@@ -4,7 +4,7 @@ import { ActivityIndicator, FlatList, Text, SafeAreaView, StyleSheet, TouchableO
 import { ButtonGroup, Divider, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-function Search({ navigation }) {
+function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
@@ -74,17 +74,4 @@ function Search({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  searchInput: {
-    flex: 1,
-    margin: 12,
-    color: 'black',
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderWidth: 1,
-    borderRadius: 30,
-    borderColor: '#dadae8',
-  },
-});
-
-export default Search;
+export default SearchScreen;

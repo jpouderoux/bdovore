@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TextInput } from 'react-native';
 
-function About(props) {
+function AboutScreen(props) {
   return (
     <SafeAreaView>
       <Image style={styles.container} source={require('../app/assets/bdovore-167.png')} />
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default About;
+export default AboutScreen;

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Switch, Divider, Rating } from 'react-native-elements';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
+import { Switch } from 'react-native-elements';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
+import { AlbumItem } from '../components/AlbumItem';
+import * as APIManager from '../api/APIManager'
 
-function Wishlist({ navigation }) {
+function WishlistScren({ navigation }) {
   const [keywords, setKeywords] = useState('');
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,12 +15,7 @@ function Wishlist({ navigation }) {
   const [nbAlbums, setNbAlbums] = useState(0);
 
   // Move to login page if no token available
-  AsyncStorage.getItem('Token').then((value) => {
-    if (value === null) {
-      navigation.navigate('Login');
-    }
-  }, () => { }
-  );
+  APIManager.checkForToken(navigation);
 
   useEffect(() => {
     getData();
@@ -56,37 +53,6 @@ function Wishlist({ navigation }) {
       });
   };
 
-  const renderAlbum = ({ item, index }) => {
-    const tome = (item.NUM_TOME !== null) ? "Tome " + item.NUM_TOME : '';
-    return (
-      <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
-        <View style={{ flexDirection: 'row', backgroundColor: rowColors[index % rowColors.length] }}>
-          <View style={{ margin: 5 }}>
-            <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={styles.albumImageStyle} />
-          </View>
-          <View style={{ margin: 5, justifyContent: "center", flexDirection: "column" }}>
-            <Text style={styles.bold}>{item.TITRE_TOME}</Text>
-            <Text>{item.NOM_SERIE}</Text>
-            <Text>{tome}</Text>
-            <Text>{item.NOM_GENRE}</Text>
-            {(item.MOYENNE_NOTE_TOME) !== null ?
-              <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
-                <Rating
-                  ratingCount={5}
-                  imageSize={20}
-                  startingValue={(item.MOYENNE_NOTE_TOME) / 2}
-                  tintColor={rowColors[index % rowColors.length]}
-                  readonly={true}
-                />
-              </View>
-              : null}
-          </View>
-        </View>
-        <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
-      </TouchableOpacity>
-    );
-  }
-
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
       <View>
@@ -109,7 +75,7 @@ function Wishlist({ navigation }) {
             windowSize={12}
             data={keywords && keywords !== '' ? filteredData : data}
             keyExtractor={({ item }, index) => index}
-            renderItem={renderAlbum}
+            renderItem={AlbumItem}
           />
         )}
       </View>
@@ -117,11 +83,4 @@ function Wishlist({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  albumImageStyle: {
-    width: 90,
-    height: 122,
-  },
-});
-
-export default Wishlist;
+export default WishlistScren;

@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 
-function Album({ route, navigation }) {
+function AlbumScreen({ route, navigation }) {
   const item = route.params.item;
   const tome = ((item.NUM_TOME !== null) ? "T" + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
   let auteurs = item.scpseudo;
@@ -70,4 +70,4 @@ const styles = EStyleSheet.create({
   },
 });
 
-export default Album;
+export default AlbumScreen;

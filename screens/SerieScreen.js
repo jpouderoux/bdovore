@@ -1,12 +1,14 @@
 import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-function Serie({ route, navigation }) {
+import CommonStyles from '../styles/CommonStyles';
+
+function SerieScreen({ route, navigation }) {
   const item = route.params.item;
   return (
     <SafeAreaView>
       <View style={{ margin: 20, alignItems: 'center' }}>
-          <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV_SERIE), }} style={styles.albumImageStyle} />
+        <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV_SERIE), }} style={CommonStyles.albumImageStyle} />
       </View>
       <View style={{ flexDirection: 'column', marginVertical: 8, alignItems: 'center' }}>
           <Text style={styles.bold}>{item.NOM_SERIE}</Text>
@@ -18,11 +20,4 @@ function Serie({ route, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  albumImageStyle: {
-    width: 180,
-    height: 244,
-  },
-});
-
-export default Serie;
+export default SerieScreen;

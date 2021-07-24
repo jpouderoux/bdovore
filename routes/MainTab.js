@@ -1,28 +1,26 @@
 import React, { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { createAppContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Login from '../screens/Login';
-import Serie from '../screens/Serie';
-import Album from '../screens/Album';
-import MyCollection from '../screens/MyCollection';
-import News from '../screens/News';
-import Search from '../screens/Search';
-import ToComplete from '../screens/ToComplete';
-import Wishlist from '../screens/Wishlist';
+import LoginScreen from '../screens/LoginScreen';
+import SerieScreen from '../screens/SerieScreen';
+import AlbumScreen from '../screens/AlbumScreen';
+import CollectionScreen from '../screens/CollectionScreen';
+import NewsScreen from '../screens/NewsScreen';
+import SearchScreen from '../screens/SearchScreen';
+import ToCompleteScreen from '../screens/ToCompleteScreen';
+import WishlistScreen from '../screens/WishlistScreen';
 
 const Tab = createBottomTabNavigator();
 
-const MyCollectionStack = createStackNavigator();
+const CollectionStack = createStackNavigator();
 
-function MyCollectionScreens({navigation}) {
+function CollectionScreens({navigation}) {
 
   const onAccountPress = () => {
     navigation.navigate('Login');
@@ -37,61 +35,61 @@ function MyCollectionScreens({navigation}) {
   }
 
   return (
-    <MyCollectionStack.Navigator>
-      <MyCollectionStack.Screen name="Ma collection" component={MyCollection}
+    <CollectionStack.Navigator>
+      <CollectionStack.Screen name="Ma collection" component={CollectionScreen}
         options={{
           headerRight: accountButton,
         }} />
-      <MyCollectionStack.Screen name="Login" component={Login} />
-      <MyCollectionStack.Screen name="Serie" component={Serie}
+      <CollectionStack.Screen name="Login" component={LoginScreen} />
+      <CollectionStack.Screen name="Serie" component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <MyCollectionStack.Screen name="Album" component={Album}
+      <CollectionStack.Screen name="Album" component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
-    </MyCollectionStack.Navigator>
+    </CollectionStack.Navigator>
   );
 }
 
 function WishlistScreens({ navigation }) {
   return (
-    <MyCollectionStack.Navigator>
-      <MyCollectionStack.Screen name="Mes envies BD" component={Wishlist} />
-      <MyCollectionStack.Screen name="Serie" component={Serie}
+    <CollectionStack.Navigator>
+      <CollectionStack.Screen name="Mes envies BD" component={WishlistScreen} />
+      <CollectionStack.Screen name="Serie" component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <MyCollectionStack.Screen name="Album" component={Album}
+      <CollectionStack.Screen name="Album" component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
-    </MyCollectionStack.Navigator>
+    </CollectionStack.Navigator>
   );
 }
 
 function ToCompleteScreens({ navigation }) {
   return (
-    <MyCollectionStack.Navigator>
-      <MyCollectionStack.Screen name="Albums manquants" component={ToComplete} />
-      <MyCollectionStack.Screen name="Serie" component={Serie}
+    <CollectionStack.Navigator>
+      <CollectionStack.Screen name="Albums manquants" component={ToCompleteScreen} />
+      <CollectionStack.Screen name="Serie" component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <MyCollectionStack.Screen name="Album" component={Album}
+      <CollectionStack.Screen name="Album" component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
-    </MyCollectionStack.Navigator>
+    </CollectionStack.Navigator>
   );
 }
 
 function NewsScreens({ navigation }) {
   return (
-    <MyCollectionStack.Navigator>
-      <MyCollectionStack.Screen name="Actualité" component={News} />
-    </MyCollectionStack.Navigator>
+    <CollectionStack.Navigator>
+      <CollectionStack.Screen name="Actualité" component={NewsScreen} />
+    </CollectionStack.Navigator>
   );
 }
 
 function SearchScreens({ navigation }) {
   return (
-    <MyCollectionStack.Navigator>
-      <MyCollectionStack.Screen name="Rechercher" component={Search} />
-      <MyCollectionStack.Screen name="Serie" component={Serie}
+    <CollectionStack.Navigator>
+      <CollectionStack.Screen name="Rechercher" component={SearchScreen} />
+      <CollectionStack.Screen name="Serie" component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <MyCollectionStack.Screen name="Album" component={Album}
+      <CollectionStack.Screen name="Album" component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
-    </MyCollectionStack.Navigator>
+    </CollectionStack.Navigator>
   );
 }
 
@@ -116,7 +114,7 @@ function MainTab() {
     >
       <Tab.Screen
         name="Ma collection"
-        component={MyCollectionScreens}
+        component={CollectionScreens}
         options={{
           tabBarIcon: (p) => {
             return setTabBarIonicons("library", p); }

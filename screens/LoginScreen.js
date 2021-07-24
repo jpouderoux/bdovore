@@ -1,54 +1,18 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, Linking, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 
-function Login({ navigation }) {
-  const [pseudo, setPseudo] = useState('pix3l');
-  const [passwd, setPasswd] = useState("pxl0nBD");
+import * as APIManager from '../api/APIManager'
+import CommonStyles from '../styles/CommonStyles';
+
+function LoginScreen({ navigation }) {
+  const [pseudo, setPseudo] = useState('dummyuser');
+  const [passwd, setPasswd] = useState("dummypwd");
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const loginBdovore = () => {
-
-    setErrortext('');
-    if (!pseudo) {
-      alert('Veuillez renseigner le pseudo.');
-      return;
-    }
-    if (!passwd) {
-      alert('Veuillez renseigner le mot de passe.');
-      return;
-    }
-    setLoading(true);
-
-    return fetch('https://www.bdovore.com/auth/gettoken', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: encodeURI("user_login="+pseudo+"&user_password="+passwd)
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        //console.log(responseJson);
-        setErrortext(responseJson.Error);
-        if (responseJson.Error === '') {
-          console.log("New token: " + responseJson.Token);
-          AsyncStorage.setItem('Token', responseJson.Token).then((token) => {
-            navigation.navigate('Ma collection');
-          }, );
-        } else {
-          console.log("Erreur: " + responseJson.Error);
-        }
-      })
-      .catch((error) => {
-        setErrortext(error);
-        console.error("Exception: {error}");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const onLoginPress = () => {
+    APIManager.loginBdovore(pseudo, passwd, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
+  }
 
   return (
     <SafeAreaView>
@@ -66,9 +30,7 @@ function Login({ navigation }) {
           returnKeyType="next"
           blurOnSubmit={false}
           value={pseudo}
-          onChangeText={(pseudo) =>
-            setPseudo(pseudo)
-          }
+          onChangeText={(pseudo) => setPseudo(pseudo)}
         />
       </View>
       <View style={{ marginLeft: 20 }}>
@@ -82,13 +44,11 @@ function Login({ navigation }) {
           value={passwd}
           blurOnSubmit={true}
           returnKeyType="next"
-          onChangeText={(passwd) =>
-            setPasswd(passwd)
-          }
+          onChangeText={(passwd) => setPasswd(passwd)}
         />
       </View>
       {errortext != '' ? (
-        <Text style={styles.errorTextStyle}>
+        <Text style={CommonStyles.errorTextStyle}>
           {errortext}
         </Text>
       ) : null}
@@ -104,7 +64,7 @@ function Login({ navigation }) {
             <ActivityIndicator size="large" color="#f00f0f" /></View> :
           <TouchableOpacity
             style={styles.buttonStyle}
-            onPress={loginBdovore}
+            onPress={onLoginPress}
             title="Login"
           >
             <Text style={styles.buttonTextStyle}>Se connecter</Text>
@@ -121,11 +81,6 @@ function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-  },
   sectionStyle: {
     flexDirection: 'row',
     height: 80,
@@ -161,11 +116,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderColor: '#dadae8',
   },
-  errorTextStyle: {
-    color: 'red',
-    textAlign: 'center',
-    fontSize: 14,
-  },
   registerTextStyle: {
     color: 'black',
     textDecorationLine: 'underline',
@@ -176,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default LoginScreen;

@@ -5,7 +5,10 @@ import { Switch, Divider, Rating } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-function ToComplete({navigation}) {
+import * as APIManager from '../api/APIManager'
+import CommonStyles from '../styles/CommonStyles';
+
+function ToCompleteScreen({navigation}) {
   const [keywords, setKeywords] = useState('');
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,12 +16,7 @@ function ToComplete({navigation}) {
   const [nbAlbums, setNbAlbums] = useState(0);
 
   // Move to login page if no token available
-  AsyncStorage.getItem('Token').then((value) => {
-    if (value === null) {
-      navigation.navigate('Login');
-    }
-  }, () => { }
-  );
+  APIManager.checkForToken(navigation);
 
   useEffect(() => {
     fetchData();
@@ -67,12 +65,12 @@ function ToComplete({navigation}) {
     const tome = (item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : '';
     return (
       <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
-        <View style={{ flexDirection: 'row', backgroundColor: '#fff'}}>
+        <View style={{ flexDirection: 'row' }}>
           <View style={{ margin: 5 }}>
-            <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={styles.albumImageStyle} />
+            <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
           </View>
           <View style={{ margin: 5, flexDirection: "column", flexGrow: 3}}>
-            <Text style={styles.bold}>{item.TITRE_TOME}</Text>
+            <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
             <Text>{item.NOM_SERIE} {tome}</Text>
             {(item.MOYENNE_NOTE_TOME) !== null ?
               <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
@@ -107,7 +105,7 @@ function ToComplete({navigation}) {
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
         </View>
         {errortext != '' ? (
-          <Text style={styles.errorTextStyle}>
+          <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
         ) : null}
@@ -125,17 +123,4 @@ function ToComplete({navigation}) {
   )
 }
 
-const styles = StyleSheet.create({
-  albumImageStyle: {
-    width: 90,
-    height: 122,
-  },
-  italic: {
-    fontStyle: 'italic'
-  },
-  bold: {
-    fontWeight: 'bold'
-  }
-});
-
-export default ToComplete;
+export default ToCompleteScreen;
