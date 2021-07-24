@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
+import { Image, SafeAreaView, ScrollView, View } from 'react-native'
 import { Text } from 'react-native-elements';
 import { WebView } from 'react-native-webview';
 import { Rating } from 'react-native-elements';

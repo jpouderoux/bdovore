@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Switch, Divider, Rating } from 'react-native-elements';
-
+import { ActivityIndicator, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Rating } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager'
 import CommonStyles from '../styles/CommonStyles';
 
-function ToCompleteScreen({navigation}) {
-  const [keywords, setKeywords] = useState('');
+function ToCompleteScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -21,18 +19,18 @@ function ToCompleteScreen({navigation}) {
   useEffect(() => {
     fetchData();
     // Make sure data is refreshed when login/token changed
-    // const willFocusSubscription = navigation.addListener('focus', () => {
-      //   //getData();
-      // });
-      // return willFocusSubscription;
-    }, []);
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return willFocusSubscription;
+  }, []);
 
-    const onPressAlbum = (item) => {
-      navigation.navigate('Album', { item });
-    }
+  const onPressAlbum = (item) => {
+    navigation.navigate('Album', { item });
+  }
 
-    const onIWantIt = () => {
-    }
+  const onIWantIt = () => {
+  }
 
   const fetchData = async () => {
     setLoading(true);
@@ -69,7 +67,7 @@ function ToCompleteScreen({navigation}) {
           <View style={{ margin: 5 }}>
             <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
           </View>
-          <View style={{ margin: 5, flexDirection: "column", flexGrow: 3}}>
+          <View style={{ margin: 5, flexDirection: "column", flexGrow: 3 }}>
             <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
             <Text>{item.NOM_SERIE} {tome}</Text>
             {(item.MOYENNE_NOTE_TOME) !== null ?
@@ -83,7 +81,7 @@ function ToCompleteScreen({navigation}) {
                 />
               </View>
               : null}
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginRight: 10}}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginRight: 10 }}>
               <TouchableOpacity onPress={onIWantIt} title="" >
                 <Icon name='check-bold' size={25} color='#f22' />
               </TouchableOpacity>

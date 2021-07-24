@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
 import { Switch } from 'react-native-elements';
-
 import AsyncStorage from '@react-native-community/async-storage';
 
 import { AlbumItem } from '../components/AlbumItem';
 import * as APIManager from '../api/APIManager'
 
 function WishlistScren({ navigation }) {
-  const [keywords, setKeywords] = useState('');
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -56,8 +54,8 @@ function WishlistScren({ navigation }) {
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
       <View>
-        <View style={{ flexDirection: 'row'}}>
-          <Text style={{ flex:1, margin: 5, fontSize: 16}}>{nbAlbums} album{nbAlbums>1?'s':''}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
           <View></View>
           <View style={{ flexDirection: 'row' }}>
             <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
@@ -73,7 +71,7 @@ function WishlistScren({ navigation }) {
           <FlatList
             maxToRenderPerBatch={20}
             windowSize={12}
-            data={keywords && keywords !== '' ? filteredData : data}
+            data={data}
             keyExtractor={({ item }, index) => index}
             renderItem={AlbumItem}
           />

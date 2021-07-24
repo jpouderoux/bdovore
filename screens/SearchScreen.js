@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Text, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
-
-import { ButtonGroup, Divider, SearchBar } from 'react-native-elements';
+import { ActivityIndicator, FlatList, Text, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function SearchScreen({ navigation }) {

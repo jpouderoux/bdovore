@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
-
 import AsyncStorage from '@react-native-community/async-storage';
-
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 
 import * as APIManager from '../api/APIManager.js'
@@ -141,6 +139,7 @@ function CollectionScreen({ navigation }) {
     setKeywords(searchText);
     let filteredData = data.filter(function (item) {
       let title = collecMode === 'series' ? item.NOM_SERIE : item.TITRE_TOME;
+      title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
       return title ? title.toLowerCase().includes(searchText.toLowerCase()): false;
     });
     setFilteredData(filteredData);

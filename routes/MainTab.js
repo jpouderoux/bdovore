@@ -1,18 +1,16 @@
 import React, { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
-
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import LoginScreen from '../screens/LoginScreen';
-import SerieScreen from '../screens/SerieScreen';
 import AlbumScreen from '../screens/AlbumScreen';
 import CollectionScreen from '../screens/CollectionScreen';
+import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
+import SerieScreen from '../screens/SerieScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
 
