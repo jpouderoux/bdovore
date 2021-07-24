@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Linking, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as APIManager from '../api/APIManager'
 import CommonStyles from '../styles/CommonStyles';
@@ -9,6 +10,17 @@ function LoginScreen({ navigation }) {
   const [passwd, setPasswd] = useState("dummypwd");
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("effect");
+    AsyncStorage.getItem('pseudo').then(v => setPseudo(v)).catch(() => { });
+    AsyncStorage.getItem('passwd').then(v => setPasswd(v)).catch(() => { });
+
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+    });
+    return willFocusSubscription;
+  }, []);
 
   const onLoginPress = () => {
     APIManager.loginBdovore(pseudo, passwd, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });

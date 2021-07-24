@@ -11,134 +11,77 @@ function CollectionScreen({ navigation }) {
   const [keywords, setKeywords] = useState('');
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [collectionAlbums, setCollectionAlbums] = useState([]);
+  const [collectionSeries, setCollectionSeries] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [nbSeries, setNbSeries] = useState(0);
   const [nbAlbums, setNbAlbums] = useState(0);
-  const [collecMode, setCollecMode] = useState('series');
-  const [searchMode, setSearchMode] = useState(0);
+  const [collecMode, setCollecMode] = useState(0);
 
   useEffect(() => {
-    getElementsCount();
-    getData(collecMode);
+    console.log("effect");
+    AsyncStorage.getItem('collecFetched').then(v => {
+      if (v === 'false') {
+        getSeries();
+        getAlbums();
+      }
+    }).catch(()=>{});
+
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      console.log(collecMode);
-      getData(collecMode);
+      console.log("new focus");
+      AsyncStorage.getItem('collecFetched').then(v => {
+        if (v === 'false') {
+          getSeries();
+          getAlbums();
+        }
+      }).catch(() => { });
     });
     return willFocusSubscription;
   }, []);
 
-  // const tesst= (x) => {
-  //   x[0] = x[0] * 2;
-  // }
-
-  // let x = [2];
-  // tesst(x);
-  // console.log(x[0]);
-
   // Move to login page if no token available
-  APIManager.checkForToken(navigation);
+  APIManager.checkForToken(navigation).then().catch();
+
+  const onDataFetched = () => {
+    console.log("data fetched");
+    AsyncStorage.getItem('nbSeries').then(v => setNbSeries(v)).catch(() => { });
+    AsyncStorage.getItem('nbAlbums').then(v => setNbAlbums(v)).catch(() => { });
+    AsyncStorage.getItem('collectionSeries').then(v => {
+      setCollectionSeries(JSON.parse(v));
+    }).catch(() => { });
+    AsyncStorage.getItem('collectionAlbums').then(v => {
+      setCollectionAlbums(JSON.parse(v));
+    }).catch(() => { });
+    AsyncStorage.setItem('collecFetched', 'true');
+  }
 
   const getSeries = () => {
-    return getData('series');
+    APIManager.fetchCollectionData('Userserie', onDataFetched, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
   }
 
   const getAlbums = () => {
-    return getData('albums');
+    APIManager.fetchCollectionData('Useralbum', onDataFetched, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
   }
 
-  const getElementsCount = async () => {
-    setLoading(true);
-    const token = await AsyncStorage.getItem('Token');
-    //console.log("Token: " + token);
-    if (token == null) {
-      navigation.push('Login');
-      return;
-    }
-    const url1 = 'https://www.bdovore.com/getjson?data=Userserie&API_TOKEN=' + encodeURI(token) + '&mode=2&length=0';
-    fetch(url1)
-      .then((response) => response.json())
-      .then((json) => { setNbSeries(json.nbserie); })
-      .catch((error) => {})
-      .finally(() => { setLoading(false); });
-
-    const url2 = 'https://www.bdovore.com/getjson?data=Useralbum&API_TOKEN=' + encodeURI(token) + '&mode=2&length=0';
-    fetch(url2)
-      .then((response) => response.json())
-      .then((json) => { setNbAlbums(json.nbTotal); })
-      .catch((error) => {})
-      .finally(() => { setLoading(false); });
-  };
-
-  const getData = async (cMode) => {
-    setLoading(true);
-    setErrortext('');
-    const token = await AsyncStorage.getItem('Token');
-    //console.log("Token: " + token);
-    if (token == null) {
-      navigation.push('Login');
-      return;
-    }
-    setCollecMode(cMode);
-    console.log("set " + cMode);
-    let dataMode = '';
-    if (cMode === 'series') {
-      dataMode = 'Userserie';
-    }
-    else if (cMode === 'albums') {
-      dataMode = 'Useralbum';
-    }
-    else {
-      setLoading(false);
-      return;
-    }
-    const url = 'https://www.bdovore.com/getjson?data=' + dataMode + '&API_TOKEN=' + encodeURI(token) + '&mode=2&page=1&length=999';
-    console.log(url);
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        //console.log(json);
-        if (cMode === 'series') {
-          setNbSeries(json.nbserie);
-        }
-        else {
-          setNbAlbums(json.nbTotal);
-        }
-        setData(json.data);
-      })
-      .catch((error) => {
-        setData([]);
-        //setErrortext(error);
-        console.error("Error: " + error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
   const onPressSearchMode = (selectedIndex) => {
-    setSearchMode(selectedIndex);
-    if (selectedIndex === 0) {
-      getSeries();
-    } else {
-      getAlbums();
-    }
+    setCollecMode(selectedIndex);
   };
 
   const renderItem = ({ item, index }) => {
-    if (collecMode === 'series') {
+    if (collecMode == 0) {
       return SerieItem({ navigation, item, index });
     }
-    if (collecMode === 'albums') {
+    if (collecMode == 1) {
       return AlbumItem({ navigation, item, index });
     }
   }
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
+    let data = (collecMode == 0) ? collectionSeries : collectionAlbums;
     let filteredData = data.filter(function (item) {
-      let title = collecMode === 'series' ? item.NOM_SERIE : item.TITRE_TOME;
+      let title = collecMode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
       title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
       return title ? title.toLowerCase().includes(searchText.toLowerCase()): false;
     });
@@ -149,14 +92,14 @@ function CollectionScreen({ navigation }) {
     <SafeAreaView style={{ backgroundColor: '#fff' }}>
       <ButtonGroup
         onPress={onPressSearchMode}
-        selectedIndex={searchMode}
+        selectedIndex={collecMode}
         buttons={[
           { element: () => <Text>{nbSeries} série{nbSeries > 1 ? 's' : ''}</Text> },
           { element: () => <Text>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text> }]}
         containerStyle={{ height: 30 }}
       />
       <SearchBar
-        placeholder={'Rechercher dans mes ' + collecMode + '...'}
+        placeholder={'Rechercher dans mes ' + (collecMode == 0 ? 'séries' : 'albums') + '...'}
         onChangeText={onSearchChanged}
         value={keywords}
         platform='ios'
@@ -175,7 +118,7 @@ function CollectionScreen({ navigation }) {
           <FlatList
             maxToRenderPerBatch={20}
             windowSize={12}
-            data={keywords && keywords !== '' ? filteredData : data}
+            data={keywords && keywords !== '' ? filteredData : (collecMode == 0 ? collectionSeries : collectionAlbums)}
             keyExtractor={({ item }, index) => index}
             renderItem={renderItem}
           />
