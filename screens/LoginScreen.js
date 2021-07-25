@@ -31,7 +31,7 @@ function LoginScreen({ navigation }) {
     setLoading(false);
     console.log('error on connection: '+ data.error);
     if (data.error == '') {
-      AsyncStorage.setItem('Token', data.token).then(()=>{
+      AsyncStorage.setItem('token', data.token).then(()=>{
       AsyncStorage.setItem('pseudo', pseudo);
       AsyncStorage.setItem('passwd', passwd);
       AsyncStorage.setItem('collecFetched', 'false');

@@ -10,11 +10,29 @@ function getBaseUserURL(token, dataMode) {
 
 export async function checkForToken(navigation) {
   // Move to login page if no token available
-  const value = await AsyncStorage.getItem('Token');
+  const value = await AsyncStorage.getItem('token');
   if (value === null) {
     navigation.navigate('Login');
+  } else if (value === 'expired') {
+    reloginBdovore(navigation);
   }
 }
+
+export function reloginBdovore(navigation) {
+
+  AsyncStorage.multiGet('pseudo', 'passwd')
+  .then((response) => {
+    let pseudo = response[0][1];
+    let passwd = response[1][1];
+    loginBdovore(pseudo, passwd, (response) => {
+      AsyncStorage.setItem('token', response.token);
+    });
+  })
+  .catch((error) => {
+    navigation.navigate('Login');
+  });
+}
+
 
 export function loginBdovore(pseudo, passwd, callback) {
   console.log("Login...");
@@ -52,21 +70,38 @@ export function loginBdovore(pseudo, passwd, callback) {
 
 export async function fetchCollectionData(dataMode, context, callback) {
 
-  const token = await AsyncStorage.getItem('Token');
+  const token = await AsyncStorage.getItem('token');
   //console.log("Token: " + token);
   if (token == null) {
     context.navigation.push('Login');
     callback({ nbItems: 0, items: [], error: null });
     return;
   }
-
-  const url = getBaseUserURL(token, dataMode) + '&mode=2&page=1&length=999';
+  const length = 100;
+  const url = getBaseUserURL(token, dataMode) + '&mode=2&page=1&length=' + length;
   console.log(url);
   fetch(url)
     .then((response) => response.json())
     .then((json) => {
       //console.log(json);
-      callback({ nbItems: (dataMode === 'Userserie') ? json.nbserie : json.nbTotal, items: json.data, error: '' });
+      let data = json.data;
+      const nbItems = (dataMode === 'Userserie') ? json.nbserie : json.nbTotal;
+      let nbPages = Math.ceil(nbItems / length);
+      if (nbPages > 1) {
+        for (let i = 2; i <= nbPages; i++) {
+          console.log("Fetching page " + i + '/' + nbPages);
+          const url = getBaseUserURL(token, dataMode) + '&mode=2&page=' + i + '&length=' + length;
+          fetch(url).then((response) => response.json()).then((json) => {
+            data = data.concat(json.data);
+            if (i === nbPages) {
+              callback({ nbItems: nbItems, items: data, error: '' });
+            }
+          });
+        }
+      }
+      else {
+        callback({ nbItems: nbItems, items: data, error: '' });
+      }
     })
     .catch((error) => {
       console.error("Error: " + error);
@@ -76,7 +111,7 @@ export async function fetchCollectionData(dataMode, context, callback) {
 
 export async function fetchAlbumsManquants(context, callback) {
 
-  const token = await AsyncStorage.getItem('Token');
+  const token = await AsyncStorage.getItem('token');
   if (token == null) {
     context.navigation.push('Login');
     callback({ nbItems: 0, items: [], error: null });
@@ -98,7 +133,7 @@ export async function fetchAlbumsManquants(context, callback) {
 
 export async function fetchNews(origine, context, callback) {
 
-  const token = await AsyncStorage.getItem('Token');
+  const token = await AsyncStorage.getItem('token');
   if (token == null) {
     context.navigation.navigate('Login');
     callback({ nbItems: 0, items: [], error: null });
@@ -120,7 +155,7 @@ export async function fetchNews(origine, context, callback) {
 
 export async function fetchWishlist(context, callback) {
 
-  const token = await AsyncStorage.getItem('Token');
+  const token = await AsyncStorage.getItem('token');
   if (token == null) {
     context.navigation.navigate('Login');
     callback({ nbItems: 0, items: [], error: null });

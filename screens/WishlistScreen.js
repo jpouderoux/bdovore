@@ -20,7 +20,7 @@ function WishlistScreen({ navigation }) {
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh data wishlist");
-    AsyncStorage.getItem('Token').then((token) => {
+    AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         setCachedToken(token);
         fetchData();

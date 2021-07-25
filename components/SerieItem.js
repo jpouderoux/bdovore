@@ -17,7 +17,7 @@ export function SerieItem({ navigation, item, index }) {
           <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV_SERIE), }} style={CommonStyles.albumImageStyle} />
         </View>
         <View style={{ margin: 5, flexDirection: "column" }}>
-          <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
+          <Text style={CommonStyles.bold}>{index} - {item.TITRE_TOME}</Text>
           <Text style={CommonStyles.bold}>{item.NOM_SERIE}</Text>
           <Text>{item.NOM_GENRE}</Text>
           <Text style={CommonStyles.italic}>{item.NB_USER_ALBUM} album{item.NB_USER_ALBUM > 1 ? 's' : ''} sur {item.NB_ALBUM} dans la base</Text>
