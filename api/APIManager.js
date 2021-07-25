@@ -96,7 +96,7 @@ export async function fetchAlbumsManquants(context, callback) {
     });
 }
 
-export async function fetchNews(context, callback) {
+export async function fetchNews(origine, context, callback) {
 
   const token = await AsyncStorage.getItem('Token');
   if (token == null) {
@@ -104,7 +104,7 @@ export async function fetchNews(context, callback) {
     callback({ nbItems: 0, items: [], error: null });
     return;
   }
-  const url = getBaseUserURL(token, 'Actu') + '&mode=2&page=1&length=20';
+  const url = getBaseUserURL(token, 'Actu') + '&origine='+ origine + '&mode=2&page=1&length=20';
   console.log(url);
   fetch(url)
     .then((response) => response.json())

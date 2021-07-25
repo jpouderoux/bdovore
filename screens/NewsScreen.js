@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
-import { Switch } from 'react-native-elements';
+import { ButtonGroup, Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -14,6 +14,7 @@ function NewsScreen({ navigation }) {
   const [nbAlbums, setNbAlbums] = useState(0);
   const [dataFetched, setDataFetched] = useState(false);
   const [cachedToken, setCachedToken] = useState('');
+  const [newsMode, setNewsMode] = useState(0);
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation);
@@ -23,9 +24,9 @@ function NewsScreen({ navigation }) {
     AsyncStorage.getItem('Token').then((token) => {
       if (token !== cachedToken) {
         setCachedToken(token);
-        fetchData();
+        fetchData(newsMode);
       } else if (!dataFetched) {
-        fetchData();
+        fetchData(newsMode);
       }
     }).catch(() => { });
   }
@@ -50,11 +51,20 @@ function NewsScreen({ navigation }) {
     setLoading(false);
   }
 
-  const fetchData = async () => {
+  const fetchData = async (newsMode) => {
     setLoading(true);
-    APIManager.fetchNews({ navigation: navigation }, onDataFetched)
+    let mode = '';
+    if (newsMode === 0) mode = 'BD';
+    else if (newsMode === 1) mode = 'Mangas';
+    else if (newsMode === 2) mode = 'Comics';
+    APIManager.fetchNews(mode, { navigation: navigation }, onDataFetched)
       .then().catch((error) => console.log(error));
   }
+
+  const onPressNewsMode = (selectedIndex) => {
+    setNewsMode(selectedIndex);
+    fetchData(selectedIndex);
+  };
 
   const renderItem = ({ item, index }) => {
     return AlbumItem({ navigation, item, index });
@@ -62,15 +72,16 @@ function NewsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
+      <ButtonGroup
+        onPress={onPressNewsMode}
+        selectedIndex={newsMode}
+        buttons={[
+          { element: () => <Text>BD</Text> },
+          { element: () => <Text>Mangas</Text> },
+          { element: () => <Text>Comics</Text> }]}
+        containerStyle={{ height: 30 }}
+      />
       <View>
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
-          <View></View>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
-            <Switch value={false} />
-          </View>
-        </View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
