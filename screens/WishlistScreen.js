@@ -5,51 +5,61 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import { AlbumItem } from '../components/AlbumItem';
 import * as APIManager from '../api/APIManager'
+import CommonStyles from '../styles/CommonStyles';
 
-function WishlistScren({ navigation }) {
+function WishlistScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [nbAlbums, setNbAlbums] = useState(0);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [cachedToken, setCachedToken] = useState('');
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation);
 
+  const refreshDataIfNeeded = async () => {
+    console.log("refresh data wishlist");
+    AsyncStorage.getItem('Token').then((token) => {
+      if (token !== cachedToken) {
+        setCachedToken(token);
+        fetchData();
+      } else if (!dataFetched) {
+        fetchData();
+      }
+    }).catch(() => { });
+  }
+
   useEffect(() => {
-    getData();
+    refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      getData();
+      refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, []);
+  }, [cachedToken]);
 
-  const getData = async () => {
-    setLoading(true);
-    setErrortext('');
-    const token = await AsyncStorage.getItem('Token');
-    if (token == null) {
-      navigation.navigate('Login');
-      return;
+  const onDataFetched = (data) => {
+    setNbAlbums(data.nbItems);
+    setData(data.items);
+    setErrortext(data.error);
+    if (data.error === '') {
+      setDataFetched(true);
+      console.log('fetched!');
     }
-    const url = 'https://www.bdovore.com/getjson?data=Useralbum&API_TOKEN=' + encodeURI(token) + '&mode=2&page=1&length=999&flg_achat=0';
-    console.log(url);
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-        setNbAlbums(json.nbTotal);
-        setData(json.data);
-      })
-      .catch((error) => {
-        setData([]);
-        setErrortext(error);
-        console.error("Error: " + error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+    setLoading(false);
+  }
+
+  const fetchData = async () => {
+    setLoading(true);
+    APIManager.fetchWishlist({ navigation: navigation }, onDataFetched)
+      .then().catch((error) => console.log(error));
+  }
+
+  const renderItem = ({ item, index }) => {
+      return AlbumItem({ navigation, item, index });
+  }
+
 
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
@@ -63,7 +73,7 @@ function WishlistScren({ navigation }) {
           </View>
         </View>
         {errortext != '' ? (
-          <Text style={styles.errorTextStyle}>
+          <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
         ) : null}
@@ -73,7 +83,7 @@ function WishlistScren({ navigation }) {
             windowSize={12}
             data={data}
             keyExtractor={({ item }, index) => index}
-            renderItem={AlbumItem}
+            renderItem={renderItem}
           />
         )}
       </View>
@@ -81,4 +91,4 @@ function WishlistScren({ navigation }) {
   );
 }
 
-export default WishlistScren;
+export default WishlistScreen;

@@ -26,7 +26,7 @@ function CollectionScreens({navigation}) {
 
   const accountButton = () => {
     return (
-      <TouchableOpacity onPress={onAccountPress} title="Search" style={{ margin: 8 }}>
+      <TouchableOpacity onPress={onAccountPress} title='Search' style={{ margin: 8 }}>
         <MaterialCommunityIcons name='account-cog' size={25} color='#222' />
       </TouchableOpacity>
     );
@@ -34,14 +34,14 @@ function CollectionScreens({navigation}) {
 
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name="Ma collection" component={CollectionScreen}
+      <CollectionStack.Screen name='Ma collection' component={CollectionScreen}
         options={{
           headerRight: accountButton,
         }} />
-      <CollectionStack.Screen name="Login" component={LoginScreen} />
-      <CollectionStack.Screen name="Serie" component={SerieScreen}
+      <CollectionStack.Screen name='Login' component={LoginScreen} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name="Album" component={AlbumScreen}
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
     </CollectionStack.Navigator>
   );
@@ -50,10 +50,10 @@ function CollectionScreens({navigation}) {
 function WishlistScreens({ navigation }) {
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name="Mes envies BD" component={WishlistScreen} />
-      <CollectionStack.Screen name="Serie" component={SerieScreen}
+      <CollectionStack.Screen name='Mes envies BD' component={WishlistScreen} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name="Album" component={AlbumScreen}
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
     </CollectionStack.Navigator>
   );
@@ -62,10 +62,10 @@ function WishlistScreens({ navigation }) {
 function ToCompleteScreens({ navigation }) {
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name="Albums manquants" component={ToCompleteScreen} />
-      <CollectionStack.Screen name="Serie" component={SerieScreen}
+      <CollectionStack.Screen name='Albums manquants' component={ToCompleteScreen} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name="Album" component={AlbumScreen}
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
     </CollectionStack.Navigator>
   );
@@ -74,7 +74,9 @@ function ToCompleteScreens({ navigation }) {
 function NewsScreens({ navigation }) {
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name="Actualité" component={NewsScreen} />
+      <CollectionStack.Screen name='Actualité' component={NewsScreen} />
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
+        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
     </CollectionStack.Navigator>
   );
 }
@@ -82,10 +84,10 @@ function NewsScreens({ navigation }) {
 function SearchScreens({ navigation }) {
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name="Rechercher" component={SearchScreen} />
-      <CollectionStack.Screen name="Serie" component={SerieScreen}
+      <CollectionStack.Screen name='Rechercher' component={SearchScreen} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name="Album" component={AlbumScreen}
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
     </CollectionStack.Navigator>
   );
@@ -107,48 +109,48 @@ function MainTab() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Ma collection"
+      initialRouteName='Ma collection'
       screenOptions={{ gestureEnabled: false }}
     >
       <Tab.Screen
-        name="Ma collection"
+        name='Ma collection'
         component={CollectionScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarIonicons("library", p); }
+            return setTabBarIonicons('library', p); }
         }}
       />
       <Tab.Screen
-        name="Wishlist"
+        name='Wishlist'
         component={WishlistScreens}
         options={{
           tabBarIcon: (p) =>  {
-            return setTabBarMatComIcons("heart-flash", p); }
+            return setTabBarMatComIcons('heart-flash', p); }
         }}
       />
       <Tab.Screen
-        name="A compléter"
+        name='A compléter'
         component={ToCompleteScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarIonicons("color-fill", p);
+            return setTabBarIonicons('color-fill', p);
           }
         }}
       />
       <Tab.Screen
-        name="Actualité"
+        name='Actualité'
         component={NewsScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons("newspaper", p); }
+            return setTabBarMatComIcons('newspaper', p); }
         }}
       />
       <Tab.Screen
-        name="Rechercher"
+        name='Rechercher'
         component={SearchScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons("table-search", p);
+            return setTabBarMatComIcons('table-search', p);
           }
         }}
       />

@@ -10,7 +10,7 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 
 function AlbumScreen({ route, navigation }) {
   const item = route.params.item;
-  const tome = ((item.NUM_TOME !== null) ? "T" + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
+  const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
   let auteurs = item.scpseudo;
   if (auteurs === null || auteurs === '') {
     auteurs = item.depseudo;

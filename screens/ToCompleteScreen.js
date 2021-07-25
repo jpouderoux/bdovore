@@ -12,18 +12,31 @@ function ToCompleteScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [nbAlbums, setNbAlbums] = useState(0);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [cachedToken, setCachedToken] = useState('');
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation);
 
+  const refreshDataIfNeeded = async () => {
+    AsyncStorage.getItem('Token').then((token) => {
+      if (token !== cachedToken) {
+        setCachedToken(token);
+        fetchData();
+      } else if (!dataFetched) {
+        fetchData();
+      }
+    }).catch(() => { });
+  }
+
   useEffect(() => {
-    fetchData();
+    refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      fetchData();
+      refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, []);
+  }, [cachedToken]);
 
   const onPressAlbum = (item) => {
     navigation.navigate('Album', { item });
@@ -32,32 +45,22 @@ function ToCompleteScreen({ navigation }) {
   const onIWantIt = () => {
   }
 
+  const onDataFetched = (data) => {
+    setNbAlbums(data.nbItems);
+    setData(data.items);
+    setErrortext(data.error);
+    if (data.error === '') {
+      setDataFetched(true);
+      console.log('fetched!');
+    }
+    setLoading(false);
+  }
+
   const fetchData = async () => {
     setLoading(true);
-    setErrortext('');
-    const token = await AsyncStorage.getItem('Token');
-    if (token == null) {
-      navigation.push('Login');
-      return;
-    }
-    const url = 'https://www.bdovore.com/getjson?data=Albummanquant&API_TOKEN=' + encodeURI(token) + '&mode=all&page=1&length=999';
-    console.log(url);
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        //console.log(json);
-        setNbAlbums(json.nbmanquant);
-        setData(json.data);
-      })
-      .catch((error) => {
-        setData([]);
-        setErrortext(error);
-        console.error("Error: " + error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+    APIManager.fetchAlbumsManquants({ navigation: navigation}, onDataFetched)
+    .then().catch((error) => console.log(error));
+  }
 
   const renderAlbum = ({ item, index }) => {
     const tome = (item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : '';

@@ -23,7 +23,25 @@ function LoginScreen({ navigation }) {
   }, []);
 
   const onLoginPress = () => {
-    APIManager.loginBdovore(pseudo, passwd, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
+    setLoading(true);
+    APIManager.loginBdovore(pseudo, passwd, onConnected);
+  }
+
+  const onConnected = (data) => {
+    setLoading(false);
+    console.log('error on connection: '+ data.error);
+    if (data.error == '') {
+      AsyncStorage.setItem('Token', data.token).then(()=>{
+      AsyncStorage.setItem('pseudo', pseudo);
+      AsyncStorage.setItem('passwd', passwd);
+      AsyncStorage.setItem('collecFetched', 'false');
+      navigation.goBack();
+      }
+      );
+    }
+    else {
+      setErrortext(data.error);
+    }
   }
 
   return (

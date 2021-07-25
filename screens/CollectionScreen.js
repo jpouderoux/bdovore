@@ -6,6 +6,7 @@ import { ButtonGroup, SearchBar } from 'react-native-elements';
 import * as APIManager from '../api/APIManager.js'
 import { AlbumItem } from '../components/AlbumItem.js';
 import { SerieItem } from '../components/SerieItem.js';
+import CommonStyles from '../styles/CommonStyles.js';
 
 function CollectionScreen({ navigation }) {
   const [keywords, setKeywords] = useState('');
@@ -17,51 +18,86 @@ function CollectionScreen({ navigation }) {
   const [nbSeries, setNbSeries] = useState(0);
   const [nbAlbums, setNbAlbums] = useState(0);
   const [collecMode, setCollecMode] = useState(0);
-
-  useEffect(() => {
-    console.log("effect");
-    AsyncStorage.getItem('collecFetched').then(v => {
-      if (v === 'false') {
-        getSeries();
-        getAlbums();
-      }
-    }).catch(()=>{});
-
-    // Make sure data is refreshed when login/token changed
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      console.log("new focus");
-      AsyncStorage.getItem('collecFetched').then(v => {
-        if (v === 'false') {
-          getSeries();
-          getAlbums();
-        }
-      }).catch(() => { });
-    });
-    return willFocusSubscription;
-  }, []);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [cachedToken, setCachedToken] = useState('');
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation).then().catch();
 
-  const onDataFetched = () => {
-    console.log("data fetched");
-    AsyncStorage.getItem('nbSeries').then(v => setNbSeries(v)).catch(() => { });
-    AsyncStorage.getItem('nbAlbums').then(v => setNbAlbums(v)).catch(() => { });
-    AsyncStorage.getItem('collectionSeries').then(v => {
-      setCollectionSeries(JSON.parse(v));
+  const refreshDataIfNeeded = async () => {
+    console.log("refresh data wishlist");
+    AsyncStorage.getItem('Token').then((token) => {
+      if (token !== cachedToken) {
+        setCachedToken(token);
+        fetchData();
+      } else if (!dataFetched) {
+        fetchData();
+      }
     }).catch(() => { });
-    AsyncStorage.getItem('collectionAlbums').then(v => {
-      setCollectionAlbums(JSON.parse(v));
-    }).catch(() => { });
-    AsyncStorage.setItem('collecFetched', 'true');
   }
 
-  const getSeries = () => {
-    APIManager.fetchCollectionData('Userserie', onDataFetched, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
+  useEffect(() => {
+    refreshDataIfNeeded();
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      refreshDataIfNeeded();
+    });
+    return willFocusSubscription;
+  }, [cachedToken]);
+
+  const fetchData = () => {
+    fetchSeries();
+    fetchAlbums();
   }
 
-  const getAlbums = () => {
-    APIManager.fetchCollectionData('Useralbum', onDataFetched, { navigation: navigation, setErrortext: setErrortext, setLoading: setLoading });
+  const fetchSeries = () => {
+    setLoading(true);
+    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched );
+  }
+
+  const fetchAlbums = () => {
+    setLoading(true);
+    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, onAlbumsFetched);
+  }
+
+  const onSeriesFetched = async (data) => {
+    console.log("series fetched");
+
+    //AsyncStorage.setItem('nbSeries', data.nbItems.toString());
+    //AsyncStorage.setItem('collectionSeries', JSON.stringify(data.items));
+
+    setNbSeries(data.nbItems);
+    setCollectionSeries(data.items);
+
+    if (!!data.error) {
+      setErrortext('');
+      setDataFetched(true);
+    } else {
+      setErrortext(data.error);
+    }
+
+    AsyncStorage.setItem('collecFetched', (data.error === null) ? 'true' : 'false');
+    setLoading(false);
+  }
+
+  const onAlbumsFetched = async (data) => {
+    console.log("albums fetched");
+
+    //AsyncStorage.setItem('nbAlbums', data.nbItems.toString());
+    //AsyncStorage.setItem('collectionAlbums', JSON.stringify(data.items));
+
+    setNbAlbums(data.nbItems);
+    setCollectionAlbums(data.items);
+
+    if (!!data.error) {
+      setErrortext('');
+      setDataFetched(true);
+    } else {
+      setErrortext(data.error);
+    }
+
+    AsyncStorage.setItem('collecFetched', (data.error === null) ? 'true' : 'false');
+    setLoading(false);
   }
 
   const onPressSearchMode = (selectedIndex) => {
