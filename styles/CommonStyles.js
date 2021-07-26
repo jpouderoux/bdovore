@@ -1,4 +1,8 @@
+import { Dimensions } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const CommonStyles = EStyleSheet.create({
   searchInput: {
@@ -24,8 +28,17 @@ const CommonStyles = EStyleSheet.create({
     color: 'white',
   },
   albumImageStyle: {
-    width: 90,
-    height: 122,
+    margin: 5,
+    resizeMode: 'cover',
+    width: windowWidth / 4,
+    height: windowWidth / 4 * (122 / 90), // respect the aspect ratio
+  },
+  itemTextWidth: {
+    width: (windowWidth / 4) * 3 - 15,
+  },
+  itemTextContent: {
+    margin: 5,
+    flexDirection: "column",
   },
   serieImageStyle: {
     width: 90,

@@ -13,15 +13,15 @@ export function AlbumItem({ navigation, item, index }) {
   const tome = (item.NUM_TOME !== null) ? "Tome " + item.NUM_TOME : '';
   return (
     <TouchableOpacity key={index} onPress={() => onPressAlbum(navigation, item)}>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ margin: 5 }}>
-          <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
-        </View>
-        <View style={{ margin: 5, justifyContent: "center", flexDirection: "column" }}>
-          <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
-          <Text>{item.NOM_SERIE}</Text>
-          <Text>{tome}</Text>
-          <Text>{item.NOM_GENRE}</Text>
+      <View style={{ flexDirection: 'row', }}>
+        <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
+        <View style={CommonStyles.itemTextContent}>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.TITRE_TOME}</Text>
+          <Text style={CommonStyles.itemTextWidth}>
+            {item.NOM_SERIE}{'\n'}
+            {tome}{'\n'}
+            {item.NOM_GENRE}
+          </Text>
           {(item.MOYENNE_NOTE_TOME) !== null ?
             <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
               <Rating

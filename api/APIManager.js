@@ -89,7 +89,7 @@ export async function fetchCollectionData(dataMode, context, callback) {
       let nbPages = Math.ceil(nbItems / length);
       if (nbPages > 1) {
         for (let i = 2; i <= nbPages; i++) {
-          console.log("Fetching page " + i + '/' + nbPages);
+          //console.log("Fetching page " + i + '/' + nbPages);
           const url = getBaseUserURL(token, dataMode) + '&mode=2&page=' + i + '&length=' + length;
           fetch(url).then((response) => response.json()).then((json) => {
             data = data.concat(json.data);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
@@ -28,9 +28,11 @@ function CollectionScreen({ navigation }) {
     console.log("refresh data wishlist");
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
+        console.log('fetch because token changed to ' + token);
         setCachedToken(token);
         fetchData();
       } else if (!dataFetched) {
+        console.log('fetch because dataFetched=' + dataFetched);
         fetchData();
       }
     }).catch(() => { });
@@ -63,45 +65,46 @@ function CollectionScreen({ navigation }) {
   const onSeriesFetched = async (data) => {
     console.log("series fetched");
 
-    //AsyncStorage.setItem('nbSeries', data.nbItems.toString());
-    //AsyncStorage.setItem('collectionSeries', JSON.stringify(data.items));
+    /*AsyncStorage.multiSet([
+      'nbSeries', data.nbItems.toString(),
+      'collectionSeries', JSON.stringify(data.items),
+      'collecFetched', (data.error === null) ? 'true' : 'false']);*/
 
     setNbSeries(data.nbItems);
     setCollectionSeries(data.items);
 
-    if (!!data.error) {
+    if (data.error === '') {
       setErrortext('');
       setDataFetched(true);
     } else {
       setErrortext(data.error);
     }
-
-    AsyncStorage.setItem('collecFetched', (data.error === null) ? 'true' : 'false');
     setLoading(false);
   }
 
   const onAlbumsFetched = async (data) => {
     console.log("albums fetched");
 
-    //AsyncStorage.setItem('nbAlbums', data.nbItems.toString());
-    //AsyncStorage.setItem('collectionAlbums', JSON.stringify(data.items));
+    /*AsyncStorage.multiSet([]
+      'nbAlbums', data.nbItems.toString(),
+      'collectionAlbums', JSON.stringify(data.items),
+      'collecFetched', (data.error === null) ? 'true' : 'false']);*/
 
     setNbAlbums(data.nbItems);
     setCollectionAlbums(data.items);
 
-    if (!!data.error) {
+    if (data.error === '') {
       setErrortext('');
       setDataFetched(true);
     } else {
       setErrortext(data.error);
     }
-
-    AsyncStorage.setItem('collecFetched', (data.error === null) ? 'true' : 'false');
     setLoading(false);
   }
 
   const onPressSearchMode = (selectedIndex) => {
     setCollecMode(selectedIndex);
+    setKeywords('');
   };
 
   const renderItem = ({ item, index }) => {
@@ -115,6 +118,7 @@ function CollectionScreen({ navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
+
     let data = (collecMode == 0) ? collectionSeries : collectionAlbums;
     let filteredData = data.filter(function (item) {
       let title = collecMode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
@@ -123,6 +127,11 @@ function CollectionScreen({ navigation }) {
     });
     setFilteredData(filteredData);
   }
+
+  const keyExtractor = useCallback(({ item }, index) =>
+    item ?
+      parseInt(collecMode == 0 ? item.ID_SERIE : item.ID_TOME)
+      + (collecMode == 0 ? 0 : 1000000) : index);
 
   return (
     <SafeAreaView style={{ backgroundColor: '#fff' }}>
@@ -152,10 +161,10 @@ function CollectionScreen({ navigation }) {
         ) : null}
         {loading ? <ActivityIndicator size="large" color="#f00f0f" /> : (
           <FlatList
-            maxToRenderPerBatch={20}
-            windowSize={12}
+            maxToRenderPerBatch={6}
+            windowSize={10}
             data={keywords && keywords !== '' ? filteredData : (collecMode == 0 ? collectionSeries : collectionAlbums)}
-            keyExtractor={({ item }, index) => index}
+            keyExtractor={keyExtractor}
             renderItem={renderItem}
           />
         )}
