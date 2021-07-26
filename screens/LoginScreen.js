@@ -29,17 +29,17 @@ function LoginScreen({ navigation }) {
 
   const onConnected = (data) => {
     setLoading(false);
-    console.log('error on connection: '+ data.error);
     if (data.error == '') {
       AsyncStorage.setItem('token', data.token).then(()=>{
-      AsyncStorage.setItem('pseudo', pseudo);
-      AsyncStorage.setItem('passwd', passwd);
-      AsyncStorage.setItem('collecFetched', 'false');
-      navigation.goBack();
+        AsyncStorage.setItem('pseudo', pseudo);
+        AsyncStorage.setItem('passwd', passwd);
+        AsyncStorage.setItem('collecFetched', 'false');
+        navigation.goBack();
       }
       );
     }
     else {
+      console.log('error on connection: '+ data.error);
       setErrortext(data.error);
     }
   }

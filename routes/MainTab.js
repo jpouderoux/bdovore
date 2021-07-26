@@ -26,8 +26,16 @@ function CollectionScreens({navigation}) {
 
   const accountButton = () => {
     return (
-      <TouchableOpacity onPress={onAccountPress} title='Search' style={{ margin: 8 }}>
-        <MaterialCommunityIcons name='account-cog' size={25} color='#222' />
+      <TouchableOpacity onPress={onAccountPress} style={{ margin: 8 }}>
+        <MaterialCommunityIcons name='account-circle-outline' size={25} color='#222' />
+      </TouchableOpacity>
+    );
+  }
+
+  const collecButton = () => {
+    return (
+      <TouchableOpacity onPress={()=>{}} style={{ margin: 8 }}>
+        <Ionicons name='library-sharp' size={25} color='#222' />
       </TouchableOpacity>
     );
   }
@@ -36,7 +44,8 @@ function CollectionScreens({navigation}) {
     <CollectionStack.Navigator>
       <CollectionStack.Screen name='Ma collection' component={CollectionScreen}
         options={{
-          headerRight: accountButton,
+          headerLeft: accountButton,
+          headerRight: collecButton,
         }} />
       <CollectionStack.Screen name='Login' component={LoginScreen} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
@@ -113,14 +122,6 @@ function MainTab() {
       screenOptions={{ gestureEnabled: false }}
     >
       <Tab.Screen
-        name='Ma collection'
-        component={CollectionScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return setTabBarIonicons('library', p); }
-        }}
-      />
-      <Tab.Screen
         name='Wishlist'
         component={WishlistScreens}
         options={{
@@ -134,6 +135,15 @@ function MainTab() {
         options={{
           tabBarIcon: (p) => {
             return setTabBarIonicons('color-fill', p);
+          }
+        }}
+      />
+      <Tab.Screen
+        name='Ma collection'
+        component={CollectionScreens}
+        options={{
+          tabBarIcon: (p) => {
+            return setTabBarMatComIcons('home', p);
           }
         }}
       />

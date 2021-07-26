@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Text, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
@@ -60,7 +61,7 @@ function SearchScreen({ navigation }) {
         />
       </View>
       <View>
-        {loading ? <ActivityIndicator size="large" color="#f00f0f" /> : (
+        {loading ? LoadingIndicator() : (
           <FlatList
             data={data}
             keyExtractor={({ id }, index) => id}

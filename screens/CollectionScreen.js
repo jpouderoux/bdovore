@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers'
 import { AlbumItem } from '../components/AlbumItem';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 import CommonStyles from '../styles/CommonStyles';
 
@@ -20,22 +21,22 @@ function CollectionScreen({ navigation }) {
   const [nbAlbums, setNbAlbums] = useState(0);
   const [collecMode, setCollecMode] = useState(0);
   const [dataFetched, setDataFetched] = useState(false);
-  const [cachedToken, setCachedToken] = useState('');
+  let [cachedToken, setCachedToken] = useState('');
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation).then().catch();
 
-  const refreshDataIfNeeded = async () => {
-    console.log("refresh data wishlist");
+  function refreshDataIfNeeded ()  {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
-        console.log('fetch because token changed to ' + token);
+        console.log('refresh collection data because token changed to ' + token);
         setCachedToken(token);
+        cachedToken = token;
         fetchData();
-      } else if (!dataFetched) {
-        console.log('fetch because dataFetched=' + dataFetched);
+      }/* else if (!dataFetched) {
+        console.log('refresh collection data first');
         fetchData();
-      }
+      }*/
     }).catch(() => { });
   }
 
@@ -46,7 +47,7 @@ function CollectionScreen({ navigation }) {
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, [cachedToken]);
+  }, []);
 
   const fetchData = () => {
     fetchSeries();
@@ -160,7 +161,7 @@ function CollectionScreen({ navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {loading ? <ActivityIndicator size="large" color="#f00f0f" /> : (
+        {loading ? LoadingIndicator(): (
           <FlatList
             maxToRenderPerBatch={6}
             windowSize={10}

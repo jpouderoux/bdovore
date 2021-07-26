@@ -4,8 +4,6 @@ import { Text } from 'react-native-elements';
 import { WebView } from 'react-native-webview';
 import { Rating } from 'react-native-elements';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import * as APIManager from '../api/APIManager';
 import CommonStyles from '../styles/CommonStyles';
 

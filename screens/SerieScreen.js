@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, FlatList, SafeAreaView, SectionList, Text, View } from 'react-native';
-
-import CommonStyles from '../styles/CommonStyles';
-import { AlbumItem } from '../components/AlbumItem';
+import { Image, SafeAreaView, SectionList, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+
+import CommonStyles from '../styles/CommonStyles';
+import { AlbumItem } from '../components/AlbumItem';
+import { LoadingIndicator } from '../components/LoadingIndicator';
+
 
 function SerieScreen({ route, navigation }) {
 
@@ -110,7 +112,7 @@ function SerieScreen({ route, navigation }) {
         </Text>
         <Image source={{ uri: APIManager.getSerieCoverURL(item), }} style={[CommonStyles.albumImageStyle, { flexDirection: 'row', height: 75 }]} />
       </View>
-      {loading ? <ActivityIndicator size="large" color="#f00f0f" /> : (
+      {loading ? LoadingIndicator() : (
         <SectionList
           maxToRenderPerBatch={6}
           windowSize={10}
@@ -119,6 +121,7 @@ function SerieScreen({ route, navigation }) {
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title } }) => (
             <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10 }]}>{title}</Text>)}
+          stickySectionHeadersEnabled={true}
         />
       )}
     </SafeAreaView >

@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import { Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
-import { AlbumItem } from '../components/AlbumItem';
 import CommonStyles from '../styles/CommonStyles';
+
+import { AlbumItem } from '../components/AlbumItem';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function WishlistScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
@@ -14,20 +16,22 @@ function WishlistScreen({ navigation }) {
   const [data, setData] = useState([]);
   const [nbAlbums, setNbAlbums] = useState(0);
   const [dataFetched, setDataFetched] = useState(false);
-  const [cachedToken, setCachedToken] = useState('');
+  let [cachedToken, setCachedToken] = useState('');
 
   // Move to login page if no token available
   APIManager.checkForToken(navigation);
 
   const refreshDataIfNeeded = async () => {
-    console.log("refresh data wishlist");
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
+        console.log("refresh wishlist because token changed from " + cachedToken + ' to ' + token);
         setCachedToken(token);
+        cachedToken = token;
         fetchData();
-      } else if (!dataFetched) {
+      }/* else if (!dataFetched) {
+        console.log("refresh wishlist because no dat fetched yet");
         fetchData();
-      }
+      }*/
     }).catch(() => { });
   }
 
@@ -79,7 +83,7 @@ function WishlistScreen({ navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {loading ? <ActivityIndicator size="large" color="#f00f0f" /> : (
+        {loading ? LoadingIndicator() : (
           <FlatList
             maxToRenderPerBatch={20}
             windowSize={12}

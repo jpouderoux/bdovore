@@ -169,6 +169,7 @@ export async function fetchAlbumsManquants(context, callback) {
     });
 }
 
+
 export async function fetchNews(origine, context, callback) {
 
   const token = await AsyncStorage.getItem('token');
@@ -177,13 +178,35 @@ export async function fetchNews(origine, context, callback) {
     callback({ nbItems: 0, items: [], error: null });
     return;
   }
-  const url = getBaseUserURL(token, 'Actu') + '&origine='+ origine + '&mode=2&page=1&length=20';
+  const url = getBaseUserURL(token, 'Actu') + '&origine=' + origine + '&mode=2&page=1&length=100';
   console.log(url);
   fetch(url)
     .then((response) => response.json())
     .then((json) => {
-      console.log(json);
+      //console.log(json.data);
       callback({ nbItems: 20, items: json, error: '' })
+    })
+    .catch((error) => {
+      console.error("Error: " + error);
+      callback({ nbItems: 0, items: [], error: error.toString() })
+    });
+};
+
+export async function fetchUserNews(context, callback) {
+
+  const token = await AsyncStorage.getItem('token');
+  if (token == null) {
+    context.navigation.navigate('Login');
+    callback({ nbItems: 0, items: [], error: null });
+    return;
+  }
+  const url = getBaseUserURL(token, 'Useractu') + '&mode=2&nb_mois=3';
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      //console.log(json.data);
+      callback({ nbItems: json.length, items: json.data, error: '' })
     })
     .catch((error) => {
       console.error("Error: " + error);
