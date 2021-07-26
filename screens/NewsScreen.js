@@ -3,8 +3,9 @@ import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-nat
 import { ButtonGroup, Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { AlbumItem } from '../components/AlbumItem';
+import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
+import { AlbumItem } from '../components/AlbumItem';
 import CommonStyles from '../styles/CommonStyles';
 
 function NewsScreen({ navigation }) {
@@ -94,6 +95,7 @@ function NewsScreen({ navigation }) {
             data={data}
             keyExtractor={({ item }, index) => index}
             renderItem={renderItem}
+            ItemSeparatorComponent={Helpers.renderSeparator}
           />
         )}
       </View>

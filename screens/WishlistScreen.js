@@ -3,8 +3,9 @@ import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-nat
 import { Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { AlbumItem } from '../components/AlbumItem';
+import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
+import { AlbumItem } from '../components/AlbumItem';
 import CommonStyles from '../styles/CommonStyles';
 
 function WishlistScreen({ navigation }) {
@@ -64,6 +65,7 @@ function WishlistScreen({ navigation }) {
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
       <View>
+        {loading ? null :
         <View style={{ flexDirection: 'row' }}>
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
           <View></View>
@@ -71,7 +73,7 @@ function WishlistScreen({ navigation }) {
             <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
             <Switch value={false} />
           </View>
-        </View>
+        </View>}
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -84,6 +86,7 @@ function WishlistScreen({ navigation }) {
             data={data}
             keyExtractor={({ item }, index) => index}
             renderItem={renderItem}
+            ItemSeparatorComponent={Helpers.renderSeparator}
           />
         )}
       </View>

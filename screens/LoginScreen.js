@@ -45,7 +45,7 @@ function LoginScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
       <View style={{ margin: 30, alignItems: 'center' }}>
         <Image source={require('../assets/bdovore-167.png')} />
       </View>

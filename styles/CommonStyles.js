@@ -33,6 +33,10 @@ const CommonStyles = EStyleSheet.create({
     width: windowWidth / 4,
     height: windowWidth / 4 * (122 / 90), // respect the aspect ratio
   },
+  fullAlbumImageStyle: {
+    width: 180,
+    height: 244,
+  },
   itemTextWidth: {
     width: (windowWidth / 4) * 3 - 15,
   },
@@ -54,11 +58,25 @@ const CommonStyles = EStyleSheet.create({
   bold: {
     fontWeight: 'bold'
   },
+  center: {
+    textAlign: 'center'
+  },
+  largerText: {
+    fontSize: '1.1rem'
+  },
   errorTextStyle: {
     color: 'red',
     textAlign: 'center',
     fontSize: 14,
   },
+  bdfugueIcon: {
+    width: 105,
+    height: 30
+  },
+  sectionStyle: {
+    backgroundColor: '#ddd',
+    width: '100%'
+  }
 });
 
 export default CommonStyles;

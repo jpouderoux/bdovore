@@ -3,6 +3,8 @@ import { ActivityIndicator, FlatList, Text, SafeAreaView, TouchableOpacity, View
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import * as Helpers from '../api/Helpers';
+
 function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [errortext, setErrortext] = useState('');
@@ -67,6 +69,7 @@ function SearchScreen({ navigation }) {
                 <Text>{item.serie}</Text>
                 <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
               </View>}
+            ItemSeparatorComponent={Helpers.renderSeparator}
           />)}
       </View>
     </SafeAreaView>

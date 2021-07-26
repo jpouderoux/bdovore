@@ -4,7 +4,8 @@ import { Rating } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as APIManager from '../api/APIManager'
+import * as Helpers from '../api/Helpers';
+import * as APIManager from '../api/APIManager';
 import CommonStyles from '../styles/CommonStyles';
 
 function ToCompleteScreen({ navigation }) {
@@ -68,7 +69,7 @@ function ToCompleteScreen({ navigation }) {
       <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ margin: 5 }}>
-            <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
+            <Image source={{ uri: APIManager.getAlbumCoverURL(item) }} style={CommonStyles.albumImageStyle} />
           </View>
           <View style={{ margin: 5, flexDirection: "column", flexGrow: 3 }}>
             <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
@@ -102,9 +103,10 @@ function ToCompleteScreen({ navigation }) {
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
       <View>
+        {loading ? null :
         <View style={{ flexDirection: 'row' }}>
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
-        </View>
+        </View>}
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -117,6 +119,7 @@ function ToCompleteScreen({ navigation }) {
             data={data}
             keyExtractor={({ item }, index) => index}
             renderItem={renderAlbum}
+            ItemSeparatorComponent={Helpers.renderSeparator}
           />
         )}
       </View>

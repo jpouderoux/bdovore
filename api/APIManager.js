@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
-const bdovoreBaseURL = 'https://www.bdovore.com/';
+const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
 
+function getBaseURL(dataMode) {
+  return bdovoreBaseUserURL + 'data=' + dataMode;
+}
+
 function getBaseUserURL(token, dataMode) {
-  return bdovoreBaseUserURL + 'API_TOKEN=' + encodeURI(token) + '&data=' + dataMode;
+  return getBaseURL(dataMode) + '&API_TOKEN=' + encodeURI(token);
 }
 
 export async function checkForToken(navigation) {
@@ -45,7 +49,7 @@ export function loginBdovore(pseudo, passwd, callback) {
     return;
   }
 
-  return fetch(bdovoreBaseURL + 'auth/gettoken', {
+  return fetch(bdovoreBaseURL + '/auth/gettoken', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -102,6 +106,40 @@ export async function fetchCollectionData(dataMode, context, callback) {
       else {
         callback({ nbItems: nbItems, items: data, error: '' });
       }
+    })
+    .catch((error) => {
+      console.error("Error: " + error);
+      callback({ nbItems: 0, items: [], error: error.toString() });
+    });
+}
+
+export async function fetchSerie(id_serie, context, callback) {
+
+  const url = getBaseURL('Serie') + '&id_serie=' + id_serie + '&mode=1';
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      let nbItems = Object.keys(json).length;
+      //console.log(json);
+      callback({ nbItems: nbItems, items: json, error: '' });
+    })
+    .catch((error) => {
+      console.error("Error: " + error);
+      callback({ nbItems: 0, items: [], error: error.toString() });
+    });
+}
+
+export async function fetchSerieAlbums(id_serie, context, callback) {
+
+  const url = getBaseURL('Album') + '&id_serie=' + id_serie + '&mode=1';
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      let nbItems = Object.keys(json).length;
+      console.log(nbItems);
+      callback({ nbItems: nbItems, items: json, error: '' });
     })
     .catch((error) => {
       console.error("Error: " + error);
@@ -176,14 +214,14 @@ export async function fetchWishlist(context, callback) {
 };
 
 export function getAlbumCoverURL(item) {
-
+  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getSerieCoverURL(item) {
-
+  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : 'default.png'));
 }
 
 export function getAuteurCoverURL(item) {
-
+  return encodeURI('https://www.bdovore.com/images/auteur/default_auteur.png');
 }
 

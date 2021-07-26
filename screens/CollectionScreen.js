@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 
-import * as APIManager from '../api/APIManager.js'
-import { AlbumItem } from '../components/AlbumItem.js';
-import { SerieItem } from '../components/SerieItem.js';
-import CommonStyles from '../styles/CommonStyles.js';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers'
+import { AlbumItem } from '../components/AlbumItem';
+import { SerieItem } from '../components/SerieItem';
+import CommonStyles from '../styles/CommonStyles';
 
 function CollectionScreen({ navigation }) {
   const [keywords, setKeywords] = useState('');
@@ -166,6 +167,7 @@ function CollectionScreen({ navigation }) {
             data={keywords && keywords !== '' ? filteredData : (collecMode == 0 ? collectionSeries : collectionAlbums)}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
+            ItemSeparatorComponent={Helpers.renderSeparator}
           />
         )}
       </View>

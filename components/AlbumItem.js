@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Rating } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
+import * as APIManager from '../api/APIManager';
 
 const onPressAlbum = (navigation, item) => {
   navigation.push('Album', { item });
@@ -14,7 +15,7 @@ export function AlbumItem({ navigation, item, index }) {
   return (
     <TouchableOpacity key={index} onPress={() => onPressAlbum(navigation, item)}>
       <View style={{ flexDirection: 'row', }}>
-        <Image source={{ uri: encodeURI('https://www.bdovore.com/images/couv/' + item.IMG_COUV), }} style={CommonStyles.albumImageStyle} />
+        <Image source={{ uri: APIManager.getAlbumCoverURL(item), }} style={CommonStyles.albumImageStyle} />
         <View style={CommonStyles.itemTextContent}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.TITRE_TOME}</Text>
           <Text style={CommonStyles.itemTextWidth}>
@@ -35,7 +36,6 @@ export function AlbumItem({ navigation, item, index }) {
             : null}
         </View>
       </View>
-      <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
     </TouchableOpacity>
   );
 }
