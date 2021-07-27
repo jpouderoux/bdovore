@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers'
@@ -23,6 +24,21 @@ function CollectionScreen({ props, navigation }) {
   const [itemMode, setItemMode] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
   const [collectionMode, setCollectionMode] = useState(0);
+  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+  const [sortMode, setSortMode] = useState(0);
+  const [showSortChooser, setShowSortChooser] = useState(false);
+
+  const collectionModes = {
+    0: ['Tout', ''],
+    1: ['BD', ' BD'],
+    2: ['Mangas', ' mangas'],
+    3: ['Comics', ' comics'],
+  };
+
+  const sortModes = {
+    0: 'Tri par série',
+    1: 'Tri par date d\'ajout',
+  }
 
   Helpers.checkForToken(navigation);
 
@@ -48,27 +64,34 @@ function CollectionScreen({ props, navigation }) {
 
   useEffect(() => {
     console.log("collectionMode: " + collectionMode);
-    if (keywords == '' && collectionMode === 0) {
+    navigation.setOptions({
+      title: ('Ma collection' + (collectionMode > 0 ? (' - ' + collectionModes[collectionMode][0]) : '')),
+    });
+
+    if (keywords === '' && collectionMode == 0) {
       setFilteredSeries(null);
       setFilteredAlbums(null);
       return;
     }
-    let lowerSearchText = keywords.toLowerCase();
+
+    const lowerSearchText = keywords.toLowerCase();
 
     for (let mode = 0; mode < 2; mode++) {
       let data = (mode == 0) ? collectionSeries : collectionAlbums;
       let filteredData = data.filter(function (item) {
         const origine = item.ORIGINE;
-        let isInCurrentCollection =
-          (collectionMode === 0) ||
-          (collectionMode === 1 && origine === 'BD') ||
-          (collectionMode === 2 && origine === 'Mangas') ||
-          (collectionMode === 3 && origine === 'Comics');
+        const isInCurrentCollection =
+          (collectionMode == 0) ||
+          (collectionMode == 1 && origine === 'BD') ||
+          (collectionMode == 2 && origine === 'Mangas') ||
+          (collectionMode == 3 && origine === 'Comics');
         if (!isInCurrentCollection) return false;
+        if (keywords === '') return true;
         let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
-        title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
-        return (title ? title.toLowerCase().includes(lowerSearchText) : false);
+        title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); // remove accents
+        return (title ? title.includes(lowerSearchText) : false);
       });
+      console.log(filteredData);
       if (mode == 0) {
         setFilteredSeries(filteredData);
       } else {
@@ -130,45 +153,12 @@ function CollectionScreen({ props, navigation }) {
     setItemMode(selectedIndex);
   };
 
-
-  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
-  const list = [
-    {
-      title: 'Collection à afficher',
-      titleStyle: { textAlign: 'center', },
-    },
-    {
-      title: 'Tout',
-      titleStyle: { color: 'dodgerblue', textAlign: 'center', },
-      onPress: () => {
-        setCollectionMode(0); setShowCollectionChooser(false);
-      }
-    },
-    {
-      title: 'BD',
-      titleStyle: { color: 'dodgerblue', textAlign: 'center', },
-      onPress: () => {
-        setCollectionMode(1); setShowCollectionChooser(false);
-      }
-    },
-    {
-      title: 'Mangas',
-      titleStyle: { color: 'dodgerblue', textAlign: 'center', },
-      onPress: () => {
-        setCollectionMode(2); setShowCollectionChooser(false);
-      }
-    },
-    {
-      title: 'Comics',
-      titleStyle: { color: 'dodgerblue', textAlign: 'center', },
-      onPress: () => {
-        setCollectionMode(3); setShowCollectionChooser(false);
-      }
-    }
-  ];
-
   const onCollectionModePress = () => {
     setShowCollectionChooser(true);
+  }
+
+  const onSortModePress = () => {
+    setShowSortChooser(true);
   }
 
   const renderItem = ({ item, index }) => {
@@ -206,12 +196,10 @@ function CollectionScreen({ props, navigation }) {
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
+      <View style={{flexDirection: 'row' }}>
+        <View style={{ flex: 1 }}>
       <SearchBar
-        placeholder={'Rechercher dans mes ' + (itemMode == 0 ? 'séries' : 'albums') +
-          (collectionMode === 0 ? '' :
-          (collectionMode === 1 ? ' BD' :
-          (collectionMode === 2 ? ' mangas' :
-          (collectionMode === 3 ? ' comics' : '')))) +'...'}
+        placeholder={'Rechercher dans mes ' + (itemMode == 0 ? 'séries' : 'albums') + collectionModes[collectionMode][1] +'...'}
         onChangeText={onSearchChanged}
         value={keywords}
         platform='ios'
@@ -220,6 +208,11 @@ function CollectionScreen({ props, navigation }) {
         inputContainerStyle={{ height: 20, }}
         inputStyle={{ fontSize: 12 }}
       />
+        </View>
+      <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
+          <Icon name='sort-variant' size={25} color='#222' />
+        </TouchableOpacity>
+      </View>
       <View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -237,14 +230,54 @@ function CollectionScreen({ props, navigation }) {
           />
         )}
       </View>
+
+      {/* Collection chooser */}
       <BottomSheet
         isVisible={showCollectionChooser}
-        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}
-      >
-        {list.map((l, i) => (
-          <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
+        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        <ListItem key='0'>
+          <ListItem.Content>
+            <ListItem.Title>Collection à afficher</ListItem.Title>
+          </ListItem.Content>
+        </ListItem>
+        {Object.entries(collectionModes).map(([mode, title], index) => (
+          <ListItem key={index+1}
+            containerStyle={
+              (collectionMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white'})}
+            onPress={() => {
+              setCollectionMode(mode); setShowCollectionChooser(false);
+            }}>
             <ListItem.Content>
-              <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+              <ListItem.Title style={
+                (collectionMode == mode ? { color: 'white' } :{ color: 'dodgerblue' })}>
+                  {title[0]}
+              </ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </BottomSheet>
+
+      {/* Sort chooser */}
+      <BottomSheet
+        isVisible={showSortChooser}
+        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        <ListItem key='0'>
+          <ListItem.Content>
+            <ListItem.Title>Trier</ListItem.Title>
+          </ListItem.Content>
+        </ListItem>
+        {Object.entries(sortModes).map(([mode, title], index) => (
+          <ListItem key={index + 1}
+            containerStyle={
+              (sortMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
+            onPress={() => {
+              setSortMode(mode); setShowSortChooser(false);
+            }}>
+            <ListItem.Content>
+              <ListItem.Title style={
+                (sortMode == mode ? { color: 'white' } : { color: 'dodgerblue' })}>
+                {title}
+              </ListItem.Title>
             </ListItem.Content>
           </ListItem>
         ))}
