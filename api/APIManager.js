@@ -12,31 +12,41 @@ function getBaseUserURL(token, dataMode) {
   return getBaseURL(dataMode) + '&API_TOKEN=' + encodeURI(token);
 }
 
+function concatParamsToURL(url, params) {
+  console.log(params);
+  for (const key in params) {
+    url += '&' + key + '=' + params[key];
+  }
+  return encodeURI(url);
+}
+
 export async function checkForToken(navigation) {
   // Move to login page if no token available
-  const value = await AsyncStorage.getItem('token');
-  if (value === null) {
+  const token = await AsyncStorage.getItem('token');
+  if (token === null) {
     navigation.navigate('Login');
-  } else if (value === 'expired') {
+  } else if (token === 'expired') {
     reloginBdovore(navigation);
+  } else {
+    return token;
   }
+  return '';
 }
 
 export function reloginBdovore(navigation) {
 
   AsyncStorage.multiGet('pseudo', 'passwd')
-  .then((response) => {
-    let pseudo = response[0][1];
-    let passwd = response[1][1];
-    loginBdovore(pseudo, passwd, (response) => {
-      AsyncStorage.setItem('token', response.token);
+    .then((response) => {
+      let pseudo = response[0][1];
+      let passwd = response[1][1];
+      loginBdovore(pseudo, passwd, (response) => {
+        AsyncStorage.setItem('token', response.token);
+      });
+    })
+    .catch((error) => {
+      navigation.navigate('Login');
     });
-  })
-  .catch((error) => {
-    navigation.navigate('Login');
-  });
 }
-
 
 export function loginBdovore(pseudo, passwd, callback) {
   console.log("Login...");
@@ -67,124 +77,54 @@ export function loginBdovore(pseudo, passwd, callback) {
       }
     })
     .catch((error) => {
-      console.error("Exception: "+ error);
+      console.error("Exception: " + error);
       callback({ connected: false, token: '', error: error.toString() });
     });
 }
 
-export async function fetchCollectionData(dataMode, context, callback) {
+export async function fetchJSON(request, context, callback, params = {},
+  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 100) {
 
-  const token = await AsyncStorage.getItem('token');
-  //console.log("Token: " + token);
-  if (token == null) {
-    context.navigation.push('Login');
-    callback({ nbItems: 0, items: [], error: null });
-    return;
+  let userMode = false;
+  let token = '';
+  if (context && context.navigation) {
+    token = await checkForToken(context.navigation);
+    if (token == '') {
+      callback({ nbItems: 0, items: [], error: null });
+      return;
+    }
+    userMode = true;
   }
-  const length = 100;
-  const url = getBaseUserURL(token, dataMode) + '&mode=2&page=1&length=' + length;
+  const baseUrl = concatParamsToURL(userMode ? getBaseUserURL(token, request) : getBaseURL(request), params);
+  let url = baseUrl;
+  if (multipage && datamode) {
+    url += '&page=1&length='+ pageLength;
+  }
   console.log(url);
   fetch(url)
     .then((response) => response.json())
     .then((json) => {
-      //console.log(json);
-      let data = json.data;
-      const nbItems = (dataMode === 'Userserie') ? json.nbserie : json.nbTotal;
-      let nbPages = Math.ceil(nbItems / length);
-      if (nbPages > 1) {
-        for (let i = 2; i <= nbPages; i++) {
-          //console.log("Fetching page " + i + '/' + nbPages);
-          const url = getBaseUserURL(token, dataMode) + '&mode=2&page=' + i + '&length=' + length;
-          fetch(url).then((response) => response.json()).then((json) => {
-            data.push(...json.data)
-            if (i === nbPages) {
-              callback({ nbItems: nbItems, items: data, error: '' });
-            }
-          });
+      let data = datamode ? json.data : json;
+      //console.log(datamode ? json.data : json);
+      callback({
+        nbItems: Object.keys(data).length,
+        items: data,
+        error: ''
+      });
+      if (multipage && datamode) {
+        const nbItems = json[multipageTotalField]; //(request === 'Userserie') ? json.nbserie : json.nbTotal;
+        let nbPages = Math.ceil(nbItems / pageLength);
+        if (nbPages > 1) {
+          for (let i = 2; i <= nbPages; i++) {
+            //console.log("Fetching page " + i + '/' + nbPages);
+            const url = baseUrl + '&page=' + i + '&length=' + pageLength;
+            fetch(url).then((response) => response.json()).then((json) => {
+              data.push(... json.data);
+              callback({ nbItems: Object.keys(data).length, items: data, error: '' });
+            });
+          }
         }
       }
-      else {
-        callback({ nbItems: nbItems, items: data, error: '' });
-      }
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() });
-    });
-}
-
-export async function fetchSerie(id_serie, context, callback) {
-
-  const url = getBaseURL('Serie') + '&id_serie=' + id_serie + '&mode=1';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      let nbItems = Object.keys(json).length;
-      //console.log(json);
-      callback({ nbItems: nbItems, items: json, error: '' });
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() });
-    });
-}
-
-export async function fetchSerieAlbums(id_serie, context, callback) {
-
-  const url = getBaseURL('Album') + '&id_serie=' + id_serie + '&mode=1';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      let nbItems = Object.keys(json).length;
-      console.log(nbItems);
-      callback({ nbItems: nbItems, items: json, error: '' });
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() });
-    });
-}
-
-export async function fetchAlbumsManquants(context, callback) {
-
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) {
-    context.navigation.push('Login');
-    callback({ nbItems: 0, items: [], error: null });
-    return;
-  }
-  const url = getBaseUserURL(token, 'Albummanquant') + '&mode=all&page=1&length=999';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      //console.log(json);
-      callback({ nbItems: json.nbmanquant, items: json.data, error: ''});
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString()});
-    });
-}
-
-
-export async function fetchNews(origine, context, callback) {
-
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) {
-    context.navigation.navigate('Login');
-    callback({ nbItems: 0, items: [], error: null });
-    return;
-  }
-  const url = getBaseUserURL(token, 'Actu') + '&origine=' + origine + '&mode=2&page=1&length=100';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      //console.log(json.data);
-      callback({ nbItems: 20, items: json, error: '' })
     })
     .catch((error) => {
       console.error("Error: " + error);
@@ -192,56 +132,95 @@ export async function fetchNews(origine, context, callback) {
     });
 };
 
-export async function fetchUserNews(context, callback) {
-
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) {
-    context.navigation.navigate('Login');
-    callback({ nbItems: 0, items: [], error: null });
-    return;
-  }
-  const url = getBaseUserURL(token, 'Useractu') + '&mode=2&nb_mois=3';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      //console.log(json.data);
-      callback({ nbItems: json.length, items: json.data, error: '' })
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() })
-    });
+export async function fetchJSONData(request, context, callback, params = {}) {
+  fetchJSON(request, context, callback, params, true);
 };
 
-export async function fetchWishlist(context, callback) {
+export async function fetchCollectionData(request, context, callback, params = {}) {
 
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) {
-    context.navigation.navigate('Login');
-    callback({ nbItems: 0, items: [], error: null });
-    return;
-  }
-  const url = getBaseUserURL(token, 'Useralbum') + '&mode=2&page=1&length=999&flg_achat=O';
-  console.log(url);
-  fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      //console.log(json);
-      callback({ nbItems: json.nbTotal, items: json.data, error: '' })
-    })
-    .catch((error) => {
-      console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() })
-    });
+  fetchJSON(request, context, callback, {...{
+    mode: 2,
+  }, ... params}, true, true, (request === 'Userserie') ? 'nbserie' : 'nbTotal');
+}
+
+export async function fetchSerie(id_serie, context, callback, params = {}) {
+
+  fetchJSON('Serie', null, callback, {...{
+    id_serie: id_serie,
+    mode: 1,
+  }, ...params});
+}
+
+export async function fetchSerieAlbums(id_serie, context, callback, params = {}) {
+
+  fetchJSON('Album', null, callback, {
+    ...{
+      id_serie: id_serie,
+      mode: 1,
+    }, ...params
+  });
+}
+
+export async function fetchAlbumsManquants(context, callback, params = {}) {
+
+  fetchJSON('Albummanquant', context, callback, {
+    ...{
+      mode: 'all',
+    }, ...params
+  }, true, true, 'nbmanquant');
+}
+
+export async function fetchNews(origine, context, callback, params = {}) {
+
+  fetchJSON('Actu', context, callback, {...{
+      origine: origine,
+      mode: 2,
+      page: 1,
+      length: 100
+    }, ...params
+  });
 };
+
+export async function fetchUserNews(context, callback, params = {}) {
+
+  fetchJSONData('Useractu', context, callback, {...{
+    mode:2,
+    nb_mois:3
+  }, ...params});
+};
+
+export async function fetchWishlist(context, callback, params = {}) {
+
+  fetchJSONData('Useralbum', context, callback, {...{
+    mode: 2,
+    page:1,
+    length:999,
+    flg_achat:'O'
+  }, ...params});
+};
+
+export async function fetchAlbum(callback, params = {}) {
+
+  fetchJSON('Album', null, callback, {...{
+    mode: 2
+    }, ...params});
+};
+
+/*export async function fetchSerie(callback, params = {}) {
+
+  fetchJSON('Serie', null, callback, {
+    ...{
+      mode: 2
+    }, ...params
+  });
+};*/
 
 export function getAlbumCoverURL(item) {
   return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getSerieCoverURL(item) {
-  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : 'default.png'));
+  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getAuteurCoverURL(item) {

@@ -78,7 +78,7 @@ function WishlistScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
+    <SafeAreaView style={CommonStyles.screenStyle}>
       <View>
         {loading ? null :
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>

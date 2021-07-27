@@ -64,7 +64,7 @@ function ToCompleteScreen({ navigation }) {
     return (
       <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ margin: 5 }}>
+          <View>
             <Image source={{ uri: APIManager.getAlbumCoverURL(item) }} style={CommonStyles.albumImageStyle} />
           </View>
           <View style={{ margin: 5, flexDirection: "column", flexGrow: 3 }}>
@@ -91,16 +91,15 @@ function ToCompleteScreen({ navigation }) {
             </View>
           </View>
         </View>
-        <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
       </TouchableOpacity>
     );
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
+    <SafeAreaView style={CommonStyles.screenStyle}>
       <View>
         {loading ? null :
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', marginBottom: 5 }}>
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
             {Helpers.pluralWord(nbAlbums, 'album')}
           </Text>

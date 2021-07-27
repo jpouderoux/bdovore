@@ -19,11 +19,11 @@ export function SerieItem({ navigation, item, index }) {
         <View style={CommonStyles.itemTextContent}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.NOM_SERIE}</Text>
           <Text>{item.NOM_GENRE}</Text>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.italic]}>
+          {(item.NB_USER_ALBUM) ? (<Text style={[CommonStyles.itemTextWidth, CommonStyles.italic]}>
             {item.NB_USER_ALBUM} album{item.NB_USER_ALBUM > 1 ? 's' : ''} sur {item.NB_ALBUM} dans la base {'\n'}
             {item.LIB_FLG_FINI_SERIE}
-          </Text>
-          {(item.NOTE_SERIE) !== null ?
+          </Text>) : null}
+          {(item.NOTE_SERIE) ?
             <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
               <Rating
                 ratingCount={5}
@@ -33,7 +33,7 @@ export function SerieItem({ navigation, item, index }) {
                 readonly={true}
               />
             </View>
-            : null}
+          : null}
         </View>
       </View>
     </TouchableOpacity >

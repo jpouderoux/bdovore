@@ -42,11 +42,16 @@ function CollectionScreen({ props, navigation }) {
 
   Helpers.checkForToken(navigation);
 
-  function refreshDataIfNeeded ()  {
+  function refreshDataIfNeeded() {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.log('refresh collection data because token changed to ' + token);
         setCachedToken(token);
+        setKeywords('');
+        setFilteredSeries(null);
+        setFilteredAlbums(null);
+        setCollectionSeries([]);
+        setCollectionAlbums([]);
         cachedToken = token;
         fetchData();
       }
@@ -60,7 +65,7 @@ function CollectionScreen({ props, navigation }) {
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, []);
+  }, [cachedToken]);
 
   useEffect(() => {
     console.log("collectionMode: " + collectionMode);
@@ -74,31 +79,41 @@ function CollectionScreen({ props, navigation }) {
       return;
     }
 
+    const isInCurrentCollection = (origine) =>
+      (collectionMode == 0) ||
+      (collectionMode == 1 && origine === 'BD') ||
+      (collectionMode == 2 && origine === 'Mangas') ||
+      (collectionMode == 3 && origine === 'Comics');
+
     const lowerSearchText = keywords.toLowerCase();
 
     for (let mode = 0; mode < 2; mode++) {
       let data = (mode == 0) ? collectionSeries : collectionAlbums;
       let filteredData = data.filter(function (item) {
-        const origine = item.ORIGINE;
-        const isInCurrentCollection =
-          (collectionMode == 0) ||
-          (collectionMode == 1 && origine === 'BD') ||
-          (collectionMode == 2 && origine === 'Mangas') ||
-          (collectionMode == 3 && origine === 'Comics');
-        if (!isInCurrentCollection) return false;
+        if (!isInCurrentCollection(item.ORIGINE)) return false;
         if (keywords === '') return true;
         let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
         title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); // remove accents
         return (title ? title.includes(lowerSearchText) : false);
       });
-      console.log(filteredData);
+
+      if (sortMode == 1 && mode == 1) {
+        // Sort albums by date of addition into user's database
+        String.prototype.replaceAt = function (index, replacement) {
+          return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+        }
+        filteredData.sort(function (item1, item2) {
+          return new Date(item2.DATE_AJOUT.replaceAt(10, 'T')) - new Date(item1.DATE_AJOUT.replaceAt(10, 'T'));
+        });
+      }
+      //console.log(filteredData);
       if (mode == 0) {
         setFilteredSeries(filteredData);
       } else {
         setFilteredAlbums(filteredData);
       }
     }
-  }, [collectionMode, keywords]);
+  }, [collectionMode, sortMode, keywords]);
 
   const fetchData = () => {
     fetchSeries();
@@ -107,7 +122,7 @@ function CollectionScreen({ props, navigation }) {
 
   const fetchSeries = () => {
     setLoading(true);
-    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched );
+    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched);
   }
 
   const fetchAlbums = () => {
@@ -158,7 +173,9 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const onSortModePress = () => {
-    setShowSortChooser(true);
+    if (itemMode == 1) {
+      setShowSortChooser(true);
+    }
   }
 
   const renderItem = ({ item, index }) => {
@@ -180,36 +197,41 @@ function CollectionScreen({ props, navigation }) {
       + (itemMode == 0 ? 0 : 1000000) : index);
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff' }}>
+    <SafeAreaView style={CommonStyles.screenStyle}>
       <View style={{ flexDirection: 'row' }}>
         <ButtonGroup
           onPress={onPressItemMode}
           selectedIndex={itemMode}
           buttons={[
-            { element: () => <Text>
-              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : collectionSeries.length, 'série')}</Text> },
-            { element: () => <Text>
-              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : collectionAlbums.length, 'album')}</Text> }]}
+            {
+              element: () => <Text>
+                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : collectionSeries.length, 'série')}</Text>
+            },
+            {
+              element: () => <Text>
+                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : collectionAlbums.length, 'album')}</Text>
+            }]}
           containerStyle={{ height: 30, flex: 1 }}
         />
         <TouchableOpacity onPress={onCollectionModePress} style={{ flex: 0, margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
-      <View style={{flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-      <SearchBar
-        placeholder={'Rechercher dans mes ' + (itemMode == 0 ? 'séries' : 'albums') + collectionModes[collectionMode][1] +'...'}
-        onChangeText={onSearchChanged}
-        value={keywords}
-        platform='ios'
-        autoCapitalize='none'
-        autoCorrect={false}
-        inputContainerStyle={{ height: 20, }}
-        inputStyle={{ fontSize: 12 }}
-      />
+          <SearchBar
+            placeholder={'Rechercher dans mes ' + (itemMode == 0 ? 'séries' : 'albums') + collectionModes[collectionMode][1] + '...'}
+            onChangeText={onSearchChanged}
+            value={keywords}
+            platform='ios'
+            autoCapitalize='none'
+            autoCorrect={false}
+            inputContainerStyle={{ height: 20, }}
+            inputStyle={{ fontSize: 12 }}
+            cancelButtonTitle='Annuler'
+          />
         </View>
-      <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
+        <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
           <Icon name='sort-variant' size={25} color='#222' />
         </TouchableOpacity>
       </View>
@@ -241,16 +263,16 @@ function CollectionScreen({ props, navigation }) {
           </ListItem.Content>
         </ListItem>
         {Object.entries(collectionModes).map(([mode, title], index) => (
-          <ListItem key={index+1}
+          <ListItem key={index + 1}
             containerStyle={
-              (collectionMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white'})}
+              (collectionMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
             onPress={() => {
               setCollectionMode(mode); setShowCollectionChooser(false);
             }}>
             <ListItem.Content>
               <ListItem.Title style={
-                (collectionMode == mode ? { color: 'white' } :{ color: 'dodgerblue' })}>
-                  {title[0]}
+                (collectionMode == mode ? { color: 'white' } : { color: 'dodgerblue' })}>
+                {title[0]}
               </ListItem.Title>
             </ListItem.Content>
           </ListItem>

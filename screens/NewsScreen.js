@@ -85,16 +85,19 @@ function NewsScreen({ navigation }) {
     /*item ? parseInt(item.ID_TOME) : */index);
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
-      <ButtonGroup
-        onPress={onPressNewsMode}
-        selectedIndex={newsMode}
-        buttons={[
-          { element: () => <Text>BD</Text> },
-          { element: () => <Text>Mangas</Text> },
-          { element: () => <Text>Comics</Text> }]}
-        containerStyle={{ height: 30 }}
-      />
+    <SafeAreaView style={CommonStyles.screenStyle}>
+      <View style={{marginLeft:-10, marginRight:-10, marginTop:-5, marginBottom:-5}}>
+        <ButtonGroup
+          onPress={onPressNewsMode}
+          selectedIndex={newsMode}
+          buttons={[
+            { element: () => <Text>BD</Text> },
+            { element: () => <Text>Mangas</Text> },
+            { element: () => <Text>Comics</Text> }]}
+          containerStyle={{ height: 40, margin: 0, backgroundColor: 'lightgrey' }}
+          buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey'}}
+        />
+      </View>
       <View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -110,7 +113,7 @@ function NewsScreen({ navigation }) {
             keyExtractor={keyExtractor}
             renderItem={renderAlbum}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10 }]}>{title}</Text>)}
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{title}</Text>)}
             stickySectionHeadersEnabled={true}
           />
         )}

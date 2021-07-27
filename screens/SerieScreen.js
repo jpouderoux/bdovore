@@ -102,7 +102,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff', height: '100%' }}>
+    <SafeAreaView style={CommonStyles.screenStyle}>
       <View style={{ margin: 0, alignItems: 'center', flexDirection: 'row', alignContent: "space-between" }}>
         <Text style={{ marginLeft: 10, width: '33%' }}>
           {tome}

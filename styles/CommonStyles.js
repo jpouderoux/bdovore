@@ -5,6 +5,10 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const CommonStyles = EStyleSheet.create({
+  screenStyle: {
+    backgroundColor: 'white',
+    height: '100%',
+  },
   searchInput: {
     flex: 1,
     margin: 12,
@@ -28,6 +32,12 @@ const CommonStyles = EStyleSheet.create({
     color: 'white',
   },
   albumImageStyle: {
+    margin: 5,
+    resizeMode: 'cover',
+    width: windowWidth / 4,
+    height: windowWidth / 4 * (122 / 90), // respect the aspect ratio
+  },
+  auteurImageStyle: {
     margin: 5,
     resizeMode: 'cover',
     width: windowWidth / 4,
