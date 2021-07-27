@@ -15,11 +15,9 @@ function ToCompleteScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [nbAlbums, setNbAlbums] = useState(0);
-  const [dataFetched, setDataFetched] = useState(false);
   let [cachedToken, setCachedToken] = useState('');
 
-  // Move to login page if no token available
-  APIManager.checkForToken(navigation);
+  Helpers.checkForToken(navigation);
 
   const refreshDataIfNeeded = () => {
     AsyncStorage.getItem('token').then((token) => {
@@ -28,10 +26,7 @@ function ToCompleteScreen({ navigation }) {
         setCachedToken(token);
         cachedToken = token;
         fetchData();
-      }/* else if (!dataFetched) {
-        console.log("refresh tocomplete because no dat fetched yet");
-        fetchData();
-      }*/
+      }
     }).catch(() => { });
   }
 
@@ -55,10 +50,6 @@ function ToCompleteScreen({ navigation }) {
     setNbAlbums(data.nbItems);
     setData(data.items);
     setErrortext(data.error);
-    if (data.error === '') {
-      setDataFetched(true);
-      console.log('fetched!');
-    }
     setLoading(false);
   }
 
@@ -110,7 +101,9 @@ function ToCompleteScreen({ navigation }) {
       <View>
         {loading ? null :
         <View style={{ flexDirection: 'row' }}>
-          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>{nbAlbums} album{nbAlbums > 1 ? 's' : ''}</Text>
+          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
+            {Helpers.pluralWord(nbAlbums, 'album')}
+          </Text>
         </View>}
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -32,21 +33,13 @@ function CollectionScreens({navigation}) {
     );
   }
 
-  const collecButton = () => {
-    return (
-      <TouchableOpacity onPress={()=>{}} style={{ margin: 8 }}>
-        <Ionicons name='library-sharp' size={25} color='#222' />
-      </TouchableOpacity>
-    );
-  }
-
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Ma collection' component={CollectionScreen}
-        options={{
-          headerLeft: accountButton,
-          headerRight: collecButton,
-        }} />
+      <CollectionStack.Screen name='Ma collection'
+      component={CollectionScreen}
+        options={({route}) => ({
+          headerLeft: accountButton
+        })} />
       <CollectionStack.Screen name='Login' component={LoginScreen} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />

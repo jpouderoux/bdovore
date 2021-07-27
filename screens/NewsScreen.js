@@ -14,11 +14,9 @@ function NewsScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [newsData, setNewsData] = useState([{ title: 'Mon actualité', data: []}, { title: 'Albums tendances', data: [] }]);
   const [newsMode, setNewsMode] = useState(0);
-  const [dataFetched, setDataFetched] = useState(false);
   let [cachedToken, setCachedToken] = useState('');
 
-  // Move to login page if no token available
-  APIManager.checkForToken(navigation);
+  Helpers.checkForToken(navigation);
 
   const refreshDataIfNeeded = async () => {
     AsyncStorage.getItem('token').then((token) => {
@@ -27,10 +25,7 @@ function NewsScreen({ navigation }) {
         cachedToken = token;
         console.log("refresh news data");
         fetchData(newsMode);
-      }/* else if (!dataFetched) {
-        console.log("refresh news data first");
-        fetchData(newsMode);
-      }*/
+      }
     }).catch(() => { });
   }
 
@@ -61,7 +56,6 @@ function NewsScreen({ navigation }) {
     setNewsData(nd);
     setErrortext(data.error);
     if (data.error === '') {
-      setDataFetched(true);
       console.log('news fetched!');
     }
     setLoading(false);
@@ -73,12 +67,10 @@ function NewsScreen({ navigation }) {
     //setNewsData(nd);
     setErrortext(data.error);
     if (data.error === '') {
-      setDataFetched(true);
       console.log('user news fetched!');
     }
     setLoading(false);
   }
-
 
   const onPressNewsMode = (selectedIndex) => {
     setNewsMode(selectedIndex);

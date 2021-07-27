@@ -96,7 +96,7 @@ export async function fetchCollectionData(dataMode, context, callback) {
           //console.log("Fetching page " + i + '/' + nbPages);
           const url = getBaseUserURL(token, dataMode) + '&mode=2&page=' + i + '&length=' + length;
           fetch(url).then((response) => response.json()).then((json) => {
-            data = data.concat(json.data);
+            data.push(...json.data)
             if (i === nbPages) {
               callback({ nbItems: nbItems, items: data, error: '' });
             }

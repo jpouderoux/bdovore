@@ -12,7 +12,6 @@ function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("effect");
     AsyncStorage.getItem('pseudo').then(v => setPseudo(v)).catch(() => { });
     AsyncStorage.getItem('passwd').then(v => setPasswd(v)).catch(() => { });
 

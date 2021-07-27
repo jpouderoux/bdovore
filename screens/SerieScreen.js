@@ -13,7 +13,6 @@ function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [dataFetched, setDataFetched] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
 
   const item = route.params.item;
@@ -84,7 +83,6 @@ function SerieScreen({ route, navigation }) {
 
     if (data.error === '') {
       setErrortext('');
-      setDataFetched(true);
     } else {
       setErrortext(data.error);
     }
