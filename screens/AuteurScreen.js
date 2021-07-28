@@ -17,7 +17,6 @@ function AuteurScreen({ route, navigation }) {
   const [auteurAlbums, setAuteurAlbums] = useState([]);
   const [nbSeries, setNbSeries] = useState(-1);
   const [nbAlbums, setNbAlbums] = useState(-1);
-  let cachedIdAuteur = -1;
 
   const item = route.params.item;
 
@@ -42,7 +41,7 @@ function AuteurScreen({ route, navigation }) {
   const onAuteurAlbumsFetched = async (result) => {
     console.log("auteur albums fetched");
 
-    // sort the albums by serie
+    // Sort the albums by serie by putting them in a dictionnary of series
     let data = result.items;
     let albums = {};
     data.forEach(album => {
@@ -54,13 +53,18 @@ function AuteurScreen({ route, navigation }) {
       }
     });
 
-    // Sort the series by name
+    // Sort the series dictionnary by name
     const sortObjectByKeys = (o) => {
       return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
     }
     albums = sortObjectByKeys(albums);
 
+    // Sort each series by tome number
     const albumsArray = Object.values(albums);
+    albumsArray.forEach(album => {
+      Helpers.sortByAscendingValue(album.data, 'NUM_TOME');
+    });
+
     setAuteurAlbums(albumsArray);
     setNbSeries(albumsArray.length);
     setNbAlbums(result.totalItems);
@@ -72,8 +76,7 @@ function AuteurScreen({ route, navigation }) {
     return AlbumItem({ navigation, item, index });
   }
 
-  const keyExtractor = useCallback(({ item }, index) =>
-    /*item ? parseInt(item.ID_TOME) : */index);
+  const keyExtractor = useCallback(({ item }, index) => index);
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>

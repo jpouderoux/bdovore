@@ -37,3 +37,24 @@ export function sortByDate(data, field = 'DATE_AJOUT') {
 export function sliceSortByDate(data, field = 'DATE_AJOUT') {
   return sortByDate(data.slice(), field);
 }
+
+export function sortByAscendingValue(data, field = 'NUM_TOME') {
+  data.sort(function (item1, item2) {
+    return item1[field] - item2[field];
+  });
+  return data;
+}
+export function sliceSortByAscendingValue(data, field = 'NUM_TOME') {
+  return sortByAscendingValue(data.slice(), field);
+}
+
+export function sortByDesendingValue(data, field = 'NUM_TOME') {
+  data.sort(function (item1, item2) {
+    return item2[field] - item1[field];
+  });
+  return data;
+}
+export function sliceSortByDescendingValue(data, field = 'NUM_TOME') {
+  return sortByDesendingValue(data.slice(), field);
+}
+
