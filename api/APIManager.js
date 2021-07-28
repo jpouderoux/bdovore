@@ -13,7 +13,6 @@ function getBaseUserURL(token, dataMode) {
 }
 
 function concatParamsToURL(url, params) {
-  console.log(params);
   for (const key in params) {
     url += '&' + key + '=' + params[key];
   }
@@ -49,13 +48,16 @@ export function reloginBdovore(navigation) {
 }
 
 export function loginBdovore(pseudo, passwd, callback) {
+  const formatResult = (connected, token, error = '') => {
+    return { connected: connected, token: token, error: error}; }
+
   console.log("Login...");
   if (!pseudo) {
-    callback({ connected: false, token: null, error: 'Veuillez renseigner le pseudo.' });
+    callback(formatResult(false, null, 'Veuillez renseigner le pseudo.'));
     return;
   }
   if (!passwd) {
-    callback({ connected: false, token: null, error: 'Veuillez renseigner le mot de passe.' });
+    callback(formatResult(false, null, 'Veuillez renseigner le mot de passe.'));
     return;
   }
 
@@ -71,26 +73,36 @@ export function loginBdovore(pseudo, passwd, callback) {
       //console.log(responseJson);
       if (responseJson.Error === '') {
         console.log("New token: " + responseJson.Token);
-        callback({ connected: true, token: responseJson.Token, error: '' });
+        callback(formatResult(true, responseJson.Token));
       } else {
-        callback({ connected: false, token: responseJson.Token, error: responseJson.Error });
+        callback(formatResult(false, responseJson.Token, responseJson.Error));
       }
     })
     .catch((error) => {
       console.error("Exception: " + error);
-      callback({ connected: false, token: '', error: error.toString() });
+      callback(formatResult(false, '', error.toString()));
     });
 }
 
 export async function fetchJSON(request, context, callback, params = {},
   datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 100) {
 
+  const formatResult = (items = [], error = '', done = true, totalItems = null) => {
+    return {
+      nbItems: Object.keys(items).length,
+      items: items,
+      error: error,
+      done: done,
+      totalItems: (totalItems ? totalItems : Object.keys(items).length)
+    };
+  }
+
   let userMode = false;
   let token = '';
   if (context && context.navigation) {
     token = await checkForToken(context.navigation);
     if (token == '') {
-      callback({ nbItems: 0, items: [], error: null });
+      callback(formatResult([]));
       return;
     }
     userMode = true;
@@ -106,29 +118,25 @@ export async function fetchJSON(request, context, callback, params = {},
     .then((json) => {
       let data = datamode ? json.data : json;
       //console.log(datamode ? json.data : json);
-      callback({
-        nbItems: Object.keys(data).length,
-        items: data,
-        error: ''
-      });
-      if (multipage && datamode) {
-        const nbItems = json[multipageTotalField]; //(request === 'Userserie') ? json.nbserie : json.nbTotal;
-        let nbPages = Math.ceil(nbItems / pageLength);
-        if (nbPages > 1) {
-          for (let i = 2; i <= nbPages; i++) {
-            //console.log("Fetching page " + i + '/' + nbPages);
-            const url = baseUrl + '&page=' + i + '&length=' + pageLength;
-            fetch(url).then((response) => response.json()).then((json) => {
-              data.push(... json.data);
-              callback({ nbItems: Object.keys(data).length, items: data, error: '' });
-            });
-          }
-        }
+
+      // get total number of items and compute number of pages to fetch
+      let nbItems = (multipage && datamode) ? json[multipageTotalField] : null;
+      let nbPages = (multipage && datamode) ? Math.ceil(nbItems / pageLength) : 1;
+
+      callback(formatResult(data, '', nbPages == 1, nbItems));
+
+      for (let i = 2; i <= nbPages; i++) {
+        //console.log("Fetching page " + i + '/' + nbPages);
+        const url = baseUrl + '&page=' + i + '&length=' + pageLength;
+        fetch(url).then((response) => response.json()).then((json) => {
+          data.push(...json.data);
+          callback(formatResult(data, '', i == nbPages, nbItems));
+        });
       }
     })
     .catch((error) => {
       console.error("Error: " + error);
-      callback({ nbItems: 0, items: [], error: error.toString() })
+      callback(formatResult([], error.toString()));
     });
 };
 
@@ -204,6 +212,15 @@ export async function fetchAlbum(callback, params = {}) {
   fetchJSON('Album', null, callback, {...{
     mode: 2
     }, ...params});
+};
+
+export async function fetchAlbumEditions(idtome, callback, params = {}) {
+
+  fetchJSON('Edition', null, callback, {
+    ...{
+      id_tome: idtome,
+    }, ...params
+  });
 };
 
 /*export async function fetchSerie(callback, params = {}) {

@@ -41,25 +41,18 @@ function WishlistScreen({ navigation }) {
   }, [cachedToken]);
 
   useEffect(() => {
-    String.prototype.replaceAt = function (index, replacement) {
-      return this.substr(0, index) + replacement + this.substr(index + replacement.length);
-    }
 
     if (!filterByDate) {
       setFilteredData(null);
     } else {
-      let newData = data.slice();
-      newData.sort(function (item1, item2) {
-        return new Date(item2.DATE_AJOUT.replaceAt(10, 'T')) - new Date(item1.DATE_AJOUT.replaceAt(10, 'T'));
-      });
-      setFilteredData(newData);
+      setFilteredData(Helpers.sliceSortByDate(data));
     }
   }, [filterByDate]);
 
-  const onDataFetched = (data) => {
-    setNbAlbums(data.nbItems);
-    setData(data.items);
-    setErrortext(data.error);
+  const onDataFetched = (result) => {
+    setNbAlbums(result.nbItems);
+    setData(result.items);
+    setErrortext(result.error);
     setLoading(false);
   }
 

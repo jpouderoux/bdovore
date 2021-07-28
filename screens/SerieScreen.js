@@ -32,7 +32,6 @@ function SerieScreen({ route, navigation }) {
   }, []);
 
   const fetchData = () => {
-    console.log(item);
     setLoading(true);
     APIManager.fetchSerieAlbums(item.ID_SERIE, {}, onSerieAlbumsFetched);
     //APIManager.fetchSerie(item.ID_SERIE, {}, onSerieFetched);
@@ -40,23 +39,22 @@ function SerieScreen({ route, navigation }) {
 
   const onSerieFetched = async (data) => {
     console.log("serie fetched");
-
   }
 
-  const onSerieAlbumsFetched = async (data) => {
+  const onSerieAlbumsFetched = async (result) => {
     console.log("serie albums fetched");
 
     let newdata = [
-      { title: 'Intégrales', data: [] },
-      { title: 'Coffrets', data: [] },
-      { title: 'Album',  data: [] },
-      { title: 'Editions spéciales', data: [] },
+      { title: 'Intégrales', result: [] },
+      { title: 'Coffrets', result: [] },
+      { title: 'Album', result: [] },
+      { title: 'Editions spéciales', result: [] },
     ];
 
     // Sort albums by type
-    for (let i = 0; i < data.items.length; i++) {
+    for (let i = 0; i < result.items.length; i++) {
       let section = 0;
-      const item = data.items[i];
+      const item = result.items[i];
       if (item.FLG_TYPE_TOME == 1) {
         section = 1; // Coffret
       } else {
@@ -81,11 +79,7 @@ function SerieScreen({ route, navigation }) {
 
     setSerieAlbums(newdata);
 
-    if (data.error === '') {
-      setErrortext('');
-    } else {
-      setErrortext(data.error);
-    }
+    setErrortext(result.error);
     setLoading(false);
   }
 

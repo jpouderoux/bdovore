@@ -9,10 +9,25 @@ import { AlbumItem } from '../components/AlbumItem';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import CommonStyles from '../styles/CommonStyles';
 
+
+let newsModeMap = {
+  0: 'BD',
+  1: 'Mangas',
+  2: 'Comics'
+};
+
+function createNewsSection(data = []) {
+  return { title: 'Albums tendances', data: data };
+}
+function createUserNewsSection(data = []) {
+  return { title: 'Mon actualité', data: data };
+}
+
 function NewsScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [newsData, setNewsData] = useState([{ title: 'Mon actualité', data: []}, { title: 'Albums tendances', data: [] }]);
+  const [newsDataArray, setNewsDataArray] = useState(createUserNewsSection());
+  const [userNewsDataArray, setUserNewsDataArray] = useState(createNewsSection());
   const [newsMode, setNewsMode] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
 
@@ -40,35 +55,27 @@ function NewsScreen({ navigation }) {
 
   const fetchData = async (newsMode) => {
     setLoading(true);
-    let mode = '';
-    if (newsMode === 0) mode = 'BD';
-    else if (newsMode === 1) mode = 'Mangas';
-    else if (newsMode === 2) mode = 'Comics';
-    APIManager.fetchNews(mode, { navigation: navigation }, onNewsFetched)
-      .then().catch((error) => console.log(error));
+
+    setUserNewsDataArray(createUserNewsSection());
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched)
+    .then().catch((error) => console.log(error));
+
+    setNewsDataArray(createNewsSection());
+    APIManager.fetchNews(newsModeMap[newsMode], { navigation: navigation }, onNewsFetched)
       .then().catch((error) => console.log(error));
   }
 
-  const onNewsFetched = async (data) => {
-    let nd = newsData;
-    nd[1].data = data.items;
-    setNewsData(nd);
-    setErrortext(data.error);
-    if (data.error === '') {
-      console.log('news fetched!');
-    }
+  const onNewsFetched = async (result) => {
+    console.log('news fetched!');
+    setNewsDataArray(createNewsSection(result.items));
+    setErrortext(result.error);
     setLoading(false);
   }
 
-  const onUserNewsFetched = async (data) => {
-    let nd = newsData;
-    nd[0].data = data.items;
-    //setNewsData(nd);
-    setErrortext(data.error);
-    if (data.error === '') {
-      console.log('user news fetched!');
-    }
+  const onUserNewsFetched = async (result) => {
+    console.log('user news fetched!');
+    setUserNewsDataArray(createUserNewsSection(result.items));
+    setErrortext(result.error);
     setLoading(false);
   }
 
@@ -81,8 +88,7 @@ function NewsScreen({ navigation }) {
     return AlbumItem({ navigation, item, index });
   }
 
-  const keyExtractor = useCallback(({ item }, index) =>
-    /*item ? parseInt(item.ID_TOME) : */index);
+  const keyExtractor = useCallback(({ item }, index) => index);
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
@@ -91,9 +97,9 @@ function NewsScreen({ navigation }) {
           onPress={onPressNewsMode}
           selectedIndex={newsMode}
           buttons={[
-            { element: () => <Text>BD</Text> },
-            { element: () => <Text>Mangas</Text> },
-            { element: () => <Text>Comics</Text> }]}
+            { element: () => <Text>{newsModeMap[0]}</Text> },
+            { element: () => <Text>{newsModeMap[1]}</Text> },
+            { element: () => <Text>{newsModeMap[2]}</Text> }]}
           containerStyle={{ height: 40, margin: 0, backgroundColor: 'lightgrey' }}
           buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey'}}
         />
@@ -109,7 +115,7 @@ function NewsScreen({ navigation }) {
             maxToRenderPerBatch={8}
             windowSize={10}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            sections={newsData}
+            sections={[userNewsDataArray, newsDataArray]}
             keyExtractor={keyExtractor}
             renderItem={renderAlbum}
             renderSectionHeader={({ section: { title } }) => (

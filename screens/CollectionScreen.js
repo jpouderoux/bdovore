@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers'
 import { AlbumItem } from '../components/AlbumItem';
-import { LoadingIndicator } from '../components/LoadingIndicator';
+import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 import CommonStyles from '../styles/CommonStyles';
 
@@ -21,6 +21,8 @@ function CollectionScreen({ props, navigation }) {
   const [collectionSeries, setCollectionSeries] = useState([]);
   const [filteredSeries, setFilteredSeries] = useState(null);
   const [filteredAlbums, setFilteredAlbums] = useState(null);
+  const [nbTotalSeries, setNbTotalSeries] = useState(0);
+  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
   const [itemMode, setItemMode] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
   const [collectionMode, setCollectionMode] = useState(0);
@@ -48,6 +50,8 @@ function CollectionScreen({ props, navigation }) {
         console.log('refresh collection data because token changed to ' + token);
         setCachedToken(token);
         setKeywords('');
+        setNbTotalSeries(0);
+        setNbTotalAlbums(0);
         setFilteredSeries(null);
         setFilteredAlbums(null);
         setCollectionSeries([]);
@@ -68,14 +72,14 @@ function CollectionScreen({ props, navigation }) {
   }, [cachedToken]);
 
   useEffect(() => {
-    console.log("collectionMode: " + collectionMode);
+    //console.log("collectionMode: " + collectionMode);
     navigation.setOptions({
       title: ('Ma collection' + (collectionMode > 0 ? (' - ' + collectionModes[collectionMode][0]) : '')),
     });
 
-    if (keywords === '' && collectionMode == 0) {
+    if (keywords == '' && collectionMode == 0) {
       setFilteredSeries(null);
-      setFilteredAlbums(null);
+      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(collectionAlbums) : null);
       return;
     }
 
@@ -85,32 +89,28 @@ function CollectionScreen({ props, navigation }) {
       (collectionMode == 2 && origine === 'Mangas') ||
       (collectionMode == 3 && origine === 'Comics');
 
-    const lowerSearchText = keywords.toLowerCase();
+    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(keywords);
 
     for (let mode = 0; mode < 2; mode++) {
+
       let data = (mode == 0) ? collectionSeries : collectionAlbums;
+
       let filteredData = data.filter(function (item) {
-        if (!isInCurrentCollection(item.ORIGINE)) return false;
-        if (keywords === '') return true;
+        if (!isInCurrentCollection(item.ORIGINE)) {
+          return false;
+        }
+        if (keywords === '') {
+          return true;
+        }
+         // search text in lowercase title without taking accents
         let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
-        title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); // remove accents
-        return (title ? title.includes(lowerSearchText) : false);
+        return (title ? Helpers.lowerCaseNoAccentuatedChars(title).includes(lowerSearchText) : false);
       });
 
-      if (sortMode == 1 && mode == 1) {
-        // Sort albums by date of addition into user's database
-        String.prototype.replaceAt = function (index, replacement) {
-          return this.substr(0, index) + replacement + this.substr(index + replacement.length);
-        }
-        filteredData.sort(function (item1, item2) {
-          return new Date(item2.DATE_AJOUT.replaceAt(10, 'T')) - new Date(item1.DATE_AJOUT.replaceAt(10, 'T'));
-        });
-      }
-      //console.log(filteredData);
       if (mode == 0) {
         setFilteredSeries(filteredData);
       } else {
-        setFilteredAlbums(filteredData);
+        setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredData) : filteredData);
       }
     }
   }, [collectionMode, sortMode, keywords]);
@@ -130,38 +130,32 @@ function CollectionScreen({ props, navigation }) {
     APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, onAlbumsFetched);
   }
 
-  const onSeriesFetched = async (data) => {
+  const onSeriesFetched = async (result) => {
     console.log("series fetched");
 
     /*AsyncStorage.multiSet([
       'collectionSeries', JSON.stringify(data.items),
       'collecFetched', (data.error === null) ? 'true' : 'false']);*/
 
-    setCollectionSeries(data.items);
+    setNbTotalSeries(result.totalItems);
+    setCollectionSeries(result.items);
 
-    if (data.error === '') {
-      setErrortext('');
-    } else {
-      setErrortext(data.error);
-    }
-    setLoading(false);
+    setErrortext(result.error);
+    setLoading(!result.done);
   }
 
-  const onAlbumsFetched = async (data) => {
+  const onAlbumsFetched = async (result) => {
     console.log("albums fetched");
 
     /*AsyncStorage.multiSet([]
-      'collectionAlbums', JSON.stringify(data.items),
-      'collecFetched', (data.error === null) ? 'true' : 'false']);*/
+      'collectionAlbums', JSON.stringify(result.items),
+      'collecFetched', (result.error === null) ? 'true' : 'false']);*/
 
-    setCollectionAlbums(data.items);
+    setNbTotalAlbums(result.totalItems);
+    setCollectionAlbums(result.items);
 
-    if (data.error === '') {
-      setErrortext('');
-    } else {
-      setErrortext(data.error);
-    }
-    setLoading(false);
+    setErrortext(result.error);
+    setLoading(!result.done);
   }
 
   const onPressItemMode = (selectedIndex) => {
@@ -205,14 +199,16 @@ function CollectionScreen({ props, navigation }) {
           buttons={[
             {
               element: () => <Text>
-                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : collectionSeries.length, 'série')}</Text>
+                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : nbTotalSeries, 'série')}</Text>
             },
             {
               element: () => <Text>
-                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : collectionAlbums.length, 'album')}</Text>
+                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : nbTotalAlbums, 'album')}</Text>
             }]}
-          containerStyle={{ height: 30, flex: 1 }}
+          containerStyle={{ height: 30, flex: 1, borderRadius: 10, backgroundColor: 'lightgrey'  }}
+          buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
         />
+        {loading ? <SmallLoadingIndicator /> : null}
         <TouchableOpacity onPress={onCollectionModePress} style={{ flex: 0, margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
@@ -241,16 +237,14 @@ function CollectionScreen({ props, navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {loading ? LoadingIndicator() : (
-          <FlatList
+        <FlatList
             maxToRenderPerBatch={6}
             windowSize={10}
             data={(itemMode == 0 ? (filteredSeries ? filteredSeries : collectionSeries) : (filteredAlbums ? filteredAlbums : collectionAlbums))}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
-          />
-        )}
+        />
       </View>
 
       {/* Collection chooser */}

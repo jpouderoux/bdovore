@@ -49,9 +49,9 @@ function SearchScreen({ navigation }) {
     }
   };
 
-  const onSearchFetched = async (data) => {
-    setData(data.items);
-    setErrortext(data.error);
+  const onSearchFetched = async (result) => {
+    setData(result.items);
+    setErrortext(result.error);
     setLoading(false);
   }
 

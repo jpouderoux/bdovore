@@ -4,9 +4,9 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 
-export function LoadingIndicator() {
+export function SmallLoadingIndicator() {
   return (
-    <View style={{ height: '100%', justifyContent: 'center' }}>
+    <View style={{ ustifyContent: 'center' }}>
       <ActivityIndicator size="large" color="#f00f0f" />
     </View>
   );

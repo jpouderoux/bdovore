@@ -9,6 +9,7 @@ import * as APIManager from '../api/APIManager';
 
 import CommonStyles from '../styles/CommonStyles';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 function ToCompleteScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
@@ -46,17 +47,19 @@ function ToCompleteScreen({ navigation }) {
   const onIWantIt = () => {
   }
 
-  const onDataFetched = (data) => {
-    setNbAlbums(data.nbItems);
-    setData(data.items);
-    setErrortext(data.error);
-    setLoading(false);
+  const onDataFetched = (result) => {
+    setNbAlbums(result.totalItems);
+    setData(result.items);
+    setErrortext(result.error);
+    setLoading(result.totalItems != Object.keys(result.items).length);
   }
 
   const fetchData = async () => {
     setLoading(true);
-    APIManager.fetchAlbumsManquants({ navigation: navigation}, onDataFetched)
-    .then().catch((error) => console.log(error));
+    setNbAlbums(0);
+    setData([]);
+    APIManager.fetchAlbumsManquants({ navigation: navigation }, onDataFetched)
+      .then().catch((error) => console.log(error));
   }
 
   const renderAlbum = ({ item, index }) => {
@@ -98,27 +101,25 @@ function ToCompleteScreen({ navigation }) {
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
       <View>
-        {loading ? null :
         <View style={{ flexDirection: 'row', marginBottom: 5 }}>
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
             {Helpers.pluralWord(nbAlbums, 'album')}
           </Text>
-        </View>}
+          {loading ? <SmallLoadingIndicator /> : null}
+        </View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
         ) : null}
-        {loading ? LoadingIndicator() : (
-          <FlatList
-            maxToRenderPerBatch={20}
-            windowSize={12}
-            data={data}
-            keyExtractor={({ item }, index) => index}
-            renderItem={renderAlbum}
-            ItemSeparatorComponent={Helpers.renderSeparator}
-          />
-        )}
+        <FlatList
+          maxToRenderPerBatch={20}
+          windowSize={12}
+          data={data}
+          keyExtractor={({ item }, index) => index}
+          renderItem={renderAlbum}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+        />
       </View>
     </SafeAreaView>
   )
