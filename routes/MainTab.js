@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AlbumScreen from '../screens/AlbumScreen';
+import AuteurScreen from '../screens/AuteurScreen';
 import CollectionScreen from '../screens/CollectionScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
@@ -91,6 +92,8 @@ function SearchScreens({ navigation }) {
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+      <CollectionStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </CollectionStack.Navigator>
   );
 }

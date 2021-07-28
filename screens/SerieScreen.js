@@ -45,10 +45,10 @@ function SerieScreen({ route, navigation }) {
     console.log("serie albums fetched");
 
     let newdata = [
-      { title: 'Intégrales', result: [] },
-      { title: 'Coffrets', result: [] },
-      { title: 'Album', result: [] },
-      { title: 'Editions spéciales', result: [] },
+      { title: 'Intégrales', data: [] },
+      { title: 'Coffrets', data: [] },
+      { title: 'Album', data: [] },
+      { title: 'Editions spéciales', data: [] },
     ];
 
     // Sort albums by type

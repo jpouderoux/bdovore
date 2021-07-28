@@ -32,9 +32,6 @@ export function sortByDate(data, field = 'DATE_AJOUT') {
   data.sort(function (item1, item2) {
     return new Date(item2[field].replaceAt(10, 'T')) - new Date(item1[field].replaceAt(10, 'T'));
   });
-  /*filteredData.sort(function (item1, item2) {
-         return new Date(item2.DATE_AJOUT.replaceAt(10, 'T')) - new Date(item1.DATE_AJOUT.replaceAt(10, 'T'));
-       });*/
   return data;
 }
 export function sliceSortByDate(data, field = 'DATE_AJOUT') {

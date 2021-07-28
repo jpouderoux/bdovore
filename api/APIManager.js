@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const bdovoreBaseURL = 'https://www.bdovore.com';
@@ -223,24 +222,15 @@ export async function fetchAlbumEditions(idtome, callback, params = {}) {
   });
 };
 
-/*export async function fetchSerie(callback, params = {}) {
-
-  fetchJSON('Serie', null, callback, {
-    ...{
-      mode: 2
-    }, ...params
-  });
-};*/
-
 export function getAlbumCoverURL(item) {
-  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
+  return encodeURI(bdovoreBaseURL+ '/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getSerieCoverURL(item) {
-  return encodeURI('https://www.bdovore.com/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : item.IMG_COUV ? item.IMG_COUV : 'default.png'));
+  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getAuteurCoverURL(item) {
-  return encodeURI('https://www.bdovore.com/images/auteur/default_auteur.png');
+  return encodeURI(bdovoreBaseURL + '/images/auteur/default_auteur.png');
 }
 
