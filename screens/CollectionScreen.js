@@ -51,6 +51,7 @@ function CollectionScreen({ props, navigation }) {
         console.log('refresh collection data because token changed to ' + token);
         setCachedToken(token);
         setKeywords('');
+        setSortMode(0);
         setNbTotalSeries(0);
         setNbTotalAlbums(0);
         setFilteredSeries(null);
@@ -73,10 +74,13 @@ function CollectionScreen({ props, navigation }) {
   }, [cachedToken]);
 
   useEffect(() => {
-    //console.log("collectionMode: " + collectionMode);
     navigation.setOptions({
       title: ('Ma collection' + (collectionMode > 0 ? (' - ' + collectionModes[collectionMode][0]) : '')),
     });
+    applyFilters();
+  }, [collectionMode, sortMode, keywords]);
+
+  const applyFilters = () => {
 
     if (keywords == '' && collectionMode == 0) {
       setFilteredSeries(null);
@@ -103,7 +107,7 @@ function CollectionScreen({ props, navigation }) {
         if (keywords === '') {
           return true;
         }
-         // search text in lowercase title without taking accents
+        // search text in lowercase title without taking accents
         let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
         return (title ? Helpers.lowerCaseNoAccentuatedChars(title).includes(lowerSearchText) : false);
       });
@@ -114,7 +118,7 @@ function CollectionScreen({ props, navigation }) {
         setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredData) : filteredData);
       }
     }
-  }, [collectionMode, sortMode, keywords]);
+  }
 
   const fetchData = () => {
     fetchSeries();
@@ -134,10 +138,6 @@ function CollectionScreen({ props, navigation }) {
   const onSeriesFetched = async (result) => {
     console.log("series fetched");
 
-    AsyncStorage.multiSet([
-      [ 'collectionSeries', JSON.stringify(result.items) ],
-      ['collecFetched', (result.error === null) ? 'true' : 'false']], () => { });
-
     setNbTotalSeries(result.totalItems);
     setCollectionSeries(result.items);
 
@@ -148,9 +148,15 @@ function CollectionScreen({ props, navigation }) {
   const onAlbumsFetched = async (result) => {
     console.log("albums fetched");
 
-    AsyncStorage.multiSet([
+    // Save albums in global scope
+    global.collectionAlbums = result.items;
+    // Create an album dictionary [{ID_TOME, ID_EDITION}=>index_in_collection]
+    global.collectionAlbumsDict = {};
+    Helpers.createAlbumDict(global.collectionAlbums, global.collectionAlbumsDict);
+
+    /*AsyncStorage.multiSet([
       [ 'collectionAlbums', JSON.stringify(result.items) ],
-      [ 'collecFetched', (result.error === null) ? 'true' : 'false' ]], ()=>{});
+      [ 'collecFetched', (result.error === null) ? 'true' : 'false' ]], ()=>{});*/
 
     setNbTotalAlbums(result.totalItems);
     setCollectionAlbums(result.items);
@@ -185,8 +191,7 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const keyExtractor = useCallback((item, index) =>
-      parseInt(itemMode == 0 ? item.ID_SERIE : item.ID_TOME)
-      + (itemMode == 0 ? 0 : 1000000));
+    itemMode == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>

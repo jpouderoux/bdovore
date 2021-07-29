@@ -61,3 +61,43 @@ export function sliceSortByDescendingValue(data, field = 'NUM_TOME') {
 export function stripEmptySections(data) {
   return data.filter(item => item.data.length > 0);
 }
+
+export function makeAlbumUID(album) {
+  // 009633-062007: ID_TOME*1000000 + ID_EDITION
+  return parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION);
+}
+
+export function createDictFromArray(array, dict, hashFun) {
+  for (let i = 0; i < array.length; i++) {
+    const idx = hashFun(array[i]);
+    console.log("added idx = " + idx);
+    dict[idx] = i;
+  }
+  return dict;
+}
+
+export function createAlbumDict(array, dict) {
+  return createDictFromArray(array, dict, (item) => makeAlbumUID(item));
+}
+
+export function createSerieDict(array, dict) {
+  return createDictFromArray(array, dict, (item) => item.ID_SERIE);
+}
+
+export function getAlbumIdxInArray(album, dict) {
+  return dict[makeAlbumUID(album)];
+}
+
+export function addAlbumToArrayAndDict(album, array, dict) {
+  const idx = array.push(album) - 1;
+  dict[makeAlbumUID(album)] = idx;
+  return idx;
+}
+
+export function removeAlbumFromArrayAndDict(album, array, dict) {
+  const idx = getAlbumIdxInArray(album, dict);
+  if (idx) {
+    array[idx] = null;
+    dict[makeAlbumUID(album)] = null;
+  }
+}

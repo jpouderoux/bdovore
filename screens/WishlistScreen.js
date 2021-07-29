@@ -52,6 +52,13 @@ function WishlistScreen({ navigation }) {
   const onDataFetched = (result) => {
     setNbAlbums(result.nbItems);
     setData(result.items);
+
+    console.log("here");
+    global.wishlistAlbums = result.items;
+    global.wishlistAlbumsDict = {};
+    Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
+    console.log(global.wishlistAlbumsDict);
+
     setErrortext(result.error);
     setLoading(false);
   }
@@ -71,7 +78,7 @@ function WishlistScreen({ navigation }) {
   }
 
   const keyExtractor = useCallback((item , index) =>
-    parseInt(item.ID_TOME));
+    Helpers.makeAlbumUID(item));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>

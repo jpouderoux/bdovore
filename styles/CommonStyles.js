@@ -73,7 +73,7 @@ const CommonStyles = EStyleSheet.create({
     textAlign: 'center'
   },
   largerText: {
-    fontSize: '1.1rem'
+    fontSize: '1.0rem'
   },
   errorTextStyle: {
     color: 'red',

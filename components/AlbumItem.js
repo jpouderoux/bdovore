@@ -31,7 +31,7 @@ export function AlbumItem({ navigation, item, index, collectionMode }) {
               />
             </View>
             : null}
-          <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
+          <Text style={[CommonStyles.largerText, CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
             {item.NOM_SERIE} {tome}{'\n'}
           </Text>
           {collectionMode ? null :

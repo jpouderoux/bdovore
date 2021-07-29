@@ -1,28 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import EStyleSheet  from 'react-native-extended-stylesheet';
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager';
-import CommonStyles from '../styles/CommonStyles';
+import * as Helpers from '../api/Helpers';
 
 const onGotIt = async (item, setGotIt) => {
+  const idxCol = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
+  if (!idxCol) {
+    // If album is in not collection yet, let's add it
+    setGotIt(true);
+    APIManager.updateAlbumInCollection(item.ID_TOME, () => { }, {
+      'id_edition': item.ID_EDITION,
+      'flg_achat': 'N'
+    });
+    Helpers.addAlbumToArrayAndDict(item, global.collectionAlbums, global.collectionAlbumsDict);
+  }
+  else {
+    setGotIt(false);
+    // If album is marked "I want" it wishlist, do not remove it from the collection
+    const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
+    if (!idx || (global.wishlistAlbums[idx].FLG_ACHAT = 'N')) {
+      APIManager.deleteAlbumInCollection(item.ID_EDITION, () => { });
+    }
+    // Remove the album from the collection
+    Helpers.removeAlbumFromArrayAndDict(item, global.wishlistAlbums, global.wishlistAlbumsDict)
+  }
 };
 
 const onWantIt = async (item, setWantIt) => {
+  // Switch the want it flag
   const wantIt = !(item.FLG_ACHAT && item.FLG_ACHAT != 'N');
   item.FLG_ACHAT = wantIt;
   setWantIt(wantIt);
   if (wantIt) {
     APIManager.updateAlbumInCollection(item.ID_TOME, () => { }, {
       'id_edition': item.ID_EDITION,
-      'flg_achat': (wantIt ? 'O' : 'N')
+      'flg_achat': 'O',
     });
+    // Add the album to the wishlist with the FLG_ACHAT flag
+    item.FLG_ACHAT = true;
+    Helpers.addAlbumToArrayAndDict(item, global.wishlistAlbums, global.wishlistAlbumsDict);
   }
   else {
-    APIManager.deleteAlbumInCollection(item.ID_EDITION, () => { });
+    // Mark the album as not wanted (FLG_ACHAT='N')
+    const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
+    if (idx) {
+      global.wishlistAlbums[idx].FLG_ACHAT = 'N';
+    }
+    // Delete the album from the server collection if it is in our client side collection copy
+    const idxCol = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
+    if (!idxCol) {
+      APIManager.deleteAlbumInCollection(item.ID_EDITION, () => { });
+    }
   }
 };
 
@@ -40,7 +72,16 @@ export function CollectionMarkers({ item }) {
   }, []);
 
   useEffect(() => {
-    setWantIt(item.FLG_ACHAT && item.FLG_ACHAT != 'N');
+    const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
+    if (idx) {
+      const album = global.wishlistAlbums[idx];
+      setWantIt(album.FLG_ACHAT && album.FLG_ACHAT != 'N');
+    } else {
+      setWantIt(item.FLG_ACHAT && item.FLG_ACHAT != 'N');
+    }
+
+    const idxCol = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
+    setGotIt(idxCol ? true : false);
   }, [idTome]);
 
   return (
@@ -75,7 +116,7 @@ const styles = EStyleSheet.create({
   iconStyle: {
     textAlign: 'center',
     paddingTop: 3,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'lightgrey',
     paddingLeft: 2,
     width: 32,

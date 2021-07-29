@@ -59,7 +59,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const keyExtractor = useCallback((item, index) =>
-    parseInt(item.ID_TOME));
+    Helpers.makeAlbumUID(item));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
