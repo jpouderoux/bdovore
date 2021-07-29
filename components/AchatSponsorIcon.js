@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Image, Linking, TouchableOpacity } from 'react-native';
 

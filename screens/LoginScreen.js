@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import * as APIManager from '../api/APIManager'
 import CommonStyles from '../styles/CommonStyles';
+import * as APIManager from '../api/APIManager'
+import { LinkText } from '../components/LinkText';
 
 function LoginScreen({ navigation }) {
   const [pseudo, setPseudo] = useState('dummyuser');
@@ -12,13 +13,9 @@ function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('pseudo').then(v => setPseudo(v)).catch(() => { });
-    AsyncStorage.getItem('passwd').then(v => setPasswd(v)).catch(() => { });
-
-    // Make sure data is refreshed when login/token changed
-    const willFocusSubscription = navigation.addListener('focus', () => {
-    });
-    return willFocusSubscription;
+    AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {
+      setPseudo(response[0][1]);
+      setPasswd(response[1][1]); }).catch((error) => { console.log(error) });
   }, []);
 
   const onLoginPress = () => {
@@ -29,16 +26,17 @@ function LoginScreen({ navigation }) {
   const onConnected = (data) => {
     setLoading(false);
     if (data.error == '') {
-      AsyncStorage.setItem('token', data.token).then(()=>{
-        AsyncStorage.setItem('pseudo', pseudo);
-        AsyncStorage.setItem('passwd', passwd);
-        AsyncStorage.setItem('collecFetched', 'false');
+      AsyncStorage.setItem('token', data.token).then(() => {
+        AsyncStorage.multiSet([
+          ['pseudo', pseudo],
+          ['passwd', passwd],
+          ['collecFetched', 'false']], () => { });
         navigation.goBack();
       }
       );
     }
     else {
-      console.log('error on connection: '+ data.error);
+      console.log('error on connection: ' + data.error);
       setErrortext(data.error);
     }
   }
@@ -94,17 +92,14 @@ function LoginScreen({ navigation }) {
           <TouchableOpacity
             style={styles.buttonStyle}
             onPress={onLoginPress}
-            title="Login"
-          >
+            title="Login">
             <Text style={styles.buttonTextStyle}>Se connecter</Text>
           </TouchableOpacity>
       }
-      <Text
-        style={styles.registerTextStyle}
-        onPress={() => { Linking.openURL("https://www.bdovore.com/compte/inscription?"); }}
-      >
-        Pas encore inscrit ?
-      </Text>
+      <LinkText
+        text='Pas encore inscrit ?'
+        url='https://www.bdovore.com/compte/inscription?'
+        style={styles.registerTextStyle} />
     </SafeAreaView>
   );
 }
@@ -146,12 +141,11 @@ const styles = StyleSheet.create({
     borderColor: '#dadae8',
   },
   registerTextStyle: {
-    color: 'black',
-    textDecorationLine: 'underline',
-    textAlign: 'center',
-    fontSize: 14,
     alignSelf: 'center',
+    color: 'black',
+    fontSize: 14,
     padding: 10,
+    textAlign: 'center',
   },
 });
 

@@ -6,12 +6,13 @@ import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elem
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers'
+
 import { AlbumItem } from '../components/AlbumItem';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
-import CommonStyles from '../styles/CommonStyles';
 
 function CollectionScreen({ props, navigation }) {
   const [keywords, setKeywords] = useState('');
@@ -133,9 +134,9 @@ function CollectionScreen({ props, navigation }) {
   const onSeriesFetched = async (result) => {
     console.log("series fetched");
 
-    /*AsyncStorage.multiSet([
-      'collectionSeries', JSON.stringify(data.items),
-      'collecFetched', (data.error === null) ? 'true' : 'false']);*/
+    AsyncStorage.multiSet([
+      [ 'collectionSeries', JSON.stringify(result.items) ],
+      ['collecFetched', (result.error === null) ? 'true' : 'false']], () => { });
 
     setNbTotalSeries(result.totalItems);
     setCollectionSeries(result.items);
@@ -147,9 +148,9 @@ function CollectionScreen({ props, navigation }) {
   const onAlbumsFetched = async (result) => {
     console.log("albums fetched");
 
-    /*AsyncStorage.multiSet([]
-      'collectionAlbums', JSON.stringify(result.items),
-      'collecFetched', (result.error === null) ? 'true' : 'false']);*/
+    AsyncStorage.multiSet([
+      [ 'collectionAlbums', JSON.stringify(result.items) ],
+      [ 'collecFetched', (result.error === null) ? 'true' : 'false' ]], ()=>{});
 
     setNbTotalAlbums(result.totalItems);
     setCollectionAlbums(result.items);
@@ -173,11 +174,9 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const renderItem = ({ item, index }) => {
-    if (itemMode == 0) {
-      return SerieItem({ navigation, item, index });
-    }
-    if (itemMode == 1) {
-      return AlbumItem({ navigation, item, index });
+    switch (itemMode) {
+      case 0: return SerieItem({ navigation, item, index });
+      case 1: return AlbumItem({ navigation, item, index });
     }
   }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 

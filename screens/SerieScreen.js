@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image, SafeAreaView, SectionList, Text, View } from 'react-native';
+import { SafeAreaView, SectionList, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
 import CommonStyles from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
+import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-
 
 function SerieScreen({ route, navigation }) {
 
@@ -24,21 +24,13 @@ function SerieScreen({ route, navigation }) {
 
   useEffect(() => {
     refreshDataIfNeeded();
-    // Make sure data is refreshed when login/token changed
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      refreshDataIfNeeded();
-    });
-    return willFocusSubscription;
   }, []);
 
   const fetchData = () => {
     setLoading(true);
+    setErrortext('');
+    setSerieAlbums([]);
     APIManager.fetchSerieAlbums(item.ID_SERIE, {}, onSerieAlbumsFetched);
-    //APIManager.fetchSerie(item.ID_SERIE, {}, onSerieFetched);
-  }
-
-  const onSerieFetched = async (data) => {
-    console.log("serie fetched");
   }
 
   const onSerieAlbumsFetched = async (result) => {
@@ -72,10 +64,10 @@ function SerieScreen({ route, navigation }) {
     }
 
     // Sort albums by tome number
-    newdata[2].data = newdata[2].data.sort((item1, item2) => (item1.NUM_TOME - item2.NUM_TOME));
+    Helpers.sortByAscendingValue(newdata[2].data);
 
     // Strip empty sections
-    newdata = newdata.filter(item => item.data.length > 0);
+    Helpers.stripEmptySections(newdata);
 
     setSerieAlbums(newdata);
 
@@ -102,7 +94,7 @@ function SerieScreen({ route, navigation }) {
           {tome}
           {item.LIB_FLG_FINI_SERIE}
         </Text>
-        <Image source={{ uri: APIManager.getSerieCoverURL(item), }} style={[CommonStyles.albumImageStyle, { flexDirection: 'row', height: 75 }]} />
+        <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ flexDirection: 'row', height: 75 }} />
       </View>
       {loading ? LoadingIndicator() : (
         <SectionList

@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
+import { CoverImage } from './CoverImage';
 
 const onPressAuteur = (navigation, item) => {
   navigation.push('Auteur', { item });
@@ -19,7 +20,7 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
   return (
     <TouchableOpacity key={index} disabled={noPressAction ? true : false} onPress={() => onPressAuteur(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
-        <Image source={{ uri: APIManager.getAuteurCoverURL(item) }} style={CommonStyles.auteurImageStyle} />
+        <CoverImage source={APIManager.getAuteurCoverURL(item)} />
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
           <Text style={[CommonStyles.itemTextWidth, { fontSize: 20}]}>{item.PSEUDO}</Text>
           <Text style={[CommonStyles.itemTextWidth, { fontSize: 16, color: 'grey', marginTop: 10 }]}>{fonctionString}</Text>

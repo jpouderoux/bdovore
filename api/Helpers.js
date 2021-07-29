@@ -58,3 +58,6 @@ export function sliceSortByDescendingValue(data, field = 'NUM_TOME') {
   return sortByDesendingValue(data.slice(), field);
 }
 
+export function stripEmptySections(data) {
+  return data.filter(item => item.data.length > 0);
+}

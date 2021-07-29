@@ -1,10 +1,10 @@
-
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-elements';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Rating } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
+import { CoverImage } from './CoverImage';
 
 const onPressSerie = (navigation, item) => {
   navigation.push('Serie', { item });
@@ -15,7 +15,7 @@ export function SerieItem({ navigation, item, index }) {
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
-        <Image source={{ uri: APIManager.getSerieCoverURL(item) }} style={CommonStyles.albumImageStyle} />
+        <CoverImage source={APIManager.getSerieCoverURL(item)} />
         <View style={CommonStyles.itemTextContent}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.NOM_SERIE}</Text>
           <Text>{item.NOM_GENRE}</Text>

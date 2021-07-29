@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { Rating } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import CommonStyles from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
-import CommonStyles from '../styles/CommonStyles';
-import { LoadingIndicator } from '../components/LoadingIndicator';
+import { CoverImage } from '../components/CoverImage';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
+
 
 function ToCompleteScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
@@ -68,7 +69,7 @@ function ToCompleteScreen({ navigation }) {
       <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
         <View style={{ flexDirection: 'row' }}>
           <View>
-            <Image source={{ uri: APIManager.getAlbumCoverURL(item) }} style={CommonStyles.albumImageStyle} />
+            <CoverImage source={APIManager.getAlbumCoverURL(item)} />
           </View>
           <View style={{ margin: 5, flexDirection: "column", flexGrow: 3 }}>
             <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>

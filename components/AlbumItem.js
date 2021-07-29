@@ -1,10 +1,11 @@
-
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-elements';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Rating } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
+
+import { CoverImage } from './CoverImage';
 
 const onPressAlbum = (navigation, item) => {
   navigation.push('Album', { item });
@@ -15,7 +16,7 @@ export function AlbumItem({ navigation, item, index }) {
   return (
     <TouchableOpacity key={index} onPress={() => onPressAlbum(navigation, item)}>
       <View style={{ flexDirection: 'row', }}>
-        <Image source={{ uri: APIManager.getAlbumCoverURL(item), }} style={CommonStyles.albumImageStyle} />
+        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
         <View style={CommonStyles.itemTextContent}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.TITRE_TOME}</Text>
           <Text style={CommonStyles.itemTextWidth}>

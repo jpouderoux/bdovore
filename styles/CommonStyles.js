@@ -86,6 +86,9 @@ const CommonStyles = EStyleSheet.create({
   sectionStyle: {
     backgroundColor: '#ddd',
     width: '100%'
+  },
+  linkTextStyle: {
+    textDecorationLine: 'underline',
   }
 });
 
