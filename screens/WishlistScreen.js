@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -24,8 +24,8 @@ function WishlistScreen({ navigation }) {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.log("refresh wishlist because token changed from " + cachedToken + ' to ' + token);
-        setCachedToken(token);
-        cachedToken = token;
+        //setCachedToken(token);
+        //cachedToken = token;
         fetchData();
       }
     }).catch(() => { });
@@ -70,6 +70,9 @@ function WishlistScreen({ navigation }) {
     setFilterByDate(previousState => !previousState);
   }
 
+  const keyExtractor = useCallback((item , index) =>
+    parseInt(item.ID_TOME));
+
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
       <View>
@@ -95,7 +98,7 @@ function WishlistScreen({ navigation }) {
             maxToRenderPerBatch={20}
             windowSize={12}
             data={filteredData ? filteredData : data}
-            keyExtractor={({ item }, index) => index}
+            keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
           />

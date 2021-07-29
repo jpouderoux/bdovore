@@ -184,10 +184,9 @@ function CollectionScreen({ props, navigation }) {
     setKeywords(searchText);
   }
 
-  const keyExtractor = useCallback(({ item }, index) =>
-    item ?
+  const keyExtractor = useCallback((item, index) =>
       parseInt(itemMode == 0 ? item.ID_SERIE : item.ID_TOME)
-      + (itemMode == 0 ? 0 : 1000000) : index);
+      + (itemMode == 0 ? 0 : 1000000));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>

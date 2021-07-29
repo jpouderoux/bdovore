@@ -17,7 +17,7 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
         <CoverImage source={APIManager.getSerieCoverURL(item)} />
-        <View style={[CommonStyles.itemTextContent, { flex:1 }]} >
+        <View style={[CommonStyles.itemTextContent]} >
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
           {(!collectionMode && item.NOTE_SERIE) ?
             <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>

@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { CollectionMarkers } from '../components/CollectionMarkers';
-import { CoverImage } from '../components/CoverImage';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
@@ -43,13 +39,6 @@ function ToCompleteScreen({ navigation }) {
     return willFocusSubscription;
   }, [cachedToken]);
 
-  const onPressAlbum = (item) => {
-    navigation.navigate('Album', { item });
-  }
-
-  const onIWantIt = () => {
-  }
-
   const onDataFetched = (result) => {
     setNbAlbums(result.totalItems);
     setData(result.items);
@@ -65,35 +54,12 @@ function ToCompleteScreen({ navigation }) {
       .then().catch((error) => console.log(error));
   }
 
-  const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, collectionMode:false });/*
-    const tome = (item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : '';
-    return (
-      <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
-        <View style={{ flexDirection: 'row' }}>
-          <View>
-            <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-          </View>
-          <View style={{ margin: 5, flexDirection: "column", flexGrow: 3 }}>
-            <Text style={CommonStyles.bold}>{item.TITRE_TOME}</Text>
-            <Text>{item.NOM_SERIE} {tome}</Text>
-            {(item.MOYENNE_NOTE_TOME) !== null ?
-              <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
-                <Rating
-                  ratingCount={5}
-                  imageSize={20}
-                  startingValue={(item.MOYENNE_NOTE_TOME) / 2}
-                  tintColor='#fff'
-                  readonly={true}
-                />
-              </View>
-              : null}
-            <CollectionMarkers/>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );*/
+  const renderItem = ({ item, index }) => {
+    return AlbumItem({ navigation, item, index });
   }
+
+  const keyExtractor = useCallback((item, index) =>
+    parseInt(item.ID_TOME));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
@@ -113,8 +79,8 @@ function ToCompleteScreen({ navigation }) {
           maxToRenderPerBatch={20}
           windowSize={12}
           data={data}
-          keyExtractor={({ item }, index) => index}
-          renderItem={renderAlbum}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}
         />
       </View>

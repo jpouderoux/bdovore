@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
@@ -18,12 +19,13 @@ function concatParamsToURL(url, params) {
   return encodeURI(url);
 }
 
-export async function checkForToken(navigation) {
+export async function checkForToken(navigation = null) {
+ // const navigation = useNavigation();
   // Move to login page if no token available
   const token = await AsyncStorage.getItem('token');
-  if (token === null) {
+  if (token === null && navigation) {
     navigation.navigate('Login');
-  } else if (token === 'expired') {
+  } else if (token === 'expired' && navigation) {
     reloginBdovore(navigation);
   } else {
     return token;
@@ -213,14 +215,53 @@ export async function fetchAlbum(callback, params = {}) {
     }, ...params});
 };
 
-export async function fetchAlbumEditions(idtome, callback, params = {}) {
+export async function fetchAlbumEditions(id_tome, callback, params = {}) {
 
   fetchJSON('Edition', null, callback, {
     ...{
-      id_tome: idtome,
+      id_tome: id_tome,
     }, ...params
   });
 };
+
+export async function updateAlbumInCollection(id_tome, callback, params = {}) {
+
+  let token = await checkForToken();
+  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/majcollection' +'?API_TOKEN=' + encodeURI(token), {
+    ...{
+      id_tome: id_tome,
+    }, ...params});
+
+  console.log(url);
+  fetch(url)
+    .then((response) => {
+      callback({ error: (response.status == '200') });
+    })
+    .catch((error) => {
+      console.log('==> error : ' + error.toString())
+      callback({ error: error.toString() });
+    });
+}
+
+export async function deleteAlbumInCollection(id_edition, callback, params = {}) {
+
+  let token = await checkForToken();
+  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/deleteAlbum' + '?API_TOKEN=' + encodeURI(token), {
+    ...{
+      id_edition: id_edition,
+    }, ...params
+  });
+
+  console.log(url);
+  fetch(url)
+    .then((response) => {
+      callback({ error: (response.status == '200') });
+    })
+    .catch((error) => {
+      console.log(' ==> ' + error.toString());
+      callback({ error: error.toString() });
+    });
+}
 
 export function getAlbumCoverURL(item) {
   return encodeURI(bdovoreBaseURL+ '/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
