@@ -8,6 +8,8 @@ import CommonStyles from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
+import { AlbumItem } from '../components/AlbumItem';
+import { CollectionMarkers } from '../components/CollectionMarkers';
 import { CoverImage } from '../components/CoverImage';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
@@ -64,6 +66,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const renderAlbum = ({ item, index }) => {
+    return AlbumItem({ navigation, item, index, collectionMode:false });/*
     const tome = (item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : '';
     return (
       <TouchableOpacity key={index} onPress={() => onPressAlbum(item)}>
@@ -85,18 +88,11 @@ function ToCompleteScreen({ navigation }) {
                 />
               </View>
               : null}
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginRight: 10 }}>
-              <TouchableOpacity onPress={onIWantIt} title="" >
-                <Icon name='check-bold' size={25} color='#f22' />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onIWantIt} title="" >
-                <Icon name='heart' size={25} color='#f22' />
-              </TouchableOpacity>
-            </View>
+            <CollectionMarkers/>
           </View>
         </View>
       </TouchableOpacity>
-    );
+    );*/
   }
 
   return (

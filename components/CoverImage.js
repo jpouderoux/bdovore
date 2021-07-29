@@ -9,6 +9,6 @@ export function CoverImage({ source, style }) {
     <Image
       source={{ uri: source }}
       style={[CommonStyles.albumImageStyle, style]}
-      PlaceholderContent={<ActivityIndicator />} />
+      PlaceholderContent={<ActivityIndicator/>} />
   );
 }

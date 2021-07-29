@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AlbumScreen from '../screens/AlbumScreen';
@@ -112,6 +113,12 @@ function MainTab() {
     );
   };
 
+  const setTabBarMatIcons = (icon, params) => {
+    return (
+      <MaterialIcons name={icon} color={params.color} size={params.size} />
+    );
+  };
+
   return (
     <Tab.Navigator
       initialRouteName='Ma collection'
@@ -122,7 +129,7 @@ function MainTab() {
         component={WishlistScreens}
         options={{
           tabBarIcon: (p) =>  {
-            return setTabBarMatComIcons('heart-flash', p); }
+            return setTabBarMatComIcons('heart', p); }
         }}
       />
       <Tab.Screen
@@ -130,7 +137,7 @@ function MainTab() {
         component={ToCompleteScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarIonicons('color-fill', p);
+            return setTabBarMatIcons('list-alt', p);
           }
         }}
       />
@@ -148,7 +155,7 @@ function MainTab() {
         component={NewsScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons('newspaper', p); }
+            return setTabBarMatIcons('fiber-new', p); }
         }}
       />
       <Tab.Screen
@@ -156,7 +163,7 @@ function MainTab() {
         component={SearchScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons('table-search', p);
+            return setTabBarMatIcons('search', p);
           }
         }}
       />

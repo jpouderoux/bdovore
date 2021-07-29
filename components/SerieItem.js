@@ -1,29 +1,25 @@
 import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { Image, Rating } from 'react-native-elements';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { Rating } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 
 const onPressSerie = (navigation, item) => {
   navigation.push('Serie', { item });
 }
 
-export function SerieItem({ navigation, item, index }) {
+export function SerieItem({ navigation, item, index, collectionMode }) {
 
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
         <CoverImage source={APIManager.getSerieCoverURL(item)} />
-        <View style={CommonStyles.itemTextContent}>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.bold]}>{item.NOM_SERIE}</Text>
-          <Text>{item.NOM_GENRE}</Text>
-          {(item.NB_USER_ALBUM) ? (<Text style={[CommonStyles.itemTextWidth, CommonStyles.italic]}>
-            {item.NB_USER_ALBUM} album{item.NB_USER_ALBUM > 1 ? 's' : ''} sur {item.NB_ALBUM} dans la base {'\n'}
-            {item.LIB_FLG_FINI_SERIE}
-          </Text>) : null}
-          {(item.NOTE_SERIE) ?
+        <View style={[CommonStyles.itemTextContent, { flex:1 }]} >
+          <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
+          {(!collectionMode && item.NOTE_SERIE) ?
             <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
               <Rating
                 ratingCount={5}
@@ -33,7 +29,14 @@ export function SerieItem({ navigation, item, index }) {
                 readonly={true}
               />
             </View>
-          : null}
+            : null}
+          <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
+            {item.LIB_FLG_FINI_SERIE}
+            </Text>
+          {(item.NB_USER_ALBUM) ? (
+            <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
+              {Helpers.pluralWord(item.NB_USER_ALBUM, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
+          </Text>) : null}
         </View>
       </View>
     </TouchableOpacity >

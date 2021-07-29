@@ -175,8 +175,8 @@ function CollectionScreen({ props, navigation }) {
 
   const renderItem = ({ item, index }) => {
     switch (itemMode) {
-      case 0: return SerieItem({ navigation, item, index });
-      case 1: return AlbumItem({ navigation, item, index });
+      case 0: return SerieItem({ navigation, item, index, collectionMode: true });
+      case 1: return AlbumItem({ navigation, item, index, collectionMode: true });
     }
   }
 

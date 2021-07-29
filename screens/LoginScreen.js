@@ -88,18 +88,21 @@ function LoginScreen({ navigation }) {
             justifyContent: "space-around",
             padding: 10
           }}>
-            <ActivityIndicator size="large" color="#f00f0f" /></View> :
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            onPress={onLoginPress}
-            title="Login">
-            <Text style={styles.buttonTextStyle}>Se connecter</Text>
-          </TouchableOpacity>
-      }
-      <LinkText
-        text='Pas encore inscrit ?'
-        url='https://www.bdovore.com/compte/inscription?'
-        style={styles.registerTextStyle} />
+            <ActivityIndicator size="large" color="#f00f0f" />
+          </View> :
+          <View>
+            <TouchableOpacity
+              style={styles.buttonStyle}
+              onPress={onLoginPress}
+              title="Login">
+              <Text style={styles.buttonTextStyle}>Se connecter</Text>
+            </TouchableOpacity>
+            <LinkText
+              text='Pas encore inscrit ?'
+              url='https://www.bdovore.com/compte/inscription?'
+              style={styles.registerTextStyle} />
+          </View>
+    }
     </SafeAreaView>
   );
 }

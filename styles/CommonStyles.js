@@ -53,6 +53,7 @@ const CommonStyles = EStyleSheet.create({
   itemTextContent: {
     margin: 5,
     flexDirection: "column",
+    flex: 1
   },
   serieImageStyle: {
     width: 90,

@@ -92,7 +92,7 @@ function AlbumScreen({ route, navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
-          <AchatSponsorIcon item={item} />
+          <AchatSponsorIcon ean={item.EAN_EDITION} />
 
           <WebView style={{ contentInsetAdjustmentBehavior: 'always', width: '100%' }} scalesPageToFit={false} source={{ html: '<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>' + item.HISTOIRE_TOME + '</body></html>' }} />
         </View>

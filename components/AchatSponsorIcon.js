@@ -3,13 +3,12 @@ import { Image, Linking, TouchableOpacity } from 'react-native';
 
 import CommonStyles from '../styles/CommonStyles';
 
-export function AchatSponsorIcon(props) {
-  return (props.item && props.item.EAN_EDITION) ? (
-    <TouchableOpacity
-      onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ref=295&ean=' + item.EAN_EDITION); }}
+export function AchatSponsorIcon({ ean }) {
+    return <TouchableOpacity
+      onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ean=' + ean + "&ref=295"); }}
       title="Acheter sur BDFugue"
       style={{ marginTop: 5 }}>
       <Image source={require('../assets/bdfugue.png')} style={CommonStyles.bdfugueIcon} />
-    </TouchableOpacity>) : null;
+    </TouchableOpacity>;
 }
 
