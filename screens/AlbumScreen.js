@@ -6,6 +6,7 @@ import { WebView } from 'react-native-webview';
 import * as APIManager from '../api/APIManager';
 import CommonStyles from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
+import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function AlbumScreen({ route, navigation }) {
@@ -76,7 +77,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText ]}>Collection</Text>
-          <Text>... TBD ...</Text>
+          <CollectionMarkers item={item} />
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText ]}>Info Album</Text>
         </View>
         <View>

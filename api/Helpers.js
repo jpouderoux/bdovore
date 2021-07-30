@@ -90,7 +90,7 @@ export function createSerieDict(array, dict) {
 }
 
 export function getAlbumIdxInArray(album, dict) {
-  return dict[makeAlbumUID(album)];
+  return dict ? dict[makeAlbumUID(album)] : null;
 }
 
 export function addAlbumToArrayAndDict(album, array, dict) {
