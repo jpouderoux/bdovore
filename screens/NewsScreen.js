@@ -152,11 +152,11 @@ function NewsScreen({ navigation }) {
           maxToRenderPerBatch={8}
           windowSize={10}
           ItemSeparatorComponent={Helpers.renderSeparator}
-          sections={[filteredUserNewsDataArray, filteredUserNewsToComeDataArray, newsDataArray]}
+          sections={[filteredUserNewsDataArray, filteredUserNewsToComeDataArray, newsDataArray].filter(s => s.data.length > 0)}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{title}</Text>)}
+          renderSectionHeader={({ section }) => (
+            <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
         />
       </View>
