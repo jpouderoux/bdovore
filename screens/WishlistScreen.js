@@ -10,63 +10,34 @@ import { AlbumItem } from '../components/AlbumItem';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function WishlistScreen({ navigation }) {
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(null);
-  const [nbAlbums, setNbAlbums] = useState(0);
   const [filterByDate, setFilterByDate] = useState(false);
-  let [cachedToken, setCachedToken] = useState('');
 
   Helpers.checkForToken(navigation);
 
-  const refreshDataIfNeeded = async () => {
-    AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken) {
-        console.log("refresh wishlist because token changed from " + cachedToken + ' to ' + token);
-        //setCachedToken(token);
-        //cachedToken = token;
-        fetchData();
-      }
-    }).catch(() => { });
-  }
-
   useEffect(() => {
-    refreshDataIfNeeded();
+    //refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      refreshDataIfNeeded();
+      //refreshDataIfNeeded();
+      if (!filterByDate) {
+        setFilteredData(null);
+      } else {
+        console.log(global.wishlistAlbums);
+        setFilteredData(Helpers.sliceSortByDate(global.wishlistAlbums));
+      }
     });
     return willFocusSubscription;
-  }, [cachedToken]);
+  }, []);
 
   useEffect(() => {
-
     if (!filterByDate) {
       setFilteredData(null);
     } else {
-      setFilteredData(Helpers.sliceSortByDate(data));
+      console.log(global.wishlistAlbums);
+      setFilteredData(Helpers.sliceSortByDate(global.wishlistAlbums));
     }
   }, [filterByDate]);
-
-  const onDataFetched = (result) => {
-    setNbAlbums(result.nbItems);
-    setData(result.items);
-
-    // Create the global structures
-    global.wishlistAlbums = result.items;
-    global.wishlistAlbumsDict = {};
-    Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
-
-    setErrortext(result.error);
-    setLoading(false);
-  }
-
-  const fetchData = async () => {
-    setLoading(true);
-    APIManager.fetchWishlist({ navigation: navigation }, onDataFetched)
-      .then().catch((error) => console.log(error));
-  }
 
   const renderItem = ({ item, index }) => {
     return AlbumItem({ navigation, item, index });
@@ -76,39 +47,31 @@ function WishlistScreen({ navigation }) {
     setFilterByDate(previousState => !previousState);
   }
 
-  const keyExtractor = useCallback((item , index) =>
+  const keyExtractor = useCallback((item, index) =>
     Helpers.makeAlbumUID(item));
 
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
       <View>
-        {loading ? null :
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-            <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
-              {Helpers.pluralWord(nbAlbums, 'album')}
-            </Text>
-            <View></View>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
-              <Switch value={filterByDate}
-                onValueChange={toggleFilterByDate} />
-            </View>
-          </View>}
-        {errortext != '' ? (
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
+            {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
           </Text>
-        ) : null}
-        {loading ? LoadingIndicator() : (
-          <FlatList
-            maxToRenderPerBatch={20}
-            windowSize={12}
-            data={filteredData ? filteredData : data}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            ItemSeparatorComponent={Helpers.renderSeparator}
-          />
-        )}
+          <View></View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
+            <Switch value={filterByDate}
+              onValueChange={toggleFilterByDate} />
+          </View>
+        </View>
+        <FlatList
+          maxToRenderPerBatch={20}
+          windowSize={12}
+          data={filteredData ? filteredData : global.wishlistAlbums}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+        />
       </View>
     </SafeAreaView>
   );

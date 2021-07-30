@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-elements';
+import { AirbnbRating, Rating } from 'react-native-elements';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import CommonStyles from '../styles/CommonStyles';
@@ -30,8 +30,8 @@ export function AlbumItem({ navigation, item, index, collectionMode }) {
                 ratingCount={5}
                 imageSize={20}
                 startingValue={(item.MOYENNE_NOTE_TOME) / 2}
-                tintColor='#fff'
-                readonly={true}
+                tintColor="white"
+                readonly
               />
             </View>
             : null}

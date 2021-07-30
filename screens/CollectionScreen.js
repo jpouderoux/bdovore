@@ -123,16 +123,25 @@ function CollectionScreen({ props, navigation }) {
   const fetchData = () => {
     fetchSeries();
     fetchAlbums();
+    fetchWishlist();
   }
 
   const fetchSeries = () => {
     setLoading(true);
-    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched);
+    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched)
+      .then().catch((error) => console.log(error));;
   }
 
   const fetchAlbums = () => {
     setLoading(true);
-    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, onAlbumsFetched);
+    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, onAlbumsFetched)
+      .then().catch((error) => console.log(error));;
+  }
+
+  const fetchWishlist = async () => {
+    setLoading(true);
+    APIManager.fetchWishlist({ navigation: navigation }, onWishlistFetched)
+      .then().catch((error) => console.log(error));
   }
 
   const onSeriesFetched = async (result) => {
@@ -163,6 +172,17 @@ function CollectionScreen({ props, navigation }) {
 
     setErrortext(result.error);
     setLoading(!result.done);
+  }
+
+  const onWishlistFetched = (result) => {
+
+    // Create the global structures
+    global.wishlistAlbums = result.items;
+    global.wishlistAlbumsDict = {};
+    Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
+
+    setErrortext(result.error);
+    setLoading(false);
   }
 
   const onPressItemMode = (selectedIndex) => {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem, Rating } from 'react-native-elements';
-import { WebView } from 'react-native-webview';
 
 import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import CommonStyles from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
@@ -19,14 +19,7 @@ function AlbumScreen({ route, navigation }) {
 
   //const item = route.params.item;
   const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
-  let auteurs = item.scpseudo;
-  if (auteurs === null || auteurs === '') {
-    auteurs = item.depseudo;
-  } else if ((item.depseudo !== null || item.depseudo !== '') && (auteurs != item.depseudo)) {
-    auteurs = auteurs + ' & ' + item.depseudo;
-  }
-
-  //const annee = item.NOM_EDITION.substring(0, 4);
+  const auteurs = Helpers.getAuteurs(item);
 
   useEffect(() => {
     getAlbumEditions();
@@ -76,9 +69,9 @@ function AlbumScreen({ route, navigation }) {
             : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText ]}>Collection</Text>
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, {color: 'white'} ]}>Collection</Text>
           <CollectionMarkers item={item} />
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText ]}>Info Album</Text>
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' } ]}>Info Album</Text>
         </View>
         <View>
           <Text style={CommonStyles.largerText}>{item.NOM_SERIE}</Text>
@@ -94,8 +87,7 @@ function AlbumScreen({ route, navigation }) {
             </TouchableOpacity>
           </View>
           <AchatSponsorIcon ean={item.EAN_EDITION} />
-
-          <WebView style={{ contentInsetAdjustmentBehavior: 'always', width: '100%' }} scalesPageToFit={false} source={{ html: '<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>' + item.HISTOIRE_TOME + '</body></html>' }} />
+          <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(item.HISTOIRE_TOME)}</Text>
         </View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>

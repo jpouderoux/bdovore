@@ -34,6 +34,11 @@ export function sortByDate(data, field = 'DATE_AJOUT') {
   });
   return data;
 }
+
+export function getNowDateString() {
+  return new Date(Date.now()).toISOString().replaceAt(10, ' ');
+}
+
 export function sliceSortByDate(data, field = 'DATE_AJOUT') {
   return sortByDate(data.slice(), field);
 }
@@ -102,7 +107,24 @@ export function addAlbumToArrayAndDict(album, array, dict) {
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
   if (idx) {
-    array[idx] = null;
-    dict[makeAlbumUID(album)] = null;
+    delete dict[makeAlbumUID(album)];
+    array = array.splice(idx, 1);
   }
+}
+
+export function removeHTMLTags(text) {
+  text = text.replace(/<br>/gi, "\n");
+  text = text.replace(/<p.*>/gi, "\n");
+  text = text.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, "$2");
+  text = text.replace(/<(?:.|\s)*?>/g, "");
+  return text;
+}
+
+export function getAuteurs(album) {
+  let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
+  auteursArray = auteursArray.filter((item) => item != null);
+  auteursArray = auteursArray.filter(function (item, pos, self) {
+    return self.indexOf(item) == pos;
+  });
+  return auteursArray.join(' / ');
 }
