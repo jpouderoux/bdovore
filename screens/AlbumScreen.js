@@ -10,12 +10,13 @@ import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function AlbumScreen({ route, navigation }) {
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
+
   const [albumEditionsData, setAlbumEditionsData] = useState([]);
-  const [showEditionsChooser, setShowEditionsChooser] = useState(0);
   const [editionIndex, setEditionIndex] = useState(0);
+  const [errortext, setErrortext] = useState('');
   const [item, setItem] = useState(route.params.item);
+  const [loading, setLoading] = useState(false);
+  const [showEditionsChooser, setShowEditionsChooser] = useState(0);
 
   //const item = route.params.item;
   const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;

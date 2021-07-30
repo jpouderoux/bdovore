@@ -1,25 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Switch, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import * as Helpers from '../api/Helpers';
-import * as APIManager from '../api/APIManager'
 import CommonStyles from '../styles/CommonStyles';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { LoadingIndicator } from '../components/LoadingIndicator';
 
 function WishlistScreen({ navigation }) {
-  const [filteredData, setFilteredData] = useState(null);
   const [filterByDate, setFilterByDate] = useState(false);
+  const [filteredData, setFilteredData] = useState(null);
 
   Helpers.checkForToken(navigation);
 
   useEffect(() => {
-    //refreshDataIfNeeded();
-    // Make sure data is refreshed when login/token changed
+    // Make sure data is refreshed when screen get focus again
     const willFocusSubscription = navigation.addListener('focus', () => {
-      //refreshDataIfNeeded();
       if (!filterByDate) {
         setFilteredData(null);
       } else {
@@ -34,7 +29,6 @@ function WishlistScreen({ navigation }) {
     if (!filterByDate) {
       setFilteredData(null);
     } else {
-      console.log(global.wishlistAlbums);
       setFilteredData(Helpers.sliceSortByDate(global.wishlistAlbums));
     }
   }, [filterByDate]);

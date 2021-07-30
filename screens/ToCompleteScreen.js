@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import CommonStyles from '../styles/CommonStyles';
@@ -11,9 +11,9 @@ import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
 function ToCompleteScreen({ navigation }) {
+  const [data, setData] = useState([]);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
   const [nbAlbums, setNbAlbums] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
 

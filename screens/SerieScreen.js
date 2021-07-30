@@ -9,13 +9,13 @@ import { AlbumItem } from '../components/AlbumItem';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
+
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
+  const [item, setItem] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
-
-  const item = route.params.item;
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh data wishlist");
@@ -66,9 +66,6 @@ function SerieScreen({ route, navigation }) {
     // Sort albums by tome number
     Helpers.sortByAscendingValue(newdata[2].data);
 
-    // Strip empty sections
-    Helpers.stripEmptySections(newdata);
-
     setSerieAlbums(newdata);
 
     setErrortext(result.error);
@@ -96,11 +93,16 @@ function SerieScreen({ route, navigation }) {
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ flexDirection: 'row', height: 75 }} />
       </View>
+      {errortext != '' ? (
+        <Text style={CommonStyles.errorTextStyle}>
+          {errortext}
+        </Text>
+      ) : null}
       {loading ? LoadingIndicator() : (
         <SectionList
           maxToRenderPerBatch={6}
           windowSize={10}
-          sections={serieAlbums}
+          sections={serieAlbums.filter(s => s.data.length > 0)}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title } }) => (

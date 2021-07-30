@@ -12,22 +12,21 @@ import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 function AuteurScreen({ route, navigation }) {
 
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
   const [auteurAlbums, setAuteurAlbums] = useState([]);
-  const [nbSeries, setNbSeries] = useState(-1);
+  const [errortext, setErrortext] = useState('');
+  const [item, setItem] = useState(route.params.item);
+  const [loading, setLoading] = useState(false);
   const [nbAlbums, setNbAlbums] = useState(-1);
+  const [nbSeries, setNbSeries] = useState(-1);
 
-  const item = route.params.item;
+  useEffect(() => {
+    refreshDataIfNeeded();
+  }, []);
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh auteur data");
     fetchData();
   }
-
-  useEffect(() => {
-    refreshDataIfNeeded();
-  }, []);
 
   const fetchData = () => {
     setLoading(true);

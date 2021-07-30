@@ -7,10 +7,11 @@ import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
 
 function LoginScreen({ navigation }) {
-  const [pseudo, setPseudo] = useState('dummyuser');
-  const [passwd, setPasswd] = useState("dummypwd");
+
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwd, setPasswd] = useState("dummypwd");
+  const [pseudo, setPseudo] = useState('dummyuser');
 
   useEffect(() => {
     AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {

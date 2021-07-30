@@ -13,10 +13,11 @@ import { AuteurItem } from '../components/AuteurItem';
 
 
 function SearchScreen({ navigation }) {
-  const [keywords, setKeywords] = useState("");
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
+
   const [data, setData] = useState([]);
+  const [errortext, setErrortext] = useState('');
+  const [keywords, setKeywords] = useState("");
+  const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
 
   useEffect(() => {
@@ -29,23 +30,25 @@ function SearchScreen({ navigation }) {
     }
 
     setLoading(true);
-    if (searchMode == 0) {
-      APIManager.fetchJSON('Serie', null, onSearchFetched, {
-        mode: 1,
-        term: keywords
-      });
-    }
-    else if (searchMode == 1) {
-      APIManager.fetchAlbum(onSearchFetched,
-        {
+    switch (searchMode) {
+      case 0:
+        APIManager.fetchJSON('Serie', null, onSearchFetched, {
+          mode: 1,
           term: keywords
         });
-    }
-    else if (searchMode == 2) {
-      APIManager.fetchJSON('Auteur', null, onSearchFetched, {
-        mode: 2,
-        term: keywords
-      });
+        break;
+      case 1:
+        APIManager.fetchAlbum(onSearchFetched,
+          {
+            term: keywords
+          });
+        break;
+      case 2:
+        APIManager.fetchJSON('Auteur', null, onSearchFetched, {
+          mode: 2,
+          term: keywords
+        });
+        break;
     }
   };
 
@@ -57,11 +60,6 @@ function SearchScreen({ navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    /*setLoading(true);
-    APIManager.fetchAlbum(onSearchFetched,
-      {
-        term: searchText
-      });*/
   }
 
   const onPressTypeButton = (selectedIndex) => {
@@ -69,12 +67,10 @@ function SearchScreen({ navigation }) {
   };
 
   const renderItem = ({ item, index }) => {
-    if (searchMode == 0) {
-      return SerieItem({ navigation, item, index });
-    } else if (searchMode == 1) {
-      return AlbumItem({ navigation, item, index });
-    } else if (searchMode == 2) {
-      return AuteurItem({ navigation, item, index });
+    switch (searchMode) {
+      case 0: return SerieItem({ navigation, item, index });
+      case 1: return AlbumItem({ navigation, item, index });
+      case 2: return AuteurItem({ navigation, item, index });
     }
   }
 

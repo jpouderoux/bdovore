@@ -29,14 +29,15 @@ function createNewsSection(data = []) {
 }
 
 function NewsScreen({ navigation }) {
+
   const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [userNewsDataArray, setUserNewsDataArray] = useState([]);
-  const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   const [filteredUserNewsDataArray, setFilteredUserNewsDataArray] = useState(createUserNewsSection());
   const [filteredUserNewsToComeDataArray, setFilteredUserNewsToComeDataArray] = useState(createUserNewsToComeSection());
+  const [loading, setLoading] = useState(false);
   const [newsDataArray, setNewsDataArray] = useState(createNewsSection());
   const [newsMode, setNewsMode] = useState(0);
+  const [userNewsDataArray, setUserNewsDataArray] = useState([]);
+  const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   let [cachedToken, setCachedToken] = useState('');
 
   Helpers.checkForToken(navigation);

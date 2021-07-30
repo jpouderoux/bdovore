@@ -15,21 +15,22 @@ import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 
 function CollectionScreen({ props, navigation }) {
-  const [keywords, setKeywords] = useState('');
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
+
   const [collectionAlbums, setCollectionAlbums] = useState([]);
-  const [collectionSeries, setCollectionSeries] = useState([]);
-  const [filteredSeries, setFilteredSeries] = useState(null);
-  const [filteredAlbums, setFilteredAlbums] = useState(null);
-  const [nbTotalSeries, setNbTotalSeries] = useState(0);
-  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
-  const [itemMode, setItemMode] = useState(0);
-  let [cachedToken, setCachedToken] = useState('');
   const [collectionMode, setCollectionMode] = useState(0);
+  const [collectionSeries, setCollectionSeries] = useState([]);
+  const [errortext, setErrortext] = useState('');
+  const [filteredAlbums, setFilteredAlbums] = useState(null);
+  const [filteredSeries, setFilteredSeries] = useState(null);
+  const [itemMode, setItemMode] = useState(0);
+  const [keywords, setKeywords] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
+  const [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
-  const [sortMode, setSortMode] = useState(0);
   const [showSortChooser, setShowSortChooser] = useState(false);
+  const [sortMode, setSortMode] = useState(0);
+  let [cachedToken, setCachedToken] = useState('');
 
   const collectionModes = {
     0: ['Tout', ''],
