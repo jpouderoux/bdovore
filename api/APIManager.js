@@ -193,8 +193,8 @@ export async function fetchNews(origine, context, callback, params = {}) {
 export async function fetchUserNews(context, callback, params = {}) {
 
   fetchJSONData('Useractu', context, callback, {...{
-    mode:2,
-    nb_mois:3
+    mode:1,
+    nb_mois:12
   }, ...params});
 };
 

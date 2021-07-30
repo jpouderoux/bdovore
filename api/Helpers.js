@@ -59,7 +59,13 @@ export function sliceSortByDescendingValue(data, field = 'NUM_TOME') {
 }
 
 export function stripEmptySections(data) {
-  return data.filter(item => item.data.length > 0);
+  return data.filter(item => (item.data.length > 0));
+}
+
+export function stripNewsByOrigin(data, origine) {
+  console.log("data to filter by " + origine)
+  console.log(data);
+  return data.filter(item => (item.ORIGINE == origine));
 }
 
 export function makeAlbumUID(album) {
@@ -70,7 +76,6 @@ export function makeAlbumUID(album) {
 export function createDictFromArray(array, dict, hashFun) {
   for (let i = 0; i < array.length; i++) {
     const idx = hashFun(array[i]);
-    console.log("added idx = " + idx);
     dict[idx] = i;
   }
   return dict;

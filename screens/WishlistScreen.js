@@ -53,11 +53,10 @@ function WishlistScreen({ navigation }) {
     setNbAlbums(result.nbItems);
     setData(result.items);
 
-    console.log("here");
+    // Create the global structures
     global.wishlistAlbums = result.items;
     global.wishlistAlbumsDict = {};
     Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
-    console.log(global.wishlistAlbumsDict);
 
     setErrortext(result.error);
     setLoading(false);
