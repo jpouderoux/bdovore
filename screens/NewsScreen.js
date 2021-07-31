@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, SectionList, Text, View } from 'react-native';
+import { SectionList, Text, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -129,7 +129,7 @@ function NewsScreen({ navigation }) {
   const keyExtractor = useCallback(({ item }, index) => index);
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <View style={{marginLeft:-10, marginRight:-10, marginTop:-5, marginBottom:-5}}>
         <ButtonGroup
           onPress={onPressNewsMode}
@@ -142,7 +142,7 @@ function NewsScreen({ navigation }) {
           buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
         />
       </View>
-      <View>
+      <View style={{ flex: 1 }}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -161,7 +161,7 @@ function NewsScreen({ navigation }) {
           stickySectionHeadersEnabled={true}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

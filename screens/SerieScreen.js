@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, SectionList, Text, View } from 'react-native';
+import { SectionList, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -82,7 +82,7 @@ function SerieScreen({ route, navigation }) {
     /*item ? parseInt(item.ID_TOME) : */index);
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <View style={{ margin: 0, flexDirection: 'row', alignContent: "space-between" }}>
         <Text style={{ marginTop: 10, marginLeft: 10, width: '33%' }}>
           {Helpers.pluralWord(item.NB_TOME, 'tome')}{'\n\n'}
@@ -100,6 +100,7 @@ function SerieScreen({ route, navigation }) {
       ) : null}
       {loading ? LoadingIndicator() : (
         <SectionList
+          style={{ flex: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
           sections={serieAlbums.filter(s => s.data.length > 0)}
@@ -108,9 +109,10 @@ function SerieScreen({ route, navigation }) {
           renderSectionHeader={({ section: { title } }) => (
             <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10 }]}>{title}</Text>)}
           stickySectionHeadersEnabled={true}
+          ItemSeparatorComponent={Helpers.renderSeparator}
         />
       )}
-    </SafeAreaView >
+    </View >
   );
 }
 

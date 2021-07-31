@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { AirbnbRating, Rating } from 'react-native-elements';
+import { Rating } from 'react-native-elements';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import CommonStyles from '../styles/CommonStyles';
@@ -9,12 +9,15 @@ import * as APIManager from '../api/APIManager';
 import { CoverImage } from './CoverImage';
 import { CollectionMarkers } from './CollectionMarkers';
 
-const onPressAlbum = (navigation, item) => {
-  navigation.push('Album', { item });
-}
 
 export function AlbumItem({ navigation, item, index, collectionMode }) {
+
+  const onPressAlbum = (navigation, item) => {
+    navigation.push('Album', { item });
+  }
+
   const tome = (item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : '';
+
   return (
     <TouchableOpacity key={index} onPress={() => onPressAlbum(navigation, item)}>
       <View style={{ flexDirection: 'row', }}>

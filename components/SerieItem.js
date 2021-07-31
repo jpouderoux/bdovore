@@ -7,11 +7,12 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 
-const onPressSerie = (navigation, item) => {
-  navigation.push('Serie', { item });
-}
 
 export function SerieItem({ navigation, item, index, collectionMode }) {
+
+  const onPressSerie = (navigation, item) => {
+    navigation.push('Serie', { item });
+  }
 
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>

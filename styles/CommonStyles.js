@@ -7,7 +7,7 @@ const windowHeight = Dimensions.get('window').height;
 const CommonStyles = EStyleSheet.create({
   screenStyle: {
     backgroundColor: 'white',
-    height: '100%',
+    flex: 1,
   },
   searchInput: {
     flex: 1,

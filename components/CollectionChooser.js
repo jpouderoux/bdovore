@@ -1,7 +1,9 @@
 import React from 'react';
 import { BottomSheet, ListItem } from 'react-native-elements';
 
+
 export function CollectionChooser({ showCollectionChooser, collectionModes, collectionMode, setCollectionMode}) {
+
   return (
     <BottomSheet
       isVisible={showCollectionChooser}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem, Rating } from 'react-native-elements';
 
 import * as APIManager from '../api/APIManager';
@@ -9,6 +9,7 @@ import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import CollectionManager from '../api/CollectionManager';
+
 
 function AlbumScreen({ route, navigation }) {
 
@@ -50,7 +51,7 @@ function AlbumScreen({ route, navigation }) {
   //console.log("show album " + item.ID_TOME);
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <ScrollView style={{  margin: 10 }}>
         <View style={{ margin: 10, alignItems: 'center' }}>
           <Image source={{ uri: APIManager.getAlbumCoverURL(item) }} style={CommonStyles.fullAlbumImageStyle} />
@@ -125,7 +126,7 @@ function AlbumScreen({ route, navigation }) {
         </BottomSheet>
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

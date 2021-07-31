@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import CommonStyles from '../styles/CommonStyles';
@@ -11,6 +11,7 @@ import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
 function ToCompleteScreen({ navigation }) {
+
   const [data, setData] = useState([]);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,29 +68,28 @@ function ToCompleteScreen({ navigation }) {
     Helpers.makeAlbumUID(item));
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
-      <View>
-        <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
-            {loading ? '' : Helpers.pluralWord(nbAlbums, 'album')}
-          </Text>
-          {loading ? <SmallLoadingIndicator /> : null}
-        </View>
-        {errortext != '' ? (
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
-          </Text>
-        ) : null}
-        <FlatList
-          maxToRenderPerBatch={20}
-          windowSize={12}
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-        />
+    <View style={CommonStyles.screenStyle}>
+      <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+        <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
+          {loading ? '' : Helpers.pluralWord(nbAlbums, 'album')}
+        </Text>
+        {loading ? <SmallLoadingIndicator /> : null}
       </View>
-    </SafeAreaView>
+      {errortext != '' ? (
+        <Text style={CommonStyles.errorTextStyle}>
+          {errortext}
+        </Text>
+      ) : null}
+      <FlatList
+        style={{ flex: 1 }}
+        maxToRenderPerBatch={20}
+        windowSize={12}
+        data={data}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        ItemSeparatorComponent={Helpers.renderSeparator}
+      />
+    </View>
   )
 }
 

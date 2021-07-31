@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -75,7 +75,7 @@ function SearchScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <View>
         <View style={{ flexDirection: 'row', margin: 0 }}>
           <View style={{ width:'85%' }}>
@@ -114,7 +114,7 @@ function SearchScreen({ navigation }) {
         />
         </View>
       </View>
-      <View>
+      <View style={{ flex: 1 }}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -130,7 +130,7 @@ function SearchScreen({ navigation }) {
             ItemSeparatorComponent={Helpers.renderSeparator}
           />)}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

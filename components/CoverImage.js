@@ -4,7 +4,9 @@ import { Image } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
 
+
 export function CoverImage({ source, style }) {
+
   return (
     <Image
       source={{ uri: source }}

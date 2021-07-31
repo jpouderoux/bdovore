@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 
-const onPressAuteur = (navigation, item) => {
-  navigation.push('Auteur', { item });
-}
 
 export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index }) {
+
+  const onPressAuteur = (navigation, item) => {
+    navigation.push('Auteur', { item });
+  }
+
   const fonction = [];
 
   if (item.FLG_SCENAR) fonction.push('Scénariste');
@@ -30,7 +32,6 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
           </Text> : null}
         </View>
       </View>
-      <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
     </TouchableOpacity >
   );
 }

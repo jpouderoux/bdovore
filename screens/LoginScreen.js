@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
+
 
 function LoginScreen({ navigation }) {
 
@@ -43,7 +44,7 @@ function LoginScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <View style={{ margin: 30, alignItems: 'center' }}>
         <Image source={require('../assets/bdovore-167.png')} />
       </View>
@@ -103,7 +104,7 @@ function LoginScreen({ navigation }) {
             style={styles.registerTextStyle} />
         </View>
       }
-    </SafeAreaView>
+    </View>
   );
 }
 

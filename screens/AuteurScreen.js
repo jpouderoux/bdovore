@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, SectionList, Text, View } from 'react-native';
+import { SectionList, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -78,7 +78,7 @@ function AuteurScreen({ route, navigation }) {
   const keyExtractor = useCallback(({ item }, index) => index);
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
+    <View style={CommonStyles.screenStyle}>
       <View>
         <AuteurItem item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true}/>
         {loading ? <SmallLoadingIndicator /> : null}
@@ -89,6 +89,7 @@ function AuteurScreen({ route, navigation }) {
         </Text>
       ) : null}
       <SectionList
+        style={{ flex: 1}}
         maxToRenderPerBatch={6}
         windowSize={10}
         sections={auteurAlbums}
@@ -97,8 +98,9 @@ function AuteurScreen({ route, navigation }) {
         renderSectionHeader={({ section: { title } }) => (
           <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10 }]}>{title}</Text>)}
         stickySectionHeadersEnabled={true}
+        ItemSeparatorComponent={Helpers.renderSeparator}
       />
-    </SafeAreaView >
+    </View>
   );
 }
 

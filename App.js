@@ -8,19 +8,13 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-
-import {
-  useColorScheme,
-  Dimensions,
-} from 'react-native';
-
+import { useColorScheme, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import SplashScreen from "react-native-splash-screen";
 
 import MainTab from './routes/MainTab';
 
-import EStyleSheet from 'react-native-extended-stylesheet';
-
-import SplashScreen from "react-native-splash-screen";
 
 const App: () => Node = () => {
 

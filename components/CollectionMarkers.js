@@ -11,6 +11,7 @@ import * as Helpers from '../api/Helpers';
 
 
 export function CollectionMarkers({ item, style, reduceMode }) {
+
   const [gotIt, setGotIt] = useState(false);
   const [wantIt, setWantIt] = useState(false);
   const [readIt, setReadIt] = useState(false);

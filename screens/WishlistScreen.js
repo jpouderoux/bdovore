@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, Switch, Text, View } from 'react-native';
+import { FlatList, Switch, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import CommonStyles from '../styles/CommonStyles';
 
 import { AlbumItem } from '../components/AlbumItem';
 
+
 function WishlistScreen({ navigation }) {
+
   const [filterByDate, setFilterByDate] = useState(false);
   const [filteredData, setFilteredData] = useState(null);
 
@@ -45,29 +47,28 @@ function WishlistScreen({ navigation }) {
     Helpers.makeAlbumUID(item));
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
-      <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-          <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
-            {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
-          </Text>
-          <View></View>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
-            <Switch value={filterByDate}
-              onValueChange={toggleFilterByDate} />
-          </View>
+    <View style={CommonStyles.screenStyle}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+        <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
+          {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
+        </Text>
+        <View></View>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
+          <Switch value={filterByDate}
+            onValueChange={toggleFilterByDate} />
         </View>
-        <FlatList
-          maxToRenderPerBatch={20}
-          windowSize={12}
-          data={filteredData ? filteredData : global.wishlistAlbums}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-        />
       </View>
-    </SafeAreaView>
+      <FlatList
+        style={{ flex: 1 }}
+        maxToRenderPerBatch={20}
+        windowSize={12}
+        data={filteredData ? filteredData : global.wishlistAlbums}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        ItemSeparatorComponent={Helpers.renderSeparator}
+      />
+    </View>
   );
 }
 

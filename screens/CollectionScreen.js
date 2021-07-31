@@ -14,6 +14,7 @@ import { AlbumItem } from '../components/AlbumItem';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 
+
 function CollectionScreen({ props, navigation }) {
 
   const [collectionAlbums, setCollectionAlbums] = useState([]);
@@ -214,8 +215,8 @@ function CollectionScreen({ props, navigation }) {
     collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item));
 
   return (
-    <SafeAreaView style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row' }}>
+    <View style={CommonStyles.screenStyle}>
+      <View style={{ flexDirection: 'row', flex:0 }}>
         <ButtonGroup
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
@@ -236,8 +237,8 @@ function CollectionScreen({ props, navigation }) {
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', flex:0 }}>
+        <View style={{ flex: 0 }}>
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
               filterModesSearch[filterMode] :
@@ -262,7 +263,7 @@ function CollectionScreen({ props, navigation }) {
             </TouchableOpacity>
           </View> : null}
       </View>
-      <View>
+      <View style={{flex:1}}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -355,7 +356,7 @@ function CollectionScreen({ props, navigation }) {
           </ListItem>
         ))}
       </BottomSheet>
-    </SafeAreaView>
+    </View>
   );
 }
 
