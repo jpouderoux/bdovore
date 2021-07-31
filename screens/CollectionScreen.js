@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers'
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -30,6 +31,7 @@ function CollectionScreen({ props, navigation }) {
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(0);
+  let loadingSteps = 0;
   let [cachedToken, setCachedToken] = useState('');
 
   const collectionModes = {
@@ -122,68 +124,35 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const fetchData = () => {
-    fetchSeries();
-    fetchAlbums();
-    fetchWishlist();
-  }
-
-  const fetchSeries = () => {
     setLoading(true);
-    APIManager.fetchCollectionData('Userserie', { navigation: navigation }, onSeriesFetched)
-      .then().catch((error) => console.log(error));;
-  }
-
-  const fetchAlbums = () => {
-    setLoading(true);
-    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, onAlbumsFetched)
-      .then().catch((error) => console.log(error));;
-  }
-
-  const fetchWishlist = async () => {
-    setLoading(true);
-    APIManager.fetchWishlist({ navigation: navigation }, onWishlistFetched)
-      .then().catch((error) => console.log(error));
+    loadingSteps = 3;
+    CollectionManager.fetchSeries(navigation, onSeriesFetched);
+    CollectionManager.fetchAlbums(navigation, onAlbumsFetched);
+    CollectionManager.fetchWishlist(navigation, onWishlistFetched);
   }
 
   const onSeriesFetched = async (result) => {
-    console.log("series fetched");
-
     setNbTotalSeries(result.totalItems);
     setCollectionSeries(result.items);
 
     setErrortext(result.error);
-    setLoading(!result.done);
+    loadingSteps -= (result.done ? 1 : 0);
+    setLoading(loadingSteps != 0);
   }
 
   const onAlbumsFetched = async (result) => {
-    console.log("albums fetched");
-
-    // Save albums in global scope
-    global.collectionAlbums = result.items;
-    // Create an album dictionary [{ID_TOME, ID_EDITION}=>index_in_collection]
-    global.collectionAlbumsDict = {};
-    Helpers.createAlbumDict(global.collectionAlbums, global.collectionAlbumsDict);
-
-    /*AsyncStorage.multiSet([
-      [ 'collectionAlbums', JSON.stringify(result.items) ],
-      [ 'collecFetched', (result.error === null) ? 'true' : 'false' ]], ()=>{});*/
-
     setNbTotalAlbums(result.totalItems);
     setCollectionAlbums(result.items);
 
     setErrortext(result.error);
-    setLoading(!result.done);
+    loadingSteps -= (result.done ? 1 : 0);
+    setLoading(loadingSteps != 0);
   }
 
   const onWishlistFetched = (result) => {
-
-    // Create the global structures
-    global.wishlistAlbums = result.items;
-    global.wishlistAlbumsDict = {};
-    Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
-
     setErrortext(result.error);
-    setLoading(false);
+    loadingSteps--;
+    setLoading(loadingSteps != 0);
   }
 
   const onPressItemMode = (selectedIndex) => {
