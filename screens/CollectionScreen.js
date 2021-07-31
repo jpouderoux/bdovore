@@ -250,9 +250,6 @@ function CollectionScreen({ props, navigation }) {
             inputContainerStyle={{ height: 20, backgroundColor: 'lightgrey' }}
             inputStyle={{ fontSize: 12 }}
             cancelButtonTitle='Annuler'
-            onFocus={()=>console.log("tete")}
-            onEndEditing={() => console.log("fini")}
-            onCancel={()=> console.log("cancel")}
           />
         </View>
         {collectionType != 0 ?

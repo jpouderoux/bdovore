@@ -64,7 +64,9 @@ function SerieScreen({ route, navigation }) {
     }
 
     // Sort albums by tome number
-    Helpers.sortByAscendingValue(newdata[2].data);
+    newdata.forEach(entry => {
+      Helpers.sortByAscendingValue(entry.data);
+    });
 
     setSerieAlbums(newdata);
 
@@ -79,19 +81,17 @@ function SerieScreen({ route, navigation }) {
   const keyExtractor = useCallback(({ item }, index) =>
     /*item ? parseInt(item.ID_TOME) : */index);
 
-  let tome = '';
-  if (item.NB_TOME) {
-    tome = item.NB_TOME + ' tome' + Helpers.plural(item.NB_TOME) + '\n\n';
-  }
-
   return (
     <SafeAreaView style={CommonStyles.screenStyle}>
-      <View style={{ margin: 0, alignItems: 'center', flexDirection: 'row', alignContent: "space-between" }}>
-        <Text style={{ marginLeft: 10, width: '33%' }}>
-          {tome}
+      <View style={{ margin: 0, flexDirection: 'row', alignContent: "space-between" }}>
+        <Text style={{ marginTop: 10, marginLeft: 10, width: '33%' }}>
+          {Helpers.pluralWord(item.NB_TOME, 'tome')}{'\n\n'}
           {item.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ flexDirection: 'row', height: 75 }} />
+        <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
+          {item.NB_USER_ALBUM} / {item.NB_ALBUM}{'    '}
+        </Text>
       </View>
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>

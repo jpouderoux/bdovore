@@ -80,30 +80,29 @@ function LoginScreen({ navigation }) {
           {errortext}
         </Text>
       ) : null}
-      {
-        loading ?
-          <View style={{
-            flex: 1,
-            justifyContent: "center",
-            flexDirection: "row",
-            justifyContent: "space-around",
-            padding: 10
-          }}>
-            <ActivityIndicator size="large" color="red" />
-          </View> :
-          <View>
-            <TouchableOpacity
-              style={styles.buttonStyle}
-              onPress={onLoginPress}
-              title="Login">
-              <Text style={styles.buttonTextStyle}>Se connecter</Text>
-            </TouchableOpacity>
-            <LinkText
-              text='Pas encore inscrit ?'
-              url='https://www.bdovore.com/compte/inscription?'
-              style={styles.registerTextStyle} />
-          </View>
-    }
+      {loading ?
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          flexDirection: "row",
+          justifyContent: "space-around",
+          padding: 10
+        }}>
+          <ActivityIndicator size="large" color="red" />
+        </View> :
+        <View>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={onLoginPress}
+            title="Login">
+            <Text style={styles.buttonTextStyle}>Se connecter</Text>
+          </TouchableOpacity>
+          <LinkText
+            text='Pas encore inscrit ?'
+            url='https://www.bdovore.com/compte/inscription?'
+            style={styles.registerTextStyle} />
+        </View>
+      }
     </SafeAreaView>
   );
 }

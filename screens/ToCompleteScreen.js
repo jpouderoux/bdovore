@@ -44,12 +44,17 @@ function ToCompleteScreen({ navigation }) {
     setData(result.items);
     setErrortext(result.error);
     setLoading(result.totalItems != Object.keys(result.items).length);
+
+    if (result.error) {
+      setTimeout(() => { fetchData(); }, 2000);
+    }
   }
 
   const fetchData = async () => {
     setLoading(true);
     setNbAlbums(0);
     setData([]);
+    setErrortext('');
     APIManager.fetchAlbumsManquants({ navigation: navigation }, onDataFetched)
       .then().catch((error) => console.log(error));
   }
@@ -66,7 +71,7 @@ function ToCompleteScreen({ navigation }) {
       <View>
         <View style={{ flexDirection: 'row', marginBottom: 5 }}>
           <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
-            {Helpers.pluralWord(nbAlbums, 'album')}
+            {loading ? '' : Helpers.pluralWord(nbAlbums, 'album')}
           </Text>
           {loading ? <SmallLoadingIndicator /> : null}
         </View>
