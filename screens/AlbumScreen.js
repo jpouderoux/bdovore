@@ -8,6 +8,7 @@ import CommonStyles from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import CollectionManager from '../api/CollectionManager';
 
 function AlbumScreen({ route, navigation }) {
 
@@ -18,7 +19,6 @@ function AlbumScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
 
-  //const item = route.params.item;
   const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
   const auteurs = Helpers.getAuteurs(item);
 
@@ -28,10 +28,10 @@ function AlbumScreen({ route, navigation }) {
 
   const getAlbumEditions = () => {
     setLoading(true);
-    APIManager.fetchAlbumEditions(item.ID_TOME, onAlbumEditionsFetched);
+    CollectionManager.fetchAlbumEditions(item, onAlbumEditionsFetched);
   }
 
-  const onAlbumEditionsFetched = async (result) => {
+  const onAlbumEditionsFetched = (result) => {
     setAlbumEditionsData(result.items);
     setErrortext(result.error);
     setLoading(false);

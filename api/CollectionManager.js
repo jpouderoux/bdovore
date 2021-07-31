@@ -19,19 +19,10 @@ class CCollectionManager {
     global.wishlistAlbumsDict = {};
   }
 
-  async fetchSeries(navigation, callback) {
+  // Fetch all the series within the collection
+  fetchSeries(navigation, callback) {
     console.log("fetching series");
     APIManager.fetchCollectionData('Userserie', { navigation: navigation }, (result) => this.onSeriesFetched(result, callback))
-      .then().catch((error) => console.log(error));
-  }
-
-  async fetchAlbums(navigation, callback) {
-    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, (result) => this.onAlbumsFetched(result, callback))
-      .then().catch((error) => console.log(error));
-  }
-
-  async fetchWishlist(navigation, callback) {
-    APIManager.fetchWishlist({ navigation: navigation }, (result) => this.onWishlistFetched(result, callback))
       .then().catch((error) => console.log(error));
   }
 
@@ -40,6 +31,12 @@ class CCollectionManager {
     console.log("series fetched");
 
     callback(result);
+  }
+
+  // Fetch all the albums within the collection
+  fetchAlbums(navigation, callback) {
+    APIManager.fetchCollectionData('Useralbum', { navigation: navigation }, (result) => this.onAlbumsFetched(result, callback))
+      .then().catch((error) => console.log(error));
   }
 
   onAlbumsFetched(result, callback) {
@@ -59,6 +56,12 @@ class CCollectionManager {
     callback(result);
   }
 
+  // Fetch the wishlist collection
+  fetchWishlist(navigation, callback) {
+    APIManager.fetchWishlist({ navigation: navigation }, (result) => this.onWishlistFetched(result, callback))
+      .then().catch((error) => console.log(error));
+  }
+
   onWishlistFetched(result, callback) {
 
     console.log("wishlist fetched");
@@ -69,6 +72,16 @@ class CCollectionManager {
 
     callback(result);
   }
+
+  // Fetch all editions from a given album
+  fetchAlbumEditions(album, callback) {
+    APIManager.fetchAlbumEditions(album.ID_TOME, (result) => this.onAlbumEditionsFetched(result, callback));
+  }
+
+  onAlbumEditionsFetched(result, callback) {
+    callback(result);
+  }
+
 };
 
 const CollectionManager = new CCollectionManager();

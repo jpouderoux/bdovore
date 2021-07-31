@@ -32,7 +32,8 @@ const CommonStyles = EStyleSheet.create({
     color: 'white',
   },
   albumImageStyle: {
-    margin: 5,
+    marginLeft: 5,
+    marginRight: 5,
     resizeMode: 'cover',
     width: windowWidth / 4,
     height: windowWidth / 4 * (122 / 90), // respect the aspect ratio

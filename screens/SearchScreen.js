@@ -30,7 +30,7 @@ function SearchScreen({ navigation }) {
     }
 
     setLoading(true);
-    switch (searchMode) {
+    switch (parseInt(searchMode)) {
       case 0:
         APIManager.fetchJSON('Serie', null, onSearchFetched, {
           mode: 1,
@@ -67,7 +67,7 @@ function SearchScreen({ navigation }) {
   };
 
   const renderItem = ({ item, index }) => {
-    switch (searchMode) {
+    switch (parseInt(searchMode)) {
       case 0: return SerieItem({ navigation, item, index });
       case 1: return AlbumItem({ navigation, item, index });
       case 2: return AuteurItem({ navigation, item, index });

@@ -89,7 +89,7 @@ function LoginScreen({ navigation }) {
             justifyContent: "space-around",
             padding: 10
           }}>
-            <ActivityIndicator size="large" color="#f00f0f" />
+            <ActivityIndicator size="large" color="red" />
           </View> :
           <View>
             <TouchableOpacity
@@ -118,15 +118,15 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: 'white',
     paddingVertical: 10,
     fontSize: 16,
   },
   buttonStyle: {
-    backgroundColor: '#f00f0f',
+    backgroundColor: 'red',
     borderWidth: 0,
-    color: '#FFFFFF',
-    borderColor: '#a00f0f',
+    color: 'white',
+    borderColor: 'red',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: '#dadae8',
+    borderColor: 'lightgrey',
   },
   registerTextStyle: {
     alignSelf: 'center',
