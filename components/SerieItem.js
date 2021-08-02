@@ -34,7 +34,7 @@ import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
-
+import { RatingStars } from './RatingStars';
 
 export function SerieItem({ navigation, item, index, collectionMode }) {
 
@@ -48,17 +48,7 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
         <CoverImage source={APIManager.getSerieCoverURL(item)} />
         <View style={[CommonStyles.itemTextContent]} >
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
-          {(!collectionMode && item.NOTE_SERIE) ?
-            <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
-              <Rating
-                ratingCount={5}
-                imageSize={20}
-                startingValue={(item.NOTE_SERIE) / 2}
-                tintColor='#fff'
-                readonly={true}
-              />
-            </View>
-            : null}
+          {!collectionMode ? <RatingStars note={item.NOTE_SERIE} /> : null}
           <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
             {item.LIB_FLG_FINI_SERIE}
             </Text>

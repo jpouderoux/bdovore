@@ -35,8 +35,7 @@ import CommonStyles from '../styles/CommonStyles';
 export function LinkText({ text, url, style }) {
 
   return (
-    <Text
-      style={[CommonStyles.linkTextStyle, style]}
+    <Text style={[CommonStyles.linkTextStyle, style]}
       onPress={() => { Linking.openURL(url); }}>
       {text ? text : ''}
     </Text>

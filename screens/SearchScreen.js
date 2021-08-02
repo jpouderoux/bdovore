@@ -60,22 +60,13 @@ function SearchScreen({ navigation }) {
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, onSearchFetched, {
-          mode: 1,
-          term: keywords
-        });
+        APIManager.fetchJSON('Serie', null, onSearchFetched, { term: keywords, mode: 1, });
         break;
       case 1:
-        APIManager.fetchAlbum(onSearchFetched,
-          {
-            term: keywords
-          });
+        APIManager.fetchAlbum(onSearchFetched, { term: keywords });
         break;
       case 2:
-        APIManager.fetchJSON('Auteur', null, onSearchFetched, {
-          mode: 2,
-          term: keywords
-        });
+        APIManager.fetchJSON('Auteur', null, onSearchFetched, { term: keywords, mode: 2, });
         break;
     }
   };

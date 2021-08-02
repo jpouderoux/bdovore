@@ -45,23 +45,18 @@ function WishlistScreen({ navigation }) {
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
     const willFocusSubscription = navigation.addListener('focus', () => {
-      if (!filterByDate) {
-        setFilteredData(null);
-      } else {
-        console.log(global.wishlistAlbums);
-        setFilteredData(Helpers.sliceSortByDate(global.wishlistAlbums));
-      }
+      refreshData();
     });
     return willFocusSubscription;
   }, []);
 
   useEffect(() => {
-    if (!filterByDate) {
-      setFilteredData(null);
-    } else {
-      setFilteredData(Helpers.sliceSortByDate(global.wishlistAlbums));
-    }
+    refreshData();
   }, [filterByDate]);
+
+  const refreshData = () => {
+    setFilteredData(filterByDate ? Helpers.sliceSortByDate(global.wishlistAlbums) : null);
+  }
 
   const renderItem = ({ item, index }) => {
     return AlbumItem({ navigation, item, index });
@@ -89,8 +84,8 @@ function WishlistScreen({ navigation }) {
       </View>
       <FlatList
         style={{ flex: 1 }}
-        maxToRenderPerBatch={20}
-        windowSize={12}
+        maxToRenderPerBatch={6}
+        windowSize={10}
         data={filteredData ? filteredData : global.wishlistAlbums}
         keyExtractor={keyExtractor}
         renderItem={renderItem}

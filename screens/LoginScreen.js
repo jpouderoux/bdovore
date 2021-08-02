@@ -33,6 +33,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
+import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
 function LoginScreen({ navigation }) {
@@ -45,7 +46,8 @@ function LoginScreen({ navigation }) {
   useEffect(() => {
     AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {
       setPseudo(response[0][1]);
-      setPasswd(response[1][1]); }).catch((error) => { console.log(error) });
+      setPasswd(response[1][1]);
+    }).catch((error) => { console.log(error) });
   }, []);
 
   const onLoginPress = () => {
@@ -55,6 +57,8 @@ function LoginScreen({ navigation }) {
 
   const onConnected = (data) => {
     setLoading(false);
+    setErrortext(data.error);
+
     if (data.error == '') {
       AsyncStorage.setItem('token', data.token).then(() => {
         AsyncStorage.multiSet([
@@ -67,7 +71,6 @@ function LoginScreen({ navigation }) {
     }
     else {
       console.log('error on connection: ' + data.error);
-      setErrortext(data.error);
     }
   }
 
@@ -76,49 +79,37 @@ function LoginScreen({ navigation }) {
       <View style={{ margin: 30, alignItems: 'center' }}>
         <Image source={require('../assets/bdovore-167.png')} />
       </View>
-      <View style={{ marginLeft: 20 }}>
-        <Text style={{ alignItems: 'center' }}>Pseudo</Text>
-      </View>
-      <View style={styles.SectionStyle}>
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Pseudo"
-          autoCapitalize="none"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          value={pseudo}
-          onChangeText={(pseudo) => setPseudo(pseudo)}
-        />
-      </View>
-      <View style={{ marginLeft: 20 }}>
-        <Text style={{ alignItems: 'center' }}>Mot de passe</Text>
-      </View>
-      <View style={styles.SectionStyle}>
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Mot de passe"
-          secureTextEntry={true}
-          value={passwd}
-          blurOnSubmit={true}
-          returnKeyType="next"
-          onChangeText={(passwd) => setPasswd(passwd)}
-        />
-      </View>
+      <Text style={{ marginLeft: 20, alignItems: 'center' }}>Pseudo</Text>
+      <TextInput
+        style={styles.SectionStyle, styles.inputStyle}
+        placeholder="Pseudo"
+        autoCapitalize="none"
+        returnKeyType="next"
+        blurOnSubmit={false}
+        value={pseudo}
+        onChangeText={(pseudo) => setPseudo(pseudo)}
+      />
+      <Text style={{ marginLeft: 20, alignItems: 'center' }}>Mot de passe</Text>
+      <TextInput
+        style={styles.SectionStyle, styles.inputStyle}
+        placeholder="Mot de passe"
+        secureTextEntry={true}
+        value={passwd}
+        blurOnSubmit={true}
+        returnKeyType="next"
+        onChangeText={(passwd) => setPasswd(passwd)}
+      />
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
         </Text>
       ) : null}
       {loading ?
-        <View style={{
-          flex: 1,
-          justifyContent: "center",
+        <SmallLoadingIndicator style={{
           flexDirection: "row",
           justifyContent: "space-around",
           padding: 10
-        }}>
-          <ActivityIndicator size="large" color="red" />
-        </View> :
+        }} /> :
         <View>
           <TouchableOpacity
             style={styles.buttonStyle}

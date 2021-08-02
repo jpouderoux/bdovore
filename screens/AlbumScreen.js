@@ -28,7 +28,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { BottomSheet, ListItem, Rating } from 'react-native-elements';
+import { BottomSheet, ListItem } from 'react-native-elements';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -36,6 +36,7 @@ import CommonStyles from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import { RatingStars } from '../components/RatingStars';
 import CollectionManager from '../api/CollectionManager';
 
 
@@ -49,7 +50,6 @@ function AlbumScreen({ route, navigation }) {
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
 
   const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
-  const auteurs = Helpers.getAuteurs(item);
 
   useEffect(() => {
     getAlbumEditions();
@@ -67,7 +67,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onShowEditionsChooser = () => {
-    setShowEditionsChooser(true);
+    setShowEditionsChooser(albumEditionsData.length > 1);
   }
 
   const onChooseEdition = (index) => {
@@ -75,8 +75,6 @@ function AlbumScreen({ route, navigation }) {
     setEditionIndex(index);
     setItem(albumEditionsData[index]);
   }
-
-  //console.log("show album " + item.ID_TOME);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -86,17 +84,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-          {(item.MOYENNE_NOTE_TOME) !== null ?
-            <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
-              <Rating
-                ratingCount={5}
-                imageSize={20}
-                startingValue={(item.MOYENNE_NOTE_TOME) / 2}
-                tintColor={'#fff'}
-                readonly={true}
-              />
-            </View>
-            : null}
+          <RatingStars note={item.MOYENNE_NOTE_TOME} />
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, {color: 'white'} ]}>Collection</Text>
@@ -105,9 +93,10 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View>
           <Text style={CommonStyles.largerText}>{item.NOM_SERIE}</Text>
-          <Text>Auteurs : {auteurs}</Text>
+          <Text>Auteurs : {Helpers.getAuteurs(item)}</Text>
           <Text>Genre : {item.NOM_GENRE}</Text>
-          <View style={{ flexDirection: 'row' }}><Text>Editions : </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text>Editions : </Text>
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">

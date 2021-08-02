@@ -30,10 +30,10 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 
-export function SmallLoadingIndicator() {
+export function SmallLoadingIndicator({ style }) {
 
   return (
-    <View style={{ ustifyContent: 'center' }}>
+    <View style={[{ justifyContent: 'center' }, style]}>
       <ActivityIndicator size="large" color="red" />
     </View>
   );

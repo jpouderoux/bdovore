@@ -178,7 +178,7 @@ function NewsScreen({ navigation }) {
         ) : null}
         {loading ? <SmallLoadingIndicator/> : null}
         <SectionList
-          maxToRenderPerBatch={8}
+          maxToRenderPerBatch={6}
           windowSize={10}
           ItemSeparatorComponent={Helpers.renderSeparator}
           sections={[filteredUserNewsDataArray, filteredUserNewsToComeDataArray, newsDataArray].filter(s => s.data.length > 0)}
