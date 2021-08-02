@@ -13,10 +13,13 @@ This project aims to provide a free and opensource new mobile application for bo
 
 ## Dependencies
 
- - Node.js
- - react-native & extensions
  - Android or iOS SDK
-
+ - Node.js
+ - react-native
+ - react-native-community
+ - react-native-elements
+ - react-native-extended-stylesheet
+ - react-native-vector-icons
 ## Build
 
 

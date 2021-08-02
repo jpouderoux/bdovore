@@ -1,5 +1,33 @@
+/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 
@@ -24,7 +52,7 @@ function CollectionScreen({ props, navigation }) {
   const [filteredAlbums, setFilteredAlbums] = useState(null);
   const [filteredSeries, setFilteredSeries] = useState(null);
   const [filterMode, setFilterMode] = useState(0);
-  const [collectionType, setCollectionType] = useState(0);
+  const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
@@ -33,8 +61,14 @@ function CollectionScreen({ props, navigation }) {
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(0);
+
   let loadingSteps = 0;
   let [cachedToken, setCachedToken] = useState('');
+
+  const collectionTypes = {
+    0: 'série',
+    1: 'album',
+  }
 
   const collectionGenres = {
     0: ['Tout', ''],
@@ -97,7 +131,46 @@ function CollectionScreen({ props, navigation }) {
       title: ('Ma collection' + (collectionGenre > 0 ? (' - ' + collectionGenres[collectionGenre][0]) : '')),
     });
     applyFilters();
-  }, [collectionGenre, collectionType, filterMode, sortMode, keywords]);
+  }, [collectionGenre]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [collectionType, filterMode, sortMode, keywords]);
+
+  const filterCollection = (collection, mode) => {
+
+    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(keywords);
+
+    const isInCurrentCollectionGenre = (item) =>
+      (collectionGenre == 0) ||
+      (collectionGenre == 1 && item.ORIGINE === 'BD') ||
+      (collectionGenre == 2 && item.ORIGINE === 'Mangas') ||
+      (collectionGenre == 3 && item.ORIGINE === 'Comics');
+
+    return collection.filter((item) => {
+      // Check if album/serie is in currently selection collection genre (All/BD/Mangas/Comics)
+      if (!isInCurrentCollectionGenre(item)) {
+        return false;
+      }
+      // Search for keywords if provided
+      if (keywords != '') {
+        // search text in lowercase title without taking accents
+        let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
+        if (title && !Helpers.lowerCaseNoAccentuatedChars(title).includes(lowerSearchText)) {
+          return false;
+        }
+      }
+      // For albums, check the status of selected flag
+      if (mode === 1) {
+        switch (parseInt(filterMode)) {
+          case 1: return item.FLG_LU != 'N';
+          case 2: return item.FLG_PRET == 'O';
+          case 3: return item.FLG_NUM == 'O';
+        }
+      }
+      return true;
+    });
+  }
 
   const applyFilters = () => {
 
@@ -107,45 +180,9 @@ function CollectionScreen({ props, navigation }) {
       return;
     }
 
-    const isInCurrentCollectionGenre = (item) =>
-      (collectionGenre == 0) ||
-      (collectionGenre == 1 && item.origine === 'BD') ||
-      (collectionGenre == 2 && item.origine === 'Mangas') ||
-      (collectionGenre == 3 && item.origine === 'Comics');
-
-    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(keywords);
-
-    for (let mode = 0; mode < 2; mode++) {
-
-      let data = (mode == 0) ? collectionSeries : collectionAlbums;
-
-      let filteredData = data.filter((item) => {
-        if (!isInCurrentCollectionGenre(item)) {
-          return false;
-        }
-        if (keywords != '') {
-          // search text in lowercase title without taking accents
-          let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
-          if (title && !Helpers.lowerCaseNoAccentuatedChars(title).includes(lowerSearchText)) {
-            return false;
-          }
-        }
-        if (mode === 1) {
-          switch (parseInt(filterMode)) {
-            case 1: return item.FLG_LU != 'N';
-            case 2: return item.FLG_PRET != 'N';
-            case 3: return item.FLG_NUM != 'N';
-          }
-        }
-        return true;
-      });
-
-      if (mode == 0) {
-        setFilteredSeries(filteredData);
-      } else {
-        setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredData) : filteredData);
-      }
-    }
+    setFilteredSeries(filterCollection(collectionSeries, 0));
+    const filteredAlbums = filterCollection(collectionAlbums, 1);
+    setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
   }
 
   const fetchData = () => {
@@ -157,19 +194,23 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const onSeriesFetched = async (result) => {
+    setErrortext(result.error);
     setNbTotalSeries(result.totalItems);
     setCollectionSeries(result.items);
 
-    setErrortext(result.error);
+    applyFilters();
+
     loadingSteps -= (result.done ? 1 : 0);
     setLoading(loadingSteps != 0);
   }
 
   const onAlbumsFetched = async (result) => {
+    setErrortext(result.error);
     setNbTotalAlbums(result.totalItems);
     setCollectionAlbums(result.items);
 
-    setErrortext(result.error);
+    applyFilters();
+
     loadingSteps -= (result.done ? 1 : 0);
     setLoading(loadingSteps != 0);
   }
@@ -181,7 +222,7 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const onPressCollectionType = (selectedIndex) => {
-    setCollectionType(selectedIndex);
+    setCollectionType(parseInt(selectedIndex));
   };
 
   const onCollectionGenrePress = () => {
@@ -189,26 +230,22 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const onFilterModePress = () => {
-    if (collectionType == 1) {
-      setShowFilterChooser(true);
-    }
+    setShowFilterChooser(true);
   }
 
   const onSortModePress = () => {
-    if (collectionType == 1) {
-      setShowSortChooser(true);
-    }
-  }
-
-  const renderItem = ({ item, index }) => {
-    switch (parseInt(collectionType)) {
-      case 0: return SerieItem({ navigation, item, index, collectionGenre: true });
-      case 1: return AlbumItem({ navigation, item, index, collectionGenre: true });
-    }
+    setShowSortChooser(true);
   }
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
+  }
+
+  const renderItem = ({ item, index }) => {
+    switch (parseInt(collectionType)) {
+      case 0: return SerieItem({ navigation, item, index, collectionMode: true });
+      case 1: return AlbumItem({ navigation, item, index, collectionMode: true });
+    }
   }
 
   const keyExtractor = useCallback((item, index) =>
@@ -237,12 +274,12 @@ function CollectionScreen({ props, navigation }) {
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
-      <View style={{ flexDirection: 'row', flex:0 }}>
-        <View style={{ flex: 0 }}>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1 }}>
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
               filterModesSearch[filterMode] :
-              'Rechercher dans mes ' + (collectionType == 0 ? 'séries' : 'albums') + collectionGenres[collectionGenre][1] + '...'}
+              'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
             onChangeText={onSearchChanged}
             value={keywords}
             platform='ios'
@@ -253,13 +290,13 @@ function CollectionScreen({ props, navigation }) {
             cancelButtonTitle='Annuler'
           />
         </View>
-        {collectionType != 0 ?
-          <View style={{ flexDirection: 'row' }}>
+        {collectionType == 1 ?
+          <View style={{ flexDirection: 'row', flex: 0 }}>
             <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8 }}>
               <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
             </TouchableOpacity>
             <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
-              <Icon name='sort-variant' size={25} color={sortMode == 0 ? '#222' : 'dodgerblue'}  />
+              <Icon name='sort-variant' size={25} color={sortMode == 0 ? '#222' : 'dodgerblue'} />
             </TouchableOpacity>
           </View> : null}
       </View>

@@ -6,6 +6,6 @@
                 android:background="#ffffff">
   <ImageView android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:src="@drawable/ic_splash"
-             android:scaleType="fitCenter" />
+             android:src="@drawable/bdo_fond_blanc"
+             />
 </RelativeLayout>
