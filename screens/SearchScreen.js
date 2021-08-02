@@ -47,6 +47,14 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
+  const [refresh, setRefresh] = useState(1);
+
+  useEffect(() => {
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      setRefresh(refresh + 1);
+    });
+    return willFocusSubscription;
+  }, []);
 
   useEffect(() => {
     onSearch();
@@ -147,6 +155,7 @@ function SearchScreen({ navigation }) {
             keyExtractor={({ id }, index) => index}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
+            extraData={refresh}
           />)}
       </View>
     </View>

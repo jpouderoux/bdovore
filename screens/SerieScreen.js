@@ -41,13 +41,17 @@ import { LoadingIndicator } from '../components/LoadingIndicator';
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
-  const [item, setItem] = useState(route.params.item);
+  const [serie, setSerie] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
+  const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
 
   const refreshDataIfNeeded = async () => {
-    console.log("refresh data wishlist");
-    fetchData();
+    console.log("refresh data serie " + serie.ID_SERIE);
+    if (!serieAlbumsLoaded) {
+      setSerieAlbumsLoaded(true);
+      fetchData();
+    }
   }
 
   useEffect(() => {
@@ -58,7 +62,7 @@ function SerieScreen({ route, navigation }) {
     setLoading(true);
     setErrortext('');
     setSerieAlbums([]);
-    APIManager.fetchSerieAlbums(item.ID_SERIE, {}, onSerieAlbumsFetched);
+    APIManager.fetchSerieAlbums(serie.ID_SERIE, {}, onSerieAlbumsFetched);
   }
 
   const onSerieAlbumsFetched = async (result) => {
@@ -74,21 +78,21 @@ function SerieScreen({ route, navigation }) {
     // Sort albums by type
     for (let i = 0; i < result.items.length; i++) {
       let section = 0;
-      const item = result.items[i];
-      if (item.FLG_TYPE_TOME == 1) {
+      const serie = result.items[i];
+      if (serie.FLG_TYPE_TOME == 1) {
         section = 1; // Coffret
       } else {
-        if (item.FLG_INT_TOME == 'O') {
+        if (serie.FLG_INT_TOME == 'O') {
           section = 0; // Intégrale
         } else {
-          if (item.TITRE_TOME.endsWith('TL') || item.TITRE_TOME.endsWith('TT')) {
+          if (serie.TITRE_TOME.endsWith('TL') || serie.TITRE_TOME.endsWith('TT')) {
             section = 3; // Edition spéciale
           } else {
             section = 2; // Album
           }
         }
       }
-      newdata[section].data.push(item);
+      newdata[section].data.push(serie);
     }
 
     // Sort albums by tome number
@@ -106,19 +110,18 @@ function SerieScreen({ route, navigation }) {
     return AlbumItem({ navigation, item, index });
   }
 
-  const keyExtractor = useCallback(({ item }, index) =>
-    /*item ? parseInt(item.ID_TOME) : */index);
+  const keyExtractor = useCallback(({ item }, index) => index);
 
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ margin: 0, flexDirection: 'row', alignContent: "space-between" }}>
         <Text style={{ marginTop: 10, marginLeft: 10, width: '33%' }}>
-          {Helpers.pluralWord(item.NB_TOME, 'tome')}{'\n\n'}
-          {item.LIB_FLG_FINI_SERIE}
+          {Helpers.pluralWord(serie.NB_TOME, 'tome')}{'\n\n'}
+          {serie.LIB_FLG_FINI_SERIE}
         </Text>
-        <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ flexDirection: 'row', height: 75 }} />
+        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} />
         <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
-          {item.NB_USER_ALBUM} / {item.NB_ALBUM}{'    '}
+          {serie.NB_USER_ALBUM} / {serie.NB_ALBUM}{'    '}
         </Text>
       </View>
       {errortext != '' ? (

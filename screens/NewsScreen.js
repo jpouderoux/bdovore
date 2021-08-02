@@ -66,6 +66,7 @@ function NewsScreen({ navigation }) {
   const [newsMode, setNewsMode] = useState(0);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
+  const [refresh, setRefresh] = useState(1);
   let [cachedToken, setCachedToken] = useState('');
 
   Helpers.checkForToken(navigation);
@@ -84,12 +85,18 @@ function NewsScreen({ navigation }) {
 
   useEffect(() => {
     refreshDataIfNeeded();
-    // Make sure data is refreshed when login/token changed
+  }, [cachedToken]);
+
+  useEffect(() => {
     const willFocusSubscription = navigation.addListener('focus', () => {
+      console.log(new Date().getTime());
+      setRefresh(new Date().getTime());
+      console.log(refresh);
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, [cachedToken]);
+  }, []);
+
 
   useEffect(() => {
     // Filter the user news according the current news mode
@@ -187,6 +194,7 @@ function NewsScreen({ navigation }) {
           renderSectionHeader={({ section }) => (
             <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
+          extraData={refresh}
         />
       </View>
     </View>

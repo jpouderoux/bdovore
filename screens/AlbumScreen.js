@@ -44,6 +44,7 @@ function AlbumScreen({ route, navigation }) {
 
   const [albumEditionsData, setAlbumEditionsData] = useState([]);
   const [editionIndex, setEditionIndex] = useState(0);
+  const [editionsLoaded, setEditionsLoaded] = useState(false);
   const [errortext, setErrortext] = useState('');
   const [item, setItem] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
@@ -56,8 +57,11 @@ function AlbumScreen({ route, navigation }) {
   }, []);
 
   const getAlbumEditions = () => {
-    setLoading(true);
-    CollectionManager.fetchAlbumEditions(item, onAlbumEditionsFetched);
+    if (!editionsLoaded) {
+      setLoading(true);
+      setEditionsLoaded(true);
+      CollectionManager.fetchAlbumEditions(item, onAlbumEditionsFetched);
+    }
   }
 
   const onAlbumEditionsFetched = (result) => {
@@ -75,6 +79,13 @@ function AlbumScreen({ route, navigation }) {
     setEditionIndex(index);
     setItem(albumEditionsData[index]);
   }
+
+  const foo = (array) => {
+    array = array.splice(1, 1);
+  }
+  let array = [ "toto", "tata", "tete" ];
+  foo(array);
+  console.log(array);
 
   return (
     <View style={CommonStyles.screenStyle}>

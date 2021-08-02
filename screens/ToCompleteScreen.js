@@ -44,6 +44,7 @@ function ToCompleteScreen({ navigation }) {
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [nbAlbums, setNbAlbums] = useState(0);
+  const [refresh, setRefresh] = useState(1);
   let [cachedToken, setCachedToken] = useState('');
 
   Helpers.checkForToken(navigation);
@@ -63,6 +64,8 @@ function ToCompleteScreen({ navigation }) {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
+      setRefresh(new Date().getTime());
+      console.log("refresh");
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
@@ -116,6 +119,7 @@ function ToCompleteScreen({ navigation }) {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}
+        extraData={refresh}
       />
     </View>
   )

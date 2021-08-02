@@ -96,8 +96,6 @@ export function stripEmptySections(data) {
 }
 
 export function stripNewsByOrigin(data, origine) {
-  console.log("data to filter by " + origine)
-  console.log(data);
   return data.filter(item => (item.ORIGINE == origine));
 }
 
