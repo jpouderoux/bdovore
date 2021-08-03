@@ -260,11 +260,11 @@ function CollectionScreen({ props, navigation }) {
           buttons={[
             {
               element: () => <Text>
-                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : nbTotalSeries, 'série')}</Text>
+                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
             },
             {
               element: () => <Text>
-                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : nbTotalAlbums, 'album')}</Text>
+                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
             }]}
           containerStyle={{ height: 30, flex: 1, borderRadius: 10, backgroundColor: 'lightgrey' }}
           buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}

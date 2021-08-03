@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Share, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -49,32 +49,53 @@ const Tab = createBottomTabNavigator();
 
 const CollectionStack = createStackNavigator();
 
+
+const accountButton = (navigation) => {
+  return (
+    <TouchableOpacity onPress={() => onAccountPress(navigation)} style={{ margin: 8 }}>
+      <MaterialCommunityIcons name='account-circle-outline' size={25} color='#222' />
+    </TouchableOpacity>
+  );
+}
+
+const onAccountPress = () => {
+  navigation.navigate('Login');
+};
+
+const shareButton = (item) => {
+  return (
+    <TouchableOpacity onPress={() => onSharePress(item)} style={{ margin: 8 }}>
+      <MaterialCommunityIcons name='share-variant' size={25} color='#222' />
+    </TouchableOpacity>
+  );
+}
+
+const onSharePress = async (item) => {
+  console.log("share");
+  Share.share({
+    message: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME,
+    url: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME
+    ,
+  });
+}
+
 function CollectionScreens({navigation}) {
-
-  const onAccountPress = () => {
-    navigation.navigate('Login');
-  };
-
-  const accountButton = () => {
-    return (
-      <TouchableOpacity onPress={onAccountPress} style={{ margin: 8 }}>
-        <MaterialCommunityIcons name='account-circle-outline' size={25} color='#222' />
-      </TouchableOpacity>
-    );
-  }
 
   return (
     <CollectionStack.Navigator>
       <CollectionStack.Screen name='Ma collection'
       component={CollectionScreen}
         options={({route}) => ({
-          headerLeft: accountButton
+          headerLeft: () => accountButton(navigation)
         })} />
       <CollectionStack.Screen name='Login' component={LoginScreen} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
     </CollectionStack.Navigator>
   );
 }
@@ -86,7 +107,10 @@ function WishlistScreens({ navigation }) {
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
     </CollectionStack.Navigator>
   );
 }
@@ -98,7 +122,10 @@ function ToCompleteScreens({ navigation }) {
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
     </CollectionStack.Navigator>
   );
 }
@@ -108,7 +135,10 @@ function NewsScreens({ navigation }) {
     <CollectionStack.Navigator>
       <CollectionStack.Screen name='Actualité' component={NewsScreen} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
     </CollectionStack.Navigator>
   );
 }
@@ -120,7 +150,10 @@ function SearchScreens({ navigation }) {
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({ title: route.params.item.TITRE_TOME })} />
+      options={({ route }) => ({
+        title: route.params.item.TITRE_TOME,
+        headerRight: () => shareButton(route.params.item)
+      })} />
       <CollectionStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </CollectionStack.Navigator>

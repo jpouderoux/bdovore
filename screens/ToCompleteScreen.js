@@ -64,7 +64,7 @@ function ToCompleteScreen({ navigation }) {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(new Date().getTime());
+      setRefresh(refresh + 1);
       console.log("refresh");
       refreshDataIfNeeded();
     });
@@ -119,7 +119,7 @@ function ToCompleteScreen({ navigation }) {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}
-        extraData={refresh}
+        extraData={useState()}
       />
     </View>
   )

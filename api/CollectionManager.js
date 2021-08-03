@@ -56,6 +56,7 @@ class CCollectionManager {
   onSeriesFetched(result, callback) {
 
     console.log("series fetched");
+    global.collectionSeries = result.items;
 
     callback(result);
   }
@@ -110,6 +111,10 @@ class CCollectionManager {
 
   onAlbumEditionsFetched(result, callback) {
     callback(result);
+  }
+
+  getAlbunInCollection(album) {
+
   }
 
 };

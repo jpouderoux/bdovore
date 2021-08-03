@@ -27,7 +27,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image,  ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem } from 'react-native-elements';
 
 import * as APIManager from '../api/APIManager';
@@ -80,13 +80,6 @@ function AlbumScreen({ route, navigation }) {
     setItem(albumEditionsData[index]);
   }
 
-  const foo = (array) => {
-    array = array.splice(1, 1);
-  }
-  let array = [ "toto", "tata", "tete" ];
-  foo(array);
-  console.log(array);
-
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{  margin: 10 }}>
@@ -104,10 +97,10 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View>
           <Text style={CommonStyles.largerText}>{item.NOM_SERIE}</Text>
-          <Text>Auteurs : {Helpers.getAuteurs(item)}</Text>
+          <Text>Auteur(s) : {Helpers.getAuteurs(item)}</Text>
           <Text>Genre : {item.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text>Editions : </Text>
+            <Text>Edition(s) : </Text>
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">
