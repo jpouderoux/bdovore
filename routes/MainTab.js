@@ -38,6 +38,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
 import CollectionScreen from '../screens/CollectionScreen';
+import UserCommentScreen from '../screens/UserCommentScreen'
+import CommentsScreen from '../screens/CommentsScreen'
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -79,12 +81,12 @@ const onSharePress = async (item) => {
   });
 }
 
-function CollectionScreens({navigation}) {
+function CollectionScreens({ route, navigation }) {
 
   return (
     <CollectionStack.Navigator>
       <CollectionStack.Screen name='Ma collection'
-      component={CollectionScreen}
+        component={CollectionScreen}
         options={({route}) => ({
           headerLeft: () => accountButton(navigation)
         })} />
@@ -96,6 +98,10 @@ function CollectionScreens({navigation}) {
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={({ route }) => ({ title: 'Mon commentaire' })} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({ title: 'Commentaires' })} />
     </CollectionStack.Navigator>
   );
 }
@@ -111,6 +117,10 @@ function WishlistScreens({ navigation }) {
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={({ route }) => ({ title: 'Mon commentaire' })} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({ title: 'Commentaires' })} />
     </CollectionStack.Navigator>
   );
 }
@@ -126,6 +136,10 @@ function ToCompleteScreens({ navigation }) {
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={({ route }) => ({ title: 'Mon commentaire' })} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({ title: 'Commentaires' })} />
     </CollectionStack.Navigator>
   );
 }
@@ -139,6 +153,10 @@ function NewsScreens({ navigation }) {
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={({ route }) => ({ title: 'Mon commentaire' })} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({ title: 'Commentaires' })} />
     </CollectionStack.Navigator>
   );
 }
@@ -150,10 +168,14 @@ function SearchScreens({ navigation }) {
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
-      options={({ route }) => ({
-        title: route.params.item.TITRE_TOME,
-        headerRight: () => shareButton(route.params.item)
-      })} />
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={({ route }) => ({ title: 'Mon commentaire' })} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({ title: 'Commentaires' })} />
       <CollectionStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </CollectionStack.Navigator>

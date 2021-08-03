@@ -27,8 +27,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Image,  ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem } from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -38,6 +39,7 @@ import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 import CollectionManager from '../api/CollectionManager';
+import { CoverImage } from '../components/CoverImage';
 
 
 function AlbumScreen({ route, navigation }) {
@@ -46,11 +48,14 @@ function AlbumScreen({ route, navigation }) {
   const [editionIndex, setEditionIndex] = useState(0);
   const [editionsLoaded, setEditionsLoaded] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [item, setItem] = useState(route.params.item);
+  const [album, setAlbum] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
+  const [similAlbums, setSimilAlbums] = useState([]);
+  const [comments, setComments] = useState([]);
 
-  const tome = ((item.NUM_TOME !== null) ? 'T' + item.NUM_TOME + ' - ': '') + item.TITRE_TOME;
+
+  const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
     getAlbumEditions();
@@ -60,12 +65,27 @@ function AlbumScreen({ route, navigation }) {
     if (!editionsLoaded) {
       setLoading(true);
       setEditionsLoaded(true);
-      CollectionManager.fetchAlbumEditions(item, onAlbumEditionsFetched);
+      setSimilAlbums([]);
+      CollectionManager.fetchAlbumEditions(album, onAlbumEditionsFetched);
+      APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
+      APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
     }
   }
 
   const onAlbumEditionsFetched = (result) => {
     setAlbumEditionsData(result.items);
+    setErrortext(result.error);
+    setLoading(false);
+  }
+
+  const onSimilFetched = (result) => {
+    setSimilAlbums(result.items);
+    setErrortext(result.error);
+    setLoading(false);
+  }
+
+  const onCommentsFetched = (result) => {
+    setComments(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
@@ -77,40 +97,76 @@ function AlbumScreen({ route, navigation }) {
   const onChooseEdition = (index) => {
     setShowEditionsChooser(false);
     setEditionIndex(index);
-    setItem(albumEditionsData[index]);
+    setAlbum(albumEditionsData[index]);
+  }
+
+  const onSimilPress = (item) => {
+    navigation.push('Album', { item });
+  }
+
+  const onUserComment = async () => {
+    AsyncStorage.getItem('pseudo').then(pseudo => {
+      let comment = '';
+      let rate = 5;
+      comments.forEach(entry => {
+        if (entry.username == pseudo) {
+          //console.log('Found user comment ! ' + comment.COMMENT);
+          comment = entry.COMMENT;
+          rate = entry.NOTE;
+        }
+      });
+      navigation.push('UserComment', { album, rate, comment });
+    }).catch(error => { });
+  }
+
+  const renderSimil = ({ item, index }) => {
+    return (
+      <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
+        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+      </TouchableOpacity>);
   }
 
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{  margin: 10 }}>
         <View style={{ margin: 10, alignItems: 'center' }}>
-          <Image source={{ uri: APIManager.getAlbumCoverURL(item) }} style={CommonStyles.fullAlbumImageStyle} />
+          <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-          <RatingStars note={item.MOYENNE_NOTE_TOME} />
+          <RatingStars note={album.MOYENNE_NOTE_TOME} />
+          {comments.length > 0 ?
+            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+              onPress={() => { navigation.push('Comments', { comments }); }}>
+              Lire les avis
+            </Text> : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, {color: 'white'} ]}>Collection</Text>
-          <CollectionMarkers item={item} />
+          <CollectionMarkers item={album} />
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' } ]}>Info Album</Text>
         </View>
         <View>
-          <Text style={CommonStyles.largerText}>{item.NOM_SERIE}</Text>
-          <Text>Auteur(s) : {Helpers.getAuteurs(item)}</Text>
-          <Text>Genre : {item.NOM_GENRE}</Text>
+          <Text style={CommonStyles.largerText}>{album.NOM_SERIE}</Text>
+          <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
+          <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text>Edition(s) : </Text>
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">
               <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: 'lightgrey'}}>
-                {' '}{item.NOM_EDITION}{' '}
+                {' '}{album.NOM_EDITION}{' '}
               </Text>
             </TouchableOpacity>
           </View>
-          <AchatSponsorIcon item={item} />
-          <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(item.HISTOIRE_TOME)}</Text>
+          <AchatSponsorIcon album={album} />
+          <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+          {CollectionManager.isAlbumInCollection(album) ?
+          <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10  }]}
+            onPress={onUserComment}>
+            Noter / commenter cet album
+          </Text> : null}
         </View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -118,6 +174,19 @@ function AlbumScreen({ route, navigation }) {
           </Text>
         ) : null}
         {loading ? LoadingIndicator() : null}
+        {similAlbums.length > 0 ?
+        <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white', marginBottom: 10 }]}>A voir aussi</Text>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            legacyImplementation={false}
+            data={similAlbums}
+            renderItem={renderSimil}
+            keyExtractor={({ item }, index) => index}
+            style={{ height: 120 }}
+          />
+        </View> : null}
 
 
         {/* Editions chooser */}
@@ -139,7 +208,7 @@ function AlbumScreen({ route, navigation }) {
               <ListItem.Content>
                 <ListItem.Title style={
                   (index == editionIndex ? { color: 'white' } : { color: 'dodgerblue' })}>
-                  {item.NOM_EDITION}
+                  {album.NOM_EDITION}
                 </ListItem.Title>
               </ListItem.Content>
             </ListItem>

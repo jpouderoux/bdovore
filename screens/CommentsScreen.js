@@ -26,28 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { Image, Linking, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, Text, View } from 'react-native'
 
+import * as Helpers from '../api/Helpers';
 import CommonStyles from '../styles/CommonStyles';
+import { RatingStars } from '../components/RatingStars';
 
-export function AchatSponsorIcon({ album }) {
+
+function CommentsScreen({ route, navigation }) {
+
+  const [comments, setComments] = useState(route.params.comments);
+
+  const renderComment = ({ index, item }) => {
     return (
-      <View style={{ flexDirection: 'row' }}>
-        {album.EAN_EDITION ? <TouchableOpacity
-          onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ean=' + album.EAN_EDITION + "&ref=295"); }}
-          title="Acheter sur BDFugue"
-          style={{ marginTop: 5 }}>
-          <Image source={require('../assets/bdfugue.png')} style={CommonStyles.bdfugueIcon} />
-        </TouchableOpacity> : null}
-        <TouchableOpacity
-          onPress={() => { Linking.openURL(album.ISBN_EDITION ?
-            ('https://www.amazon.fr/exec/obidos/ASIN/' + album.ISBN_EDITION + "/bdovorecom-21/") :
-            encodeURI('https://www.amazon.fr/exec/obidos/external-search?tag=bdovorecom-21&mode=books-fr&keyword=' + album.TITRE_TOME)); }}
-          title="Acheter sur Amazon"
-          style={{ marginTop: 5 }}>
-          <Image source={require('../assets/amazon.jpg')} style={CommonStyles.amazonIcon} />
-        </TouchableOpacity>
-    </View>);
+      item.NOTE > 0 ?
+        <View style={{ margin: 10 }}>
+          <RatingStars note={item.NOTE} />
+          <Text style={{ color: 'lightgrey', position: 'absolute', right: 10 }}>{item.username}</Text>
+          <Text>{item.COMMENT}</Text>
+        </View> : null);
+  }
+
+  return (
+    <View style={CommonStyles.screenStyle}>
+      <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
+        <FlatList
+          legacyImplementation={false}
+          data={comments}
+          renderItem={renderComment}
+          keyExtractor={({ item }, index) => index}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+          style={{ width: '100%' }}
+        />
+      </View>
+    </View>
+  );
 }
 
+export default CommentsScreen;

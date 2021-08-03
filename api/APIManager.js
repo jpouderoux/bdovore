@@ -244,6 +244,57 @@ export async function fetchWishlist(context, callback, params = {}) {
   }, ...params});
 };
 
+export async function fetchSimilAlbums(id_tome, callback) {
+  const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });
+
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      callback({ error: '', items: json, nbItems: Object.keys(json).length,});
+    })
+    .catch((error) => {
+      console.log('==> error : ' + error.toString())
+      callback({ error: error.toString(), items: [], nbItems: 0 });
+    });
+}
+
+export async function fetchAlbumComments(id_tome, callback) {
+  const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', { id_tome: id_tome, });
+
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      callback({ error: '', items: json, nbItems: Object.keys(json).length, });
+    })
+    .catch((error) => {
+      console.log('==> error : ' + error.toString())
+      callback({ error: error.toString(), items: [], nbItems: 0 });
+    });
+}
+
+export async function sendAlbumComment(id_tome, callback, note = 0, comment = '') {
+
+  let token = await checkForToken();
+  const url = concatParamsToURL(bdovoreBaseURL + '/albumcomment/writecomment' + '?API_TOKEN=' + encodeURI(token),
+     {
+       id_tome: id_tome,
+       note: note,
+       comment: comment
+     });
+
+  console.log(url);
+  fetch(url)
+    .then((response) => {
+      callback({ error: (response.status != '200') });
+    })
+    .catch((error) => {
+      console.log('==> error : ' + error.toString())
+      callback({ error: error.toString() });
+    });
+}
+
 export async function fetchAlbum(callback, params = {}) {
 
   fetchJSON('Album', null, callback, {...{
@@ -271,7 +322,7 @@ export async function updateAlbumInCollection(id_tome, callback, params = {}) {
   console.log(url);
   fetch(url)
     .then((response) => {
-      callback({ error: (response.status == '200') });
+      callback({ error: (response.status != '200') });
     })
     .catch((error) => {
       console.log('==> error : ' + error.toString())
@@ -291,7 +342,7 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
   console.log(url);
   fetch(url)
     .then((response) => {
-      callback({ error: (response.status == '200') });
+      callback({ error: (response.status != '200') });
     })
     .catch((error) => {
       console.log(' ==> ' + error.toString());

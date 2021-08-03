@@ -31,16 +31,18 @@ import { View } from 'react-native';
 import { Rating } from 'react-native-elements';
 
 
-export function RatingStars({ note }) {
+export function RatingStars({ note, editable, callback }) {
 
   return ((note && note > 0) ?
     <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
       <Rating
+        fractions={1}
         ratingCount={5}
         imageSize={20}
-        startingValue={note / 2}
+        startingValue={note / 2.}
         tintColor='#fff'
-        readonly={true}
+        readonly={editable ? false : true}
+        onFinishRating={callback ? callback : (rate)=>{}}
       />
     </View> : null);
 }

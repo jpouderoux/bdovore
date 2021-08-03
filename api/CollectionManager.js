@@ -117,6 +117,14 @@ class CCollectionManager {
 
   }
 
+  isAlbumInCollection(album) {
+    return Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict) >= 0;
+  }
+
+  isAlbumInWishlist(album) {
+    return Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict) >= 0;
+  }
+
 };
 
 const CollectionManager = new CCollectionManager();
