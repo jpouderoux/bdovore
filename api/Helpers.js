@@ -162,3 +162,7 @@ export function getAuteurs(album) {
   });
   return auteursArray.join(' / ');
 }
+
+export function makeSection(title = '', data = []) {
+  return { title: title, data: data };
+}

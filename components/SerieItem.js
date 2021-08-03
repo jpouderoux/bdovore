@@ -28,7 +28,6 @@
 
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-elements';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
@@ -45,17 +44,22 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
-        <CoverImage source={APIManager.getSerieCoverURL(item)} />
+        <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ height: item.nb_album ? 90 : 122 }} />
         <View style={[CommonStyles.itemTextContent]} >
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
-          {!collectionMode ? <RatingStars note={item.NOTE_SERIE} /> : null}
+          {(!collectionMode && item.NOTE_SERIE) ? <RatingStars note={item.NOTE_SERIE} /> : null}
+          {(item.LIB_FLG_FINI_SERIE) ?
           <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
             {item.LIB_FLG_FINI_SERIE}
-            </Text>
+          </Text> : null}
           {(item.NB_USER_ALBUM) ? (
             <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
               {Helpers.pluralWord(item.NB_USER_ALBUM, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
           </Text>) : null}
+          {(item.nb_album) ?
+            <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
+              {item.nb_album} albums manquants
+            </Text> : null}
         </View>
       </View>
     </TouchableOpacity >

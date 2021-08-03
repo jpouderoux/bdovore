@@ -60,12 +60,12 @@ function WishlistScreen({ navigation }) {
     setFilteredData(filterByDate ? Helpers.sliceSortByDate(global.wishlistAlbums) : null);
   }
 
-  const renderItem = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
-  }
-
   const toggleFilterByDate = () => {
     setFilterByDate(previousState => !previousState);
+  }
+
+  const renderItem = ({ item, index }) => {
+    return AlbumItem({ navigation, item, index });
   }
 
   const keyExtractor = useCallback((item, index) =>

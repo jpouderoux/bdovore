@@ -28,6 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
+import { SectionList } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import CommonStyles from '../styles/CommonStyles';
@@ -36,14 +37,15 @@ import * as APIManager from '../api/APIManager';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
+import { SerieItem } from '../components/SerieItem';
 
 
 function ToCompleteScreen({ navigation }) {
 
-  const [data, setData] = useState([]);
+  const [albums, setAlbums] = useState(Helpers.makeSection());
+  const [series, setSeries] = useState(Helpers.makeSection());
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [nbAlbums, setNbAlbums] = useState(0);
   const [refresh, setRefresh] = useState(1);
   let [cachedToken, setCachedToken] = useState('');
 
@@ -59,21 +61,26 @@ function ToCompleteScreen({ navigation }) {
       }
     }).catch(() => { });
   }
+  useEffect(() => {
+    refreshDataIfNeeded();
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      setRefresh(new Date().getTime());
+    });
+    return willFocusSubscription;
+  }, []);
 
   useEffect(() => {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(refresh + 1);
-      console.log("refresh");
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
   }, [cachedToken]);
 
-  const onDataFetched = (result) => {
-    setNbAlbums(result.totalItems);
-    setData(result.items);
+  const onAlbumsFetched = (result) => {
+    setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
     setErrortext(result.error);
     setLoading(result.totalItems != Object.keys(result.items).length);
 
@@ -82,28 +89,37 @@ function ToCompleteScreen({ navigation }) {
     }
   }
 
+  const onSeriesFetched = (result) => {
+    setSeries(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'série'), result.items));
+    setErrortext(result.error);
+    setLoading(false);
+  }
+
   const fetchData = async () => {
     setLoading(true);
-    setNbAlbums(0);
-    setData([]);
+    setAlbums(Helpers.makeSection());
+    setSeries(Helpers.makeSection());
     setErrortext('');
-    APIManager.fetchAlbumsManquants({ navigation: navigation }, onDataFetched)
+    APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
+      .then().catch((error) => console.log(error));
+    APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
       .then().catch((error) => console.log(error));
   }
 
   const renderItem = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
+    if (item.IMG_COUV_SERIE) {
+      return SerieItem({ navigation, item, index });
+    } else {
+      return AlbumItem({ navigation, item, index });
+    }
   }
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.makeAlbumUID(item));
+    item.IMG_COUV_SERIE ? item.ID_SERIE + 1000000 : Helpers.makeAlbumUID(item));
 
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-        <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
-          {data.length == 0 ? '' : Helpers.pluralWord(nbAlbums, 'album')}
-        </Text>
         {loading ? <SmallLoadingIndicator /> : null}
       </View>
       {errortext != '' ? (
@@ -111,15 +127,17 @@ function ToCompleteScreen({ navigation }) {
           {errortext}
         </Text>
       ) : null}
-      <FlatList
-        style={{ flex: 1 }}
-        maxToRenderPerBatch={20}
-        windowSize={12}
-        data={data}
+      <SectionList
+        maxToRenderPerBatch={6}
+        windowSize={10}
+        ItemSeparatorComponent={Helpers.renderSeparator}
+        sections={[series, albums].filter(s => s.data.length > 0)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        ItemSeparatorComponent={Helpers.renderSeparator}
-        extraData={useState()}
+        renderSectionHeader={({ section }) => (
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
+        stickySectionHeadersEnabled={false}
+        extraData={refresh}
       />
     </View>
   )

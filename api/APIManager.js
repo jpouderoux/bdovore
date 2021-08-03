@@ -206,6 +206,15 @@ export async function fetchAlbumsManquants(context, callback, params = {}) {
   }, true, true, 'nbmanquant');
 }
 
+export async function fetchSeriesManquants(context, callback, params = {}) {
+
+  fetchJSON('Albummanquant', context, callback, {
+    ...{
+      mode: '1',
+    }, ...params
+  }, true);
+}
+
 export async function fetchNews(origine, context, callback, params = {}) {
 
   fetchJSON('Actu', context, callback, {...{

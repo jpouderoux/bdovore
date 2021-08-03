@@ -58,7 +58,7 @@ const accountButton = (navigation) => {
   );
 }
 
-const onAccountPress = () => {
+const onAccountPress = (navigation) => {
   navigation.navigate('Login');
 };
 
