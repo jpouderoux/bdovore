@@ -79,7 +79,8 @@ function LoginScreen({ navigation }) {
       <View style={{ margin: 30, alignItems: 'center' }}>
         <Image source={require('../assets/bdovore-167.png')} />
       </View>
-      <Text style={{ marginLeft: 20, alignItems: 'center' }}>Pseudo</Text>
+      <Text style={{  marginBottom: 20, textAlign: 'center' }}>Connectez vous avec votre compte Bdovore</Text>
+      <Text style={{ marginLeft: 20, textAlign: 'center'  }}>Pseudo</Text>
       <TextInput
         style={styles.SectionStyle, styles.inputStyle}
         placeholder="Pseudo"
@@ -89,7 +90,7 @@ function LoginScreen({ navigation }) {
         value={pseudo}
         onChangeText={(pseudo) => setPseudo(pseudo)}
       />
-      <Text style={{ marginLeft: 20, alignItems: 'center' }}>Mot de passe</Text>
+      <Text style={{ marginLeft: 20, textAlign: 'center' }}>Mot de passe</Text>
       <TextInput
         style={styles.SectionStyle, styles.inputStyle}
         placeholder="Mot de passe"

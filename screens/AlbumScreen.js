@@ -53,7 +53,7 @@ function AlbumScreen({ route, navigation }) {
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
   const [similAlbums, setSimilAlbums] = useState([]);
   const [comments, setComments] = useState([]);
-
+  const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
 
   const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
@@ -119,6 +119,17 @@ function AlbumScreen({ route, navigation }) {
     }).catch(error => { });
   }
 
+  const onShowSerieScreen = async () => {
+
+    setLoading(true);
+    APIManager.fetchSerie(album.ID_SERIE, {}, (result) => {
+      setLoading(false);
+      if (result.error == '') {
+        navigation.push('Serie', { item: result.items[0] });
+      }
+    });
+  }
+
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
@@ -128,7 +139,7 @@ function AlbumScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <ScrollView style={{  margin: 10 }}>
+      <ScrollView style={{ margin: 10 }}>
         <View style={{ margin: 10, alignItems: 'center' }}>
           <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
         </View>
@@ -137,17 +148,23 @@ function AlbumScreen({ route, navigation }) {
           <RatingStars note={album.MOYENNE_NOTE_TOME} />
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
-              onPress={() => { navigation.push('Comments', { comments }); }}>
+            onPress={() => { navigation.push('Comments', { comments }); }}>
               Lire les avis
             </Text> : null}
+          {loading ? LoadingIndicator() : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, {color: 'white'} ]}>Collection</Text>
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>
           <CollectionMarkers item={album} />
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' } ]}>Info Album</Text>
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Info Album</Text>
         </View>
         <View>
           <Text style={CommonStyles.largerText}>{album.NOM_SERIE}</Text>
+          {dontShowSerieScreen ? null :
+            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+              onPress={onShowSerieScreen}>
+              Voir la fiche série
+            </Text>}
           <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
           <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
@@ -155,7 +172,7 @@ function AlbumScreen({ route, navigation }) {
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">
-              <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: 'lightgrey'}}>
+              <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: 'lightgrey' }}>
                 {' '}{album.NOM_EDITION}{' '}
               </Text>
             </TouchableOpacity>
@@ -163,30 +180,29 @@ function AlbumScreen({ route, navigation }) {
           <AchatSponsorIcon album={album} />
           <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) ?
-          <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10  }]}
-            onPress={onUserComment}>
-            Noter / commenter cet album
-          </Text> : null}
+            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+              onPress={onUserComment}>
+              Noter / commenter cet album
+            </Text> : null}
         </View>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
         ) : null}
-        {loading ? LoadingIndicator() : null}
         {similAlbums.length > 0 ?
-        <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white', marginBottom: 10 }]}>A voir aussi</Text>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            legacyImplementation={false}
-            data={similAlbums}
-            renderItem={renderSimil}
-            keyExtractor={({ item }, index) => index}
-            style={{ height: 120 }}
-          />
-        </View> : null}
+          <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
+            <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white', marginBottom: 10 }]}>A voir aussi</Text>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              legacyImplementation={false}
+              data={similAlbums}
+              renderItem={renderSimil}
+              keyExtractor={({ item }, index) => index}
+              style={{ height: 120 }}
+            />
+          </View> : null}
 
 
         {/* Editions chooser */}

@@ -37,10 +37,10 @@ import { CoverImage } from './CoverImage';
 import { CollectionMarkers } from './CollectionMarkers';
 import { RatingStars } from './RatingStars';
 
-export function AlbumItem({ navigation, item, index, collectionMode }) {
+export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen }) {
 
   const onPressAlbum = (navigation, item) => {
-    navigation.push('Album', { item });
+    navigation.push('Album', { item, dontShowSerieScreen });
   }
 
   return (

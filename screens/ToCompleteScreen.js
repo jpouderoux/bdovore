@@ -101,7 +101,7 @@ function ToCompleteScreen({ navigation }) {
     setSeries(Helpers.makeSection());
     setErrortext('');
     APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
-      .then().catch((error) => console.log(error));
+    .then().catch((error) => console.log(error));
     APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
       .then().catch((error) => console.log(error));
   }
@@ -119,14 +119,14 @@ function ToCompleteScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <View style={{ alignItems: 'center', marginBottom: 5 }}>
         {loading ? <SmallLoadingIndicator /> : null}
+        {errortext != '' ? (
+          <Text style={CommonStyles.errorTextStyle}>
+            {errortext}
+          </Text>
+        ) : null}
       </View>
-      {errortext != '' ? (
-        <Text style={CommonStyles.errorTextStyle}>
-          {errortext}
-        </Text>
-      ) : null}
       <SectionList
         maxToRenderPerBatch={6}
         windowSize={10}

@@ -153,6 +153,8 @@ function NewsScreens({ navigation }) {
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
+        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
         options={({ route }) => ({ title: 'Mon commentaire' })} />
       <CollectionStack.Screen name='Comments' component={CommentsScreen}
