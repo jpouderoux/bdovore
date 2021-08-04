@@ -33,6 +33,7 @@ import CommonStyles from '../styles/CommonStyles';
 
 export function AchatSponsorIcon({ album }) {
     return (
+      (Platform.OS === 'ios') ? null : // Sponsored links are disabled on iOS according AppStore rules.
       <View style={{ flexDirection: 'row' }}>
         {album.EAN_EDITION ? <TouchableOpacity
           onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ean=' + album.EAN_EDITION + "&ref=295"); }}
