@@ -29,13 +29,12 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import { useColorScheme, Dimensions } from 'react-native';
+import { Dimensions, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import SplashScreen from "react-native-splash-screen";
 
 import MainTab from './routes/MainTab';
-
 
 const App: () => Node = () => {
 
@@ -52,7 +51,7 @@ const App: () => Node = () => {
 
   return (
     <NavigationContainer>
-      <MainTab/>
+      <MainTab />
     </NavigationContainer>
   );
 };

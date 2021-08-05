@@ -37,6 +37,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
+import BarcodeScanner from '../screens/BarcodeScanner';
 import CollectionScreen from '../screens/CollectionScreen';
 import UserCommentScreen from '../screens/UserCommentScreen'
 import CommentsScreen from '../screens/CommentsScreen'
@@ -50,6 +51,10 @@ import WishlistScreen from '../screens/WishlistScreen';
 const Tab = createBottomTabNavigator();
 
 const CollectionStack = createStackNavigator();
+const WishlistStack = createStackNavigator();
+const ToCompleteStack = createStackNavigator();
+const NewsStack = createStackNavigator();
+const SearchStack = createStackNavigator();
 
 
 const accountButton = (navigation) => {
@@ -85,102 +90,103 @@ function CollectionScreens({ route, navigation }) {
 
   return (
     <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Ma collection'
-        component={CollectionScreen}
-        options={({route}) => ({
-          headerLeft: () => accountButton(navigation)
-        })} />
-      <CollectionStack.Screen name='Login' component={LoginScreen} />
-      <CollectionStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name='Album' component={AlbumScreen}
-        options={({ route }) => ({
-          title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
-        })} />
-      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
-        options={({ route }) => ({ title: 'Mon commentaire' })} />
-      <CollectionStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({ title: 'Commentaires' })} />
+        <CollectionStack.Screen name='Ma collection'
+          component={CollectionScreen}
+          options={({ route }) => ({
+            headerLeft: () => accountButton(navigation)
+          })} />
+        <CollectionStack.Screen name='Serie' component={SerieScreen}
+          options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        <CollectionStack.Screen name='Album' component={AlbumScreen}
+          options={({ route }) => ({
+            title: route.params.item.TITRE_TOME,
+            headerRight: () => shareButton(route.params.item)
+          })} />
+        <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+          options={({ route }) => ({ title: 'Mon commentaire' })} />
+        <CollectionStack.Screen name='Comments' component={CommentsScreen}
+          options={({ route }) => ({ title: 'Commentaires' })} />
+        <CollectionStack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }}/>
     </CollectionStack.Navigator>
   );
 }
 
 function WishlistScreens({ navigation }) {
   return (
-    <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Mes envies BD' component={WishlistScreen} />
-      <CollectionStack.Screen name='Serie' component={SerieScreen}
+    <WishlistStack.Navigator>
+      <WishlistStack.Screen name='Mes envies BD' component={WishlistScreen} />
+      <WishlistStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name='Album' component={AlbumScreen}
+      <WishlistStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
-      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+      <WishlistStack.Screen name='UserComment' component={UserCommentScreen}
         options={({ route }) => ({ title: 'Mon commentaire' })} />
-      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+      <WishlistStack.Screen name='Comments' component={CommentsScreen}
         options={({ route }) => ({ title: 'Commentaires' })} />
-    </CollectionStack.Navigator>
+    </WishlistStack.Navigator>
   );
 }
 
 function ToCompleteScreens({ navigation }) {
   return (
-    <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Albums manquants' component={ToCompleteScreen} />
-      <CollectionStack.Screen name='Serie' component={SerieScreen}
+    <ToCompleteStack.Navigator>
+      <ToCompleteStack.Screen name='Albums manquants' component={ToCompleteScreen} />
+      <ToCompleteStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name='Album' component={AlbumScreen}
+      <ToCompleteStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
-      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+      <ToCompleteStack.Screen name='UserComment' component={UserCommentScreen}
         options={({ route }) => ({ title: 'Mon commentaire' })} />
-      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+      <ToCompleteStack.Screen name='Comments' component={CommentsScreen}
         options={({ route }) => ({ title: 'Commentaires' })} />
-    </CollectionStack.Navigator>
+    </ToCompleteStack.Navigator>
   );
 }
 
 function NewsScreens({ navigation }) {
   return (
-    <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Actualité' component={NewsScreen} />
-      <CollectionStack.Screen name='Album' component={AlbumScreen}
+    <NewsStack.Navigator>
+      <NewsStack.Screen name='Actualité' component={NewsScreen} />
+      <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
-      <CollectionStack.Screen name='Serie' component={SerieScreen}
+      <NewsStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+      <NewsStack.Screen name='UserComment' component={UserCommentScreen}
         options={({ route }) => ({ title: 'Mon commentaire' })} />
-      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+      <NewsStack.Screen name='Comments' component={CommentsScreen}
         options={({ route }) => ({ title: 'Commentaires' })} />
-    </CollectionStack.Navigator>
+    </NewsStack.Navigator>
   );
 }
 
 function SearchScreens({ navigation }) {
   return (
-    <CollectionStack.Navigator>
-      <CollectionStack.Screen name='Rechercher' component={SearchScreen} />
-      <CollectionStack.Screen name='Serie' component={SerieScreen}
+    <SearchStack.Navigator>
+      <SearchStack.Screen name='Rechercher' component={SearchScreen} />
+      <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-      <CollectionStack.Screen name='Album' component={AlbumScreen}
+      <SearchStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
           headerRight: () => shareButton(route.params.item)
         })} />
-      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+      <SearchStack.Screen name='UserComment' component={UserCommentScreen}
         options={({ route }) => ({ title: 'Mon commentaire' })} />
-      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+      <SearchStack.Screen name='Comments' component={CommentsScreen}
         options={({ route }) => ({ title: 'Commentaires' })} />
-      <CollectionStack.Screen name='Auteur' component={AuteurScreen}
+      <SearchStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: route.params.item.PSEUDO })} />
-    </CollectionStack.Navigator>
+      <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner} />
+    </SearchStack.Navigator>
   );
 }
 

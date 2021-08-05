@@ -10,7 +10,6 @@
     "backgroundColor": "#ffffff"
   },
   "ios": {
-    "supportsTablet": true,
-    "userInterfaceStyle": "automatic"
+    "supportsTablet": true
   }
 }

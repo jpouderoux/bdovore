@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -93,6 +93,23 @@ function SearchScreen({ navigation }) {
     setSearchMode(selectedIndex);
   };
 
+  const onBarcodeSearch = () => {
+    navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); }});
+  }
+
+  const onSearchWithEAN = async (ean) => {
+    if (ean) {
+      let params = (ean.length > 10) ? { EAN: ean } : { ISBN: ean };
+      APIManager.fetchAlbum((result) => {
+        if (result.error == '') {
+          navigation.push('Album', { item: result.items[0] })
+        } else {
+          Alert.alert("Aucun album trouvé avec ce code. Essayez la recherche textuelle avec le nom de la série ou de l'album.");
+        }
+      }, params);
+    }
+  }
+
   const renderItem = ({ item, index }) => {
     switch (parseInt(searchMode)) {
       case 0: return SerieItem({ navigation, item, index });
@@ -119,7 +136,7 @@ function SearchScreen({ navigation }) {
             />
             </View>
           <TouchableOpacity
-            onPress={onSearch}
+            onPress={onBarcodeSearch}
             title="Search"
             style={{marginLeft:8}}>
             <Icon

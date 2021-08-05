@@ -69,9 +69,9 @@ function SerieScreen({ route, navigation }) {
     console.log("serie albums fetched");
 
     let newdata = [
+      { title: 'Albums', data: [] },
       { title: 'Intégrales', data: [] },
       { title: 'Coffrets', data: [] },
-      { title: 'Album', data: [] },
       { title: 'Editions spéciales', data: [] },
     ];
 
@@ -80,15 +80,15 @@ function SerieScreen({ route, navigation }) {
       let section = 0;
       const serie = result.items[i];
       if (serie.FLG_TYPE_TOME == 1) {
-        section = 1; // Coffret
+        section = 2; // Coffret
       } else {
         if (serie.FLG_INT_TOME == 'O') {
-          section = 0; // Intégrale
+          section = 1; // Intégrale
         } else {
           if (serie.TITRE_TOME.endsWith('TL') || serie.TITRE_TOME.endsWith('TT')) {
             section = 3; // Edition spéciale
           } else {
-            section = 2; // Album
+            section = 0; // Album
           }
         }
       }
