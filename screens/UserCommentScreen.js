@@ -30,7 +30,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, TextInput, View } from 'react-native'
 
 import * as APIManager from '../api/APIManager';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 
@@ -66,28 +66,31 @@ function UserCommentScreen({ route, navigation }) {
 
   return (
     <View style={[CommonStyles.screenStyle, { margin: 10 }]}>
-      <View style={{ margin: 0, alignItems: 'center' }}>
-        <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-        <RatingStars note={rate} editable={true} callback={setRate} />
-        <TextInput multiline={true}
-          numberOfLines={10}
-          editable
-          textContentType={'none'}
-          style={{ marginTop: 10, width: '100%', backgroundColor: '#eee', textAlignVertical: 'top' }}
-          onChangeText={(comment) => setComment(comment)}
-          value={comment}
-        />
-        <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
-          onPress={onSaveComment}>
-          Enregistrer votre avis
-        </Text>
+      <View style={{ margin: 10 }}>
+        <View style={{ margin: 0, alignItems: 'center' }}>
+          <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
+          <RatingStars note={rate} editable={true} callback={setRate} />
+          <TextInput multiline={true}
+            numberOfLines={10}
+            editable
+            textContentType={'none'}
+            style={{ marginTop: 10, width: '100%', backgroundColor: '#eee', textAlignVertical: 'top' }}
+            onChangeText={(comment) => setComment(comment)}
+            value={comment}
+            autoFocus={true}
+          />
+          <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+            onPress={onSaveComment}>
+            Enregistrer votre avis
+          </Text>
+        </View>
+        {loading ? <SmallLoadingIndicator /> : null}
+        {errortext != '' ? (
+          <Text style={CommonStyles.errorTextStyle}>
+            {errortext}
+          </Text>
+        ) : null}
       </View>
-      {loading ? <SmallLoadingIndicator /> : null}
-      {errortext != '' ? (
-        <Text style={CommonStyles.errorTextStyle}>
-          {errortext}
-        </Text>
-      ) : null}
     </View>
   );
 }

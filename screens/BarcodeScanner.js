@@ -11,7 +11,7 @@ function BarcodeScanner({ route, navigation }) {
 
   const onBarCodeRead = (e) => {
     if (!eanFound) {
-      setEanFound(true);
+      setEanFound(true); // needed to avoid reentry
       navigation.goBack();
       route.params.onGoBack(e.data);
     }

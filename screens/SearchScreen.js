@@ -33,7 +33,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';

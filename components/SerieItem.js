@@ -28,8 +28,8 @@
 
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import CommonStyles from '../styles/CommonStyles';
 
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
@@ -58,7 +58,7 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
           </Text> : null}
           {(nbUserAlbums > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
-              {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(nbUserAlbums, 'album')} dans la base {'\n'}
+              {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
           </Text>) : null}
           {(item.nb_album) ?
             <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>

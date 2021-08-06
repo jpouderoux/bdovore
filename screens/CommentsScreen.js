@@ -30,7 +30,7 @@ import React, { useState } from 'react';
 import { FlatList, Text, View } from 'react-native'
 
 import * as Helpers from '../api/Helpers';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
 
 

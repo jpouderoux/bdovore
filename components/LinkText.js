@@ -29,7 +29,7 @@
 import React from 'react';
 import { Linking, Text } from 'react-native';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 export function LinkText({ text, url, style }) {

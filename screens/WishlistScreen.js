@@ -30,7 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
-import CommonStyles from '../styles/CommonStyles';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 
 import { AlbumItem } from '../components/AlbumItem';
 
@@ -93,6 +93,11 @@ function WishlistScreen({ navigation }) {
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}
         extraData={refresh}
+        getItemLayout={(data, index) => ({
+          length: AlbumItemHeight,
+          offset: AlbumItemHeight * index,
+          index
+        })}
       />
     </View>
   );

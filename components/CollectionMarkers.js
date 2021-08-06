@@ -56,7 +56,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
       cachedIdTome = item.ID_TOME;
       setIdTome(item.ID_TOME);
     }
-    const isInCollec = CollectionManager.isAlbumInCollection(album);
+    const isInCollec = CollectionManager.isAlbumInCollection(item);
     setGotIt(isInCollec);
     setShowAllMarks(reduceMode ? false : isInCollec);
   }, []);
@@ -109,7 +109,6 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const onWantIt = async () => {
     // Switch the want it flag
     const wantIt = !(album.FLG_ACHAT && album.FLG_ACHAT != 'N');
-    album.FLG_ACHAT = wantIt ? 'O' : 'N';
     setWantIt(wantIt);
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album);

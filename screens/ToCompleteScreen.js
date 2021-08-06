@@ -32,7 +32,7 @@ import { SectionList } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Progress from 'react-native-progress';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
@@ -60,8 +60,7 @@ function ToCompleteScreen({ navigation }) {
 
   const refreshDataIfNeeded = () => {
     AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken)
-      {
+      if (token !== cachedToken) {
         console.log("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
         setCachedToken(token);
         cachedToken = token;
@@ -101,7 +100,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const onAlbumsFetched = async (result) => {
-    console.log('album ' + (result.done ? ' done' : 'in progress'));
+    console.log('albums ' + (result.done ? ' done' : 'in progress'));
     console.log(result.items.length + ' albums to complete fetched');
     setNbTotalAlbums(result.totalItems);
     setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));

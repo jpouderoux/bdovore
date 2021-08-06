@@ -39,13 +39,13 @@ import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import CollectionScreen from '../screens/CollectionScreen';
-import UserCommentScreen from '../screens/UserCommentScreen'
 import CommentsScreen from '../screens/CommentsScreen'
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
+import UserCommentScreen from '../screens/UserCommentScreen'
 import WishlistScreen from '../screens/WishlistScreen';
 
 const Tab = createBottomTabNavigator();
@@ -103,10 +103,12 @@ function CollectionScreens({ route, navigation }) {
             headerRight: () => shareButton(route.params.item)
           })} />
         <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
-          options={({ route }) => ({ title: 'Mon commentaire' })} />
+          options={{ title: 'Mon commentaire',
+            presentation: 'modal', gestureDirection: 'vertical' }} />
         <CollectionStack.Screen name='Comments' component={CommentsScreen}
-          options={({ route }) => ({ title: 'Commentaires' })} />
-        <CollectionStack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }}/>
+          options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
+      <CollectionStack.Screen name="Login" component={LoginScreen}
+        options={{ presentation: 'modal', gestureDirection: 'vertical' }}/>
     </CollectionStack.Navigator>
   );
 }
@@ -124,9 +126,9 @@ function WishlistScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <WishlistStack.Screen name='UserComment' component={UserCommentScreen}
-        options={({ route }) => ({ title: 'Mon commentaire' })} />
+        options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <WishlistStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({ title: 'Commentaires' })} />
+        options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
     </WishlistStack.Navigator>
   );
 }
@@ -144,9 +146,9 @@ function ToCompleteScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <ToCompleteStack.Screen name='UserComment' component={UserCommentScreen}
-        options={({ route }) => ({ title: 'Mon commentaire' })} />
+        options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <ToCompleteStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({ title: 'Commentaires' })} />
+        options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
     </ToCompleteStack.Navigator>
   );
 }
@@ -164,9 +166,9 @@ function NewsScreens({ navigation }) {
       <NewsStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <NewsStack.Screen name='UserComment' component={UserCommentScreen}
-        options={({ route }) => ({ title: 'Mon commentaire' })} />
+        options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <NewsStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({ title: 'Commentaires' })} />
+        options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
     </NewsStack.Navigator>
   );
 }
@@ -184,9 +186,9 @@ function SearchScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <SearchStack.Screen name='UserComment' component={UserCommentScreen}
-        options={({ route }) => ({ title: 'Mon commentaire' })} />
+        options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <SearchStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({ title: 'Commentaires' })} />
+        options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
       <SearchStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: route.params.item.PSEUDO })} />
       <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner} />

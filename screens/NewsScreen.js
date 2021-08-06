@@ -35,7 +35,7 @@ import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
 import { AlbumItem } from '../components/AlbumItem';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 let newsModeMap = {
@@ -77,7 +77,7 @@ function NewsScreen({ navigation }) {
         setCachedToken(token);
         cachedToken = token;
         console.log("refresh news data");
-        fetchUserNewsData(newsMode);
+        fetchUserNewsData();
         fetchNewsData(newsMode);
       }
     }).catch(() => { });
@@ -108,7 +108,7 @@ function NewsScreen({ navigation }) {
       createUserNewsToComeSection(Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[newsMode])));
   }, [newsMode]);
 
-  const fetchUserNewsData = async (newsMode) => {
+  const fetchUserNewsData = async () => {
     setLoading(true);
 
     setFilteredUserNewsDataArray(createUserNewsSection());

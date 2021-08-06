@@ -29,7 +29,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';

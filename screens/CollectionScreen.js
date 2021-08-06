@@ -35,7 +35,7 @@ import * as Progress from 'react-native-progress';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import CommonStyles from '../styles/CommonStyles';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers'
 
@@ -45,9 +45,7 @@ import { SerieItem } from '../components/SerieItem';
 
 function CollectionScreen({ props, navigation }) {
 
-  const [collectionAlbums, setCollectionAlbums] = useState([]);
   const [collectionGenre, setCollectionGenre] = useState(0);
-  const [collectionSeries, setCollectionSeries] = useState([]);
   const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState(null);
   const [filteredSeries, setFilteredSeries] = useState(null);
@@ -112,8 +110,6 @@ function CollectionScreen({ props, navigation }) {
         setNbTotalAlbums(0);
         setFilteredSeries(null);
         setFilteredAlbums(null);
-        setCollectionSeries([]);
-        setCollectionAlbums([]);
         setProgressRate(0);
         cachedToken = token;
         fetchData();
@@ -180,12 +176,12 @@ function CollectionScreen({ props, navigation }) {
 
     if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
       setFilteredSeries(null);
-      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(collectionAlbums) : null);
+      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(global.collectionAlbums) : null);
       return;
     }
 
-    setFilteredSeries(filterCollection(collectionSeries, 0));
-    const filteredAlbums = filterCollection(collectionAlbums, 1);
+    setFilteredSeries(filterCollection(global.collectionSeries, 0));
+    const filteredAlbums = filterCollection(global.collectionAlbums, 1);
     setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
   }
 
@@ -217,7 +213,6 @@ function CollectionScreen({ props, navigation }) {
   const onSeriesFetched = async (result) => {
     setErrortext(result.error);
     setNbTotalSeries(result.totalItems);
-    setCollectionSeries(result.items);
 
     applyFilters();
 
@@ -227,7 +222,6 @@ function CollectionScreen({ props, navigation }) {
   const onAlbumsFetched = async (result) => {
     setErrortext(result.error);
     setNbTotalAlbums(result.totalItems);
-    setCollectionAlbums(result.items);
 
     applyFilters();
 
@@ -326,12 +320,17 @@ function CollectionScreen({ props, navigation }) {
           </Text>
         ) : null}
         <FlatList
+          initialNumToRender={6}
           maxToRenderPerBatch={6}
           windowSize={10}
           data={(collectionType == 0 ? (filteredSeries ? filteredSeries : global.collectionSeries) : (filteredAlbums ? filteredAlbums : global.collectionAlbums))}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}
+          getItemLayout={(data, index) => ({
+            length: AlbumItemHeight,
+            offset: AlbumItemHeight * index,
+            index })}
         />
       </View>
 

@@ -30,7 +30,7 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Image } from 'react-native-elements';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 export function CoverImage({ source, style }) {

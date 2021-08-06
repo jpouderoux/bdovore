@@ -33,7 +33,7 @@ import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';

@@ -27,10 +27,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
@@ -96,6 +96,7 @@ function LoginScreen({ navigation }) {
         placeholder="Mot de passe"
         secureTextEntry={true}
         value={passwd}
+        autoCapitalize="none"
         blurOnSubmit={true}
         returnKeyType="next"
         onChangeText={(passwd) => setPasswd(passwd)}

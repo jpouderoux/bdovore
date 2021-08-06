@@ -29,7 +29,7 @@
 import React from 'react';
 import { Image, Linking, TouchableOpacity, View } from 'react-native';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 
 export function AchatSponsorIcon({ album }) {
     return (

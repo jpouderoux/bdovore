@@ -28,11 +28,14 @@
 
 import { Dimensions } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
+import { AlbumItem } from '../components/AlbumItem';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const CommonStyles = EStyleSheet.create({
+export const AlbumItemHeight = windowWidth / 4 * (122 / 90) + 1;
+
+export const CommonStyles = EStyleSheet.create({
   screenStyle: {
     backgroundColor: 'white',
     flex: 1,
@@ -127,4 +130,3 @@ const CommonStyles = EStyleSheet.create({
   }
 });
 
-export default CommonStyles;

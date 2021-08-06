@@ -30,7 +30,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 
 import { CoverImage } from './CoverImage';

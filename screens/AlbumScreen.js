@@ -33,7 +33,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -224,7 +224,7 @@ function AlbumScreen({ route, navigation }) {
               <ListItem.Content>
                 <ListItem.Title style={
                   (index == editionIndex ? { color: 'white' } : { color: 'dodgerblue' })}>
-                  {album.NOM_EDITION}
+                  {item.NOM_EDITION}
                 </ListItem.Title>
               </ListItem.Content>
             </ListItem>

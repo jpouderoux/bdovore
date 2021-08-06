@@ -32,7 +32,7 @@ import { SectionList, Text, View } from 'react-native';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
-import CommonStyles from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';

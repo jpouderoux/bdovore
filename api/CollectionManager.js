@@ -198,6 +198,8 @@ class CCollectionManager {
 
   removeAlbumFromWishlist(album) {
 
+    album.FLG_ACHAT = 'N';
+
     // Delete the album from the server collection
     APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
 
