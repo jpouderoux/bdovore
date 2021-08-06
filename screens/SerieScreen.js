@@ -31,6 +31,7 @@ import { SectionList, Text, View } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 
 import CommonStyles from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
@@ -62,7 +63,7 @@ function SerieScreen({ route, navigation }) {
     setLoading(true);
     setErrortext('');
     setSerieAlbums([]);
-    APIManager.fetchSerieAlbums(serie.ID_SERIE, {}, onSerieAlbumsFetched);
+    APIManager.fetchSerieAlbums(serie.ID_SERIE, onSerieAlbumsFetched);
   }
 
   const onSerieAlbumsFetched = async (result) => {
@@ -121,7 +122,7 @@ function SerieScreen({ route, navigation }) {
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} />
         <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
-          {serie.NB_USER_ALBUM} / {serie.NB_ALBUM}{'    '}
+          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {serie.NB_ALBUM}{'    '}
         </Text>
       </View>
       {errortext != '' ? (

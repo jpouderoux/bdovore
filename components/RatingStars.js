@@ -28,6 +28,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { Rating } from 'react-native-elements';
 
 
@@ -40,7 +41,7 @@ export function RatingStars({ note, editable, callback }) {
         ratingCount={5}
         imageSize={20}
         startingValue={note / 2.}
-        tintColor='#fff'
+        tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
         readonly={editable ? false : true}
         onFinishRating={callback ? callback : (rate)=>{}}
       />

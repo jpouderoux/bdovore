@@ -27,9 +27,10 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SectionList } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import * as Progress from 'react-native-progress';
 
 import CommonStyles from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
@@ -44,16 +45,23 @@ function ToCompleteScreen({ navigation }) {
 
   const [albums, setAlbums] = useState(Helpers.makeSection());
   const [series, setSeries] = useState(Helpers.makeSection());
+  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
+  const [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(1);
+  const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
+  let loadingSteps = 0;
+  let loadedAlbums = 0;
+  let loadedSeries = 0;
 
   Helpers.checkForToken(navigation);
 
   const refreshDataIfNeeded = () => {
     AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken) {
+      if (token !== cachedToken)
+      {
         console.log("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
         setCachedToken(token);
         cachedToken = token;
@@ -79,30 +87,55 @@ function ToCompleteScreen({ navigation }) {
     return willFocusSubscription;
   }, [cachedToken]);
 
-  const onAlbumsFetched = (result) => {
-    setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
-    setErrortext(result.error);
-    setLoading(result.totalItems != Object.keys(result.items).length);
+  const makeProgress = (result) => {
+    loadingSteps -= (result.done ? 1 : 0);
+    setLoading(loadingSteps > 0);
+    console.log(loadingSteps);
 
-    if (result.error) {
-      setTimeout(() => { fetchData(); }, 2000);
+    if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
+      const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
+      const rate = parseFloat(loadedAlbums + loadedSeries) / nbTotalItems;
+      console.log(loadedAlbums + ", " + loadedSeries + " rate : " + rate + "   " + nbTotalAlbums + " , "+nbTotalSeries);
+      setProgressRate(rate);
     }
   }
 
-  const onSeriesFetched = (result) => {
-    setSeries(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'série'), result.items));
+  const onAlbumsFetched = async (result) => {
+    console.log('album ' + (result.done ? ' done' : 'in progress'));
+    console.log(result.items.length + ' albums to complete fetched');
+    setNbTotalAlbums(result.totalItems);
+    setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
     setErrortext(result.error);
-    setLoading(false);
+    loadedAlbums = result.items.length;
+
+    makeProgress(result);
   }
 
-  const fetchData = async () => {
+  const onSeriesFetched = async (result) => {
+    console.log('series ' + (result.done ? ' done' : 'in progress'));
+    console.log(result.items.length + ' series to complete fetched')
+    setNbTotalSeries(result.totalItems);
+    setSeries(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'série'), result.items));
+    setErrortext(result.error);
+    loadedSeries = result.items.length;
+
+    makeProgress(result);
+  }
+
+  const fetchData = () => {
     setLoading(true);
+    setProgressRate(0);
+    loadingSteps = 2;
     setAlbums(Helpers.makeSection());
     setSeries(Helpers.makeSection());
+    setNbTotalAlbums(0);
+    setNbTotalSeries(0);
+    loadedAlbums = 0;
+    loadedSeries = 0;
     setErrortext('');
-    APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
-    .then().catch((error) => console.log(error));
     APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
+      .then().catch((error) => console.log(error));
+    APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
       .then().catch((error) => console.log(error));
   }
 
@@ -119,19 +152,19 @@ function ToCompleteScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ alignItems: 'center', marginBottom: 5 }}>
-        {loading ? <SmallLoadingIndicator /> : null}
-        {errortext != '' ? (
+      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }}/> : null}
+      {errortext != '' ? (
+        <View style={{ alignItems: 'center', marginBottom: 5 }}>
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
       <SectionList
         maxToRenderPerBatch={6}
         windowSize={10}
         ItemSeparatorComponent={Helpers.renderSeparator}
-        sections={[series, albums].filter(s => s.data.length > 0)}
+        sections={[albums, series].filter(s => s.data.length > 0)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         renderSectionHeader={({ section }) => (

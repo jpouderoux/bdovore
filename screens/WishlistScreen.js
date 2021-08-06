@@ -73,8 +73,8 @@ function WishlistScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-        <Text style={{ flex: 1, margin: 5, fontSize: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, backgroundColor: 'lightgrey' }}>
+        <Text style={[{ flex: 1, margin: 5, fontSize: 16}, CommonStyles.bold, CommonStyles.largerText]}>
           {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
         </Text>
         <View></View>

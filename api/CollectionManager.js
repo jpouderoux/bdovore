@@ -45,9 +45,24 @@ class CCollectionManager {
     global.wishlistAlbumsDict = {};
   }
 
+  numberOfSeries() {
+    return global.collectionSeries.length;
+  }
+
+  numberOfAlbums() {
+    return global.collectionAlbums.length;
+  }
+
+  numberOfWishAlbums() {
+    return global.wishlistAlbums.length;
+  }
+
   // Fetch all the series within the collection
   fetchSeries(navigation, callback) {
-    console.log("fetching series");
+
+    global.collectionSeries = [];
+    global.collectionSeriesDict = {};
+
     APIManager.fetchCollectionData('Userserie', { navigation: navigation },
       (result) => this.onSeriesFetched(result, callback))
       .then().catch((error) => console.log(error));
@@ -55,14 +70,20 @@ class CCollectionManager {
 
   onSeriesFetched(result, callback) {
 
-    console.log("series fetched");
+    console.log(result.items.length + ' series fetched');
     global.collectionSeries = result.items;
+    global.collectionSeriesDict = {};
+    Helpers.createSeriesDict(global.collectionSeries, global.collectionSeriesDict);
 
     callback(result);
   }
 
   // Fetch all the albums within the collection
   fetchAlbums(navigation, callback) {
+
+    global.collectionAlbums = [];
+    global.collectionAlbumsDict = {};
+
     APIManager.fetchCollectionData('Useralbum', { navigation: navigation },
       (result) => this.onAlbumsFetched(result, callback))
       .then().catch((error) => console.log(error));
@@ -70,7 +91,7 @@ class CCollectionManager {
 
   onAlbumsFetched(result, callback) {
 
-    console.log("albums fetched");
+    console.log(result.items.length + ' albums fetched');
 
     // Save albums in global scope
     global.collectionAlbums = result.items;
@@ -94,7 +115,7 @@ class CCollectionManager {
 
   onWishlistFetched(result, callback) {
 
-    console.log("wishlist fetched");
+    console.log(result.items.length + ' albums in wishlist fetched');
 
     global.wishlistAlbums = result.items;
     global.wishlistAlbumsDict = {};
@@ -113,8 +134,108 @@ class CCollectionManager {
     callback(result);
   }
 
-  getAlbunInCollection(album) {
+  addAlbumToCollection(album) {
+    // Inform server of the add
+    APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
+      'id_edition': album.ID_EDITION,
+      'flg_achat': 'N'
+    });
 
+    // Remove the album from the wishlist if needed
+    Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+    console.log('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
+
+    // Add the album in local collection and increment the serie's counter
+    Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
+    let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
+    if (idx === null || idx == undefined) {
+      console.log('serie '+ album.ID_SERIE + ' not found in collection, let\'s add it');
+      APIManager.fetchSerie(album.ID_SERIE, (result) => {
+        if (result.error == '') {
+          const serie = result.items[0];
+          const idx = Helpers.addSerieToArrayAndDict(serie, global.collectionSeries, global.collectionSeriesDict);
+          global.collectionSeries[idx].NB_USER_ALBUM = 1;
+          console.log('serie ' + album.ID_SERIE + ' added to collection');
+        }
+      });
+    } else {
+      global.collectionSeries[idx].NB_USER_ALBUM++;
+    }
+  }
+
+  removeAlbumFromCollection(album) {
+
+    // Remove the album from the collection
+    APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
+
+    Helpers.removeAlbumFromArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
+    console.log('album ' + album.ID_TOME + ' removed from the collection');
+
+    let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
+    if (idx >= 0) {
+      global.collectionSeries[idx].NB_USER_ALBUM--;
+      if (global.collectionSeries[idx].NB_USER_ALBUM == 0) {
+        Helpers.removeSerieFromArrayAndDict(album.ID_SERIE, global.collectionSeries, global.collectionSeriesDict);
+        console.log('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
+      }
+    }
+  }
+
+  addAlbumToWishlist(album) {
+    APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
+      'id_edition': album.ID_EDITION,
+      'flg_achat': 'O',
+    });
+
+    album.DATE_AJOUT = Helpers.getNowDateString();
+    album.FLG_ACHAT = 'O';
+
+    // Add the album to the wishlist with the FLG_ACHAT flag
+    Helpers.addAlbumToArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+
+    console.log('album ' + album.ID_TOME + ' added to the wishlist');
+  }
+
+  removeAlbumFromWishlist(album) {
+
+    // Delete the album from the server collection
+    APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
+
+    // Remove the album from the collection
+    Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+
+    console.log('album ' + album.ID_TOME + ' removed from the wishlist');
+  }
+
+  setAlbumReadFlag(album, flag) {
+    album.FLG_LU = flag ? 'O' : 'N';
+    this.updateAlbumEdition(album);
+  }
+
+  setAlbumLendFlag(album, flag) {
+    album.FLG_PRET = flag ? 'O' : 'N';
+    this.updateAlbumEdition(album);
+  }
+
+  setAlbumNumEdFlag(album, flag) {
+    album.FLG_NUM = flag ? 'O' : 'N';
+    this.updateAlbumEdition(album);
+  };
+
+  setAlbumGiftFlag(album, flag) {
+    album.FLG_CADEAU = flag ? 'O' : 'N';
+    this.updateAlbumEdition(album);
+  };
+
+  updateAlbumEdition(album) {
+    APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
+      'id_edition': album.ID_EDITION,
+      'flg_achat': 'N',
+      'flg_lu': album.FLG_LU,
+      'flg_cadeau': album.FLG_CADEAU,
+      'flg_pret': album.FLG_PRET,
+      'flg_num': album.FLG_NUM,
+    });
   }
 
   isAlbumInCollection(album) {
@@ -123,6 +244,16 @@ class CCollectionManager {
 
   isAlbumInWishlist(album) {
     return Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict) >= 0;
+  }
+
+  getNbOfUserAlbumsInSerie(serie) {
+    let count = 0;
+    global.collectionAlbums.forEach(album => {
+      if (album.ID_SERIE == serie.ID_SERIE) {
+        count++;
+      }
+    });
+    return count;
   }
 
 };

@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { Share, TouchableOpacity } from 'react-native';
+import { Share, TouchableOpacity, useColorScheme } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -87,9 +87,9 @@ const onSharePress = async (item) => {
 }
 
 function CollectionScreens({ route, navigation }) {
-
   return (
-    <CollectionStack.Navigator>
+    <CollectionStack.Navigator
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
         <CollectionStack.Screen name='Ma collection'
           component={CollectionScreen}
           options={({ route }) => ({
@@ -113,7 +113,8 @@ function CollectionScreens({ route, navigation }) {
 
 function WishlistScreens({ navigation }) {
   return (
-    <WishlistStack.Navigator>
+    <WishlistStack.Navigator
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
       <WishlistStack.Screen name='Mes envies BD' component={WishlistScreen} />
       <WishlistStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -132,7 +133,8 @@ function WishlistScreens({ navigation }) {
 
 function ToCompleteScreens({ navigation }) {
   return (
-    <ToCompleteStack.Navigator>
+    <ToCompleteStack.Navigator
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
       <ToCompleteStack.Screen name='Albums manquants' component={ToCompleteScreen} />
       <ToCompleteStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -151,7 +153,8 @@ function ToCompleteScreens({ navigation }) {
 
 function NewsScreens({ navigation }) {
   return (
-    <NewsStack.Navigator>
+    <NewsStack.Navigator
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
       <NewsStack.Screen name='Actualité' component={NewsScreen} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
@@ -170,7 +173,8 @@ function NewsScreens({ navigation }) {
 
 function SearchScreens({ navigation }) {
   return (
-    <SearchStack.Navigator>
+    <SearchStack.Navigator
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
       <SearchStack.Screen name='Rechercher' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />

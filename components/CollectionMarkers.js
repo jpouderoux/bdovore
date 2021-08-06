@@ -34,8 +34,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
+import CollectionManager from '../api/CollectionManager';
 
 
 export function CollectionMarkers({ item, style, reduceMode }) {
@@ -53,69 +53,56 @@ export function CollectionMarkers({ item, style, reduceMode }) {
 
   useEffect(() => {
     if (cachedIdTome != item.ID_TOME) {
-      //console.log("NEW TOME");
-      //console.log(item);
       cachedIdTome = item.ID_TOME;
       setIdTome(item.ID_TOME);
     }
-    const isInCollec = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict) >= 0;
+    const isInCollec = CollectionManager.isAlbumInCollection(album);
     setGotIt(isInCollec);
     setShowAllMarks(reduceMode ? false : isInCollec);
   }, []);
 
   useEffect(() => {
     let alb = item;
-    let isInCollec = false;
     const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
     if (idx >= 0) {
       alb = global.wishlistAlbums[idx];
+      setGotIt(false);
+      setWantIt(true);
       console.log("Album found in wishlist");
-    } //else
+    }
+    else
     {
       const idx = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
       if (idx >= 0) {
-        isInCollec = true;
+        setGotIt(true);
         alb = global.collectionAlbums[idx];
+        setWantIt(false);
+        setReadIt(alb.FLG_LU === 'O');
+        setLendIt(alb.FLG_PRET === 'O');
+        setNumEd(alb.FLG_NUM === 'O');
+        setGift(alb.FLG_CADEAU === 'O');
         console.log("Album found in collection");
       }
     }
-    if (!alb) { alb = item; }
-    //console.log(alb);
-    setGotIt(isInCollec);
-    setWantIt(alb.FLG_ACHAT === 'O');
-    setReadIt(alb.FLG_LU ==='O');
-    setLendIt(alb.FLG_PRET === 'O');
-    setNumEd(alb.FLG_NUM === 'O');
-    setGift(alb.FLG_CADEAU === 'O');
     setAlbum(alb);
   }, [idTome]);
 
   const onGotIt = async () => {
-    const idxCol = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
-    if (!idxCol) {
-      // If album is in not collection yet, let's add it
+    if (!CollectionManager.isAlbumInCollection(album)) {
+      // If album is not collection yet, let's add it
       setGotIt(true);
       setShowAllMarks(reduceMode ? false : true);
-      APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
-        'id_edition': album.ID_EDITION,
-        'flg_achat': 'N'
-      });
+
       // Add album to collection & remove it from the wishlist
-      Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
-      Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
-      console.log("album remove " + album.TOME + " from wishlist");
-      console.log(wishlistAlbums);
+      CollectionManager.addAlbumToCollection(album);
     }
     else {
+      // Album is in collection, let's remove it
       setGotIt(false);
+      setWantIt(false);
       setShowAllMarks(false);
-      // If album is marked "I want" it wishlist, do not remove it from the collection
-      const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
-      if (!idx || (global.wishlistAlbums[idx].FLG_ACHAT != 'N')) {
-        APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
-      }
-      // Remove the album from the collection
-      Helpers.removeAlbumFromArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
+
+      CollectionManager.removeAlbumFromCollection(album);
     }
   };
 
@@ -125,71 +112,36 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     album.FLG_ACHAT = wantIt ? 'O' : 'N';
     setWantIt(wantIt);
     if (wantIt) {
-      APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
-        'id_edition': album.ID_EDITION,
-        'flg_achat': 'O',
-      });
-
-      console.log(Helpers.getNowDateString());
-      album.DATE_AJOUT = Helpers.getNowDateString();
-
-      // Add the album to the wishlist with the FLG_ACHAT flag
-      Helpers.addAlbumToArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+      CollectionManager.addAlbumToWishlist(album);
     }
     else {
-      // Mark the album as not wanted (FLG_ACHAT='N')
-      const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
-      if (idx) {
-        global.wishlistAlbums[idx].FLG_ACHAT = 'N';
-      }
-      // Delete the album from the server collection if it is in our client side collection copy
-      const idxCol = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
-      if (!idxCol) {
-        APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
-      }
-      // Remove the album from the collection
-      Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+      CollectionManager.removeAlbumFromWishlist(album);
     }
   };
 
   const onReadIt = async () => {
     const readIt = !(album.FLG_LU && album.FLG_LU != 'N');
-    album.FLG_LU = readIt ? 'O' : 'N';
+    CollectionManager.setAlbumReadFlag(album, readIt)
     setReadIt(readIt);
-    updateAlbumEdition(album);
   };
 
   const onLendIt = async () => {
     const lendIt = !(album.FLG_PRET && album.FLG_PRET != 'N');
-    album.FLG_PRET = lendIt ? 'O' : 'N';
+    CollectionManager.setAlbumLendFlag(album, lendIt)
     setLendIt(lendIt);
-    updateAlbumEdition(album);
   };
 
   const onNumEd = async () => {
     const numEd = !(album.FLG_NUM && album.FLG_NUM != 'N');
-    album.FLG_NUM = numEd ? 'O' : 'N';
+    CollectionManager.setAlbumNumEdFlag(album, numEd)
     setNumEd(numEd);
-    updateAlbumEdition(album);
   };
 
   const onGift = async () => {
     const gift = !(album.FLG_CADEAU && album.FLG_CADEAU != 'N');
-    album.FLG_CADEAU = gift ? 'O' : 'N';
+    CollectionManager.setAlbumGiftFlag(album, gift)
     setGift(gift);
-    updateAlbumEdition(album);
   };
-
-  const updateAlbumEdition = () => {
-    APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
-      'id_edition': album.ID_EDITION,
-      'flg_achat': 'N',
-      'flg_lu': album.FLG_LU,
-      'flg_cadeau': album.FLG_CADEAU,
-      'flg_pret': album.FLG_PRET,
-      'flg_num': album.FLG_NUM,
-    });
-  }
 
   return (
     <View style={[styles.viewStyle, style]}>

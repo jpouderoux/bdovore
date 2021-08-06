@@ -116,12 +116,16 @@ export function createAlbumDict(array, dict) {
   return createDictFromArray(array, dict, (item) => makeAlbumUID(item));
 }
 
-export function createSerieDict(array, dict) {
+export function createSeriesDict(array, dict) {
   return createDictFromArray(array, dict, (item) => item.ID_SERIE);
 }
 
 export function getAlbumIdxInArray(album, dict) {
   return dict ? dict[makeAlbumUID(album)] : null;
+}
+
+export function getSerieIdxInArray(id_serie, dict) {
+  return dict ? dict[id_serie.toString()] : null;
 }
 
 export function addAlbumToArrayAndDict(album, array, dict) {
@@ -130,10 +134,24 @@ export function addAlbumToArrayAndDict(album, array, dict) {
   return idx;
 }
 
+export function addSerieToArrayAndDict(serie, array, dict) {
+  const idx = array.push(serie) - 1;
+  dict[serie.ID_SERIE] = idx;
+  return idx;
+}
+
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
   if (idx) {
     delete dict[makeAlbumUID(album)];
+    array = array.splice(idx, 1);
+  }
+}
+
+export function removeSerieFromArrayAndDict(id_serie, array, dict) {
+  const idx = getSerieIdxInArray(id_serie, dict);
+  if (idx) {
+    delete dict[id_serie];
     array = array.splice(idx, 1);
   }
 }

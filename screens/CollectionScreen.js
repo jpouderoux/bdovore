@@ -30,6 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
+import * as Progress from 'react-native-progress';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -39,7 +40,6 @@ import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers'
 
 import { AlbumItem } from '../components/AlbumItem';
-import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 
 
@@ -61,6 +61,9 @@ function CollectionScreen({ props, navigation }) {
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(0);
+  const [progressRate, setProgressRate] = useState(0);
+
+  let loadTime = 0;
 
   let loadingSteps = 0;
   let [cachedToken, setCachedToken] = useState('');
@@ -111,6 +114,7 @@ function CollectionScreen({ props, navigation }) {
         setFilteredAlbums(null);
         setCollectionSeries([]);
         setCollectionAlbums([]);
+        setProgressRate(0);
         cachedToken = token;
         fetchData();
       }
@@ -163,7 +167,7 @@ function CollectionScreen({ props, navigation }) {
       // For albums, check the status of selected flag
       if (mode === 1) {
         switch (parseInt(filterMode)) {
-          case 1: return item.FLG_LU != 'N';
+          case 1: return item.FLG_LU == 'N';
           case 2: return item.FLG_PRET == 'O';
           case 3: return item.FLG_NUM == 'O';
         }
@@ -188,9 +192,26 @@ function CollectionScreen({ props, navigation }) {
   const fetchData = () => {
     setLoading(true);
     loadingSteps = 3;
+    loadTime = Date.now();
+    CollectionManager.fetchWishlist(navigation, onWishlistFetched);
     CollectionManager.fetchSeries(navigation, onSeriesFetched);
     CollectionManager.fetchAlbums(navigation, onAlbumsFetched);
-    CollectionManager.fetchWishlist(navigation, onWishlistFetched);
+  }
+
+  const makeProgress = (result) => {
+    loadingSteps -= (result.done ? 1 : 0);
+    setLoading(loadingSteps != 0);
+
+    if (loadingSteps == 0) {
+      const millis = Date.now() - loadTime;
+      console.log('Collection loaded in ' + millis / 1000 + ' seconds');
+    }
+
+    if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
+      const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
+      const rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
+      setProgressRate(rate);
+    }
   }
 
   const onSeriesFetched = async (result) => {
@@ -200,8 +221,7 @@ function CollectionScreen({ props, navigation }) {
 
     applyFilters();
 
-    loadingSteps -= (result.done ? 1 : 0);
-    setLoading(loadingSteps != 0);
+    makeProgress(result);
   }
 
   const onAlbumsFetched = async (result) => {
@@ -211,14 +231,13 @@ function CollectionScreen({ props, navigation }) {
 
     applyFilters();
 
-    loadingSteps -= (result.done ? 1 : 0);
-    setLoading(loadingSteps != 0);
+    makeProgress(result);
   }
 
   const onWishlistFetched = (result) => {
     setErrortext(result.error);
-    loadingSteps--;
-    setLoading(loadingSteps != 0);
+
+    makeProgress(result);
   }
 
   const onPressCollectionType = (selectedIndex) => {
@@ -269,11 +288,11 @@ function CollectionScreen({ props, navigation }) {
           containerStyle={{ height: 30, flex: 1, borderRadius: 10, backgroundColor: 'lightgrey' }}
           buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
         />
-        {loading ? <SmallLoadingIndicator /> : null}
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
+      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }}/> : null}
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
           <SearchBar
@@ -309,7 +328,7 @@ function CollectionScreen({ props, navigation }) {
         <FlatList
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={(collectionType == 0 ? (filteredSeries ? filteredSeries : collectionSeries) : (filteredAlbums ? filteredAlbums : collectionAlbums))}
+          data={(collectionType == 0 ? (filteredSeries ? filteredSeries : global.collectionSeries) : (filteredAlbums ? filteredAlbums : global.collectionAlbums))}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}

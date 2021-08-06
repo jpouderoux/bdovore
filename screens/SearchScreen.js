@@ -101,10 +101,12 @@ function SearchScreen({ navigation }) {
     if (ean) {
       let params = (ean.length > 10) ? { EAN: ean } : { ISBN: ean };
       APIManager.fetchAlbum((result) => {
-        if (result.error == '') {
+        if (result.error == '' && result.items.length > 0) {
           navigation.push('Album', { item: result.items[0] })
         } else {
-          Alert.alert("Aucun album trouvé avec ce code. Essayez la recherche textuelle avec le nom de la série ou de l'album.");
+          Alert.alert(
+            "Aucun album trouvé",
+            "Aucun album trouvé avec ce code. Essayez la recherche textuelle avec le nom de la série ou de l'album.");
         }
       }, params);
     }

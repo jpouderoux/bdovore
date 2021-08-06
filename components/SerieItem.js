@@ -28,10 +28,12 @@
 
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-
 import CommonStyles from '../styles/CommonStyles';
+
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
+import CollectionManager from '../api/CollectionManager';
+
 import { CoverImage } from './CoverImage';
 import { RatingStars } from './RatingStars';
 
@@ -40,6 +42,8 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
   const onPressSerie = (navigation, item) => {
     navigation.push('Serie', { item });
   }
+
+  const nbUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(item);
 
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
@@ -52,9 +56,9 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
           <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
             {item.LIB_FLG_FINI_SERIE}
           </Text> : null}
-          {(item.NB_USER_ALBUM) ? (
+          {(nbUserAlbums > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
-              {Helpers.pluralWord(item.NB_USER_ALBUM, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
+              {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(nbUserAlbums, 'album')} dans la base {'\n'}
           </Text>) : null}
           {(item.nb_album) ?
             <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>

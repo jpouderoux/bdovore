@@ -46,6 +46,20 @@ function concatParamsToURL(url, params) {
   return encodeURI(url);
 }
 
+const GETHeaders = new Headers({
+  'Accept-Encoding': 'gzip, deflate',
+  'Content-Type': 'application/json',
+});
+
+const fetchZIP = async(url) => {
+  console.log(url);
+  return fetch(url, {
+    method: 'GET',
+    compress: true,
+    headers: GETHeaders,
+  });
+};
+
 export async function checkForToken(navigation = null) {
  // const navigation = useNavigation();
   // Move to login page if no token available
@@ -98,7 +112,6 @@ export function loginBdovore(pseudo, passwd, callback) {
   })
     .then((response) => response.json())
     .then((responseJson) => {
-      //console.log(responseJson);
       if (responseJson.Error === '') {
         console.log("New token: " + responseJson.Token);
         callback(formatResult(true, responseJson.Token));
@@ -113,7 +126,7 @@ export function loginBdovore(pseudo, passwd, callback) {
 }
 
 export async function fetchJSON(request, context, callback, params = {},
-  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 100) {
+  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000) {
 
   const formatResult = (items = [], error = '', done = true, totalItems = null) => {
     return {
@@ -140,26 +153,33 @@ export async function fetchJSON(request, context, callback, params = {},
   if (multipage && datamode) {
     url += '&page=1&length='+ pageLength;
   }
-  console.log(url);
-  fetch(url)
+
+  fetchZIP(url)
     .then((response) => response.json())
     .then((json) => {
       let data = datamode ? json.data : json;
-      //console.log(datamode ? json.data : json);
 
-      // get total number of items and compute number of pages to fetch
+      // Get total number of items and compute number of pages to fetch
       let nbItems = (multipage && datamode) ? json[multipageTotalField] : null;
       let nbPages = (multipage && datamode) ? Math.ceil(nbItems / pageLength) : 1;
 
-      callback(formatResult(data, '', nbPages == 1, nbItems));
+      callback(formatResult(data, '', nbPages === 1, nbItems));
 
-      for (let i = 2; i <= nbPages; i++) {
+      const loadPage = (page) => {
+        const url = baseUrl + '&page=' + page + '&length=' + pageLength;
         //console.log("Fetching page " + i + '/' + nbPages);
-        const url = baseUrl + '&page=' + i + '&length=' + pageLength;
-        fetch(url).then((response) => response.json()).then((json) => {
-          data.push(...json.data);
-          callback(formatResult(data, '', i == nbPages, nbItems));
-        });
+        fetchZIP(url)
+          .then((response) => response.json())
+          .then((json) => {
+            data.push(...json.data);
+            callback(formatResult(data, '', page === nbPages ? true : false, nbItems));
+          });
+      }
+      // Perform all pages request at once. It is far far faster than
+      // making them iteratively once the previous has been fetched.
+      // Will it create an overload serverside?
+      for (let i = 2; i <= nbPages; i++) {
+        loadPage(i);
       }
     })
     .catch((error) => {
@@ -179,7 +199,7 @@ export async function fetchCollectionData(request, context, callback, params = {
   }, ... params}, true, true, (request === 'Userserie') ? 'nbserie' : 'nbTotal');
 }
 
-export async function fetchSerie(id_serie, context, callback, params = {}) {
+export async function fetchSerie(id_serie, callback, params = {}) {
 
   fetchJSON('Serie', null, callback, {...{
     id_serie: id_serie,
@@ -187,7 +207,7 @@ export async function fetchSerie(id_serie, context, callback, params = {}) {
   }, ...params});
 }
 
-export async function fetchSerieAlbums(id_serie, context, callback, params = {}) {
+export async function fetchSerieAlbums(id_serie, callback, params = {}) {
 
   fetchJSON('Album', null, callback, {
     ...{
@@ -247,8 +267,7 @@ export async function fetchWishlist(context, callback, params = {}) {
 export async function fetchSimilAlbums(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });
 
-  console.log(url);
-  fetch(url)
+  fetchZIP(url)
     .then((response) => response.json())
     .then((json) => {
       callback({ error: '', items: json, nbItems: Object.keys(json).length,});
@@ -262,8 +281,7 @@ export async function fetchSimilAlbums(id_tome, callback) {
 export async function fetchAlbumComments(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', { id_tome: id_tome, });
 
-  console.log(url);
-  fetch(url)
+  fetchZIP(url)
     .then((response) => response.json())
     .then((json) => {
       callback({ error: '', items: json, nbItems: Object.keys(json).length, });
@@ -284,8 +302,7 @@ export async function sendAlbumComment(id_tome, callback, note = 0, comment = ''
        comment: comment
      });
 
-  console.log(url);
-  fetch(url)
+  fetchZIP(url)
     .then((response) => {
       callback({ error: (response.status != '200') });
     })
@@ -319,8 +336,7 @@ export async function updateAlbumInCollection(id_tome, callback, params = {}) {
       id_tome: id_tome,
     }, ...params});
 
-  console.log(url);
-  fetch(url)
+  fetchZIP(url)
     .then((response) => {
       callback({ error: (response.status != '200') });
     })
@@ -339,8 +355,7 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
     }, ...params
   });
 
-  console.log(url);
-  fetch(url)
+  fetchZIP(url)
     .then((response) => {
       callback({ error: (response.status != '200') });
     })

@@ -122,7 +122,7 @@ function AlbumScreen({ route, navigation }) {
   const onShowSerieScreen = async () => {
 
     setLoading(true);
-    APIManager.fetchSerie(album.ID_SERIE, {}, (result) => {
+    APIManager.fetchSerie(album.ID_SERIE, (result) => {
       setLoading(false);
       if (result.error == '') {
         navigation.push('Serie', { item: result.items[0] });
