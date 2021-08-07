@@ -45,15 +45,15 @@ let newsModeMap = {
 };
 
 function createUserNewsSection(data = []) {
-  return { title: 'Mon actualité', data: data };
+  return { title: 'Mon actualité', data };
 }
 
 function createUserNewsToComeSection(data = []) {
-  return { title: 'A paraître', data: data };
+  return { title: 'A paraître', data };
 }
 
 function createNewsSection(data = []) {
-  return { title: 'Albums tendances', data: data };
+  return { title: 'Albums tendances', data };
 }
 
 function NewsScreen({ navigation }) {
@@ -67,6 +67,7 @@ function NewsScreen({ navigation }) {
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   const [refresh, setRefresh] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
   let [cachedToken, setCachedToken] = useState('');
 
   Helpers.checkForToken(navigation);
@@ -77,8 +78,7 @@ function NewsScreen({ navigation }) {
         setCachedToken(token);
         cachedToken = token;
         console.log("refresh news data");
-        fetchUserNewsData();
-        fetchNewsData(newsMode);
+        fetchData();
       }
     }).catch(() => { });
   }
@@ -107,6 +107,11 @@ function NewsScreen({ navigation }) {
     setFilteredUserNewsToComeDataArray(
       createUserNewsToComeSection(Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[newsMode])));
   }, [newsMode]);
+
+  const fetchData = () => {
+    fetchUserNewsData();
+    fetchNewsData(newsMode);
+  }
 
   const fetchUserNewsData = async () => {
     setLoading(true);
@@ -183,7 +188,6 @@ function NewsScreen({ navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {loading ? <SmallLoadingIndicator/> : null}
         <SectionList
           maxToRenderPerBatch={6}
           windowSize={10}
@@ -195,6 +199,8 @@ function NewsScreen({ navigation }) {
             <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
           extraData={refresh}
+          onRefresh={fetchData}
+          refreshing={loading}
         />
       </View>
     </View>

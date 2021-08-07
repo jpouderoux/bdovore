@@ -37,7 +37,6 @@ import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 
 
@@ -68,28 +67,23 @@ function ToCompleteScreen({ navigation }) {
       }
     }).catch(() => { });
   }
-  useEffect(() => {
-    refreshDataIfNeeded();
-    // Make sure data is refreshed when login/token changed
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(new Date().getTime());
-    });
-    return willFocusSubscription;
-  }, []);
 
   useEffect(() => {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
+      //console.log('focus');
+      // setAlbums(JSON.parse(JSON.stringify(albums)));
+      // setSeries(JSON.parse(JSON.stringify(series)));
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
   }, [cachedToken]);
 
+
   const makeProgress = (result) => {
     loadingSteps -= (result.done ? 1 : 0);
     setLoading(loadingSteps > 0);
-    console.log(loadingSteps);
 
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
@@ -101,7 +95,7 @@ function ToCompleteScreen({ navigation }) {
 
   const onAlbumsFetched = async (result) => {
     console.log('albums ' + (result.done ? ' done' : 'in progress'));
-    console.log(result.items.length + ' albums to complete fetched');
+    console.log(result.items.length + ' albums fetched so far');
     nbTotalAlbums = result.totalItems;
     setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
     setErrortext(result.error);
@@ -169,7 +163,8 @@ function ToCompleteScreen({ navigation }) {
         renderSectionHeader={({ section }) => (
           <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
         stickySectionHeadersEnabled={false}
-        extraData={refresh}
+        onRefresh={fetchData}
+        refreshing={loading}
       />
     </View>
   )

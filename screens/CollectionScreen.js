@@ -195,6 +195,7 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const makeProgress = (result) => {
+    console.log(loadingSteps);
     loadingSteps -= (result.done ? 1 : 0);
     setLoading(loadingSteps != 0);
 
@@ -222,6 +223,7 @@ function CollectionScreen({ props, navigation }) {
 
   const onAlbumsFetched = async (result) => {
     setErrortext(result.error);
+    console.log(result);
     nbTotalAlbums = result.totalItems;
 
     applyFilters();
@@ -332,6 +334,8 @@ function CollectionScreen({ props, navigation }) {
             length: AlbumItemHeight,
             offset: AlbumItemHeight * index,
             index })}
+          onRefresh={fetchData}
+          refreshing={loading}
         />
       </View>
 

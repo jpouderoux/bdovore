@@ -155,7 +155,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>
-          <CollectionMarkers item={album} />
+          <CollectionMarkers item={album} updateCallback={route.params.updateCallback} />
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Info Album</Text>
         </View>
         <View>

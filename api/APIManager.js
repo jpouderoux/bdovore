@@ -91,7 +91,7 @@ export function reloginBdovore(navigation) {
 
 export function loginBdovore(pseudo, passwd, callback) {
   const formatResult = (connected, token, error = '') => {
-    return { connected: connected, token: token, error: error}; }
+    return { connected, token, error }; }
 
   console.log("Login...");
   if (!pseudo) {
@@ -129,12 +129,13 @@ export async function fetchJSON(request, context, callback, params = {},
   datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000) {
 
   const formatResult = (items = [], error = '', done = true, totalItems = null) => {
+    const nbItems = Object.keys(items).length;
     return {
-      nbItems: Object.keys(items).length,
-      items: items,
-      error: error,
-      done: done,
-      totalItems: (totalItems ? totalItems : Object.keys(items).length)
+      nbItems,
+      items,
+      error,
+      done,
+      totalItems: (totalItems ? totalItems : nbItems)
     };
   }
 
@@ -160,7 +161,7 @@ export async function fetchJSON(request, context, callback, params = {},
       let data = datamode ? json.data : json;
 
       // Get total number of items and compute number of pages to fetch
-      let nbItems = (multipage && datamode) ? json[multipageTotalField] : null;
+      let nbItems = (multipage && datamode) ? parseInt(json[multipageTotalField]) : null;
       let nbPages = (multipage && datamode) ? Math.ceil(nbItems / pageLength) : 1;
 
       callback(formatResult(data, '', nbPages === 1, nbItems));

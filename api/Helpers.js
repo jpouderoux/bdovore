@@ -182,5 +182,5 @@ export function getAuteurs(album) {
 }
 
 export function makeSection(title = '', data = []) {
-  return { title: title, data: data };
+  return { title, data };
 }

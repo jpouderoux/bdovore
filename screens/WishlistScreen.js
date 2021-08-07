@@ -39,14 +39,12 @@ function WishlistScreen({ navigation }) {
 
   const [filterByDate, setFilterByDate] = useState(false);
   const [filteredData, setFilteredData] = useState(null);
-  const [refresh, setRefresh] = useState(1);
 
   Helpers.checkForToken(navigation);
 
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
     const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(new Date().getTime());
       refreshData();
     });
     return willFocusSubscription;
@@ -92,7 +90,6 @@ function WishlistScreen({ navigation }) {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}
-        extraData={refresh}
         getItemLayout={(data, index) => ({
           length: AlbumItemHeight,
           offset: AlbumItemHeight * index,

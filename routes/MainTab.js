@@ -89,26 +89,26 @@ const onSharePress = async (item) => {
 function CollectionScreens({ route, navigation }) {
   return (
     <CollectionStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
-        <CollectionStack.Screen name='Ma collection'
-          component={CollectionScreen}
-          options={({ route }) => ({
-            headerLeft: () => accountButton(navigation)
-          })} />
-        <CollectionStack.Screen name='Serie' component={SerieScreen}
-          options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
-        <CollectionStack.Screen name='Album' component={AlbumScreen}
-          options={({ route }) => ({
-            title: route.params.item.TITRE_TOME,
-            headerRight: () => shareButton(route.params.item)
-          })} />
-        <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
-          options={{ title: 'Mon commentaire',
-            presentation: 'modal', gestureDirection: 'vertical' }} />
-        <CollectionStack.Screen name='Comments' component={CommentsScreen}
-          options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
-      <CollectionStack.Screen name="Login" component={LoginScreen}
-        options={{ presentation: 'modal', gestureDirection: 'vertical', headerShown: false }}/>
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', animationEnabled: false }}>
+      <CollectionStack.Screen name='Ma collection'
+        component={CollectionScreen}
+        options={({ route }) => ({
+          headerLeft: () => accountButton(navigation)
+        })} />
+      <CollectionStack.Screen name='Serie' component={SerieScreen}
+        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+      <CollectionStack.Screen name='Album' component={AlbumScreen}
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareButton(route.params.item)
+        })} />
+      <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
+        options={{
+          title: 'Mon commentaire',
+          presentation: 'modal', gestureDirection: 'vertical'
+        }} />
+      <CollectionStack.Screen name='Comments' component={CommentsScreen}
+        options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
     </CollectionStack.Navigator>
   );
 }
@@ -196,11 +196,11 @@ function SearchScreens({ navigation }) {
   );
 }
 
-function MainTab() {
+function MainTab2() {
 
   const setTabBarIonicons = (icon, params) => {
     return (
-      <Ionicons name={icon} color={params.color} size={params.size}/>
+      <Ionicons name={icon} color={params.color} size={params.size} />
     );
   };
 
@@ -225,8 +225,9 @@ function MainTab() {
         name='Wishlist'
         component={WishlistScreens}
         options={{
-          tabBarIcon: (p) =>  {
-            return setTabBarMatComIcons('heart', p); }
+          tabBarIcon: (p) => {
+            return setTabBarMatComIcons('heart', p);
+          }
         }}
       />
       <Tab.Screen
@@ -252,7 +253,8 @@ function MainTab() {
         component={NewsScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatIcons('fiber-new', p); }
+            return setTabBarMatIcons('fiber-new', p);
+          }
         }}
       />
       <Tab.Screen
@@ -265,6 +267,17 @@ function MainTab() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+const RootStack = createStackNavigator();
+
+function MainTab() {
+  return (
+    <RootStack.Navigator mode="modal" headerMode="none">
+      <RootStack.Screen name="MainTab2" component={MainTab2} />
+      <RootStack.Screen name="Login" component={LoginScreen} />
+    </RootStack.Navigator>
   );
 }
 

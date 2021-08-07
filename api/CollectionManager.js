@@ -167,7 +167,6 @@ class CCollectionManager {
   }
 
   removeAlbumFromCollection(album) {
-
     // Remove the album from the collection
     APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
 
@@ -182,9 +181,16 @@ class CCollectionManager {
         console.log('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
       }
     }
+
+    this.resetAlbumFlags(album);
   }
 
   addAlbumToWishlist(album) {
+    let idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
+    if (idx >= 0) {
+      console.log("trying to add an album in wishlist twice!");
+      return;
+    }
     APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
       'id_edition': album.ID_EDITION,
       'flg_achat': 'O',
@@ -200,7 +206,6 @@ class CCollectionManager {
   }
 
   removeAlbumFromWishlist(album) {
-
     album.FLG_ACHAT = 'N';
 
     // Delete the album from the server collection
@@ -265,7 +270,7 @@ class CCollectionManager {
     if (!retalb) {
       retalb = global.wishlistAlbums.find(alb =>
       (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
-      console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
+      //console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
     }
     return retalb ? retalb : album;
   }

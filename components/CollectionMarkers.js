@@ -49,38 +49,33 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const [showAllMarks, setShowAllMarks] = useState(false);
   const [album, setAlbum] = useState(item);
 
-  if (album != item) {
-    setAlbum(item);
-    //console.log(Helpers.makeAlbumUID(item));
-  }
+  const refresh = () => {
 
-  useEffect(() => {
-    const isInCollec = CollectionManager.isAlbumInCollection(item);
+    const isInCollec = CollectionManager.isAlbumInCollection(album);
     setGotIt(isInCollec);
     setShowAllMarks(reduceMode ? false : isInCollec);
     let alb;
-    const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
+    const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
     if (idx >= 0) {
-      alb = global.wishlistAlbums[idx];
-      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist');
+      setAlbum(global.wishlistAlbums[idx]);
+      console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' edition ' + album.ID_EDITION + ' found in wishlist');
+      console.log(' with flag: ' + album.FLG_ACHAT);
       setGotIt(false);
       setWantIt(true);
-    }
-    else {
-      const idx = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
+    } else {
+      const idx = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
       if (idx >= 0) {
-        alb = global.collectionAlbums[idx];
-        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        setAlbum(global.collectionAlbums[idx]);
+        console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' edition ' + album.ID_EDITION + ' found in collection');
         setGotIt(true);
         setWantIt(false);
-        setReadIt(alb.FLG_LU === 'O');
-        setLendIt(alb.FLG_PRET === 'O');
-        setNumEd(alb.FLG_NUM === 'O');
-        setGift(alb.FLG_CADEAU === 'O');
+        setReadIt(album.FLG_LU === 'O');
+        setLendIt(album.FLG_PRET === 'O');
+        setNumEd(album.FLG_NUM === 'O');
+        setGift(album.FLG_CADEAU === 'O');
       } else {
-        alb = item;
-        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
-        CollectionManager.resetAlbumFlags(item);
+        console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' edition ' + album.ID_EDITION + ' not found in collection or wishlist');
+        CollectionManager.resetAlbumFlags(album);
         setGotIt(false);
         setWantIt(false);
         setReadIt(false);
@@ -89,9 +84,14 @@ export function CollectionMarkers({ item, style, reduceMode }) {
         setGift(false);
       }
     }
+    //setAlbum(item);
     //console.log(alb);
-    setAlbum(alb);
-  }, [album]);
+    //setAlbum(alb);
+  }
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {
@@ -116,6 +116,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const onWantIt = async () => {
     // Switch the want it flag
     const wantIt = !(album.FLG_ACHAT && album.FLG_ACHAT != 'N');
+    console.log("flag: "  + album.FLG_ACHAT);
     setWantIt(wantIt);
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album);
@@ -123,6 +124,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     else {
       CollectionManager.removeAlbumFromWishlist(album);
     }
+    item.FLG_ACHAT = wantIt ? 'O' : 'N';
   };
 
   const onReadIt = async () => {

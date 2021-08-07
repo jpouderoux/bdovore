@@ -39,12 +39,12 @@ import { RatingStars } from './RatingStars';
 
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen }) {
 
-  const onPressAlbum = (navigation, item) => {
+  const onPressAlbum = () => {
     navigation.push('Album', { item, dontShowSerieScreen });
   }
 
   return (
-    <TouchableOpacity key={index} onPress={() => onPressAlbum(navigation, item)}>
+    <TouchableOpacity key={index} onPress={onPressAlbum}>
       <View style={{ flexDirection: 'row', }}>
         <CoverImage source={APIManager.getAlbumCoverURL(item)} />
         <View style={CommonStyles.itemTextContent}>
@@ -56,7 +56,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           </Text>
           <RatingStars note={item.MOYENNE_NOTE_TOME} />
           {collectionMode ? null :
-            <CollectionMarkers item={item} style={styles.markersStyle} reduceMode={true}/>
+            <CollectionMarkers item={item} style={styles.markersStyle} reduceMode={true} />
           }
         </View>
       </View>
