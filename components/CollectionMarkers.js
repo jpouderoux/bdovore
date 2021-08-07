@@ -47,50 +47,57 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const [numEd, setNumEd] = useState(false);
   const [gift, setGift] = useState(false);
   const [showAllMarks, setShowAllMarks] = useState(false);
-  const [album, setAlbum] = useState(null);
-  const [idTome, setIdTome] = useState(0);
-  let cachedIdTome = 0;
+  const [album, setAlbum] = useState(item);
+
+  if (album != item) {
+    setAlbum(item);
+    //console.log(Helpers.makeAlbumUID(item));
+  }
 
   useEffect(() => {
-    if (cachedIdTome != item.ID_TOME) {
-      cachedIdTome = item.ID_TOME;
-      setIdTome(item.ID_TOME);
-    }
     const isInCollec = CollectionManager.isAlbumInCollection(item);
     setGotIt(isInCollec);
     setShowAllMarks(reduceMode ? false : isInCollec);
-  }, []);
-
-  useEffect(() => {
-    let alb = item;
+    let alb;
     const idx = Helpers.getAlbumIdxInArray(item, global.wishlistAlbumsDict);
     if (idx >= 0) {
       alb = global.wishlistAlbums[idx];
+      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist');
       setGotIt(false);
       setWantIt(true);
-      console.log("Album found in wishlist");
     }
-    else
-    {
+    else {
       const idx = Helpers.getAlbumIdxInArray(item, global.collectionAlbumsDict);
       if (idx >= 0) {
-        setGotIt(true);
         alb = global.collectionAlbums[idx];
+        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        setGotIt(true);
         setWantIt(false);
         setReadIt(alb.FLG_LU === 'O');
         setLendIt(alb.FLG_PRET === 'O');
         setNumEd(alb.FLG_NUM === 'O');
         setGift(alb.FLG_CADEAU === 'O');
-        console.log("Album found in collection");
+      } else {
+        alb = item;
+        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+        CollectionManager.resetAlbumFlags(item);
+        setGotIt(false);
+        setWantIt(false);
+        setReadIt(false);
+        setLendIt(false);
+        setNumEd(false);
+        setGift(false);
       }
     }
+    //console.log(alb);
     setAlbum(alb);
-  }, [idTome]);
+  }, [album]);
 
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {
       // If album is not collection yet, let's add it
       setGotIt(true);
+      setWantIt(false);
       setShowAllMarks(reduceMode ? false : true);
 
       // Add album to collection & remove it from the wishlist

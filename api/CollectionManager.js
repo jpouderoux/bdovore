@@ -144,9 +144,12 @@ class CCollectionManager {
     // Remove the album from the wishlist if needed
     Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
     console.log('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
+    album.FLG_ACHAT = 'N';
 
     // Add the album in local collection and increment the serie's counter
     Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
+    album.DATE_AJOUT = Helpers.getNowDateString();
+
     let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
     if (idx === null || idx == undefined) {
       console.log('serie '+ album.ID_SERIE + ' not found in collection, let\'s add it');
@@ -206,7 +209,15 @@ class CCollectionManager {
     // Remove the album from the collection
     Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
 
-    console.log('album ' + album.ID_TOME + ' removed from the wishlist');
+    console.log('album ' + album.ID_TOME + ' removed from the wishlist: ' + this.isAlbumInWishlist(album));
+  }
+
+  resetAlbumFlags(album) {
+    album.FLG_ACHAT = 'N';
+    album.FLG_LU = 'N';
+    album.FLG_PRET = 'N';
+    album.FLG_NUM = 'N';
+    album.FLG_CADEAU = 'N';
   }
 
   setAlbumReadFlag(album, flag) {
@@ -233,10 +244,10 @@ class CCollectionManager {
     APIManager.updateAlbumInCollection(album.ID_TOME, () => { }, {
       'id_edition': album.ID_EDITION,
       'flg_achat': 'N',
-      'flg_lu': album.FLG_LU,
-      'flg_cadeau': album.FLG_CADEAU,
-      'flg_pret': album.FLG_PRET,
-      'flg_num': album.FLG_NUM,
+      'flg_lu': album.FLG_LU ? album.FLG_LU : 'N',
+      'flg_cadeau': album.FLG_CADEAU ? album.FLG_CADEAU : 'N',
+      'flg_pret': album.FLG_PRET ? album.FLG_PRET : 'N',
+      'flg_num': album.FLG_NUM ? album.FLG_NUM : 'N',
     });
   }
 
@@ -246,6 +257,17 @@ class CCollectionManager {
 
   isAlbumInWishlist(album) {
     return Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict) >= 0;
+  }
+
+  getFirstAlbumEditionOfSerieInCollection(album) {
+    let retalb = global.collectionAlbums.find(alb =>
+      (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
+    if (!retalb) {
+      retalb = global.wishlistAlbums.find(alb =>
+      (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
+      console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
+    }
+    return retalb ? retalb : album;
   }
 
   getNbOfUserAlbumsInSerie(serie) {

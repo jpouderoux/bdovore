@@ -108,7 +108,7 @@ function CollectionScreens({ route, navigation }) {
         <CollectionStack.Screen name='Comments' component={CommentsScreen}
           options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
       <CollectionStack.Screen name="Login" component={LoginScreen}
-        options={{ presentation: 'modal', gestureDirection: 'vertical' }}/>
+        options={{ presentation: 'modal', gestureDirection: 'vertical', headerShown: false }}/>
     </CollectionStack.Navigator>
   );
 }

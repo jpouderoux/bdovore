@@ -53,8 +53,8 @@ function CollectionScreen({ props, navigation }) {
   const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
-  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
-  const [nbTotalSeries, setNbTotalSeries] = useState(0);
+  let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
+  let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
@@ -106,8 +106,8 @@ function CollectionScreen({ props, navigation }) {
         setCachedToken(token);
         setKeywords('');
         setSortMode(0);
-        setNbTotalSeries(0);
-        setNbTotalAlbums(0);
+        nbTotalSeries = 0;
+        nbTotalAlbums = 0;
         setFilteredSeries(null);
         setFilteredAlbums(null);
         setProgressRate(0);
@@ -207,12 +207,13 @@ function CollectionScreen({ props, navigation }) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
       const rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
       setProgressRate(rate);
+      //console.log("progress rate " + rate + " nbtotal:" + nbTotalItems + " loaded: " + parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()));
     }
   }
 
   const onSeriesFetched = async (result) => {
     setErrortext(result.error);
-    setNbTotalSeries(result.totalItems);
+    nbTotalSeries = result.totalItems;
 
     applyFilters();
 
@@ -221,7 +222,7 @@ function CollectionScreen({ props, navigation }) {
 
   const onAlbumsFetched = async (result) => {
     setErrortext(result.error);
-    setNbTotalAlbums(result.totalItems);
+    nbTotalAlbums = result.totalItems;
 
     applyFilters();
 

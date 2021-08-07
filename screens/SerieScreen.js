@@ -79,21 +79,22 @@ function SerieScreen({ route, navigation }) {
     // Sort albums by type
     for (let i = 0; i < result.items.length; i++) {
       let section = 0;
-      const serie = result.items[i];
-      if (serie.FLG_TYPE_TOME == 1) {
+      const album = result.items[i];
+      if (album.FLG_TYPE_TOME == 1) {
         section = 2; // Coffret
       } else {
-        if (serie.FLG_INT_TOME == 'O') {
+        if (album.FLG_INT_TOME == 'O') {
           section = 1; // Intégrale
         } else {
-          if (serie.TITRE_TOME.endsWith('TL') || serie.TITRE_TOME.endsWith('TT')) {
+          if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')) {
             section = 3; // Edition spéciale
           } else {
             section = 0; // Album
           }
         }
       }
-      newdata[section].data.push(serie);
+      album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+      newdata[section].data.push(album);
     }
 
     // Sort albums by tome number

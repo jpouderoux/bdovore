@@ -45,8 +45,8 @@ function ToCompleteScreen({ navigation }) {
 
   const [albums, setAlbums] = useState(Helpers.makeSection());
   const [series, setSeries] = useState(Helpers.makeSection());
-  const [nbTotalAlbums, setNbTotalAlbums] = useState(0);
-  const [nbTotalSeries, setNbTotalSeries] = useState(0);
+  let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
+  let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(1);
@@ -94,7 +94,7 @@ function ToCompleteScreen({ navigation }) {
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
       const rate = parseFloat(loadedAlbums + loadedSeries) / nbTotalItems;
-      console.log(loadedAlbums + ", " + loadedSeries + " rate : " + rate + "   " + nbTotalAlbums + " , "+nbTotalSeries);
+      //console.log(loadedAlbums + ", " + loadedSeries + " rate : " + rate + "   " + nbTotalAlbums + " , "+ nbTotalSeries);
       setProgressRate(rate);
     }
   }
@@ -102,7 +102,7 @@ function ToCompleteScreen({ navigation }) {
   const onAlbumsFetched = async (result) => {
     console.log('albums ' + (result.done ? ' done' : 'in progress'));
     console.log(result.items.length + ' albums to complete fetched');
-    setNbTotalAlbums(result.totalItems);
+    nbTotalAlbums = result.totalItems;
     setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
     setErrortext(result.error);
     loadedAlbums = result.items.length;
@@ -113,7 +113,7 @@ function ToCompleteScreen({ navigation }) {
   const onSeriesFetched = async (result) => {
     console.log('series ' + (result.done ? ' done' : 'in progress'));
     console.log(result.items.length + ' series to complete fetched')
-    setNbTotalSeries(result.totalItems);
+    nbTotalSeries = result.totalItems;
     setSeries(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'série'), result.items));
     setErrortext(result.error);
     loadedSeries = result.items.length;
@@ -127,8 +127,8 @@ function ToCompleteScreen({ navigation }) {
     loadingSteps = 2;
     setAlbums(Helpers.makeSection());
     setSeries(Helpers.makeSection());
-    setNbTotalAlbums(0);
-    setNbTotalSeries(0);
+    nbTotalAlbums = 0;
+    nbTotalSeries = 0;
     loadedAlbums = 0;
     loadedSeries = 0;
     setErrortext('');
