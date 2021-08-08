@@ -48,14 +48,13 @@ function AlbumScreen({ route, navigation }) {
   const [editionIndex, setEditionIndex] = useState(0);
   const [editionsLoaded, setEditionsLoaded] = useState(false);
   const [errortext, setErrortext] = useState('');
-  //const [album, setAlbum] = useState(route.params.item);
+  const [album, setAlbum] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
   const [similAlbums, setSimilAlbums] = useState([]);
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
 
-  const album = route.params.item;
   const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
@@ -77,6 +76,14 @@ function AlbumScreen({ route, navigation }) {
     setAlbumEditionsData(result.items);
     setErrortext(result.error);
     setLoading(false);
+
+    // Initialize the edition index with the current album edition
+    for (let i = 0; i < result.items.length; i++) {
+      if (result.items[i].ID_EDITION == album.ID_EDITION ) {
+        setEditionIndex(i);
+        break;
+      }
+    }
   }
 
   const onSimilFetched = (result) => {
@@ -98,7 +105,7 @@ function AlbumScreen({ route, navigation }) {
   const onChooseEdition = (index) => {
     setShowEditionsChooser(false);
     setEditionIndex(index);
-    Object.assign(album, albumEditionsData[index]);
+    setAlbum(albumEditionsData[index]);
   }
 
   const onSimilPress = (item) => {
