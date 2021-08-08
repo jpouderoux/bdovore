@@ -48,13 +48,14 @@ function AlbumScreen({ route, navigation }) {
   const [editionIndex, setEditionIndex] = useState(0);
   const [editionsLoaded, setEditionsLoaded] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [album, setAlbum] = useState(route.params.item);
+  //const [album, setAlbum] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [showEditionsChooser, setShowEditionsChooser] = useState(0);
   const [similAlbums, setSimilAlbums] = useState([]);
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
 
+  const album = route.params.item;
   const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
@@ -97,7 +98,7 @@ function AlbumScreen({ route, navigation }) {
   const onChooseEdition = (index) => {
     setShowEditionsChooser(false);
     setEditionIndex(index);
-    setAlbum(albumEditionsData[index]);
+    Object.assign(album, albumEditionsData[index]);
   }
 
   const onSimilPress = (item) => {
@@ -155,7 +156,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>
-          <CollectionMarkers item={album} updateCallback={route.params.updateCallback} />
+          <CollectionMarkers item={album} />
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Info Album</Text>
         </View>
         <View>
