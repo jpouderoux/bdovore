@@ -211,7 +211,7 @@ class CCollectionManager {
     // Delete the album from the server collection
     APIManager.deleteAlbumInCollection(album.ID_EDITION, () => { });
 
-    // Remove the album from the collection
+    // Remove the album from the wishlist
     Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
 
     console.log('album ' + album.ID_TOME + ' removed from the wishlist: ' + this.isAlbumInWishlist(album));
@@ -262,6 +262,16 @@ class CCollectionManager {
 
   isAlbumInWishlist(album) {
     return Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict) >= 0;
+  }
+
+  getAlbumInCollection(album) {
+    const idx = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
+    return idx >= 0 ? global.collectionAlbums[idx] : null;
+  }
+
+  getAlbumInWishlist(album) {
+    const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
+    return idx >= 0 ? global.wishlistAlbums[idx] : null;
   }
 
   getFirstAlbumEditionOfSerieInCollection(album) {

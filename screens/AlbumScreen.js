@@ -176,13 +176,14 @@ function AlbumScreen({ route, navigation }) {
           <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
           <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text>Edition(s) : </Text>
+            <Text>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">
+              {albumEditionsData.length > 1 ?
               <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: 'lightgrey' }}>
                 {' '}{album.NOM_EDITION}{' '}
-              </Text>
+              </Text> :  <Text>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
           <AchatSponsorIcon album={album} />

@@ -74,18 +74,24 @@ export async function checkForToken(navigation = null) {
   return '';
 }
 
-export function reloginBdovore(navigation) {
+export function reloginBdovore(navigation, callback = null) {
 
-  AsyncStorage.multiGet('pseudo', 'passwd')
+  AsyncStorage.multiGet(['pseudo', 'passwd'])
     .then((response) => {
-      let pseudo = response[0][1];
-      let passwd = response[1][1];
+      const pseudo = response[0][1];
+      const passwd = response[1][1];
       loginBdovore(pseudo, passwd, (response) => {
         AsyncStorage.setItem('token', response.token);
+        console.log("New token " + response.token + " fetched!");
+        if (callback) {
+          callback();
+        }
       });
     })
     .catch((error) => {
-      navigation.navigate('Login');
+      if (navigation) {
+        navigation.navigate('Login');
+      }
     });
 }
 
@@ -126,7 +132,7 @@ export function loginBdovore(pseudo, passwd, callback) {
 }
 
 export async function fetchJSON(request, context, callback, params = {},
-  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000) {
+  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000, retry = 5) {
 
   const formatResult = (items = [], error = '', done = true, totalItems = null) => {
     const nbItems = Object.keys(items).length;
@@ -184,8 +190,14 @@ export async function fetchJSON(request, context, callback, params = {},
       }
     })
     .catch((error) => {
-      console.error("Error: " + error);
-      callback(formatResult([], error.toString()));
+      if (retry > 0) {
+        console.log("Retry " + retry);
+        reloginBdovore(context ? context.navigation : null, () => {
+          fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);});
+        } else {
+        console.error("Error: " + error);
+        callback(formatResult([], error.toString()));
+      }
     });
 };
 

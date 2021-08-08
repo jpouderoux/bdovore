@@ -28,6 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -38,7 +39,6 @@ import { AlbumItem } from '../components/AlbumItem';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
-
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
@@ -46,6 +46,8 @@ function SerieScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
+
+  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh data serie " + serie.ID_SERIE);
@@ -123,7 +125,7 @@ function SerieScreen({ route, navigation }) {
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} />
         <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
-          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {serie.NB_ALBUM}{'    '}
+          {serie && CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {serie.NB_ALBUM}{'    '}
         </Text>
       </View>
       {errortext != '' ? (

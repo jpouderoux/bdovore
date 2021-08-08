@@ -78,7 +78,6 @@ const shareButton = (item) => {
 }
 
 const onSharePress = async (item) => {
-  console.log("share");
   Share.share({
     message: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME,
     url: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME

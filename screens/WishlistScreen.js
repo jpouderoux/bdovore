@@ -28,6 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -40,6 +41,8 @@ function WishlistScreen({ navigation }) {
   const [filterByDate, setFilterByDate] = useState(false);
   const [filteredData, setFilteredData] = useState(null);
 
+  //const isFocused = useIsFocused();
+
   Helpers.checkForToken(navigation);
 
   useEffect(() => {
@@ -49,6 +52,10 @@ function WishlistScreen({ navigation }) {
     });
     return willFocusSubscription;
   }, []);
+
+  /*useFocusEffect(useCallback(() => {
+    refreshData();
+  }));*/
 
   useEffect(() => {
     refreshData();

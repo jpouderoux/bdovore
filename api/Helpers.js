@@ -142,7 +142,7 @@ export function addSerieToArrayAndDict(serie, array, dict) {
 
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
-  if (idx) {
+  if (idx >= 0) {
     delete dict[makeAlbumUID(album)];
     array = array.splice(idx, 1);
   }
@@ -150,7 +150,7 @@ export function removeAlbumFromArrayAndDict(album, array, dict) {
 
 export function removeSerieFromArrayAndDict(id_serie, array, dict) {
   const idx = getSerieIdxInArray(id_serie, dict);
-  if (idx) {
+  if (idx >= 0) {
     delete dict[id_serie];
     array = array.splice(idx, 1);
   }
@@ -175,9 +175,7 @@ export function removeHTMLTags(text) {
 export function getAuteurs(album) {
   let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
   auteursArray = auteursArray.filter((item) => item != null);
-  auteursArray = auteursArray.filter(function (item, pos, self) {
-    return self.indexOf(item) == pos;
-  });
+  auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
   return auteursArray.join(' / ');
 }
 

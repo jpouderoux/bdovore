@@ -91,7 +91,6 @@ function NewsScreen({ navigation }) {
     const willFocusSubscription = navigation.addListener('focus', () => {
       console.log(new Date().getTime());
       setRefresh(new Date().getTime());
-      console.log(refresh);
       refreshDataIfNeeded();
     });
     return willFocusSubscription;

@@ -29,6 +29,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
+import { useIsFocused } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -41,6 +42,7 @@ import CollectionManager from '../api/CollectionManager';
 export function CollectionMarkers({ item, style, reduceMode }) {
 
   const [showAllMarks, setShowAllMarks] = useState(false);
+  const [initAlbum, setInitAlbum] = useState({});
   const [album, setAlbum] = useState(item);
   const [isOwn, setIsOwn] = useState(false);
   const [isWanted, setIsWanted] = useState(false);
@@ -49,41 +51,47 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const [isNum, setIsNum] = useState(false);
   const [isGift, setIsGift] = useState(false);
 
-  const refresh = () => {
+  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
-    const isInCollec = CollectionManager.isAlbumInCollection(album);
-    setShowAllMarks(reduceMode ? false : isInCollec);
-    const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
-    let alb;
-    if (idx >= 0) {
-      alb = global.wishlistAlbums[idx];
-      setIsOwn(false);
-      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist');
-      console.log(' with flag: ' + alb.FLG_ACHAT);
+  const refresh = () => {
+    setInitAlbum(item);
+    if (!item) { return; }
+    //console.log("REFRESH MARKERS FOR ALBUM: " + item);
+    let alb = null;
+    alb = CollectionManager.getAlbumInWishlist(item);
+    if (alb) {
+        setShowAllMarks(false);
+        setIsOwn(false);
+        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist');
+        console.log(' with flag: ' + alb.FLG_ACHAT);
     } else {
-      const idx = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
-      if (idx >= 0) {
-        alb = global.collectionAlbums[idx];
+      alb = CollectionManager.getAlbumInCollection(item);
+      if (alb) {
+        setShowAllMarks(showAllMarks);
         setIsOwn(true);
         console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
-      } else {
-        alb = item;
-        setIsOwn(false);
-        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
-        CollectionManager.resetAlbumFlags(alb);
       }
     }
-    setIsWanted(alb.FLG_ACHAT == 'O');
-    setIsRead(alb.FLG_LU == 'O');
-    setIsLoan(alb.FLG_PRET == 'O');
-    setIsNum(alb.FLG_NUM == 'O');
-    setIsGift(alb.FLG_CADEAU == 'O');
+    if (!alb) {
+      alb = item;
+      setShowAllMarks(false);
+      setIsOwn(false);
+      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+      CollectionManager.resetAlbumFlags(alb);
+    }
+
+    //console.log(alb);
+    setIsWanted(alb.FLG_ACHAT && alb.FLG_ACHAT == 'O');
+    setIsRead(alb.FLG_LU && alb.FLG_LU == 'O');
+    setIsLoan(alb.FLG_PRET && alb.FLG_PRET == 'O');
+    setIsNum(alb.FLG_NUM && alb.FLG_NUM == 'O');
+    setIsGift(alb.FLG_CADEAU && alb.FLG_CADEAU == 'O');
     setAlbum(alb);
   }
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [item]);
 
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {
@@ -110,7 +118,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     const wantIt = !(album.FLG_ACHAT === 'O');
     setIsWanted(wantIt);
     album.FLG_ACHAT = wantIt ? 'O' : 'N';
-    console.log("flag: "  + album.FLG_ACHAT);
+    console.log(album.TITRE_TOME + " flag: "  + album.FLG_ACHAT);
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album);
     }
@@ -147,36 +155,36 @@ export function CollectionMarkers({ item, style, reduceMode }) {
 
       <TouchableOpacity onPress={onGotIt} title="" style={styles.markerStyle}>
         <MaterialCommunityIcons name={CollectionManager.isAlbumInCollection(album) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isAlbumInCollection(album) ? 'green' : 'black'} style={styles.iconStyle} />
-        <Text style={[styles.textStyle, { color: ((isOwn || CollectionManager.isAlbumInCollection(album)) ? 'green' : 'black') }]}>J'ai</Text>
+        <Text style={[styles.textStyle, { color: (( CollectionManager.isAlbumInCollection(album)) ? 'green' : 'black') }]}>J'ai</Text>
       </TouchableOpacity>
 
       {!CollectionManager.isAlbumInCollection(album) ?
         <TouchableOpacity onPress={onWantIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={(isWanted || album.FLG_ACHAT === 'O') ? 'heart' : 'heart-outline'} size={25} color={album.FLG_ACHAT === 'O' ? 'red' : 'black'} style={styles.iconStyle} />
+          <MaterialCommunityIcons name={( album.FLG_ACHAT === 'O') ? 'heart' : 'heart-outline'} size={25} color={album.FLG_ACHAT === 'O' ? 'red' : 'black'} style={styles.iconStyle} />
           <Text style={[styles.textStyle, { color: (album.FLG_ACHAT === 'O' ? 'red' : 'black') }]}>Je veux</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onReadIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={isRead || album.FLG_LU == 'O' ? 'book' : 'book-outline'} size={25} color={album.FLG_LU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
+          <MaterialCommunityIcons name={album.FLG_LU == 'O' ? 'book' : 'book-outline'} size={25} color={album.FLG_LU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
           <Text style={[styles.textStyle, { color: (album.FLG_LU == 'O' ? 'green' : 'black') }]}>Lu</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onLendIt} title="" style={styles.markerStyle}>
-          <Ionicons name={isLoan || album.FLG_PRET == 'O' ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={album.FLG_PRET == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
+          <Ionicons name={ album.FLG_PRET == 'O' ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={album.FLG_PRET == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
           <Text style={[styles.textStyle, { color: (album.FLG_PRET == 'O' ? 'green' : 'black') }]}>Prêt</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onNumEd} title="" style={styles.markerStyle}>
-          <MaterialIcons name={isNum && album.FLG_NUM == 'O' ? 'devices' : 'devices'} size={25} color={album.FLG_NUM == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
+          <MaterialIcons name={album.FLG_NUM == 'O' ? 'devices' : 'devices'} size={25} color={album.FLG_NUM == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
           <Text style={[styles.textStyle, { color: (album.FLG_NUM == 'O' ? 'green' : 'black') }]}>Ed. Num.</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onGift} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={isGift && album.FLG_CADEAU == 'O' ? 'gift' : 'gift-outline'} size={25} color={album.FLG_CADEAU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
+          <MaterialCommunityIcons name={album.FLG_CADEAU == 'O' ? 'gift' : 'gift-outline'} size={25} color={album.FLG_CADEAU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
           <Text style={[styles.textStyle, { color: (album.FLG_CADEAU == 'O' ? 'green' : 'black') }]}>Cadeau</Text>
         </TouchableOpacity> : null}
 
