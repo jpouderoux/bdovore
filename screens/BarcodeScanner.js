@@ -30,7 +30,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 function BarcodeScanner({ route, navigation }) {
@@ -64,17 +64,24 @@ function BarcodeScanner({ route, navigation }) {
           buttonPositive: 'Ok',
           buttonNegative: 'Annuler',
         }}>
+        <View style={{ width: '100%', backgroundColor: 'white', flexDirection: 'row', padding: 5 }}>
+        <Icon
+          name='barcode'
+          size={45}
+          color='black' />
         <Text style={{
           backgroundColor: 'white',
-          fontSize: 18,
-          margin: 5
+          fontSize: 14,
+          margin: 5,
+          paddingLeft: 10,
         }}>
-          {'  '}Scannez le code barre de l'album{'  '}
+          Placez le code-barre à scanner dans la fenêtre.{'\n'}La recherche commence automatiquement.{'  '}
         </Text>
+        </View>
       </RNCamera>
       <View style={styles.bottomOverlay}>
         <TouchableOpacity onPress={handleTorch}>
-          <MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={30} color={torchOn ? 'orange' : 'black'} style={styles.cameraIcon} />
+          <Icon name={torchOn ? 'flashlight' : 'flashlight-off'} size={30} color={torchOn ? 'orange' : 'black'} style={styles.cameraIcon} />
         </TouchableOpacity>
       </View>
     </View>

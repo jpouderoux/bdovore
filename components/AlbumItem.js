@@ -30,7 +30,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 
 import { CoverImage } from './CoverImage';
@@ -47,7 +47,9 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
   return (
     <TouchableOpacity key={index} onPress={onPressAlbum}>
       <View style={{ flexDirection: 'row', }}>
-        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+        <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
+          <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+        </View>
         <View style={CommonStyles.itemTextContent}>
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.TITRE_TOME}

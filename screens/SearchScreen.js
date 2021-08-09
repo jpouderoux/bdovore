@@ -62,6 +62,7 @@ function SearchScreen({ navigation }) {
 
   const onSearch = () => {
     if (keywords == '') {
+      setData([]);
       return;
     }
 
@@ -87,6 +88,11 @@ function SearchScreen({ navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
+  }
+
+  const onSearchCancel = () => {
+    setKeywords('');
+    setData([]);
   }
 
   const onPressTypeButton = (selectedIndex) => {
@@ -129,6 +135,8 @@ function SearchScreen({ navigation }) {
               placeholder={'Rechercher...'}
               onChangeText={onSearchChanged}
               onSubmitEditing={onSearch}
+              onCancel={onSearchCancel}
+              onClear={onSearchCancel}
               value={keywords}
               platform='ios'
               autoCapitalize='none'

@@ -70,7 +70,7 @@ export const CommonStyles = EStyleSheet.create({
   albumImageStyle: {
     marginLeft: 5,
     marginRight: 5,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     width: AlbumImageWidth,
     height: AlbumImageHeight, // respect the aspect ratio
   },

@@ -190,7 +190,8 @@ function SearchScreens({ navigation }) {
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
       <SearchStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: route.params.item.PSEUDO })} />
-      <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner} />
+      <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner}
+        options={({ title: 'Scan code-barre' })} />
     </SearchStack.Navigator>
   );
 }
@@ -219,6 +220,7 @@ function MainTab2() {
     <Tab.Navigator
       initialRouteName='Ma collection'
       screenOptions={{ gestureEnabled: false }}
+      tabBarOptions={{ activeTintColor: 'firebrick' }}
     >
       <Tab.Screen
         name='Wishlist'

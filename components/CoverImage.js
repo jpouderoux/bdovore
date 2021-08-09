@@ -27,29 +27,34 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { Image } from 'react-native-elements';
 
 import { CommonStyles, AlbumImageHeight, AlbumImageWidth } from '../styles/CommonStyles';
 
 
 export function CoverImage({ source, style }) {
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(AlbumImageWidth);
+  const [height, setHeight] = useState(AlbumImageHeight);
 
   useEffect(() => {
     if (width == 0) {
       Image.getSize(source, (srcWidth, srcHeight) => {
-        setWidth(AlbumImageHeight * srcWidth / srcHeight);
+        if (srcHeight > srcWidth) {
+          setWidth(AlbumImageHeight * srcWidth / srcHeight);
+          setHeight(AlbumImageHeight);
+        } else {
+          setWidth(AlbumImageWidth);
+          setWidth(AlbumImageWidth * srcHeight / srcWidth);
+        }
       }, (error) => { console.log(error); });
     }
   });
 
   return (
-    <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-      <Image
-        source={{uri: source}}
-        style={[CommonStyles.albumImageStyle, style, { width } ]}
-        PlaceholderContent={<ActivityIndicator />} />
-    </View>
+    <Image
+      source={{ uri: source }}
+      style={[CommonStyles.albumImageStyle, { width }, style]}
+      PlaceholderContent={<ActivityIndicator />} />
   );
 }
