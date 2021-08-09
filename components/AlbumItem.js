@@ -37,6 +37,7 @@ import { CoverImage } from './CoverImage';
 import { CollectionMarkers } from './CollectionMarkers';
 import { RatingStars } from './RatingStars';
 
+
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen }) {
 
   const onPressAlbum = () => {

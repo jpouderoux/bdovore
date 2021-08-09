@@ -31,6 +31,7 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
+import { useIsFocused } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -42,6 +43,36 @@ import * as Helpers from '../api/Helpers'
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
 
+const collectionTypes = {
+  0: 'série',
+  1: 'album',
+}
+
+const collectionGenres = {
+  0: ['Tout', ''],
+  1: ['BD', ' BD'],
+  2: ['Mangas', ' mangas'],
+  3: ['Comics', ' comics'],
+};
+
+const sortModes = {
+  0: 'Tri par série',
+  1: 'Tri par date d\'ajout',
+}
+
+const filterModes = {
+  0: 'Tous',
+  1: 'Non lu',
+  2: 'Prêt',
+  3: 'Numérique',
+}
+
+const filterModesSearch = {
+  0: 'Rechercher dans tous mes albums...',
+  1: 'Rechercher dans mes albums non lus...',
+  2: 'Rechercher dans mes albums prêtés...',
+  3: 'Rechercher dans mes albums numériques...',
+}
 
 function CollectionScreen({ props, navigation }) {
 
@@ -60,42 +91,11 @@ function CollectionScreen({ props, navigation }) {
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(0);
   const [progressRate, setProgressRate] = useState(0);
-
   let loadTime = 0;
-
   let loadingSteps = 0;
   let [cachedToken, setCachedToken] = useState('');
 
-  const collectionTypes = {
-    0: 'série',
-    1: 'album',
-  }
-
-  const collectionGenres = {
-    0: ['Tout', ''],
-    1: ['BD', ' BD'],
-    2: ['Mangas', ' mangas'],
-    3: ['Comics', ' comics'],
-  };
-
-  const sortModes = {
-    0: 'Tri par série',
-    1: 'Tri par date d\'ajout',
-  }
-
-  const filterModes = {
-    0: 'Tous',
-    1: 'Non lu',
-    2: 'Prêt',
-    3: 'Numérique',
-  }
-
-  const filterModesSearch = {
-    0: 'Rechercher dans tous mes albums...',
-    1: 'Rechercher dans mes albums non lus...',
-    2: 'Rechercher dans mes albums prêtés...',
-    3: 'Rechercher dans mes albums numériques...',
-  }
+  const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
@@ -104,13 +104,6 @@ function CollectionScreen({ props, navigation }) {
       if (token !== cachedToken) {
         console.log('refresh collection data because token changed to ' + token);
         setCachedToken(token);
-        setKeywords('');
-        setSortMode(0);
-        nbTotalSeries = 0;
-        nbTotalAlbums = 0;
-        setFilteredSeries(null);
-        setFilteredAlbums(null);
-        setProgressRate(0);
         cachedToken = token;
         fetchData();
       }
@@ -173,7 +166,6 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const applyFilters = () => {
-
     if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
       setFilteredSeries(null);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(global.collectionAlbums) : null);
@@ -187,6 +179,13 @@ function CollectionScreen({ props, navigation }) {
 
   const fetchData = () => {
     setLoading(true);
+    setKeywords('');
+    setSortMode(0);
+    nbTotalSeries = 0;
+    nbTotalAlbums = 0;
+    setFilteredSeries(null);
+    setFilteredAlbums(null);
+    setProgressRate(0);
     loadingSteps = 3;
     loadTime = Date.now();
     CollectionManager.fetchWishlist(navigation, onWishlistFetched);
@@ -271,12 +270,10 @@ function CollectionScreen({ props, navigation }) {
         <ButtonGroup
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
-          buttons={[
-            {
+          buttons={[{
               element: () => <Text>
                 {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
-            },
-            {
+            },{
               element: () => <Text>
                 {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
             }]}

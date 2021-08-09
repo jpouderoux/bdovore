@@ -39,6 +39,7 @@ import { AlbumItem } from '../components/AlbumItem';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 
+
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
@@ -125,7 +126,7 @@ function SerieScreen({ route, navigation }) {
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} />
         <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
-          {serie && CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {serie.NB_ALBUM}{'    '}
+          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}{'    '}
         </Text>
       </View>
       {errortext != '' ? (

@@ -37,6 +37,7 @@ import CollectionManager from '../api/CollectionManager';
 import { CoverImage } from './CoverImage';
 import { RatingStars } from './RatingStars';
 
+
 export function SerieItem({ navigation, item, index, collectionMode }) {
 
   const onPressSerie = (navigation, item) => {

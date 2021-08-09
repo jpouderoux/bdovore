@@ -31,6 +31,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
+
 class CCollectionManager {
 
   constructor() {

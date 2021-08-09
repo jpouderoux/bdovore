@@ -35,7 +35,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
@@ -67,7 +66,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     } else {
       alb = CollectionManager.getAlbumInCollection(item);
       if (alb) {
-        setShowAllMarks(showAllMarks);
+        setShowAllMarks(!reduceMode);
         setIsOwn(true);
         console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
       }
@@ -118,7 +117,6 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     const wantIt = !(album.FLG_ACHAT === 'O');
     setIsWanted(wantIt);
     album.FLG_ACHAT = wantIt ? 'O' : 'N';
-    console.log(album.TITRE_TOME + " flag: "  + album.FLG_ACHAT);
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album);
     }
@@ -141,6 +139,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
 
   const onNumEd = async () => {
     const numEd = !(album.FLG_NUM == 'O');
+    setIsNum(numEd);
     CollectionManager.setAlbumNumEdFlag(album, numEd);
   };
 
@@ -160,32 +159,32 @@ export function CollectionMarkers({ item, style, reduceMode }) {
 
       {!CollectionManager.isAlbumInCollection(album) ?
         <TouchableOpacity onPress={onWantIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={( album.FLG_ACHAT === 'O') ? 'heart' : 'heart-outline'} size={25} color={album.FLG_ACHAT === 'O' ? 'red' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_ACHAT === 'O' ? 'red' : 'black') }]}>Je veux</Text>
+          <MaterialCommunityIcons name={(album.FLG_ACHAT == 'O') ? 'heart' : 'heart-outline'} size={25} color={(album.FLG_ACHAT == 'O') ? 'red' : 'black'} style={styles.iconStyle} />
+          <Text style={[styles.textStyle, { color: (album.FLG_ACHAT === 'O') ? 'red' : 'black' }]}>Je veux</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onReadIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={album.FLG_LU == 'O' ? 'book' : 'book-outline'} size={25} color={album.FLG_LU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_LU == 'O' ? 'green' : 'black') }]}>Lu</Text>
+          <MaterialCommunityIcons name={(album.FLG_LU == 'O') ? 'book' : 'book-outline'} size={25} color={(album.FLG_LU == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
+          <Text style={[styles.textStyle, { color: (album.FLG_LU == 'O') ? 'green' : 'black' }]}>Lu</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onLendIt} title="" style={styles.markerStyle}>
-          <Ionicons name={ album.FLG_PRET == 'O' ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={album.FLG_PRET == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_PRET == 'O' ? 'green' : 'black') }]}>Prêt</Text>
+          <Ionicons name={(album.FLG_PRET == 'O') ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={(album.FLG_PRET == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
+          <Text style={[styles.textStyle, { color: (album.FLG_PRET == 'O') ? 'green' : 'black' }]}>Prêt</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onNumEd} title="" style={styles.markerStyle}>
-          <MaterialIcons name={album.FLG_NUM == 'O' ? 'devices' : 'devices'} size={25} color={album.FLG_NUM == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_NUM == 'O' ? 'green' : 'black') }]}>Ed. Num.</Text>
+          <MaterialIcons name={(album.FLG_NUM == 'O') ? 'devices' : 'devices'} size={25} color={(album.FLG_NUM == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
+          <Text style={[styles.textStyle, { color: (album.FLG_NUM == 'O') ? 'green' : 'black' }]}>Ed. Num.</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
         <TouchableOpacity onPress={onGift} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={album.FLG_CADEAU == 'O' ? 'gift' : 'gift-outline'} size={25} color={album.FLG_CADEAU == 'O' ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_CADEAU == 'O' ? 'green' : 'black') }]}>Cadeau</Text>
+          <MaterialCommunityIcons name={(album.FLG_CADEAU == 'O') ? 'gift' : 'gift-outline'} size={25} color={(album.FLG_CADEAU == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
+          <Text style={[styles.textStyle, { color: (album.FLG_CADEAU == 'O') ? 'green' : 'black' }]}>Cadeau</Text>
         </TouchableOpacity> : null}
 
     </View>);

@@ -41,7 +41,7 @@ function WishlistScreen({ navigation }) {
   const [filterByDate, setFilterByDate] = useState(false);
   const [filteredData, setFilteredData] = useState(null);
 
-  //const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
@@ -53,9 +53,9 @@ function WishlistScreen({ navigation }) {
     return willFocusSubscription;
   }, []);
 
-  /*useFocusEffect(useCallback(() => {
+  useFocusEffect(useCallback(() => {
     refreshData();
-  }));*/
+  }));
 
   useEffect(() => {
     refreshData();

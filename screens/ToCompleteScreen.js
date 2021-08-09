@@ -31,6 +31,7 @@ import { Text, View } from 'react-native';
 import { SectionList } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Progress from 'react-native-progress';
+import { useIsFocused } from '@react-navigation/native';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
@@ -48,12 +49,13 @@ function ToCompleteScreen({ navigation }) {
   let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(1);
   const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
   let loadingSteps = 0;
   let loadedAlbums = 0;
   let loadedSeries = 0;
+
+  const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
@@ -72,14 +74,10 @@ function ToCompleteScreen({ navigation }) {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      //console.log('focus');
-      // setAlbums(JSON.parse(JSON.stringify(albums)));
-      // setSeries(JSON.parse(JSON.stringify(series)));
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
   }, [cachedToken]);
-
 
   const makeProgress = (result) => {
     loadingSteps -= (result.done ? 1 : 0);

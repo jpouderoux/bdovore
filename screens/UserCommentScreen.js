@@ -58,7 +58,6 @@ function UserCommentScreen({ route, navigation }) {
   const onCommentSaved = (result) => {
     setErrortext(result.error);
     setLoading(false);
-    console.log(result);
     if (result.error == '') {
       navigation.goBack();
     }

@@ -30,6 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
@@ -67,8 +68,9 @@ function NewsScreen({ navigation }) {
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   const [refresh, setRefresh] = useState(1);
-  const [refreshing, setRefreshing] = useState(false);
   let [cachedToken, setCachedToken] = useState('');
+
+  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   Helpers.checkForToken(navigation);
 
