@@ -33,7 +33,12 @@ import { AlbumItem } from '../components/AlbumItem';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export const AlbumItemHeight = windowWidth / 4 * (122 / 90) + 1;
+export const FullAlbumImageWidth = 180;
+export const FullAlbumImageHeight = 244;
+
+export const AlbumImageWidth = windowWidth / 4;
+export const AlbumImageHeight = AlbumImageWidth * (FullAlbumImageHeight / FullAlbumImageWidth);
+export const AlbumItemHeight = AlbumImageHeight + 1;
 
 export const CommonStyles = EStyleSheet.create({
   screenStyle: {
@@ -66,18 +71,18 @@ export const CommonStyles = EStyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     resizeMode: 'cover',
-    width: windowWidth / 4,
-    height: windowWidth / 4 * (122 / 90), // respect the aspect ratio
+    width: AlbumImageWidth,
+    height: AlbumImageHeight, // respect the aspect ratio
   },
   auteurImageStyle: {
     margin: 5,
     resizeMode: 'cover',
-    width: windowWidth / 4,
-    height: windowWidth / 4 * (122 / 90), // respect the aspect ratio
+    width: AlbumImageWidth,
+    height: AlbumImageHeight, // respect the aspect ratio
   },
   fullAlbumImageStyle: {
-    width: 180,
-    height: 244,
+    width: FullAlbumImageWidth,
+    height: FullAlbumImageHeight,
   },
   itemTextWidth: {
     width: (windowWidth / 4) * 3 - 15,

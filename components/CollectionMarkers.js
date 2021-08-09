@@ -61,21 +61,20 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     if (alb) {
         setShowAllMarks(false);
         setIsOwn(false);
-        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist');
-        console.log(' with flag: ' + alb.FLG_ACHAT);
+        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
     } else {
       alb = CollectionManager.getAlbumInCollection(item);
       if (alb) {
         setShowAllMarks(!reduceMode);
         setIsOwn(true);
-        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
       }
     }
     if (!alb) {
       alb = item;
       setShowAllMarks(false);
       setIsOwn(false);
-      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
       CollectionManager.resetAlbumFlags(alb);
     }
 

@@ -26,19 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { Image } from 'react-native-elements';
 
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageHeight, AlbumImageWidth } from '../styles/CommonStyles';
 
 
 export function CoverImage({ source, style }) {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (width == 0) {
+      Image.getSize(source, (srcWidth, srcHeight) => {
+        setWidth(AlbumImageHeight * srcWidth / srcHeight);
+      }, (error) => { console.log(error); });
+    }
+  });
 
   return (
-    <Image
-      source={{ uri: source }}
-      style={[CommonStyles.albumImageStyle, style]}
-      PlaceholderContent={<ActivityIndicator/>} />
+    <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
+      <Image
+        source={{uri: source}}
+        style={[CommonStyles.albumImageStyle, style, { width } ]}
+        PlaceholderContent={<ActivityIndicator />} />
+    </View>
   );
 }

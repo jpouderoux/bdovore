@@ -38,7 +38,7 @@ import { AlbumItem } from '../components/AlbumItem';
 
 function WishlistScreen({ navigation }) {
 
-  const [filterByDate, setFilterByDate] = useState(false);
+  const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
 
   const isFocused = useIsFocused();
@@ -53,9 +53,9 @@ function WishlistScreen({ navigation }) {
     return willFocusSubscription;
   }, []);
 
-  useFocusEffect(useCallback(() => {
-    refreshData();
-  }));
+  /*useFocusEffect(useCallback(() => {
+    //refreshData();
+  }));*/
 
   useEffect(() => {
     refreshData();

@@ -49,7 +49,7 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
-        <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ height: item.nb_album ? 90 : 122 }} />
+        <CoverImage source={APIManager.getSerieCoverURL(item)} /*style={{ height: item.nb_album ? 90 : 122 }}*/ />
         <View style={[CommonStyles.itemTextContent]} >
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
           {(!collectionMode && item.NOTE_SERIE) ? <RatingStars note={item.NOTE_SERIE} /> : null}
