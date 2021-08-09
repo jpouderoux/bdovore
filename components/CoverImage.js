@@ -30,22 +30,36 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Image } from 'react-native-elements';
 
-import { CommonStyles, AlbumImageHeight, AlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 
-
-export function CoverImage({ source, style }) {
+export function CoverImage({ source, style, noResize, largeMode }) {
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
 
-  useEffect(() => {
-    if (width == 0) {
+  /*useEffect(() => {
+    if (!noResize && width == 0) {
       Image.getSize(source, (srcWidth, srcHeight) => {
         if (srcHeight > srcWidth) {
           setWidth(AlbumImageHeight * srcWidth / srcHeight);
           setHeight(AlbumImageHeight);
         } else {
           setWidth(AlbumImageWidth);
-          setWidth(AlbumImageWidth * srcHeight / srcWidth);
+          setHeight(AlbumImageWidth * srcHeight / srcWidth);
+          console.log("ehre");
+        }
+      }, (error) => { console.log(error); });
+    }
+  });
+*/
+  useEffect(() => {
+    if (largeMode) {
+      Image.getSize(source, (srcWidth, srcHeight) => {
+        if (srcWidth > srcHeight) {
+          setWidth(FullAlbumImageHeight * 2);
+          setHeight(FullAlbumImageHeight);
+        } else {
+          setWidth(FullAlbumImageWidth);
+          setHeight(FullAlbumImageHeight);
         }
       }, (error) => { console.log(error); });
     }
@@ -54,7 +68,7 @@ export function CoverImage({ source, style }) {
   return (
     <Image
       source={{ uri: source }}
-      style={[CommonStyles.albumImageStyle, { width }, style]}
-      PlaceholderContent={<ActivityIndicator />} />
+      style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
+      PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
   );
 }

@@ -38,10 +38,15 @@ import { CollectionMarkers } from './CollectionMarkers';
 import { RatingStars } from './RatingStars';
 
 
-export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen }) {
+export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate }) {
 
   const onPressAlbum = () => {
     navigation.push('Album', { item, dontShowSerieScreen });
+  }
+
+  const convertDate = (date) => {
+    //return new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // not supported on react
+    return date.split('-').reverse().join('/');
   }
 
   return (
@@ -56,6 +61,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           </Text>
           <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
             {item.NOM_SERIE} {(item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : ''}{'\n'}
+            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + convertDate(item.DTE_PARUTION) : '' }
           </Text>
           <RatingStars note={item.MOYENNE_NOTE_TOME} />
           {collectionMode ? null :

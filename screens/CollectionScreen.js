@@ -277,15 +277,17 @@ function CollectionScreen({ props, navigation }) {
               element: () => <Text>
                 {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
             }]}
-          containerStyle={{ height: 30, flex: 1, borderRadius: 10, backgroundColor: 'lightgrey' }}
-          buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
+          containerStyle={{ marginLeft: 8, height: 30, flex: 1, borderRadius: 8, backgroundColor: '#eee' }}
+          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
+          selectedButtonStyle={{backgroundColor: 'white'}}
+          innerBorderStyle={{ width: 0 }}
         />
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
       {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }}/> : null}
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', marginTop: -8 }}>
         <View style={{ flex: 1 }}>
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
@@ -296,14 +298,14 @@ function CollectionScreen({ props, navigation }) {
             platform='ios'
             autoCapitalize='none'
             autoCorrect={false}
-            inputContainerStyle={{ height: 20, backgroundColor: 'lightgrey' }}
+            inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
             inputStyle={{ fontSize: 12 }}
             cancelButtonTitle='Annuler'
           />
         </View>
         {collectionType == 1 ?
           <View style={{ flexDirection: 'row', flex: 0 }}>
-            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8 }}>
+            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 0 }}>
               <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
             </TouchableOpacity>
             <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>

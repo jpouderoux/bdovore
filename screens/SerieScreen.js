@@ -112,7 +112,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true });
+    return AlbumItem({ navigation, item, index });
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);
@@ -124,7 +124,7 @@ function SerieScreen({ route, navigation }) {
           {Helpers.pluralWord(serie.NB_TOME, 'tome')}{'\n\n'}
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
-        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} />
+        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} noResize={true} />
         <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
           {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}{'    '}
         </Text>

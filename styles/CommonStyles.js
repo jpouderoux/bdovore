@@ -81,6 +81,7 @@ export const CommonStyles = EStyleSheet.create({
     height: AlbumImageHeight, // respect the aspect ratio
   },
   fullAlbumImageStyle: {
+    resizeMode: 'contain',
     width: FullAlbumImageWidth,
     height: FullAlbumImageHeight,
   },

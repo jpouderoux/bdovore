@@ -164,7 +164,7 @@ function NewsScreen({ navigation }) {
   };
 
   const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
+    return AlbumItem({ navigation, item, index, showEditionDate:true });
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);
@@ -179,8 +179,10 @@ function NewsScreen({ navigation }) {
             { element: () => <Text>{newsModeMap[0]}</Text> },
             { element: () => <Text>{newsModeMap[1]}</Text> },
             { element: () => <Text>{newsModeMap[2]}</Text> }]}
-          containerStyle={{ height: 40, margin: 0, backgroundColor: 'lightgrey' }}
-          buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
+          containerStyle={{ height: 40, margin: 0, borderRadius: 8, backgroundColor: '#eee' }}
+          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
+          selectedButtonStyle={{ backgroundColor: 'white' }}
+          innerBorderStyle={{ width: 0 }}
         />
       </View>
       <View style={{ flex: 1 }}>

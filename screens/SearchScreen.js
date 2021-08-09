@@ -100,7 +100,7 @@ function SearchScreen({ navigation }) {
   };
 
   const onBarcodeSearch = () => {
-    navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); }});
+    navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); } });
   }
 
   const onSearchWithEAN = async (ean) => {
@@ -130,7 +130,7 @@ function SearchScreen({ navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View>
         <View style={{ flexDirection: 'row', margin: 0 }}>
-          <View style={{ width:'85%' }}>
+          <View style={{ width: '85%' }}>
             <SearchBar
               placeholder={'Rechercher...'}
               onChangeText={onSearchChanged}
@@ -141,14 +141,14 @@ function SearchScreen({ navigation }) {
               platform='ios'
               autoCapitalize='none'
               autoCorrect={false}
-              inputContainerStyle={{ height: 20 }}
+              inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
               cancelButtonTitle='Annuler'
             />
-            </View>
+          </View>
           <TouchableOpacity
             onPress={onBarcodeSearch}
             title="Search"
-            style={{marginLeft:8}}>
+            style={{ marginLeft: 8 }}>
             <Icon
               name='barcode-scan'
               size={45}
@@ -156,16 +156,18 @@ function SearchScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={{ marginLeft: -10, marginRight: -10, marginTop: -5, marginBottom: -5 }}>
-        <ButtonGroup
-          onPress={onPressTypeButton}
-          selectedIndex={searchMode}
-          buttons={[
-            { element: () => <Text>Série</Text> },
-            { element: () => <Text>Album</Text> },
-            { element: () => <Text>Auteur</Text> }]}
-          containerStyle={{ height: 40, margin: 0, backgroundColor: 'lightgrey' }}
-          buttonStyle={{ borderRadius: 10, backgroundColor: 'lightgrey' }}
-        />
+          <ButtonGroup
+            onPress={onPressTypeButton}
+            selectedIndex={searchMode}
+            buttons={[
+              { element: () => <Text>Série</Text> },
+              { element: () => <Text>Album</Text> },
+              { element: () => <Text>Auteur</Text> }]}
+            containerStyle={{ height: 30, borderRadius: 8, backgroundColor: '#eee' }}
+            buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
+            selectedButtonStyle={{ backgroundColor: 'white' }}
+            innerBorderStyle={{ width: 0 }}
+          />
         </View>
       </View>
       <View style={{ flex: 1 }}>

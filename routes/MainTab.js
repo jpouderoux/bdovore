@@ -88,7 +88,7 @@ const onSharePress = async (item) => {
 function CollectionScreens({ route, navigation }) {
   return (
     <CollectionStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', animationEnabled: false }}>
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black' }}>
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => ({
@@ -221,6 +221,7 @@ function MainTab2() {
       initialRouteName='Ma collection'
       screenOptions={{ gestureEnabled: false }}
       tabBarOptions={{ activeTintColor: 'firebrick' }}
+      animationEnabled={true}
     >
       <Tab.Screen
         name='Wishlist'
