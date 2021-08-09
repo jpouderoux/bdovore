@@ -46,15 +46,15 @@ let newsModeMap = {
 };
 
 function createUserNewsSection(data = []) {
-  return { title: 'Mon actualité', data };
+  return { title: 'Mon actualité', idx: 0, data };
 }
 
 function createUserNewsToComeSection(data = []) {
-  return { title: 'A paraître', data };
+  return { title: 'A paraître', idx: 1, data };
 }
 
 function createNewsSection(data = []) {
-  return { title: 'Albums tendances', data };
+  return { title: 'Albums tendances', idx: 2, data };
 }
 
 function NewsScreen({ navigation }) {
@@ -163,8 +163,8 @@ function NewsScreen({ navigation }) {
     fetchNewsData(selectedIndex);
   };
 
-  const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, showEditionDate:true });
+  const renderAlbum = ({ item, section, index }) => {
+    return AlbumItem({ navigation, item, index, showEditionDate: (section.idx == 1) });
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);
