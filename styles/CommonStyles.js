@@ -119,13 +119,13 @@ export const CommonStyles = EStyleSheet.create({
     fontSize: 14,
   },
   bdfugueIcon: {
-    width: 105,
-    height: 30,
+    width: 200/2,
+    height: 65/2,
     marginRight: 40,
   },
   amazonIcon: {
-    width: 105,
-    height: 30,
+    width: 234/2,
+    height: 60/2,
   },
   sectionStyle: {
     backgroundColor: '#ddd',
