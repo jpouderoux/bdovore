@@ -112,7 +112,15 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
+    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true});
+  }
+
+  const getCounterText = () => {
+    const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
+    if (nbTomes > 0) {
+      return Helpers.pluralWord(nbTomes, 'tome');
+    }
+    return Helpers.pluralWord(serie.NB_ALBUM, 'album');
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);
@@ -121,7 +129,7 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={{ margin: 0, flexDirection: 'row', alignContent: "space-between" }}>
         <Text style={{ marginTop: 10, marginLeft: 10, width: '33%' }}>
-          {Helpers.pluralWord(serie.NB_TOME, 'tome')}{'\n\n'}
+          {getCounterText()}{'\n\n'}
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} noResize={true} />
