@@ -102,10 +102,7 @@ function CollectionScreens({ route, navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <CollectionStack.Screen name='UserComment' component={UserCommentScreen}
-        options={{
-          title: 'Mon commentaire',
-          presentation: 'modal', gestureDirection: 'vertical'
-        }} />
+        options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <CollectionStack.Screen name='Comments' component={CommentsScreen}
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
     </CollectionStack.Navigator>

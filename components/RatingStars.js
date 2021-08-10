@@ -30,20 +30,25 @@ import React from 'react';
 import { View } from 'react-native';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { Rating } from 'react-native-elements';
+import Star from './Star';
 
 
 export function RatingStars({ note, editable, callback }) {
 
+  // Note: in view only mode we use the simple & fast Star component
   return ((note && note > 0) ?
-    <View style={{ marginTop: 5, height: 20, alignItems: 'baseline' }}>
-      <Rating
-        fractions={1}
-        ratingCount={5}
-        imageSize={20}
-        startingValue={note / 2.}
-        tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
-        readonly={editable ? false : true}
-        onFinishRating={callback ? callback : (rate)=>{}}
-      />
+    <View style={{ alignItems: 'baseline' }}>
+      {editable ?
+        <Rating
+          fractions={1}
+          ratingCount={5}
+          imageSize={20}
+          startingValue={note / 2.}
+          tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
+          readonly={editable ? false : true}
+          onFinishRating={callback ? callback : (rate) => { }}
+        /> :
+        <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20 }} starColor={global.isDarkMode ? 'white' : 'black'} />
+      }
     </View> : null);
 }

@@ -156,7 +156,9 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-          <RatingStars note={album.MOYENNE_NOTE_TOME} />
+          <View style={{ marginTop: 10}}>
+            <RatingStars note={album.MOYENNE_NOTE_TOME} />
+          </View>
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
             onPress={() => { navigation.push('Comments', { comments }); }}>

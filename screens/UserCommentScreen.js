@@ -64,11 +64,13 @@ function UserCommentScreen({ route, navigation }) {
   }
 
   return (
-    <View style={[CommonStyles.screenStyle, { margin: 10 }]}>
+    <View style={[CommonStyles.screenStyle, { padding: 10 }]}>
       <View style={{ margin: 10 }}>
         <View style={{ margin: 0, alignItems: 'center' }}>
-          <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-          <RatingStars note={rate} editable={true} callback={setRate} />
+          <Text style={[CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
+          <View style={{ marginVertical: 10, borderWidth: 0.5, borderColor: 'lightgrey' }}>
+            <RatingStars note={rate} editable={true} callback={setRate} />
+          </View>
           <TextInput multiline={true}
             numberOfLines={10}
             editable
