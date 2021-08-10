@@ -158,16 +158,17 @@ export function removeSerieFromArrayAndDict(id_serie, array, dict) {
 
 export function removeHTMLTags(text) {
   if (text) {
-    text = text.replace(/<br>/gi, "\n");
-    text = text.replace(/<\/p>/gi, "\n");
-    text = text.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, "$2");
-    text = text.replace(/<(?:.|\s)*?>/g, "");
-    text = text.replace(/&nbsp;/g, " ");
-    text = text.replace(/&amp;/g, "&");
-    text = text.replace(/&quot;/g, "\"");
-    text = text.replace(/&lt;/g, "<");
-    text = text.replace(/&gt;/g, ">");
-    text = text.replace(/&.*?;/gi, " "); // catch any other "&...;" special chars
+    text = text.replace(/<\!-(.*)\-->/g, '');
+    text = text.replace(/<br>/gi, '\n');
+    text = text.replace(/<\/p>/gi, '\n');
+    text = text.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, '$2');
+    text = text.replace(/<(?:.|\s)*?>/g, '');
+    text = text.replace(/&nbsp;/g, ' ');
+    text = text.replace(/&amp;/g, '&');
+    text = text.replace(/&quot;/g, '\"');
+    text = text.replace(/&lt;/g, '<');
+    text = text.replace(/&gt;/g, '>');
+    text = text.replace(/&.*?;/gi, ' '); // catch any other "&...;" special chars
   }
   return text;
 }
