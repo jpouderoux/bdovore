@@ -124,8 +124,8 @@ export const CommonStyles = EStyleSheet.create({
     marginRight: 40,
   },
   amazonIcon: {
-    width: 234/2,
-    height: 60/2,
+    width: 365/4,
+    height: 130/4,
   },
   sectionStyle: {
     backgroundColor: '#ddd',

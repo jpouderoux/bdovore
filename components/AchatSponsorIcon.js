@@ -48,7 +48,7 @@ export function AchatSponsorIcon({ album }) {
             encodeURI('https://www.amazon.fr/exec/obidos/external-search?tag=bdovorecom-21&mode=books-fr&keyword=' + album.TITRE_TOME)); }}
           title="Acheter sur Amazon"
           style={{ marginTop: 5 }}>
-          <Image source={require('../assets/amazon.jpg')} style={CommonStyles.amazonIcon} />
+          <Image source={require('../assets/amazon.png')} style={CommonStyles.amazonIcon} />
         </TouchableOpacity>
     </View>);
 }
