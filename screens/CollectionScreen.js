@@ -286,7 +286,6 @@ function CollectionScreen({ props, navigation }) {
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
-      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }}/> : null}
       <View style={{ flexDirection: 'row', marginTop: -8 }}>
         <View style={{ flex: 1 }}>
           <SearchBar
@@ -301,7 +300,7 @@ function CollectionScreen({ props, navigation }) {
             inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
             inputStyle={{ fontSize: 12 }}
             cancelButtonTitle='Annuler'
-          />
+            />
         </View>
         {collectionType == 1 ?
           <View style={{ flexDirection: 'row', flex: 0 }}>
@@ -313,6 +312,7 @@ function CollectionScreen({ props, navigation }) {
             </TouchableOpacity>
           </View> : null}
       </View>
+      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10, marginBottom: 4 }}/> : null}
       <View style={{flex:1}}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
