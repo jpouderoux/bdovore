@@ -29,7 +29,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
+import { bdovorgray, CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
@@ -66,15 +66,15 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
           {(!collectionMode && item.NOTE_SERIE) ? <RatingStars note={item.NOTE_SERIE} /> : null}
           {(item.LIB_FLG_FINI_SERIE) ?
-          <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
+          <Text style={[CommonStyles.largerText, { color: bdovorgray, marginTop: 10 }]}>
             {item.LIB_FLG_FINI_SERIE}
           </Text> : null}
           {(nbUserAlbums > 0 && item.NB_ALBUM > 0) ? (
-            <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
+            <Text style={[CommonStyles.itemTextWidth, { color: bdovorgray, marginTop: 15 }]}>
               {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
           </Text>) : null}
           {(item.nb_album) ?
-            <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
+            <Text style={[CommonStyles.largerText, { color: bdovorgray, marginTop: 10 }]}>
               {Helpers.pluralWord(item.nb_album, 'album') + ' ' + Helpers.pluralize(item.nb_album, 'manquant')}
             </Text> : null}
         </View>

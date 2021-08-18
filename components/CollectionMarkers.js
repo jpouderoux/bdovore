@@ -36,6 +36,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CollectionManager from '../api/CollectionManager';
+import { bdovorgray } from '../styles/CommonStyles';
 
 
 export function CollectionMarkers({ item, style, reduceMode }) {
@@ -202,7 +203,7 @@ const styles = EStyleSheet.create({
     textAlign: 'center',
     paddingTop: 3,
     borderWidth: 0.5,
-    borderColor: 'lightgrey',
+    borderColor: bdovorgray,
     paddingLeft: 2,
     width: 32,
     height: 32

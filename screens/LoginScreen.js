@@ -30,7 +30,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { CommonStyles } from '../styles/CommonStyles';
+import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: 'lightgrey',
+    borderColor: bdovorgray,
   },
   registerTextStyle: {
     alignSelf: 'center',

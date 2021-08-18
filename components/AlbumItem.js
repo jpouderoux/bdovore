@@ -30,7 +30,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
-import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
+import { bdovorgray, CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 
 import { CoverImage } from './CoverImage';
@@ -59,7 +59,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.TITRE_TOME}
           </Text>
-          <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
+          <Text style={[CommonStyles.itemTextWidth, { color: bdovorgray, marginTop: 15 }]}>
             {item.NOM_SERIE} {(item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : ''}{'\n'}
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + convertDate(item.DTE_PARUTION) : '' }
           </Text>
