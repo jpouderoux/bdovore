@@ -132,7 +132,7 @@ export function loginBdovore(pseudo, passwd, callback) {
 }
 
 export async function fetchJSON(request, context, callback, params = {},
-  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000, retry = 5) {
+  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 200, retry = 5) {
 
   const formatResult = (items = [], error = '', done = true, totalItems = null) => {
     const nbItems = Object.keys(items).length;
