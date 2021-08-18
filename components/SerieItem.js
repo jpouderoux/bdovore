@@ -41,7 +41,17 @@ import { RatingStars } from './RatingStars';
 export function SerieItem({ navigation, item, index, collectionMode }) {
 
   const onPressSerie = (navigation, item) => {
-    navigation.push('Serie', { item });
+    const nbtomes = Math.max(item.NB_TOME, item.NB_ALBUM);
+
+    if (isNaN(nbtomes)) {
+      APIManager.fetchSerie(item.ID_SERIE, (result) => {
+        if (result.error == '') {
+          navigation.push('Serie', { item: result.items[0] });
+        }
+      });
+    } else {
+      navigation.push('Serie', { item });
+    }
   }
 
   const nbUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(item);
@@ -59,13 +69,13 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
           <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
             {item.LIB_FLG_FINI_SERIE}
           </Text> : null}
-          {(nbUserAlbums > 0) ? (
+          {(nbUserAlbums > 0 && item.NB_ALBUM > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, { color: 'lightgrey', marginTop: 15 }]}>
               {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
           </Text>) : null}
           {(item.nb_album) ?
             <Text style={[CommonStyles.largerText, { color: 'lightgrey', marginTop: 10 }]}>
-              {item.nb_album} albums manquants
+              {Helpers.pluralWord(item.nb_album, 'album') + ' ' + Helpers.pluralize(item.nb_album, 'manquant')}
             </Text> : null}
         </View>
       </View>

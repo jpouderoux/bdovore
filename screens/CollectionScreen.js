@@ -236,7 +236,7 @@ function CollectionScreen({ props, navigation }) {
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
-  };
+  }
 
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(true);

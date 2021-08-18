@@ -47,6 +47,10 @@ export function plural(nb) {
   return nb > 1 ? 's' : '';
 }
 
+export function pluralize(nb, word) {
+  return word + plural(nb);
+}
+
 export function pluralWord(nb, word) {
   return nb + ' ' + word + plural(nb);
 }

@@ -27,13 +27,13 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { SectionList } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
+import { ButtonGroup } from 'react-native-elements';
 
-import { CommonStyles } from '../styles/CommonStyles';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
@@ -43,8 +43,12 @@ import { SerieItem } from '../components/SerieItem';
 
 function ToCompleteScreen({ navigation }) {
 
-  const [albums, setAlbums] = useState(Helpers.makeSection());
-  const [series, setSeries] = useState(Helpers.makeSection());
+  const [albums, setAlbums] = useState([]);
+  const [series, setSeries] = useState([]);
+  const [collectionType, setCollectionType] = useState(0); // 0: Albums, 1: Series
+  const [nbTotalAlbums2, setNbTotalAlbums2] = useState(0);
+  const [nbTotalSeries2, setNbTotalSeries2] = useState(0);
+
   let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
   let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [errortext, setErrortext] = useState('');
@@ -91,50 +95,65 @@ function ToCompleteScreen({ navigation }) {
     }
   }
 
+  const fetchData = () => {
+    setLoading(true);
+    setProgressRate(0);
+    loadingSteps = 2;
+    setErrortext('');
+    fetchSeries();
+    fetchAlbums();
+  }
+
+  const fetchAlbums = () => {
+    setAlbums([]);
+    setNbTotalAlbums(0);
+    setNbTotalAlbums2(0);
+    loadedAlbums = 0;
+    APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
+      .then().catch((error) => console.log(error));
+  }
+
   const onAlbumsFetched = async (result) => {
     console.log('albums ' + (result.done ? ' done' : 'in progress'));
     console.log(result.items.length + ' albums fetched so far');
+    setNbTotalAlbums2(result.totalItems);
     nbTotalAlbums = result.totalItems;
-    setAlbums(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'album'), result.items));
+    setAlbums(result.items);
     setErrortext(result.error);
     loadedAlbums = result.items.length;
 
     makeProgress(result);
   }
 
+  const fetchSeries = () => {
+    setSeries([]);
+    setNbTotalSeries(0);
+    setNbTotalSeries2(0);
+    loadedSeries = 0;
+    APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
+      .then().catch((error) => console.log(error));
+  }
+
   const onSeriesFetched = async (result) => {
     console.log('series ' + (result.done ? ' done' : 'in progress'));
     console.log(result.items.length + ' series to complete fetched')
+    setNbTotalSeries2(result.totalItems);
     nbTotalSeries = result.totalItems;
-    setSeries(Helpers.makeSection(Helpers.pluralWord(result.totalItems, 'série'), result.items));
+    setSeries(result.items);
     setErrortext(result.error);
     loadedSeries = result.items.length;
 
     makeProgress(result);
   }
 
-  const fetchData = () => {
-    setLoading(true);
-    setProgressRate(0);
-    loadingSteps = 2;
-    setAlbums(Helpers.makeSection());
-    setSeries(Helpers.makeSection());
-    nbTotalAlbums = 0;
-    nbTotalSeries = 0;
-    loadedAlbums = 0;
-    loadedSeries = 0;
-    setErrortext('');
-    APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
-      .then().catch((error) => console.log(error));
-    APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
-      .then().catch((error) => console.log(error));
+  const onPressCollectionType = (selectedIndex) => {
+    setCollectionType(parseInt(selectedIndex));
   }
 
   const renderItem = ({ item, index }) => {
-    if (item.IMG_COUV_SERIE) {
-      return SerieItem({ navigation, item, index });
-    } else {
-      return AlbumItem({ navigation, item, index });
+    switch (collectionType) {
+      case 0: return AlbumItem({ navigation, item, index });
+      case 1: return SerieItem({ navigation, item, index });
     }
   }
 
@@ -143,7 +162,24 @@ function ToCompleteScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }}/> : null}
+      <View style={{ flexDirection: 'row', flex: 0 }}>
+        <ButtonGroup
+          onPress={onPressCollectionType}
+          selectedIndex={collectionType}
+          buttons={[{
+            element: () => <Text>
+              {Helpers.pluralWord(nbTotalAlbums2, 'album')}</Text>
+          }, {
+            element: () => <Text>
+              {Helpers.pluralWord(nbTotalSeries2, 'série')}</Text>
+          }]}
+          containerStyle={{ marginLeft: 8, height: 30, flex: 1, borderRadius: 8, backgroundColor: '#eee' }}
+          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
+          selectedButtonStyle={{ backgroundColor: 'white' }}
+          innerBorderStyle={{ width: 0 }}
+        />
+      </View>
+      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }} /> : null}
       {errortext != '' ? (
         <View style={{ alignItems: 'center', marginBottom: 5 }}>
           <Text style={CommonStyles.errorTextStyle}>
@@ -151,16 +187,19 @@ function ToCompleteScreen({ navigation }) {
           </Text>
         </View>
       ) : null}
-      <SectionList
+      <FlatList
+        initialNumToRender={6}
         maxToRenderPerBatch={6}
         windowSize={10}
-        ItemSeparatorComponent={Helpers.renderSeparator}
-        sections={[albums, series].filter(s => s.data.length > 0)}
+        data={(collectionType == 0 ? albums : series)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        renderSectionHeader={({ section }) => (
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
-        stickySectionHeadersEnabled={false}
+        ItemSeparatorComponent={Helpers.renderSeparator}
+        getItemLayout={(data, index) => ({
+          length: AlbumItemHeight,
+          offset: AlbumItemHeight * index,
+          index
+        })}
         onRefresh={fetchData}
         refreshing={loading}
       />
