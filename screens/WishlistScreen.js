@@ -52,10 +52,6 @@ function WishlistScreen({ navigation }) {
     return willFocusSubscription;
   }, []);
 
-  /*useFocusEffect(useCallback(() => {
-    //refreshData();
-  }));*/
-
   useEffect(() => {
     refreshData();
   }, [filterByDate]);

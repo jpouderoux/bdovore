@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { Image, Linking, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, Platform, TouchableOpacity, View } from 'react-native';
 
 import { CommonStyles } from '../styles/CommonStyles';
 

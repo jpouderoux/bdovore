@@ -134,7 +134,7 @@ export const CommonStyles = EStyleSheet.create({
     width: '100%',
   },
   linkTextStyle: {
-    textDecorationLine: 'underline',
+    //textDecorationLine: 'underline',
   }
 });
 

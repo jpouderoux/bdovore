@@ -53,7 +53,7 @@ export function pluralize(nb, word) {
 }
 
 export function pluralWord(nb, word) {
-  return nb + ' ' + word + plural(nb);
+  return nb + ' ' + pluralize(nb, word);
 }
 
 // Move to login page if no token available
@@ -181,6 +181,7 @@ export function removeHTMLTags(text) {
 export function getAuteurs(album) {
   let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
   auteursArray = auteursArray.filter((item) => item != null);
+  //auteursArray = auteursArray.filter((item) => item != '<n&b>');
   auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
   return auteursArray.join(' / ');
 }
