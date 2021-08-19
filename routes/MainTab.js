@@ -40,6 +40,7 @@ import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import CollectionScreen from '../screens/CollectionScreen';
 import CommentsScreen from '../screens/CommentsScreen'
+import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -278,6 +279,7 @@ function MainTab() {
     <RootStack.Navigator mode="modal" headerMode="none">
       <RootStack.Screen name="MainTab2" component={MainTab2} />
       <RootStack.Screen name="Login" component={LoginScreen} />
+      <RootStack.Screen name="Image" component={ImageScreen} />
     </RootStack.Navigator>
   );
 }

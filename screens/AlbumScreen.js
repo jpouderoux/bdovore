@@ -138,6 +138,10 @@ function AlbumScreen({ route, navigation }) {
     });
   }
 
+  const onShowFullscreenCover = () => {
+    navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
+  }
+
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
@@ -152,7 +156,9 @@ function AlbumScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{ margin: 10 }}>
         <View style={{ margin: 10, alignItems: 'center' }}>
-          <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
+          <TouchableOpacity onPress={onShowFullscreenCover}>
+            <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
+          </TouchableOpacity>
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
