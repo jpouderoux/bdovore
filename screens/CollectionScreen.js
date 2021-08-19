@@ -43,6 +43,8 @@ import * as Helpers from '../api/Helpers'
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
 
+const defaultSortMode = 1;
+
 const collectionTypes = {
   0: 'série',
   1: 'album',
@@ -89,7 +91,7 @@ function CollectionScreen({ props, navigation }) {
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
-  const [sortMode, setSortMode] = useState(0);
+  const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
   let loadTime = 0;
   let loadingSteps = 0;
@@ -180,7 +182,7 @@ function CollectionScreen({ props, navigation }) {
   const fetchData = () => {
     setLoading(true);
     setKeywords('');
-    setSortMode(0);
+    setSortMode(defaultSortMode);
     nbTotalSeries = 0;
     nbTotalAlbums = 0;
     setFilteredSeries(null);
@@ -308,7 +310,7 @@ function CollectionScreen({ props, navigation }) {
               <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
             </TouchableOpacity>
             <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
-              <Icon name='sort-variant' size={25} color={sortMode == 0 ? '#222' : 'dodgerblue'} />
+              <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? '#222' : 'dodgerblue'} />
             </TouchableOpacity>
           </View> : null}
       </View>
