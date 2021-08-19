@@ -100,7 +100,7 @@ function AuteurScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
+    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true });
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);

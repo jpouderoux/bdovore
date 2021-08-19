@@ -32,8 +32,8 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 export const bdovored = '#990000';
 export const bdovorgray = '#aaaaaa'; // Same as iOS UIColor.lightGray
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+export const windowWidth = Dimensions.get('window').width;
+export const windowHeight = Dimensions.get('window').height;
 
 export const FullAlbumImageWidth = 180;
 export const FullAlbumImageHeight = 244;
