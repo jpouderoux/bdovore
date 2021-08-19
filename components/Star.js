@@ -6,6 +6,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PropTypes from 'prop-types';
+
 const STAR_COUNT = 5;
 
 // default total score is 5

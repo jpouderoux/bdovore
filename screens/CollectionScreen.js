@@ -43,6 +43,7 @@ import * as Helpers from '../api/Helpers'
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
 
+
 const defaultSortMode = 1;
 
 const collectionTypes = {

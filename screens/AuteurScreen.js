@@ -52,7 +52,7 @@ function AuteurScreen({ route, navigation }) {
   }, []);
 
   const refreshDataIfNeeded = async () => {
-    console.log("refresh auteur data");
+    console.log("refresh author data");
     fetchData();
   }
 
@@ -66,7 +66,7 @@ function AuteurScreen({ route, navigation }) {
   }
 
   const onAuteurAlbumsFetched = async (result) => {
-    console.log("auteur albums fetched");
+    console.log("author albums fetched");
 
     // Sort the albums by serie by putting them in a dictionnary of series
     let data = result.items;

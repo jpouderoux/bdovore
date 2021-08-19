@@ -204,7 +204,7 @@ function ToCompleteScreen({ navigation }) {
         refreshing={loading}
       />
     </View>
-  )
+  );
 }
 
 export default ToCompleteScreen;

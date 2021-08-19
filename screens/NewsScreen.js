@@ -35,7 +35,6 @@ import { useIsFocused } from '@react-navigation/native';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
 import { AlbumItem } from '../components/AlbumItem';
-import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { CommonStyles } from '../styles/CommonStyles';
 
 

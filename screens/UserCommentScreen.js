@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native'
 
 import * as APIManager from '../api/APIManager';
@@ -42,10 +42,6 @@ function UserCommentScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [rate, setRate] = useState(route.params.rate);
   const [comment, setComment] = useState(route.params.comment);
-
-  useEffect(() => {
-
-  }, []);
 
   const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 

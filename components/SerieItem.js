@@ -41,6 +41,7 @@ import { RatingStars } from './RatingStars';
 export function SerieItem({ navigation, item, index, collectionMode }) {
 
   const onPressSerie = (navigation, item) => {
+
     const nbtomes = Math.max(item.NB_TOME, item.NB_ALBUM);
 
     if (isNaN(nbtomes)) {

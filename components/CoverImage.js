@@ -32,25 +32,11 @@ import { Image } from 'react-native-elements';
 
 import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 
+
 export function CoverImage({ source, style, noResize, largeMode }) {
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
 
-  /*useEffect(() => {
-    if (!noResize && width == 0) {
-      Image.getSize(source, (srcWidth, srcHeight) => {
-        if (srcHeight > srcWidth) {
-          setWidth(AlbumImageHeight * srcWidth / srcHeight);
-          setHeight(AlbumImageHeight);
-        } else {
-          setWidth(AlbumImageWidth);
-          setHeight(AlbumImageWidth * srcHeight / srcWidth);
-          console.log("ehre");
-        }
-      }, (error) => { console.log(error); });
-    }
-  });
-*/
   useEffect(() => {
     if (largeMode) {
       Image.getSize(source, (srcWidth, srcHeight) => {
