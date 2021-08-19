@@ -266,6 +266,36 @@ function CollectionScreen({ props, navigation }) {
   const keyExtractor = useCallback((item, index) =>
     collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item));
 
+  const renderHeader = () => {
+    return (
+    <View style={{ flexDirection: 'row', marginTop: -8 }}>
+      <View style={{ flex: 1 }}>
+        <SearchBar
+          placeholder={(collectionType == 1 && filterMode != 0) ?
+            filterModesSearch[filterMode] :
+            'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
+          onChangeText={onSearchChanged}
+          value={keywords}
+          platform='ios'
+          autoCapitalize='none'
+          autoCorrect={false}
+          inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
+          inputStyle={{ fontSize: 12 }}
+          cancelButtonTitle='Annuler'
+        />
+      </View>
+      {collectionType == 1 ?
+        <View style={{ flexDirection: 'row', flex: 0 }}>
+          <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 0 }}>
+            <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
+            <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? '#222' : 'dodgerblue'} />
+          </TouchableOpacity>
+        </View> : null}
+    </View>);
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ flexDirection: 'row', flex:0 }}>
@@ -288,32 +318,7 @@ function CollectionScreen({ props, navigation }) {
           <Ionicons name='library-sharp' size={25} color='#222' />
         </TouchableOpacity>
       </View>
-      <View style={{ flexDirection: 'row', marginTop: -8 }}>
-        <View style={{ flex: 1 }}>
-          <SearchBar
-            placeholder={(collectionType == 1 && filterMode != 0) ?
-              filterModesSearch[filterMode] :
-              'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
-            onChangeText={onSearchChanged}
-            value={keywords}
-            platform='ios'
-            autoCapitalize='none'
-            autoCorrect={false}
-            inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
-            inputStyle={{ fontSize: 12 }}
-            cancelButtonTitle='Annuler'
-            />
-        </View>
-        {collectionType == 1 ?
-          <View style={{ flexDirection: 'row', flex: 0 }}>
-            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 0 }}>
-              <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
-              <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? '#222' : 'dodgerblue'} />
-            </TouchableOpacity>
-          </View> : null}
-      </View>
+
       {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10, marginBottom: 4 }}/> : null}
       <View style={{flex:1}}>
         {errortext != '' ? (
@@ -335,6 +340,7 @@ function CollectionScreen({ props, navigation }) {
             index })}
           onRefresh={fetchData}
           refreshing={loading}
+          ListHeaderComponent={renderHeader}
         />
       </View>
 
