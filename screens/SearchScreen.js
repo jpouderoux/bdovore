@@ -57,28 +57,8 @@ function SearchScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    onSearch();
+    onSearch(keywords);
   }, [searchMode]);
-
-  const onSearch = () => {
-    if (keywords == '') {
-      setData([]);
-      return;
-    }
-
-    setLoading(true);
-    switch (parseInt(searchMode)) {
-      case 0:
-        APIManager.fetchJSON('Serie', null, onSearchFetched, { term: keywords, mode: 1, });
-        break;
-      case 1:
-        APIManager.fetchAlbum(onSearchFetched, { term: keywords });
-        break;
-      case 2:
-        APIManager.fetchJSON('Auteur', null, onSearchFetched, { term: keywords, mode: 2, });
-        break;
-    }
-  };
 
   const onSearchFetched = async (result) => {
     setData(result.items);
@@ -86,8 +66,25 @@ function SearchScreen({ navigation }) {
     setLoading(false);
   }
 
-  const onSearchChanged = (searchText) => {
+  const onSearch = (searchText) => {
     setKeywords(searchText);
+    if (searchText == '') {
+      setData([]);
+      return;
+    }
+
+    setLoading(true);
+    switch (parseInt(searchMode)) {
+      case 0:
+        APIManager.fetchJSON('Serie', null, onSearchFetched, { term: searchText, mode: 1, });
+        break;
+      case 1:
+        APIManager.fetchAlbum(onSearchFetched, { term: searchText });
+        break;
+      case 2:
+        APIManager.fetchJSON('Auteur', null, onSearchFetched, { term: searchText, mode: 2, });
+        break;
+    }
   }
 
   const onSearchCancel = () => {
@@ -133,8 +130,7 @@ function SearchScreen({ navigation }) {
           <View style={{ width: '85%' }}>
             <SearchBar
               placeholder={'Rechercher...'}
-              onChangeText={onSearchChanged}
-              onSubmitEditing={onSearch}
+              onChangeText={onSearch}
               onCancel={onSearchCancel}
               onClear={onSearchCancel}
               value={keywords}

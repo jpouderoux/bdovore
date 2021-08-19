@@ -27,8 +27,11 @@
  */
 
 import AsyncStorage from '@react-native-community/async-storage';
+import Toast from 'react-native-toast-message';
 
-const bdovoreBaseURL = 'https://www.bdovore.com';
+const bdovoreUserAgent = 'bdovore mobile v0.1';
+
+export const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
 
 function getBaseURL(dataMode) {
@@ -47,11 +50,12 @@ function concatParamsToURL(url, params) {
 }
 
 const GETHeaders = new Headers({
+  'User-Agent': bdovoreUserAgent,
   'Accept-Encoding': 'gzip, deflate',
   'Content-Type': 'application/json',
 });
 
-const fetchZIP = async(url) => {
+const fetchZIP = async (url) => {
   console.log(url);
   return fetch(url, {
     method: 'GET',
@@ -61,7 +65,7 @@ const fetchZIP = async(url) => {
 };
 
 export async function checkForToken(navigation = null) {
- // const navigation = useNavigation();
+  // const navigation = useNavigation();
   // Move to login page if no token available
   const token = await AsyncStorage.getItem('token');
   if (token === null && navigation) {
@@ -97,7 +101,8 @@ export function reloginBdovore(navigation, callback = null) {
 
 export function loginBdovore(pseudo, passwd, callback) {
   const formatResult = (connected, token, error = '') => {
-    return { connected, token, error }; }
+    return { connected, token, error };
+  }
 
   console.log("Login...");
   if (!pseudo) {
@@ -112,6 +117,7 @@ export function loginBdovore(pseudo, passwd, callback) {
   return fetch(bdovoreBaseURL + '/auth/gettoken', {
     method: 'POST',
     headers: {
+      'User-Agent': bdovoreUserAgent,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: encodeURI("user_login=" + pseudo + "&user_password=" + passwd)
@@ -126,13 +132,16 @@ export function loginBdovore(pseudo, passwd, callback) {
       }
     })
     .catch((error) => {
-      console.error("Exception: " + error);
-      callback(formatResult(false, '', error.toString()));
+      Helpers.showToast(true,
+        'Erreur de connexion au serveur.',
+        'Vérifiez la connexion internet.',
+        1500);
+      callback(formatResult(false, '', 'Erreur de connexion au serveur.\nVérifiez la connexion internet.'));
     });
 }
 
 export async function fetchJSON(request, context, callback, params = {},
-  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 1000, retry = 5) {
+  datamode = false, multipage = false, multipageTotalField = 'nbTotal', pageLength = 200, retry = 5) {
 
   const formatResult = (items = [], error = '', done = true, totalItems = null) => {
     const nbItems = Object.keys(items).length;
@@ -158,7 +167,7 @@ export async function fetchJSON(request, context, callback, params = {},
   const baseUrl = concatParamsToURL(userMode ? getBaseUserURL(token, request) : getBaseURL(request), params);
   let url = baseUrl;
   if (multipage && datamode) {
-    url += '&page=1&length='+ pageLength;
+    url += '&page=1&length=' + pageLength;
   }
 
   fetchZIP(url)
@@ -193,8 +202,9 @@ export async function fetchJSON(request, context, callback, params = {},
       if (retry > 0) {
         console.log("Retry " + retry);
         reloginBdovore(context ? context.navigation : null, () => {
-          fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);});
-        } else {
+          fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
+        });
+      } else {
         console.error("Error: " + error);
         callback(formatResult([], error.toString()));
       }
@@ -207,17 +217,21 @@ export async function fetchJSONData(request, context, callback, params = {}) {
 
 export async function fetchCollectionData(request, context, callback, params = {}) {
 
-  fetchJSON(request, context, callback, {...{
-    mode: 2,
-  }, ... params}, true, true, (request === 'Userserie') ? 'nbserie' : 'nbTotal');
+  fetchJSON(request, context, callback, {
+    ...{
+      mode: 2,
+    }, ...params
+  }, true, true, (request === 'Userserie') ? 'nbserie' : 'nbTotal');
 }
 
 export async function fetchSerie(id_serie, callback, params = {}) {
 
-  fetchJSON('Serie', null, callback, {...{
-    id_serie: id_serie,
-    mode: 1,
-  }, ...params});
+  fetchJSON('Serie', null, callback, {
+    ...{
+      id_serie: id_serie,
+      mode: 1,
+    }, ...params
+  });
 }
 
 export async function fetchSerieAlbums(id_serie, callback, params = {}) {
@@ -250,7 +264,8 @@ export async function fetchSeriesManquants(context, callback, params = {}) {
 
 export async function fetchNews(origine, context, callback, params = {}) {
 
-  fetchJSON('Actu', context, callback, {...{
+  fetchJSON('Actu', context, callback, {
+    ...{
       origine: origine,
       mode: 2,
       page: 1,
@@ -261,20 +276,24 @@ export async function fetchNews(origine, context, callback, params = {}) {
 
 export async function fetchUserNews(context, callback, params = {}) {
 
-  fetchJSONData('Useractu', context, callback, {...{
-    mode:1,
-    nb_mois:12
-  }, ...params});
+  fetchJSONData('Useractu', context, callback, {
+    ...{
+      mode: 1,
+      nb_mois: 12
+    }, ...params
+  });
 };
 
 export async function fetchWishlist(context, callback, params = {}) {
 
-  fetchJSONData('Useralbum', context, callback, {...{
-    mode: 2,
-    page:1,
-    length:999,
-    flg_achat:'O'
-  }, ...params});
+  fetchJSONData('Useralbum', context, callback, {
+    ...{
+      mode: 2,
+      page: 1,
+      length: 999,
+      flg_achat: 'O'
+    }, ...params
+  });
 };
 
 export async function fetchSimilAlbums(id_tome, callback) {
@@ -283,7 +302,7 @@ export async function fetchSimilAlbums(id_tome, callback) {
   fetchZIP(url)
     .then((response) => response.json())
     .then((json) => {
-      callback({ error: '', items: json, nbItems: Object.keys(json).length,});
+      callback({ error: '', items: json, nbItems: Object.keys(json).length, });
     })
     .catch((error) => {
       console.log('==> error : ' + error.toString())
@@ -309,11 +328,11 @@ export async function sendAlbumComment(id_tome, callback, note = 0, comment = ''
 
   let token = await checkForToken();
   const url = concatParamsToURL(bdovoreBaseURL + '/albumcomment/writecomment' + '?API_TOKEN=' + encodeURI(token),
-     {
-       id_tome: id_tome,
-       note: note,
-       comment: comment
-     });
+    {
+      id_tome: id_tome,
+      note: note,
+      comment: comment
+    });
 
   fetchZIP(url)
     .then((response) => {
@@ -327,9 +346,11 @@ export async function sendAlbumComment(id_tome, callback, note = 0, comment = ''
 
 export async function fetchAlbum(callback, params = {}) {
 
-  fetchJSON('Album', null, callback, {...{
-    mode: 2
-    }, ...params});
+  fetchJSON('Album', null, callback, {
+    ...{
+      mode: 2
+    }, ...params
+  });
 };
 
 export async function fetchAlbumEditions(id_tome, callback, params = {}) {
@@ -344,10 +365,11 @@ export async function fetchAlbumEditions(id_tome, callback, params = {}) {
 export async function updateAlbumInCollection(id_tome, callback, params = {}) {
 
   let token = await checkForToken();
-  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/majcollection' +'?API_TOKEN=' + encodeURI(token), {
+  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/majcollection' + '?API_TOKEN=' + encodeURI(token), {
     ...{
       id_tome: id_tome,
-    }, ...params});
+    }, ...params
+  });
 
   fetchZIP(url)
     .then((response) => {
@@ -379,7 +401,7 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
 }
 
 export function getAlbumCoverURL(item) {
-  return encodeURI(bdovoreBaseURL+ '/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
+  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
 }
 
 export function getSerieCoverURL(item) {

@@ -47,6 +47,8 @@ import SerieScreen from '../screens/SerieScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import UserCommentScreen from '../screens/UserCommentScreen'
 import WishlistScreen from '../screens/WishlistScreen';
+import * as APIManager from '../api/APIManager';
+import * as CommonStyles from '../styles/CommonStyles';
 
 const Tab = createBottomTabNavigator();
 
@@ -78,17 +80,21 @@ const shareButton = (item) => {
 }
 
 const onSharePress = async (item) => {
+  const url = APIManager.bdovoreBaseURL + '/Album?id_tome=' + item.ID_TOME;
   Share.share({
-    message: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME,
-    url: 'https://www.bdovore.com/Album?id_tome=' + item.ID_TOME
-    ,
+    message: url,
+    url: url
   });
 }
 
+const defaultStackOptions = {
+  headerTintColor: global.isDarkMode ? 'white' : CommonStyles.bdovored,
+  headerTruncatedBackTitle: 'Retour'
+};
+
 function CollectionScreens({ route, navigation }) {
   return (
-    <CollectionStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black' }}>
+    <CollectionStack.Navigator screenOptions={defaultStackOptions}>
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => ({
@@ -111,8 +117,7 @@ function CollectionScreens({ route, navigation }) {
 
 function WishlistScreens({ navigation }) {
   return (
-    <WishlistStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
+    <WishlistStack.Navigator screenOptions={defaultStackOptions}>
       <WishlistStack.Screen name='Mes envies BD' component={WishlistScreen} />
       <WishlistStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -131,8 +136,7 @@ function WishlistScreens({ navigation }) {
 
 function ToCompleteScreens({ navigation }) {
   return (
-    <ToCompleteStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
+    <ToCompleteStack.Navigator screenOptions={defaultStackOptions}>
       <ToCompleteStack.Screen name='Albums manquants' component={ToCompleteScreen} />
       <ToCompleteStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -151,8 +155,7 @@ function ToCompleteScreens({ navigation }) {
 
 function NewsScreens({ navigation }) {
   return (
-    <NewsStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
+    <NewsStack.Navigator screenOptions={defaultStackOptions}>
       <NewsStack.Screen name='Actualité' component={NewsScreen} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
@@ -171,8 +174,7 @@ function NewsScreens({ navigation }) {
 
 function SearchScreens({ navigation }) {
   return (
-    <SearchStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : 'black', }}>
+    <SearchStack.Navigator screenOptions={defaultStackOptions}>
       <SearchStack.Screen name='Rechercher' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -217,7 +219,7 @@ function MainTab2() {
     <Tab.Navigator
       initialRouteName='Ma collection'
       screenOptions={{ gestureEnabled: false }}
-      tabBarOptions={{ activeTintColor: 'firebrick' }}
+      tabBarOptions={{ activeTintColor: CommonStyles.bdovored }}
       animationEnabled={true}
     >
       <Tab.Screen

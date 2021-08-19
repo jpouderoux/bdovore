@@ -36,6 +36,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CollectionManager from '../api/CollectionManager';
+import { bdovorgray } from '../styles/CommonStyles';
 
 
 export function CollectionMarkers({ item, style, reduceMode }) {
@@ -93,59 +94,81 @@ export function CollectionMarkers({ item, style, reduceMode }) {
 
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {
-      // If album is not collection yet, let's add it
-      setIsOwn(true);
-      setIsWanted(false);
-      setShowAllMarks(reduceMode ? false : true);
-
       // Add album to collection & remove it from the wishlist
-      CollectionManager.addAlbumToCollection(album);
+      CollectionManager.addAlbumToCollection(album, (result) => {
+        if (!result.error) {
+          // If album was not collection and has been added
+          setIsOwn(true);
+          setIsWanted(false);
+          setShowAllMarks(reduceMode ? false : true);
+        }
+      });
     }
     else {
-      // Album is in collection, let's remove it
-      setIsOwn(false);
-      setIsWanted(false);
-      setShowAllMarks(false);
-
-      CollectionManager.removeAlbumFromCollection(album);
+      CollectionManager.removeAlbumFromCollection(album, (result) => {
+        if (!result.error) {
+          // Album was in collection and has been removed
+          setIsOwn(false);
+          setIsWanted(false);
+          setShowAllMarks(false);
+        }
+      });
     }
   };
 
   const onWantIt = async () => {
     // Switch the want it flag
     const wantIt = !(album.FLG_ACHAT === 'O');
-    setIsWanted(wantIt);
-    album.FLG_ACHAT = wantIt ? 'O' : 'N';
     if (wantIt) {
-      CollectionManager.addAlbumToWishlist(album);
+      CollectionManager.addAlbumToWishlist(album, (result) => {
+        if (!result.error) {
+          setIsWanted(wantIt);
+        }
+      });
     }
     else {
-      CollectionManager.removeAlbumFromWishlist(album);
+      CollectionManager.removeAlbumFromWishlist(album, (result) => {
+        if (!result.error) {
+          setIsWanted(wantIt);
+        }
+      });
     }
   };
 
   const onReadIt = async () => {
     const readIt = !(album.FLG_LU == 'O');
-    setIsRead(readIt);
-    CollectionManager.setAlbumReadFlag(album, readIt);
+    CollectionManager.setAlbumReadFlag(album, readIt, (result) => {
+      if (!result.error) {
+        setIsRead(readIt);
+      }
+    });
   };
 
   const onLendIt = async () => {
     const lendIt = !(album.FLG_PRET == 'O');
-    setIsLoan(lendIt);
-    CollectionManager.setAlbumLendFlag(album, lendIt);
+    CollectionManager.setAlbumLendFlag(album, lendIt, (result) => {
+      if (!result.error) {
+        setIsLoan(lendIt);
+      }
+    });
   };
 
   const onNumEd = async () => {
     const numEd = !(album.FLG_NUM == 'O');
-    setIsNum(numEd);
-    CollectionManager.setAlbumNumEdFlag(album, numEd);
+    CollectionManager.setAlbumNumEdFlag(album, numEd, (result) => {
+      if (!result.error) {
+        setIsNum(numEd);
+      }
+    });
   };
 
   const onGift = async () => {
     const gift = !(album.FLG_CADEAU == 'O');
-    setIsGift(gift);
-    CollectionManager.setAlbumGiftFlag(album, gift);
+    CollectionManager.setAlbumGiftFlag(album, gift, (result) => {
+      if (!result.error) {
+        setIsGift(gift);
+      }
+    });
   };
 
   return (
@@ -202,7 +225,7 @@ const styles = EStyleSheet.create({
     textAlign: 'center',
     paddingTop: 3,
     borderWidth: 0.5,
-    borderColor: 'lightgrey',
+    borderColor: bdovorgray,
     paddingLeft: 2,
     width: 32,
     height: 32

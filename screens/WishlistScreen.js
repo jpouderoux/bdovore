@@ -28,11 +28,10 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
-import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
-
+import { bdovorgray, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 
 
@@ -78,7 +77,7 @@ function WishlistScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, backgroundColor: 'lightgrey' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, backgroundColor: bdovorgray }}>
         <Text style={[{ flex: 1, margin: 5, fontSize: 16}, CommonStyles.bold, CommonStyles.largerText]}>
           {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
         </Text>

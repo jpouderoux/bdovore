@@ -33,7 +33,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import { CommonStyles } from '../styles/CommonStyles';
+import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -159,12 +159,12 @@ function AlbumScreen({ route, navigation }) {
           <View style={{ marginTop: 10}}>
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
+          {loading ? LoadingIndicator() : null}
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
             onPress={() => { navigation.push('Comments', { comments }); }}>
               Lire les avis
             </Text> : null}
-          {loading ? LoadingIndicator() : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>
@@ -186,7 +186,7 @@ function AlbumScreen({ route, navigation }) {
               onPress={onShowEditionsChooser}
               title="Editions">
               {albumEditionsData.length > 1 ?
-              <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: 'lightgrey' }}>
+              <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: bdovorgray }}>
                 {' '}{album.NOM_EDITION}{' '}
               </Text> :  <Text>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>

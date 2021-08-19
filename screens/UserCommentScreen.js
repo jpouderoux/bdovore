@@ -30,7 +30,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, TextInput, View } from 'react-native'
 
 import * as APIManager from '../api/APIManager';
-import { CommonStyles } from '../styles/CommonStyles';
+import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 
@@ -68,7 +68,7 @@ function UserCommentScreen({ route, navigation }) {
       <View style={{ margin: 10 }}>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text style={[CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
-          <View style={{ marginVertical: 10, borderWidth: 0.5, borderColor: 'lightgrey' }}>
+          <View style={{ marginVertical: 10, borderWidth: 0.5, borderColor: bdovorgray }}>
             <RatingStars note={rate} editable={true} callback={setRate} />
           </View>
           <TextInput multiline={true}

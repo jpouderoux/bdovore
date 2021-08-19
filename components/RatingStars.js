@@ -33,11 +33,11 @@ import { Rating } from 'react-native-elements';
 import Star from './Star';
 
 
-export function RatingStars({ note, editable, callback }) {
+export function RatingStars({ note, editable, callback, style }) {
 
   // Note: in view only mode we use the simple & fast Star component
   return ((note && note > 0) ?
-    <View style={{ alignItems: 'baseline' }}>
+    <View style={[{ alignItems: 'baseline' }, style]}>
       {editable ?
         <Rating
           fractions={1}
