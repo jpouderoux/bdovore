@@ -401,14 +401,14 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
 }
 
 export function getAlbumCoverURL(item) {
-  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV ? item.IMG_COUV : 'default.png'));
+  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV ?? 'default.png'));
 }
 
 export function getSerieCoverURL(item) {
-  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : item.IMG_COUV ? item.IMG_COUV : 'default.png'));
+  return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV_SERIE ? item.IMG_COUV_SERIE : item.IMG_COUV ?? 'default.png'));
 }
 
 export function getAuteurCoverURL(item) {
-  return encodeURI(bdovoreBaseURL + '/images/auteur/default_auteur.png');
+  return encodeURI(bdovoreBaseURL + '/images/auteur/' + (item.IMG_AUT ?? 'default_auteur.png'));
 }
 
