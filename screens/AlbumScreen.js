@@ -159,12 +159,12 @@ function AlbumScreen({ route, navigation }) {
           <View style={{ marginTop: 10}}>
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
+          {loading ? LoadingIndicator() : null}
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
             onPress={() => { navigation.push('Comments', { comments }); }}>
               Lire les avis
             </Text> : null}
-          {loading ? LoadingIndicator() : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>

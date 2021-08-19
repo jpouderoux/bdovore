@@ -27,6 +27,9 @@
  */
 
 import AsyncStorage from '@react-native-community/async-storage';
+import Toast from 'react-native-toast-message';
+
+const bdovoreUserAgent = 'bdovore mobile v0.1';
 
 const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
@@ -47,6 +50,7 @@ function concatParamsToURL(url, params) {
 }
 
 const GETHeaders = new Headers({
+  'User-Agent': bdovoreUserAgent,
   'Accept-Encoding': 'gzip, deflate',
   'Content-Type': 'application/json',
 });
@@ -112,6 +116,7 @@ export function loginBdovore(pseudo, passwd, callback) {
   return fetch(bdovoreBaseURL + '/auth/gettoken', {
     method: 'POST',
     headers: {
+      'User-Agent': bdovoreUserAgent,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: encodeURI("user_login=" + pseudo + "&user_password=" + passwd)
@@ -126,8 +131,15 @@ export function loginBdovore(pseudo, passwd, callback) {
       }
     })
     .catch((error) => {
-      console.error("Exception: " + error);
-      callback(formatResult(false, '', error.toString()));
+      Toast.show({
+        visibilityTime: 1500,
+        autoHide: true,
+        position: 'bottom',
+        type: 'error',
+        text1: 'Erreur de connexion au serveur.',
+        text2: 'Vérifiez la connexion internet.'
+      });
+      callback(formatResult(false, '', 'Erreur de connexion au serveur.\nVérifiez la connexion internet.'));
     });
 }
 

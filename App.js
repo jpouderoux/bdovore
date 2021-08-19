@@ -33,6 +33,7 @@ import { Dimensions, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import SplashScreen from "react-native-splash-screen";
+import Toast from 'react-native-toast-message';
 
 import MainTab from './routes/MainTab';
 
@@ -52,6 +53,7 @@ const App: () => Node = () => {
   return (
     <NavigationContainer>
       <MainTab />
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>
   );
 };

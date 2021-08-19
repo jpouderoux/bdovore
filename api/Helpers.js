@@ -28,6 +28,7 @@
 
 import React from 'react';
 import { StyleSheet, View  } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import * as APIManager from '../api/APIManager';
 
@@ -186,4 +187,15 @@ export function getAuteurs(album) {
 
 export function makeSection(title = '', data = []) {
   return { title, data };
+}
+
+export function showToast(isError, text1, text2 = '', duration = 1000) {
+  Toast.show({
+    visibilityTime: duration,
+    autoHide: true,
+    position: 'bottom',
+    type: isError ? 'error' : 'success',
+    text1,
+    text2,
+  });
 }
