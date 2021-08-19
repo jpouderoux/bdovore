@@ -59,11 +59,11 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.TITRE_TOME}
           </Text>
-          <Text style={[CommonStyles.itemTextWidth, { color: bdovorgray, marginTop: 15 }]}>
+          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
+          <Text style={[CommonStyles.itemTextWidth, { color: bdovorgray, marginTop: 5 }]}>
             {item.NOM_SERIE} {(item.NUM_TOME !== null) ? "tome " + item.NUM_TOME : ''}{'\n'}
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + convertDate(item.DTE_PARUTION) : '' }
           </Text>
-          <RatingStars note={item.MOYENNE_NOTE_TOME} />
           {collectionMode ? null :
             <CollectionMarkers item={item} style={styles.markersStyle} reduceMode={true} />
           }
@@ -77,6 +77,6 @@ const styles = EStyleSheet.create({
   markersStyle: {
     position: 'absolute',
     bottom: 0,
-    right: 20,
+    right: 5,
   },
 });

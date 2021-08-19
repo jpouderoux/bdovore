@@ -89,7 +89,10 @@ const onSharePress = async (item) => {
 function CollectionScreens({ route, navigation }) {
   return (
     <CollectionStack.Navigator
-      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : CommonStyles.bdovored }}>
+      screenOptions={{ headerTintColor: global.isDarkMode ? 'white' : CommonStyles.bdovored,
+        headerTruncatedBackTitle: 'Retour'
+    }}
+      >
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => ({
