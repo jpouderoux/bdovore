@@ -31,7 +31,7 @@ import Toast from 'react-native-toast-message';
 
 const bdovoreUserAgent = 'bdovore mobile v0.1';
 
-const bdovoreBaseURL = 'https://www.bdovore.com';
+export const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
 
 function getBaseURL(dataMode) {
