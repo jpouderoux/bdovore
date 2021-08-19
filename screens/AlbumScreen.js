@@ -55,7 +55,7 @@ function AlbumScreen({ route, navigation }) {
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
 
-  const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
+  const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
     getAlbumEditions();
