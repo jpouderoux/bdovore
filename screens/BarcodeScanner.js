@@ -31,6 +31,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 function BarcodeScanner({ route, navigation }) {

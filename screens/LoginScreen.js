@@ -27,10 +27,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Image, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
@@ -80,25 +80,29 @@ function LoginScreen({ navigation }) {
         <Image source={require('../assets/bdovore-167.png')} />
       </View>
       <Text style={{  marginTop: -15, marginBottom: 15, textAlign: 'center' }}>Connectez vous avec votre compte Bdovore</Text>
-      <Text style={{ textAlign: 'center'  }}>Pseudo</Text>
+      <Text style={{ textAlign: 'center'  }}>Login</Text>
       <TextInput
-        style={[styles.SectionStyle, styles.inputStyle]}
-        placeholder="Pseudo"
-        autoCapitalize="none"
-        returnKeyType="next"
+        style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+        placeholder='Login'
+        autoCapitalize='none'
+        returnKeyType='next'
         blurOnSubmit={false}
         value={pseudo}
+        textContentType='username'  // iOS
+        autoCompleteType='username' // Android
         onChangeText={(pseudo) => setPseudo(pseudo)}
       />
       <Text style={{ textAlign: 'center' }}>Mot de passe</Text>
       <TextInput
-        style={[styles.SectionStyle, styles.inputStyle]}
-        placeholder="Mot de passe"
+        style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+        placeholder='Mot de passe'
         secureTextEntry={true}
         value={passwd}
-        autoCapitalize="none"
+        autoCapitalize='none'
         blurOnSubmit={true}
-        returnKeyType="next"
+        returnKeyType='next'
+        textContentType='password'  // iOS
+        autoCompleteType='password' // Android
         onChangeText={(passwd) => setPasswd(passwd)}
       />
       {errortext != '' ? (
@@ -108,70 +112,25 @@ function LoginScreen({ navigation }) {
       ) : null}
       {loading ?
         <SmallLoadingIndicator style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
           padding: 10
         }} /> :
         <View>
           <TouchableOpacity
-            style={styles.buttonStyle}
+            style={CommonStyles.loginConnectionButtonStyle}
             onPress={onLoginPress}
-            title="Login">
-            <Text style={styles.buttonTextStyle}>Se connecter</Text>
+            title='Login'>
+            <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
           </TouchableOpacity>
           <LinkText
             text='Pas encore inscrit ?'
             url='https://www.bdovore.com/compte/inscription?'
-            style={styles.registerTextStyle} />
+            style={[CommonStyles.loginRegisterTextStyle, CommonStyles.linkTextStyle]} />
         </View>
       }
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionStyle: {
-    flexDirection: 'row',
-    height: 80,
-    marginTop: 20,
-    marginLeft: 35,
-    marginRight: 35,
-    margin: 10,
-  },
-  buttonTextStyle: {
-    color: 'white',
-    paddingVertical: 10,
-    fontSize: 16,
-  },
-  buttonStyle: {
-    backgroundColor: 'red',
-    borderWidth: 0,
-    color: 'white',
-    borderColor: 'red',
-    height: 40,
-    alignItems: 'center',
-    borderRadius: 30,
-    marginLeft: 35,
-    marginRight: 35,
-    marginTop: 20,
-    marginBottom: 25,
-  },
-  inputStyle: {
-    margin: 12,
-    color: 'black',
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderWidth: 1,
-    borderRadius: 30,
-    borderColor: bdovorgray,
-  },
-  registerTextStyle: {
-    alignSelf: 'center',
-    color: 'black',
-    fontSize: 14,
-    padding: 10,
-    textAlign: 'center',
-  },
-});
 
 export default LoginScreen;

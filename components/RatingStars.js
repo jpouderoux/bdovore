@@ -31,6 +31,7 @@ import { View } from 'react-native';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { Rating } from 'react-native-elements';
 import Star from './Star';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 export function RatingStars({ note, editable, callback, style }) {
@@ -44,11 +45,11 @@ export function RatingStars({ note, editable, callback, style }) {
           ratingCount={5}
           imageSize={20}
           startingValue={note / 2.}
-          tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
+          //tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
           readonly={editable ? false : true}
           onFinishRating={callback ? callback : (rate) => { }}
         /> :
-        <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20 }} starColor={global.isDarkMode ? 'white' : 'black'} />
+        <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20 }} starColor={CommonStyles.ratingStarColor.color} />
       }
     </View> : null);
 }

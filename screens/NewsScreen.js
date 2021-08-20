@@ -178,10 +178,10 @@ function NewsScreen({ navigation }) {
             { element: () => <Text>{newsModeMap[0]}</Text> },
             { element: () => <Text>{newsModeMap[1]}</Text> },
             { element: () => <Text>{newsModeMap[2]}</Text> }]}
-          containerStyle={{ height: 40, margin: 0, borderRadius: 8, backgroundColor: '#eee' }}
-          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
-          selectedButtonStyle={{ backgroundColor: 'white' }}
-          innerBorderStyle={{ width: 0 }}
+          containerStyle={[CommonStyles.buttonGroupContainerStyle, {height: 40}]}
+          buttonStyle={CommonStyles.buttonGroupButtonStyle}
+          selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
+          innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
       <View style={{ flex: 1 }}>

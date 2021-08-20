@@ -30,9 +30,8 @@ import React, { useState } from 'react';
 import { FlatList, Text, View } from 'react-native'
 
 import * as Helpers from '../api/Helpers';
-import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
-
 
 function CommentsScreen({ route, navigation }) {
 
@@ -43,7 +42,7 @@ function CommentsScreen({ route, navigation }) {
       item.NOTE > 0 ?
         <View style={{ margin: 10 }}>
           <RatingStars note={item.NOTE} />
-          <Text style={{ color: bdovorgray, position: 'absolute', right: 10 }}>{item.username}</Text>
+          <Text style={CommonStyles.commentsTextStyle}>{item.username}</Text>
           <Text>{item.COMMENT}</Text>
         </View> : null);
   }

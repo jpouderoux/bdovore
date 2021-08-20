@@ -106,7 +106,7 @@ export function stripNewsByOrigin(data, origine) {
 
 export function makeAlbumUID(album) {
   // 009633-062007: ID_TOME*1000000 + ID_EDITION
-  return parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION);
+  return album ? parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION) : 0;
 }
 
 export function createDictFromArray(array, dict, hashFun) {
@@ -150,6 +150,8 @@ export function removeAlbumFromArrayAndDict(album, array, dict) {
   if (idx >= 0) {
     delete dict[makeAlbumUID(album)];
     array = array.splice(idx, 1);
+  } else {
+    console.warn('Trying to remove an album that is not in the array/dict!');
   }
 }
 
@@ -158,6 +160,9 @@ export function removeSerieFromArrayAndDict(id_serie, array, dict) {
   if (idx >= 0) {
     delete dict[id_serie];
     array = array.splice(idx, 1);
+  }
+  else {
+    console.warn('Trying to remove a serie that is not in the array/dict!');
   }
 }
 

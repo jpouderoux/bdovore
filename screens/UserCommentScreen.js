@@ -64,19 +64,19 @@ function UserCommentScreen({ route, navigation }) {
       <View style={{ margin: 10 }}>
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text style={[CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
-          <View style={{ marginVertical: 10, borderWidth: 0.5, borderColor: bdovorgray }}>
+          <View style={{ marginVertical: 10 }}>
             <RatingStars note={rate} editable={true} callback={setRate} />
           </View>
           <TextInput multiline={true}
             numberOfLines={10}
             editable
             textContentType={'none'}
-            style={{ marginTop: 10, width: '100%', backgroundColor: '#eee', textAlignVertical: 'top' }}
+            style={CommonStyles.commentsTextInputStyle}
             onChangeText={(comment) => setComment(comment)}
             value={comment}
             autoFocus={true}
           />
-          <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+          <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
             onPress={onSaveComment}>
             Enregistrer votre avis
           </Text>
