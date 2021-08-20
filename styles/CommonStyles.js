@@ -44,7 +44,7 @@ export const AlbumItemHeight = AlbumImageHeight + 1;
 
 export const CommonStyles = EStyleSheet.create({
   screenStyle: {
-    backgroundColor: global.isDarkMode ? 'black' : 'white',
+    backgroundColor: '$bg',
     flex: 1,
   },
 
@@ -86,7 +86,7 @@ export const CommonStyles = EStyleSheet.create({
     height: 130/4,
   },
   iconStyle: {
-    color: global.isDarkMode ? 'white' : 'black', // #222
+    color: '$textcolor', // #222
   },
   iconEnabledStyle: {
     color: 'dodgerblue',
@@ -104,10 +104,10 @@ export const CommonStyles = EStyleSheet.create({
     flex: 1
   },
   defaultText: {
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
   }, 
   itemTitleText: {
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
   },
   itemText: {
     color: bdovorgray,
@@ -131,7 +131,7 @@ export const CommonStyles = EStyleSheet.create({
   },
   sectionStyle: {
     backgroundColor: global.isDarkMode ? '#333' : '#ddd',
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
     width: '100%',
   },
   sectionAlbumStyle: {
@@ -141,8 +141,8 @@ export const CommonStyles = EStyleSheet.create({
   },
   albumEditionButtonStyle: {
     backgroundColor: bdovorgray,
-    borderColor: global.isDarkMode ? 'white' : 'black',
-    color: global.isDarkMode ? 'white' : 'black',
+    borderColor: '$textcolor',
+    color: '$textcolor',
     borderWidth: 1,
     borderRadius: 5,
   },
@@ -180,20 +180,20 @@ export const CommonStyles = EStyleSheet.create({
     color: 'red',
   },
   markIconDisabled: {
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
   },
 
   //**************
   // Login styles
   loginConnectionTextStyle: {
-    color: global.isDarkMode ? 'black' : 'white',
+    color: '$bg',
     paddingVertical: 10,
     fontSize: 16,
   },
   loginConnectionButtonStyle: {
     backgroundColor: 'red',
     borderWidth: 0,
-    color: global.isDarkMode ? 'black' : 'white',
+    color: '$bg',
     borderColor: 'red',
     height: 40,
     alignItems: 'center',
@@ -205,7 +205,7 @@ export const CommonStyles = EStyleSheet.create({
   },
   loginInputTextStyle: {
     margin: 12,
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
     paddingLeft: 15,
     paddingRight: 15,
     borderWidth: 1,
@@ -279,7 +279,7 @@ export const CommonStyles = EStyleSheet.create({
   //*********************
   // Rating stars styles
   ratingStarColor: {
-    color: global.isDarkMode ? 'white' : 'black',
+    color: '$textcolor',
   }
 
 });
