@@ -28,7 +28,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import EStyleSheet from 'react-native-extended-stylesheet';
 import { useIsFocused } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -36,7 +35,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CollectionManager from '../api/CollectionManager';
-import { bdovorgray } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 export function CollectionMarkers({ item, style, reduceMode }) {
@@ -56,26 +55,33 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const refresh = () => {
     setInitAlbum(item);
     if (!item) { return; }
-    //console.log("REFRESH MARKERS FOR ALBUM: " + item);
+    console.log("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
+    //console.log(item);
     let alb = null;
     alb = CollectionManager.getAlbumInWishlist(item);
     if (alb) {
-        setShowAllMarks(false);
-        setIsOwn(false);
-        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
+      setShowAllMarks(false);
+      setIsOwn(false);
+      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
     } else {
       alb = CollectionManager.getAlbumInCollection(item);
       if (alb) {
         setShowAllMarks(!reduceMode);
         setIsOwn(true);
-        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        /*if (!CollectionManager.isAlbumInCollection(alb))
+          console.error('Album found in collection but not in dict ' + CollectionManager.isAlbumInCollection(alb));*/
+      } else {
+        if (CollectionManager.isAlbumInCollection(alb)) {
+          console.error('Album ' + alb + ' but album is found in collection dict! ' + CollectionManager.isAlbumInCollection(alb));
+        }
       }
     }
     if (!alb) {
       alb = item;
       setShowAllMarks(false);
       setIsOwn(false);
-      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
       CollectionManager.resetAlbumFlags(alb);
     }
 
@@ -172,65 +178,42 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   };
 
   return (
-    <View style={[styles.viewStyle, style]}>
+    <View style={[{ flexDirection: 'row' }, style]}>
 
-      <TouchableOpacity onPress={onGotIt} title="" style={styles.markerStyle}>
-        <MaterialCommunityIcons name={CollectionManager.isAlbumInCollection(album) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isAlbumInCollection(album) ? 'green' : 'black'} style={styles.iconStyle} />
-        <Text style={[styles.textStyle, { color: (( CollectionManager.isAlbumInCollection(album)) ? 'green' : 'black') }]}>J'ai</Text>
+      <TouchableOpacity onPress={onGotIt} title="" style={CommonStyles.markerStyle}>
+        <MaterialCommunityIcons name={CollectionManager.isAlbumInCollection(album) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isAlbumInCollection(album) ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+        <Text style={[CommonStyles.markerTextStyle, CollectionManager.isAlbumInCollection(album) ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai</Text>
       </TouchableOpacity>
 
       {!CollectionManager.isAlbumInCollection(album) ?
-        <TouchableOpacity onPress={onWantIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={(album.FLG_ACHAT == 'O') ? 'heart' : 'heart-outline'} size={25} color={(album.FLG_ACHAT == 'O') ? 'red' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_ACHAT === 'O') ? 'red' : 'black' }]}>Je veux</Text>
+        <TouchableOpacity onPress={onWantIt} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name={(album.FLG_ACHAT == 'O') ? 'heart' : 'heart-outline'} size={25} color={(album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+          <Text style={[CommonStyles.markerTextStyle, (album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Je veux</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
-        <TouchableOpacity onPress={onReadIt} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={(album.FLG_LU == 'O') ? 'book' : 'book-outline'} size={25} color={(album.FLG_LU == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_LU == 'O') ? 'green' : 'black' }]}>Lu</Text>
+        <TouchableOpacity onPress={onReadIt} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name={(album.FLG_LU == 'O') ? 'book' : 'book-outline'} size={25} color={(album.FLG_LU == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+          <Text style={[CommonStyles.markerTextStyle, (album.FLG_LU == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Lu</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
-        <TouchableOpacity onPress={onLendIt} title="" style={styles.markerStyle}>
-          <Ionicons name={(album.FLG_PRET == 'O') ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={(album.FLG_PRET == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_PRET == 'O') ? 'green' : 'black' }]}>Prêt</Text>
+        <TouchableOpacity onPress={onLendIt} title="" style={CommonStyles.markerStyle}>
+          <Ionicons name={(album.FLG_PRET == 'O') ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={(album.FLG_PRET == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+          <Text style={[CommonStyles.markerTextStyle, (album.FLG_PRET == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Prêt</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
-        <TouchableOpacity onPress={onNumEd} title="" style={styles.markerStyle}>
-          <MaterialIcons name={(album.FLG_NUM == 'O') ? 'devices' : 'devices'} size={25} color={(album.FLG_NUM == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_NUM == 'O') ? 'green' : 'black' }]}>Ed. Num.</Text>
+        <TouchableOpacity onPress={onNumEd} title="" style={CommonStyles.markerStyle}>
+          <MaterialIcons name={(album.FLG_NUM == 'O') ? 'devices' : 'devices'} size={25} color={(album.FLG_NUM == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+          <Text style={[CommonStyles.markerTextStyle, (album.FLG_NUM == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Ed. Num.</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?
-        <TouchableOpacity onPress={onGift} title="" style={styles.markerStyle}>
-          <MaterialCommunityIcons name={(album.FLG_CADEAU == 'O') ? 'gift' : 'gift-outline'} size={25} color={(album.FLG_CADEAU == 'O') ? 'green' : 'black'} style={styles.iconStyle} />
-          <Text style={[styles.textStyle, { color: (album.FLG_CADEAU == 'O') ? 'green' : 'black' }]}>Cadeau</Text>
+        <TouchableOpacity onPress={onGift} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name={(album.FLG_CADEAU == 'O') ? 'gift' : 'gift-outline'} size={25} color={(album.FLG_CADEAU == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+          <Text style={[CommonStyles.markerTextStyle, (album.FLG_CADEAU == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Cadeau</Text>
         </TouchableOpacity> : null}
 
     </View>);
 }
-
-const styles = EStyleSheet.create({
-  viewStyle: {
-    flexDirection: 'row',
-  },
-  markerStyle: {
-    alignItems: 'center',
-    alignContent: 'center',
-    padding: 8,
-  },
-  iconStyle: {
-    textAlign: 'center',
-    paddingTop: 3,
-    borderWidth: 0.5,
-    borderColor: bdovorgray,
-    paddingLeft: 2,
-    width: 32,
-    height: 32
-  },
-  textStyle: {
-    fontSize: 9,
-  }
-});

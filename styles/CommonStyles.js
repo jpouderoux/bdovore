@@ -135,6 +135,35 @@ export const CommonStyles = EStyleSheet.create({
   },
   linkTextStyle: {
     //textDecorationLine: 'underline',
+  },
+
+  //*********************
+  // Markers styles
+  markerStyle: {
+    alignItems: 'center',
+    alignContent: 'center',
+    padding: 8,
+  },
+  markerIconStyle: {
+    textAlign: 'center',
+    paddingTop: 3,
+    borderWidth: 0.5,
+    borderColor: bdovorgray,
+    paddingLeft: 2,
+    width: 32,
+    height: 32,
+  },
+  markerTextStyle: {
+    fontSize: 9,
+  },
+  markIconEnabled: {
+    color: 'green',
+  },
+  markWishIconEnabled: {
+    color: 'red',
+  },
+  markIconDisabled: {
+    color: 'black',
   }
 });
 
