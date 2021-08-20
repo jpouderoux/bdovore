@@ -82,7 +82,7 @@ function LoginScreen({ navigation }) {
       <Text style={{  marginTop: -15, marginBottom: 15, textAlign: 'center' }}>Connectez vous avec votre compte Bdovore</Text>
       <Text style={{ textAlign: 'center'  }}>Pseudo</Text>
       <TextInput
-        style={styles.SectionStyle, styles.inputStyle}
+        style={[styles.SectionStyle, styles.inputStyle]}
         placeholder="Pseudo"
         autoCapitalize="none"
         returnKeyType="next"
@@ -92,7 +92,7 @@ function LoginScreen({ navigation }) {
       />
       <Text style={{ textAlign: 'center' }}>Mot de passe</Text>
       <TextInput
-        style={styles.SectionStyle, styles.inputStyle}
+        style={[styles.SectionStyle, styles.inputStyle]}
         placeholder="Mot de passe"
         secureTextEntry={true}
         value={passwd}
