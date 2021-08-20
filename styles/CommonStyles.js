@@ -44,7 +44,7 @@ export const AlbumItemHeight = AlbumImageHeight + 1;
 
 export const CommonStyles = EStyleSheet.create({
   screenStyle: {
-    backgroundColor: '$bg',
+    backgroundColor: 'white',
     flex: 1,
   },
 
@@ -86,7 +86,7 @@ export const CommonStyles = EStyleSheet.create({
     height: 130/4,
   },
   iconStyle: {
-    color: '$textcolor', // #222
+    color: 'black', // #222
   },
   iconEnabledStyle: {
     color: 'dodgerblue',
@@ -103,11 +103,8 @@ export const CommonStyles = EStyleSheet.create({
     flexDirection: "column",
     flex: 1
   },
-  defaultText: {
-    color: '$textcolor',
-  }, 
   itemTitleText: {
-    color: '$textcolor',
+    color: 'black',
   },
   itemText: {
     color: bdovorgray,
@@ -130,19 +127,18 @@ export const CommonStyles = EStyleSheet.create({
     fontSize: 14,
   },
   sectionStyle: {
-    backgroundColor: global.isDarkMode ? '#333' : '#ddd',
-    color: '$textcolor',
+    backgroundColor: '#ddd',
     width: '100%',
   },
   sectionAlbumStyle: {
-    backgroundColor: global.isDarkMode ? '#333' : '#ddd',
+    backgroundColor: '#ddd',
     color: 'white',
     width: '100%',
   },
   albumEditionButtonStyle: {
     backgroundColor: bdovorgray,
-    borderColor: '$textcolor',
-    color: '$textcolor',
+    borderColor: 'black',
+    color: 'black',
     borderWidth: 1,
     borderRadius: 5,
   },
@@ -180,20 +176,20 @@ export const CommonStyles = EStyleSheet.create({
     color: 'red',
   },
   markIconDisabled: {
-    color: '$textcolor',
+    color: 'black',
   },
 
   //**************
   // Login styles
   loginConnectionTextStyle: {
-    color: '$bg',
+    color: 'white',
     paddingVertical: 10,
     fontSize: 16,
   },
   loginConnectionButtonStyle: {
     backgroundColor: 'red',
     borderWidth: 0,
-    color: '$bg',
+    color: 'white',
     borderColor: 'red',
     height: 40,
     alignItems: 'center',
@@ -205,7 +201,7 @@ export const CommonStyles = EStyleSheet.create({
   },
   loginInputTextStyle: {
     margin: 12,
-    color: '$textcolor',
+    color: 'black',
     paddingLeft: 15,
     paddingRight: 15,
     borderWidth: 1,
@@ -279,7 +275,7 @@ export const CommonStyles = EStyleSheet.create({
   //*********************
   // Rating stars styles
   ratingStarColor: {
-    color: '$textcolor',
+    color: global.isDarkMode ? 'white' : 'black',
   }
 
 });

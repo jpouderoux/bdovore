@@ -161,7 +161,7 @@ function AlbumScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
-          <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText,{ fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
+          <Text h4 style={[CommonStyles.bold, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
           <View style={{ marginTop: 10}}>
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
@@ -178,7 +178,7 @@ function AlbumScreen({ route, navigation }) {
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
         <View>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText]}>{album.NOM_SERIE}</Text>
+          <Text style={CommonStyles.largerText}>{album.NOM_SERIE}</Text>
           {dontShowSerieScreen ? null :
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onShowSerieScreen}>
@@ -187,18 +187,18 @@ function AlbumScreen({ route, navigation }) {
           <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
           <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={CommonStyles.defaultText}>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
+            <Text>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
             <TouchableOpacity
               onPress={onShowEditionsChooser}
               title="Editions">
               {albumEditionsData.length > 1 ?
                 <Text style={CommonStyles.albumEditionButtonStyle}>
                 {' '}{album.NOM_EDITION}{' '}
-              </Text> :  <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
+              </Text> :  <Text>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
           <AchatSponsorIcon album={album} />
-          <Text style={[CommonStyles.defaultText,{ marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+          <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) ?
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onUserComment}>
