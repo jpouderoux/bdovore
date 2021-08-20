@@ -53,10 +53,10 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
       <View style={{ flexDirection: 'row' }}>
         <CoverImage source={APIManager.getAuteurCoverURL(item)} />
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
-          <Text style={[CommonStyles.itemTextWidth, { fontSize: 20 }]}>{item.PSEUDO}</Text>
-          <Text style={[CommonStyles.itemTextWidth, { fontSize: 16, color: 'grey', marginTop: 10 }]}>{fonctionString}</Text>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{item.PSEUDO}</Text>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>{fonctionString}</Text>
           {nbSeries && nbSeries > 0 ?
-            <Text style={[CommonStyles.itemTextWidth, { fontSize: 16, color: 'grey', marginTop: 10 }]}>
+            <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>
               {Helpers.pluralWord(nbAlbums, 'album')} pour {Helpers.pluralWord(nbSeries, 'série')}
             </Text> : null}
         </View>

@@ -33,7 +33,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { CollectionMarkers } from '../components/CollectionMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -167,20 +167,20 @@ function AlbumScreen({ route, navigation }) {
           </View>
           {loading ? LoadingIndicator() : null}
           {comments.length > 0 ?
-            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
             onPress={() => { navigation.push('Comments', { comments }); }}>
               Lire les avis
             </Text> : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Collection</Text>
+          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
           <CollectionMarkers item={album} reduceMode={false}/>
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white' }]}>Info Album</Text>
+          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
         <View>
           <Text style={CommonStyles.largerText}>{album.NOM_SERIE}</Text>
           {dontShowSerieScreen ? null :
-            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onShowSerieScreen}>
               Voir la fiche série
             </Text>}
@@ -192,7 +192,7 @@ function AlbumScreen({ route, navigation }) {
               onPress={onShowEditionsChooser}
               title="Editions">
               {albumEditionsData.length > 1 ?
-              <Text style={{ borderWidth: 1, borderRadius: 5, backgroundColor: bdovorgray }}>
+                <Text style={CommonStyles.albumEditionButtonStyle}>
                 {' '}{album.NOM_EDITION}{' '}
               </Text> :  <Text>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
@@ -200,7 +200,7 @@ function AlbumScreen({ route, navigation }) {
           <AchatSponsorIcon album={album} />
           <Text style={{ marginTop: 10 }}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) ?
-            <Text style={[CommonStyles.linkTextStyle, { color: 'dodgerblue', marginTop: 10, marginBottom: 10 }]}
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onUserComment}>
               Noter / commenter cet album
             </Text> : null}
@@ -212,7 +212,7 @@ function AlbumScreen({ route, navigation }) {
         ) : null}
         {similAlbums.length > 0 ?
           <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.center, CommonStyles.largerText, { color: 'white', marginBottom: 10 }]}>A voir aussi</Text>
+            <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText, { marginBottom: 10 }]}>A voir aussi</Text>
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -228,7 +228,7 @@ function AlbumScreen({ route, navigation }) {
         {/* Editions chooser */}
         <BottomSheet
           isVisible={showEditionsChooser}
-          containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+          containerStyle={CommonStyles.bottomSheetContainerStyle}>
           <ListItem key='0'>
             <ListItem.Content>
               <ListItem.Title>Editions</ListItem.Title>
@@ -237,13 +237,13 @@ function AlbumScreen({ route, navigation }) {
           {albumEditionsData.map((item, index) => (
             <ListItem key={index + 1}
               containerStyle={
-                (index == editionIndex ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
+                (index == editionIndex ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle)}
               onPress={() => {
                 onChooseEdition(index);
               }}>
               <ListItem.Content>
                 <ListItem.Title style={
-                  (index == editionIndex ? { color: 'white' } : { color: 'dodgerblue' })}>
+                  (index == editionIndex ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle)}>
                   {item.NOM_EDITION}
                 </ListItem.Title>
               </ListItem.Content>

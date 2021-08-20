@@ -143,14 +143,19 @@ class CCollectionManager {
 
       if (!result.error) {
         // Remove the album from the wishlist if needed
+        album.FLG_ACHAT = 'N';
         Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
         console.log('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
-        album.FLG_ACHAT = 'N';
 
-        // Add the album in local collection and increment the serie's counter
+        // Add the album in local collection
         Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
         album.DATE_AJOUT = Helpers.getNowDateString();
 
+        if (!CollectionManager.getAlbumInCollection(album)) {
+          console.error("/!\\ Album added but not found in collection!");
+        }
+
+        // Increment the serie's counter
         let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
         if (idx === null || idx == undefined) {
           console.log('serie ' + album.ID_SERIE + ' not found in collection, let\'s add it');
@@ -166,6 +171,7 @@ class CCollectionManager {
           global.collectionSeries[idx].NB_USER_ALBUM++;
         }
       }
+
 
       if (callback) {
         callback(result);
@@ -189,7 +195,14 @@ class CCollectionManager {
     APIManager.deleteAlbumInCollection(album.ID_EDITION, (result) => {
       if (!result.error) {
         Helpers.removeAlbumFromArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
-        console.log('album ' + album.ID_TOME + ' removed from the collection');
+        console.log('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
+
+        if (CollectionManager.isAlbumInCollection(album)) {
+          console.error('Album removed but still found in collection!');
+        }
+        if (Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict)) {
+          console.error('Album removed but still found in collection dict!');
+        }
 
         let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
         if (idx >= 0) {

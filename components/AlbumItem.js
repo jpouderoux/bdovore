@@ -56,11 +56,11 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <CoverImage source={APIManager.getAlbumCoverURL(item)} />
         </View>
         <View style={CommonStyles.itemTextContent}>
-          <Text style={[CommonStyles.largerText]} numberOfLines={1} textBreakStrategy='balanced'>
+          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.TITRE_TOME}
           </Text>
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
-          <Text style={[CommonStyles.itemTextWidth, { color: bdovorgray, marginTop: 5 }]}>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "tome " + item.NUM_TOME : ''}{'\n'}
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + convertDate(item.DTE_PARUTION) : '' }
           </Text>

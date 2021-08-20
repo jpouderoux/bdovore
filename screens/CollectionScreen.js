@@ -280,7 +280,7 @@ function CollectionScreen({ props, navigation }) {
           platform='ios'
           autoCapitalize='none'
           autoCorrect={false}
-          inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
+          inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
           inputStyle={{ fontSize: 12 }}
           cancelButtonTitle='Annuler'
         />
@@ -288,10 +288,10 @@ function CollectionScreen({ props, navigation }) {
       {collectionType == 1 ?
         <View style={{ flexDirection: 'row', flex: 0 }}>
           <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 0 }}>
-            <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? '#222' : 'dodgerblue'} />
+              <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
           </TouchableOpacity>
           <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
-            <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? '#222' : 'dodgerblue'} />
+            <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
           </TouchableOpacity>
         </View> : null}
     </View>);
@@ -310,13 +310,13 @@ function CollectionScreen({ props, navigation }) {
               element: () => <Text>
                 {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
             }]}
-          containerStyle={{ marginLeft: 8, height: 30, flex: 1, borderRadius: 8, backgroundColor: '#eee' }}
-          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
-          selectedButtonStyle={{backgroundColor: 'white'}}
-          innerBorderStyle={{ width: 0 }}
+          containerStyle={[{ flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
+          buttonStyle={CommonStyles.buttonGroupButtonStyle}
+          selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
+          innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, margin: 8 }}>
-          <Ionicons name='library-sharp' size={25} color='#222' />
+          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
       </View>
 
@@ -348,7 +348,7 @@ function CollectionScreen({ props, navigation }) {
       {/* Collection chooser */}
       <BottomSheet
         isVisible={showCollectionChooser}
-        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0'>
           <ListItem.Content>
             <ListItem.Title>Collection à afficher</ListItem.Title>
@@ -356,14 +356,12 @@ function CollectionScreen({ props, navigation }) {
         </ListItem>
         {Object.entries(collectionGenres).map(([mode, title], index) => (
           <ListItem key={index + 1}
-            containerStyle={
-              (collectionGenre == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
+            containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
             onPress={() => {
               setCollectionGenre(mode); setShowCollectionChooser(false);
             }}>
             <ListItem.Content>
-              <ListItem.Title style={
-                (collectionGenre == mode ? { color: 'white' } : { color: 'dodgerblue' })}>
+              <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title[0]}
               </ListItem.Title>
             </ListItem.Content>
@@ -374,7 +372,7 @@ function CollectionScreen({ props, navigation }) {
       {/* Filter chooser */}
       <BottomSheet
         isVisible={showFilterChooser}
-        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0'>
           <ListItem.Content>
             <ListItem.Title>Filtrer</ListItem.Title>
@@ -382,14 +380,12 @@ function CollectionScreen({ props, navigation }) {
         </ListItem>
         {Object.entries(filterModes).map(([mode, title], index) => (
           <ListItem key={index + 1}
-            containerStyle={
-              (filterMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
+            containerStyle={filterMode == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
             onPress={() => {
               setFilterMode(mode); setShowFilterChooser(false);
             }}>
             <ListItem.Content>
-              <ListItem.Title style={
-                (filterMode == mode ? { color: 'white' } : { color: 'dodgerblue' })}>
+              <ListItem.Title style={filterMode == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title}
               </ListItem.Title>
             </ListItem.Content>
@@ -400,7 +396,7 @@ function CollectionScreen({ props, navigation }) {
       {/* Sort chooser */}
       <BottomSheet
         isVisible={showSortChooser}
-        containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}>
+        containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0'>
           <ListItem.Content>
             <ListItem.Title>Trier</ListItem.Title>
@@ -408,14 +404,12 @@ function CollectionScreen({ props, navigation }) {
         </ListItem>
         {Object.entries(sortModes).map(([mode, title], index) => (
           <ListItem key={index + 1}
-            containerStyle={
-              (sortMode == mode ? { backgroundColor: 'dodgerblue' } : { backgroundColor: 'white' })}
+            containerStyle={sortMode == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
             onPress={() => {
               setSortMode(mode); setShowSortChooser(false);
             }}>
             <ListItem.Content>
-              <ListItem.Title style={
-                (sortMode == mode ? { color: 'white' } : { color: 'dodgerblue' })}>
+              <ListItem.Title style={sortMode == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title}
               </ListItem.Title>
             </ListItem.Content>

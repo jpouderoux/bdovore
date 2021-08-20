@@ -137,7 +137,7 @@ function SearchScreen({ navigation }) {
               platform='ios'
               autoCapitalize='none'
               autoCorrect={false}
-              inputContainerStyle={{ height: 20, backgroundColor: '#eee' }}
+              inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
               cancelButtonTitle='Annuler'
             />
           </View>
@@ -148,7 +148,7 @@ function SearchScreen({ navigation }) {
             <Icon
               name='barcode-scan'
               size={45}
-              color='black' />
+              color={CommonStyles.iconStyle.color}/>
           </TouchableOpacity>
         </View>
         <View style={{ marginLeft: -10, marginRight: -10, marginTop: -5, marginBottom: -5 }}>
@@ -159,10 +159,10 @@ function SearchScreen({ navigation }) {
               { element: () => <Text>Série</Text> },
               { element: () => <Text>Album</Text> },
               { element: () => <Text>Auteur</Text> }]}
-            containerStyle={{ height: 30, borderRadius: 8, backgroundColor: '#eee' }}
-            buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
-            selectedButtonStyle={{ backgroundColor: 'white' }}
-            innerBorderStyle={{ width: 0 }}
+            containerStyle={CommonStyles.buttonGroupContainerStyle}
+            buttonStyle={CommonStyles.buttonGroupButtonStyle}
+            selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
+            innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
           />
         </View>
       </View>

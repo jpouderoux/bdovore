@@ -162,7 +162,7 @@ function ToCompleteScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row', flex: 0 }}>
+      <View style={{ flexDirection: 'row' }}>
         <ButtonGroup
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
@@ -173,10 +173,10 @@ function ToCompleteScreen({ navigation }) {
             element: () => <Text>
               {Helpers.pluralWord(nbTotalSeries2, 'série')}</Text>
           }]}
-          containerStyle={{ marginLeft: 8, height: 30, flex: 1, borderRadius: 8, backgroundColor: '#eee' }}
-          buttonStyle={{ borderRadius: 8, margin: 2, backgroundColor: '#eee' }}
-          selectedButtonStyle={{ backgroundColor: 'white' }}
-          innerBorderStyle={{ width: 0 }}
+          containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
+          buttonStyle={CommonStyles.buttonGroupButtonStyle}
+          selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
+          innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
       {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }} /> : null}

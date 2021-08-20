@@ -29,12 +29,13 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
+import { bdovored } from '../styles/CommonStyles';
 
 export function SmallLoadingIndicator({ style }) {
 
   return (
     <View style={[{ justifyContent: 'center' }, style]}>
-      <ActivityIndicator size="large" color="red" />
+      <ActivityIndicator size="large" color={bdovored} />
     </View>
   );
 }
