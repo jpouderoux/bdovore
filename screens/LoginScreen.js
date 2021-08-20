@@ -83,22 +83,26 @@ function LoginScreen({ navigation }) {
       <Text style={{ textAlign: 'center'  }}>Pseudo</Text>
       <TextInput
         style={[styles.SectionStyle, styles.inputStyle]}
-        placeholder="Pseudo"
-        autoCapitalize="none"
-        returnKeyType="next"
+        placeholder='Pseudo'
+        autoCapitalize='none'
+        returnKeyType='next'
         blurOnSubmit={false}
         value={pseudo}
+        textContentType='username'  // iOS
+        autoCompleteType='username' // Android
         onChangeText={(pseudo) => setPseudo(pseudo)}
       />
       <Text style={{ textAlign: 'center' }}>Mot de passe</Text>
       <TextInput
         style={[styles.SectionStyle, styles.inputStyle]}
-        placeholder="Mot de passe"
+        placeholder='Mot de passe'
         secureTextEntry={true}
         value={passwd}
-        autoCapitalize="none"
+        autoCapitalize='none'
         blurOnSubmit={true}
-        returnKeyType="next"
+        returnKeyType='next'
+        textContentType='password'  // iOS
+        autoCompleteType='password' // Android
         onChangeText={(passwd) => setPasswd(passwd)}
       />
       {errortext != '' ? (
@@ -108,15 +112,15 @@ function LoginScreen({ navigation }) {
       ) : null}
       {loading ?
         <SmallLoadingIndicator style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
           padding: 10
         }} /> :
         <View>
           <TouchableOpacity
             style={styles.buttonStyle}
             onPress={onLoginPress}
-            title="Login">
+            title='Login'>
             <Text style={styles.buttonTextStyle}>Se connecter</Text>
           </TouchableOpacity>
           <LinkText
