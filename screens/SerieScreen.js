@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -49,6 +49,10 @@ function SerieScreen({ route, navigation }) {
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
 
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
+
+  useFocusEffect(() => {
+    refreshAlbumSeries();
+  });
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh data serie " + serie.ID_SERIE);
@@ -109,6 +113,17 @@ function SerieScreen({ route, navigation }) {
 
     setErrortext(result.error);
     setLoading(false);
+  }
+
+  const refreshAlbumSeries = () => {
+    console.log("refresh series albums");
+    // Select the first album of the series
+    for (let t = 0; t < serieAlbums.length; t++) {
+      for (let i = 0; i < serieAlbums[t].data.length; i++) {
+        let album = serieAlbums[t].data[i];
+        serieAlbums[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+      }
+    }
   }
 
   const renderAlbum = ({ item, index }) => {
