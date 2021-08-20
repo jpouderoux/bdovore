@@ -36,6 +36,7 @@ import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
 
 import MainTab from './routes/MainTab';
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 
 
 const App: () => Node = () => {
@@ -52,7 +53,7 @@ const App: () => Node = () => {
   global.isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={global.isDarkMode ? DarkTheme : DefaultTheme}>
       <MainTab />
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>

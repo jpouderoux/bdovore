@@ -76,11 +76,11 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginTop: 0, alignItems: 'center' }}>
+      <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
         <Image source={require('../assets/bdovore-167.png')} />
       </View>
-      <Text style={{  marginTop: -15, marginBottom: 15, textAlign: 'center' }}>Connectez vous avec votre compte Bdovore</Text>
-      <Text style={{ textAlign: 'center'  }}>Login</Text>
+      <Text style={[CommonStyles.defaultText, {  marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
+      <Text style={[CommonStyles.defaultText,{ textAlign: 'center'  }]}>Login</Text>
       <TextInput
         style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
         placeholder='Login'
@@ -92,7 +92,7 @@ function LoginScreen({ navigation }) {
         autoCompleteType='username' // Android
         onChangeText={(pseudo) => setPseudo(pseudo)}
       />
-      <Text style={{ textAlign: 'center' }}>Mot de passe</Text>
+      <Text style={[CommonStyles.defaultText,{ textAlign: 'center' }]}>Mot de passe</Text>
       <TextInput
         style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
         placeholder='Mot de passe'
