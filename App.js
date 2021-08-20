@@ -37,6 +37,7 @@ import Toast from 'react-native-toast-message';
 
 import MainTab from './routes/MainTab';
 
+
 const App: () => Node = () => {
 
   React.useEffect(() => {
