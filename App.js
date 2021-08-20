@@ -51,7 +51,7 @@ const App: () => Node = () => {
   EStyleSheet.build({
     $rem: width > 340 ? 16 : 14,
     $bg: global.isDarkMode ? 'black' : 'white',
-    $textcolor: global.isDarkMode ? 'white' : 'dark'
+    $textcolor: global.isDarkMode ? 'white' : 'black'
   });
 
   Appearance.addChangeListener(({ colorScheme }) => {
@@ -59,7 +59,7 @@ const App: () => Node = () => {
     EStyleSheet.build({
       $rem: width > 340 ? 16 : 14,
       $bg: isDarkMode ? 'black' : 'white',
-      $textcolor: isDarkMode ? 'white' : 'dark'
+      $textcolor: isDarkMode ? 'white' : 'black'
     });
     console.log(colorScheme);
   });
