@@ -44,7 +44,7 @@ export function RatingStars({ note, editable, callback, style }) {
           fractions={1}
           ratingCount={5}
           imageSize={20}
-          startingValue={note / 2.}
+          startingValue={note}
           //tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
           readonly={editable ? false : true}
           onFinishRating={callback ? callback : (rate) => { }}

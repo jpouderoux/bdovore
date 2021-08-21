@@ -40,7 +40,7 @@ function UserCommentScreen({ route, navigation }) {
   const [errortext, setErrortext] = useState('');
   const [album, setAlbum] = useState(route.params.album);
   const [loading, setLoading] = useState(false);
-  const [rate, setRate] = useState(route.params.rate);
+  const [rate, setRate] = useState(route.params.rate / 2.);
   const [comment, setComment] = useState(route.params.comment);
 
   const tome = ((album.NUM_TOME !== null) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
