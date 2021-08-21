@@ -28,7 +28,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'

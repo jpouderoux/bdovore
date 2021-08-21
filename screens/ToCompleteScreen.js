@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';

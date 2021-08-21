@@ -29,7 +29,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';

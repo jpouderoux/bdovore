@@ -29,7 +29,7 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem } from 'react-native-elements';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
