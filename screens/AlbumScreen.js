@@ -229,7 +229,7 @@ function AlbumScreen({ route, navigation }) {
         <BottomSheet
           isVisible={showEditionsChooser}
           containerStyle={CommonStyles.bottomSheetContainerStyle}>
-          <ListItem key='0'>
+          <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
             <ListItem.Content>
               <ListItem.Title>Editions</ListItem.Title>
             </ListItem.Content>

@@ -105,7 +105,7 @@ export const CommonStyles = EStyleSheet.create({
   },
   defaultText: {
     color: '$textcolor',
-  }, 
+  },
   itemTitleText: {
     color: '$textcolor',
   },
@@ -238,8 +238,12 @@ export const CommonStyles = EStyleSheet.create({
   bottomSheetContainerStyle: {
     backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)',
   },
+  bottomSheetTitleStyle: {
+    backgroundColor: '$bg',
+    color: '$textcolor',
+  },
   bottomSheetItemContainerStyle: {
-    backgroundColor: 'white',
+    backgroundColor: '$bg',
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: 'dodgerblue',
@@ -248,7 +252,7 @@ export const CommonStyles = EStyleSheet.create({
     color: 'dodgerblue',
   },
   bottomSheetSelectedItemTextStyle: {
-    color: 'white',
+    color: '$textcolor',
   },
 
   //***************

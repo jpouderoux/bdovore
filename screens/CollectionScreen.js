@@ -350,9 +350,9 @@ function CollectionScreen({ props, navigation }) {
       <BottomSheet
         isVisible={showCollectionChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
-        <ListItem key='0'>
+        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
-            <ListItem.Title>Collection à afficher</ListItem.Title>
+            <ListItem.Title >Collection à afficher</ListItem.Title>
           </ListItem.Content>
         </ListItem>
         {Object.entries(collectionGenres).map(([mode, title], index) => (
@@ -374,7 +374,7 @@ function CollectionScreen({ props, navigation }) {
       <BottomSheet
         isVisible={showFilterChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
-        <ListItem key='0'>
+        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
             <ListItem.Title>Filtrer</ListItem.Title>
           </ListItem.Content>
@@ -398,7 +398,7 @@ function CollectionScreen({ props, navigation }) {
       <BottomSheet
         isVisible={showSortChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
-        <ListItem key='0'>
+        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
             <ListItem.Title>Trier</ListItem.Title>
           </ListItem.Content>
