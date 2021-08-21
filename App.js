@@ -28,7 +28,7 @@
 
 import 'react-native-gesture-handler';
 
-import React from 'react';
+import React,  { useState } from 'react';
 import { Dimensions, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -53,7 +53,7 @@ const App: () => Node = () => {
     $bg: global.isDarkMode ? 'black' : 'white',
     $textcolor: global.isDarkMode ? 'white' : 'black'
   });
-
+  const [isRender, setisRender] = useState(true);
   Appearance.addChangeListener(({ colorScheme }) => {
     isDarkMode = colorScheme === 'dark';
     EStyleSheet.build({
@@ -61,6 +61,7 @@ const App: () => Node = () => {
       $bg: isDarkMode ? 'black' : 'white',
       $textcolor: isDarkMode ? 'white' : 'black'
     });
+    setisRender(true);
     console.log(colorScheme);
   });
 
