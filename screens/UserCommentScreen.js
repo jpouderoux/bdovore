@@ -63,7 +63,7 @@ function UserCommentScreen({ route, navigation }) {
     <View style={[CommonStyles.screenStyle, { padding: 10 }]}>
       <View style={{ margin: 10 }}>
         <View style={{ margin: 0, alignItems: 'center' }}>
-          <Text style={[CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
+          <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
           <View style={{ marginVertical: 10 }}>
             <RatingStars note={rate} editable={true} callback={setRate} />
           </View>
@@ -71,7 +71,7 @@ function UserCommentScreen({ route, navigation }) {
             numberOfLines={10}
             editable
             textContentType={'none'}
-            style={CommonStyles.commentsTextInputStyle}
+            style={[{color: 'black'}, CommonStyles.commentsTextInputStyle]}
             onChangeText={(comment) => setComment(comment)}
             value={comment}
             autoFocus={true}

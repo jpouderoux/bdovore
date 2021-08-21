@@ -280,7 +280,8 @@ function CollectionScreen({ props, navigation }) {
           platform='ios'
           autoCapitalize='none'
           autoCorrect={false}
-          inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
+          inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+          containerStyle={[CommonStyles.screenStyle]}
           inputStyle={{ fontSize: 12 }}
           cancelButtonTitle='Annuler'
         />
@@ -310,7 +311,7 @@ function CollectionScreen({ props, navigation }) {
               element: () => <Text>
                 {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
             }]}
-          containerStyle={[{ flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
+          containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}

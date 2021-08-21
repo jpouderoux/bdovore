@@ -126,8 +126,8 @@ function SearchScreen({ navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View>
-        <View style={{ flexDirection: 'row', margin: 0 }}>
-          <View style={{ width: '85%' }}>
+        <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, {flex:0}]}>
+          <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
               placeholder={'Rechercher...'}
               onChangeText={onSearch}
@@ -138,6 +138,7 @@ function SearchScreen({ navigation }) {
               autoCapitalize='none'
               autoCorrect={false}
               inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
+              containerStyle={[CommonStyles.screenStyle]}
               cancelButtonTitle='Annuler'
             />
           </View>

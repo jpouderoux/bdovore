@@ -43,7 +43,7 @@ function CommentsScreen({ route, navigation }) {
         <View style={{ margin: 10 }}>
           <RatingStars note={item.NOTE} />
           <Text style={CommonStyles.commentsTextStyle}>{item.username}</Text>
-          <Text>{item.COMMENT}</Text>
+          <Text style={CommonStyles.defaultText}>{item.COMMENT}</Text>
         </View> : null);
   }
 
