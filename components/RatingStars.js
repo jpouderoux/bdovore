@@ -28,7 +28,6 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { Rating } from 'react-native-elements';
 import Star from './Star';
 import { CommonStyles } from '../styles/CommonStyles';

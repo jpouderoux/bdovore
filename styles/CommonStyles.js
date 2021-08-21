@@ -284,6 +284,7 @@ export const CommonStyles = EStyleSheet.create({
   // Rating stars styles
   ratingStarColor: {
     color: '$textcolor',
+    backgroundColor: '$bg'
   }
 
 });

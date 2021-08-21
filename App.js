@@ -37,14 +37,14 @@ import Toast from 'react-native-toast-message';
 
 import MainTab from './routes/MainTab';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { Appearance } from 'react-native'; 
+import { Appearance } from 'react-native';
 
 const App: () => Node = () => {
 
   React.useEffect(() => {
     SplashScreen.hide();
   });
-  
+
   global.isDarkMode = useColorScheme() === 'dark';
 
   let { height, width } = Dimensions.get('window');
@@ -55,11 +55,11 @@ const App: () => Node = () => {
   });
 
   Appearance.addChangeListener(({ colorScheme }) => {
-    isDarkMode = colorScheme === 'dark';
+    global.isDarkMode = colorScheme === 'dark';
     EStyleSheet.build({
       $rem: width > 340 ? 16 : 14,
-      $bg: isDarkMode ? 'black' : 'white',
-      $textcolor: isDarkMode ? 'white' : 'black'
+      $bg: global.isDarkMode ? 'black' : 'white',
+      $textcolor: global.isDarkMode ? 'white' : 'black'
     });
     console.log(colorScheme);
   });
