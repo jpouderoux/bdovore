@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -47,8 +47,6 @@ function SerieScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
-
-  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   useFocusEffect(() => {
     refreshAlbumSeries();

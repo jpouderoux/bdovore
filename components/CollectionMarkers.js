@@ -36,7 +36,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
-
+import * as Helpers from '../api/Helpers';
 
 export function CollectionMarkers({ item, style, reduceMode }) {
 
@@ -55,33 +55,27 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const refresh = () => {
     setInitAlbum(item);
     if (!item) { return; }
-    console.log("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
+    //console.log("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
     //console.log(item);
     let alb = null;
     alb = CollectionManager.getAlbumInWishlist(item);
     if (alb) {
       setShowAllMarks(false);
       setIsOwn(false);
-      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
+      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
     } else {
       alb = CollectionManager.getAlbumInCollection(item);
       if (alb) {
         setShowAllMarks(!reduceMode);
         setIsOwn(true);
-        console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
-        /*if (!CollectionManager.isAlbumInCollection(alb))
-          console.error('Album found in collection but not in dict ' + CollectionManager.isAlbumInCollection(alb));*/
-      } else {
-        if (CollectionManager.isAlbumInCollection(alb)) {
-          console.error('Album ' + alb + ' but album is found in collection dict! ' + CollectionManager.isAlbumInCollection(alb));
-        }
+        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
       }
     }
     if (!alb) {
       alb = item;
       setShowAllMarks(false);
       setIsOwn(false);
-      console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
       CollectionManager.resetAlbumFlags(alb);
     }
 

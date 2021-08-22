@@ -160,10 +160,15 @@ export function addSerieToArrayAndDict(serie, array, dict) {
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
   if (idx >= 0) {
-    delete dict[makeAlbumUID(album)];
+    const uid = makeAlbumUID(album);
+    delete dict[uid];
     array = array.splice(idx, 1);
-  } else {
-    console.warn('Trying to remove an album that is not in the array/dict!');
+    // Refresh dictionary according the new array order once the entry has been removed
+    for (const [key, value] of Object.entries(dict)) {
+      if (value > idx) {
+        dict[key] = value - 1;
+      }
+    }
   }
 }
 
@@ -172,9 +177,12 @@ export function removeSerieFromArrayAndDict(id_serie, array, dict) {
   if (idx >= 0) {
     delete dict[id_serie];
     array = array.splice(idx, 1);
-  }
-  else {
-    console.warn('Trying to remove a serie that is not in the array/dict!');
+    // Refresh dictionary according the new array order once the entry has been removed
+    for (const [key, value] of Object.entries(dict)) {
+      if (value > idx) {
+        dict[key] = value - 1;
+      }
+    }
   }
 }
 
