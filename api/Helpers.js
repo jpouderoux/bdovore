@@ -32,6 +32,18 @@ import Toast from 'react-native-toast-message';
 
 import * as APIManager from '../api/APIManager';
 
+// Returns true if the screen is in portrait mode
+export function isPortrait() {
+  const dim = Dimensions.get('screen');
+  return dim.height >= dim.width;
+}
+
+// Returns true of the screen is in landscape mode
+export function isLandscape() {
+  const dim = Dimensions.get('screen');
+  return dim.width >= dim.height;
+}
+
 String.prototype.replaceAt = function (index, replacement) {
   return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }

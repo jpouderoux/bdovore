@@ -49,21 +49,23 @@ import ToCompleteScreen from '../screens/ToCompleteScreen';
 import UserCommentScreen from '../screens/UserCommentScreen'
 import WishlistScreen from '../screens/WishlistScreen';
 import * as APIManager from '../api/APIManager';
-import * as CommonStyles from '../styles/CommonStyles';
+import { bdovored, CommonStyles } from '../styles/CommonStyles';
 
+
+// The main tab navigator
 const Tab = createBottomTabNavigator();
 
+// The stack navigators for each tab
 const CollectionStack = createStackNavigator();
 const WishlistStack = createStackNavigator();
 const ToCompleteStack = createStackNavigator();
 const NewsStack = createStackNavigator();
 const SearchStack = createStackNavigator();
 
-
 const accountButton = (navigation) => {
   return (
     <TouchableOpacity onPress={() => onAccountPress(navigation)} style={{ margin: 8 }}>
-      <MaterialCommunityIcons name='account-circle-outline' size={25} color={CommonStyles.CommonStyles.iconStyle.color} />
+      <MaterialCommunityIcons name='account-circle-outline' size={25} color={CommonStyles.iconStyle.color} />
     </TouchableOpacity>
   );
 }
@@ -75,7 +77,7 @@ const onAccountPress = (navigation) => {
 const shareButton = (item) => {
   return (
     <TouchableOpacity onPress={() => onSharePress(item)} style={{ margin: 8 }}>
-      <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.CommonStyles.iconStyle.color} />
+      <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />
     </TouchableOpacity>
   );
 }
@@ -89,7 +91,7 @@ const onSharePress = async (item) => {
 }
 
 const defaultStackOptions = {
-  headerTintColor: global.isDarkMode ? 'white' : CommonStyles.bdovored,
+  headerTintColor: global.isDarkMode ? 'white' : bdovored,
   headerTruncatedBackTitle: 'Retour'
 };
 
@@ -220,7 +222,7 @@ function MainTab2() {
     <Tab.Navigator
       initialRouteName='Ma collection'
       screenOptions={{ gestureEnabled: false }}
-      tabBarOptions={{ activeTintColor: CommonStyles.bdovored }}
+      tabBarOptions={{ activeTintColor: bdovored }}
       animationEnabled={true}
     >
       <Tab.Screen

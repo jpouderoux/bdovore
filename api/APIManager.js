@@ -27,9 +27,10 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 
-const bdovoreUserAgent = 'bdovore mobile v0.1';
+const bdovoreUserAgent = 'bdovore ' + Platform.OS + ' v0.1';
 
 export const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
@@ -56,7 +57,7 @@ const GETHeaders = new Headers({
 });
 
 const fetchZIP = async (url) => {
-  console.log(url);
+  console.log("fetchZIP: " + url);
   return fetch(url, {
     method: 'GET',
     compress: true,
