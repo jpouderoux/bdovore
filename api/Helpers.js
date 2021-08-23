@@ -204,11 +204,11 @@ export function removeHTMLTags(text) {
 }
 
 export function getAuteurs(album) {
-  let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
-  auteursArray = auteursArray.filter((item) => item != null);
-  //auteursArray = auteursArray.filter((item) => item != '<n&b>');
+  const wb = album.copseudo == '<n&b>';
+  let auteursArray = [album.depseudo, album.scpseudo, wb ? null : album.copseudo];
+  auteursArray = auteursArray.filter((item) => (item != null && item != '<n&b>' && item != '<indéterminé>'));
   auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
-  return auteursArray.join(' / ');
+  return auteursArray.join(' / ') + (wb ? '  - N&B' : '');
 }
 
 export function makeSection(title = '', data = []) {

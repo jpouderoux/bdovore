@@ -83,7 +83,7 @@ export let CommonStyles = EStyleSheet.create({
   },
   fullAlbumImageStyle: {
     resizeMode: 'contain',
-    width: FullAlbumImageWidth,
+    width: windowWidth*0.8,
     height: FullAlbumImageHeight,
   },
   serieImageStyle: {

@@ -145,9 +145,9 @@ function AlbumScreen({ route, navigation }) {
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
-        <View style={{ flexDirection: 'column', width: 100 }}>
+        <View style={{ flexDirection: 'column', width: 110 }}>
           <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-          <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 100, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
+          <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
         </View>
       </TouchableOpacity>);
   }
@@ -220,7 +220,7 @@ function AlbumScreen({ route, navigation }) {
               data={similAlbums}
               renderItem={renderSimil}
               keyExtractor={({ item }, index) => index}
-              style={{ height: 150 }}
+              style={{ height: 170 }}
             />
           </View> : null}
 
