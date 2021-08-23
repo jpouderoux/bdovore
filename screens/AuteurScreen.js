@@ -28,9 +28,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
@@ -50,6 +52,10 @@ function AuteurScreen({ route, navigation }) {
   useEffect(() => {
     refreshDataIfNeeded();
   }, []);
+
+  useFocusEffect(() => {
+    refreshAlbumSeries();
+  });
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh author data");
@@ -92,11 +98,31 @@ function AuteurScreen({ route, navigation }) {
       Helpers.sortByAscendingValue(album.data, 'NUM_TOME');
     });
 
+    console.log("refresh series albums");
+    // Select the first album of the series
+    for (let t = 0; t < albumsArray.length; t++) {
+      for (let i = 0; i < albumsArray[t].data.length; i++) {
+        let album = albumsArray[t].data[i];
+        albumsArray[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+      }
+    }
+
     setAuteurAlbums(albumsArray);
     setNbSeries(albumsArray.length);
     setNbAlbums(result.totalItems);
     setErrortext(result.error);
     setLoading(false);
+  }
+
+  const refreshAlbumSeries = () => {
+    console.log("refresh series albums");
+    // Select the first album of the series
+    for (let t = 0; t < auteurAlbums.length; t++) {
+      for (let i = 0; i < auteurAlbums[t].data.length; i++) {
+        let album = auteurAlbums[t].data[i];
+        auteurAlbums[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+      }
+    }
   }
 
   const renderAlbum = ({ item, index }) => {
