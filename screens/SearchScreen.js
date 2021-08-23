@@ -40,6 +40,8 @@ import { SerieItem } from '../components/SerieItem';
 import { AuteurItem } from '../components/AuteurItem';
 
 
+let lastKeywords = '';
+
 function SearchScreen({ navigation }) {
 
   const [data, setData] = useState([]);
@@ -60,14 +62,21 @@ function SearchScreen({ navigation }) {
     onSearch(keywords);
   }, [searchMode]);
 
-  const onSearchFetched = async (result) => {
-    setData(result.items);
-    setErrortext(result.error);
-    setLoading(false);
+  const onSearchFetched = async (searchedText, result) => {
+    // As many requests are sent to the server while typing the keywords,
+    // it may happen that answers are not received in order. So we make
+    // sure to only take into account the result of the request for
+    // the last provided keywords.
+    if (searchedText == lastKeywords) {
+      setData(result.items);
+      setErrortext(result.error);
+      setLoading(false);
+    }
   }
 
   const onSearch = (searchText) => {
     setKeywords(searchText);
+    lastKeywords = searchText;
     if (searchText == '') {
       setData([]);
       return;
@@ -76,13 +85,13 @@ function SearchScreen({ navigation }) {
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, onSearchFetched, { term: searchText, mode: 1, });
+        APIManager.fetchJSON('Serie', null, async (result) => onSearchFetched(searchText, result), { term: searchText, mode: 1, });
         break;
       case 1:
-        APIManager.fetchAlbum(onSearchFetched, { term: searchText });
+        APIManager.fetchAlbum(async (result) => onSearchFetched(searchText, result), { term: searchText });
         break;
       case 2:
-        APIManager.fetchJSON('Auteur', null, onSearchFetched, { term: searchText, mode: 2, });
+        APIManager.fetchJSON('Auteur', null, async (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
         break;
     }
   }
@@ -181,7 +190,7 @@ function SearchScreen({ navigation }) {
             keyExtractor={({ id }, index) => index}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            extraData={refresh}
+            extraData={refresh, keywords}
           />)}
       </View>
     </View>
