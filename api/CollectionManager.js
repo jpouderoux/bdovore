@@ -410,6 +410,16 @@ class CCollectionManager {
     return false;
   }
 
+  refreshAlbumSeries(albumsArray) {
+    // For each serie, select the first own album of the serie
+    for (let t = 0; t < albumsArray.length; t++) {
+      for (let i = 0; i < albumsArray[t].data.length; i++) {
+        let album = albumsArray[t].data[i];
+        albumsArray[t].data[i] = this.getFirstAlbumEditionOfSerieInCollection(album);
+      }
+    }
+  }
+
 };
 
 const CollectionManager = new CCollectionManager();

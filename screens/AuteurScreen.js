@@ -54,7 +54,7 @@ function AuteurScreen({ route, navigation }) {
   }, []);
 
   useFocusEffect(() => {
-    refreshAlbumSeries();
+    CollectionManager.refreshAlbumSeries(auteurAlbums);
   });
 
   const refreshDataIfNeeded = async () => {
@@ -98,31 +98,13 @@ function AuteurScreen({ route, navigation }) {
       Helpers.sortByAscendingValue(album.data, 'NUM_TOME');
     });
 
-    console.log("refresh series albums");
-    // Select the first album of the series
-    for (let t = 0; t < albumsArray.length; t++) {
-      for (let i = 0; i < albumsArray[t].data.length; i++) {
-        let album = albumsArray[t].data[i];
-        albumsArray[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
-      }
-    }
+    CollectionManager.refreshAlbumSeries(albumsArray);
 
     setAuteurAlbums(albumsArray);
     setNbSeries(albumsArray.length);
     setNbAlbums(result.totalItems);
     setErrortext(result.error);
     setLoading(false);
-  }
-
-  const refreshAlbumSeries = () => {
-    console.log("refresh series albums");
-    // Select the first album of the series
-    for (let t = 0; t < auteurAlbums.length; t++) {
-      for (let i = 0; i < auteurAlbums[t].data.length; i++) {
-        let album = auteurAlbums[t].data[i];
-        auteurAlbums[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
-      }
-    }
   }
 
   const renderAlbum = ({ item, index }) => {

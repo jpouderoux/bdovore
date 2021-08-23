@@ -312,12 +312,12 @@ function CollectionScreen({ props, navigation }) {
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
-        <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, margin: 8 }}>
+        <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, marginRight: 8, paddingTop: 6 }}>
           <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
       </View>
 
-      <View style={{ flexDirection: 'row', marginTop: -8 }}>
+      <View style={{ flexDirection: 'row', marginBottom: 4 }}>
         <View style={{ flex: 1 }}>
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
@@ -335,17 +335,17 @@ function CollectionScreen({ props, navigation }) {
           />
         </View>
         {collectionType == 0 ?
-          <View style={{ flexDirection: 'row', flex: 0, margin: 5 }}>
-            <TouchableOpacity onPress={onSerieFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 5 }}>
+          <View style={{ flexDirection: 'row', flex: 0, margin: 5, marginLeft: 0 }}>
+            <TouchableOpacity onPress={onSerieFilterModePress} style={{ flex: 0, marginRight: 5 }}>
               <Icon name={serieFilterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={serieFilterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
             </TouchableOpacity>
           </View>
           :
-          <View style={{ flexDirection: 'row', flex: 0, margin: 5 }}>
-            <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, marginVertical: 8 }}>
+          <View style={{ flexDirection: 'row', flex: 0, margin: 5, marginLeft: 0 }}>
+            <TouchableOpacity onPress={onSortModePress} style={{ flex: 0 }}>
               <Icon name={sortMode == defaultSortMode ? 'sort-variant' : 'sort-variant-remove'} size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, marginTop: 8, margin: 5 }}>
+            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, marginRight: 5 }}>
               <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
             </TouchableOpacity>
           </View>
