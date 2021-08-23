@@ -63,11 +63,17 @@ const sortModes = {
   1: 'Tri par date d\'ajout',
 }
 
+const serieFilterModes = {
+  0: 'Toutes',
+  1: 'Complètes',
+  2: 'Incomplètes',
+}
+
 const filterModes = {
   0: 'Tous',
-  1: 'Non lu',
-  2: 'Prêt',
-  3: 'Numérique',
+  1: 'Non lus',
+  2: 'Prêtés',
+  3: 'Numériques',
 }
 
 const filterModesSearch = {
@@ -83,6 +89,7 @@ function CollectionScreen({ props, navigation }) {
   const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState(null);
   const [filteredSeries, setFilteredSeries] = useState(null);
+  const [serieFilterMode, setSerieFilterMode] = useState(0);
   const [filterMode, setFilterMode] = useState(0);
   const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
@@ -90,6 +97,7 @@ function CollectionScreen({ props, navigation }) {
   let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
   let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+  const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
@@ -131,7 +139,8 @@ function CollectionScreen({ props, navigation }) {
 
   useEffect(() => {
     applyFilters();
-  }, [collectionType, filterMode, sortMode, keywords]);
+  }, [collectionType, filterMode, serieFilterMode, sortMode, keywords]);
+
 
   const filterCollection = (collection, mode) => {
 
@@ -156,8 +165,17 @@ function CollectionScreen({ props, navigation }) {
           return false;
         }
       }
-      // For albums, check the status of selected flag
-      if (mode === 1) {
+      if (mode == 0) {
+        // Filter serie according there completeness status and requested filter mode
+        const fMode = parseInt(serieFilterMode);
+        if (fMode > 0) {
+          const isComplete = CollectionManager.isSerieComplete(item);
+          if (fMode == 1) return isComplete;
+          if (fMode == 2) return !isComplete;
+        }
+      }
+      else {
+        // For albums, check the status of selected filter modes
         switch (parseInt(filterMode)) {
           case 1: return item.FLG_LU == 'N';
           case 2: return item.FLG_PRET == 'O';
@@ -169,15 +187,20 @@ function CollectionScreen({ props, navigation }) {
   }
 
   const applyFilters = () => {
+
     if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
-      setFilteredSeries(null);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(global.collectionAlbums) : null);
-      return;
+    } else {
+      const filteredAlbums = filterCollection(global.collectionAlbums, 1);
+      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
     }
 
-    setFilteredSeries(filterCollection(global.collectionSeries, 0));
-    const filteredAlbums = filterCollection(global.collectionAlbums, 1);
-    setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
+    if (keywords == '' && collectionGenre == 0 && serieFilterMode == 0) {
+      setFilteredSeries(null);
+    }
+    else {
+      setFilteredSeries(filterCollection(global.collectionSeries, 0));
+    }
   }
 
   const fetchData = () => {
@@ -245,6 +268,10 @@ function CollectionScreen({ props, navigation }) {
     setShowCollectionChooser(true);
   }
 
+  const onSerieFilterModePress = () => {
+    setShowSerieFilterChooser(true);
+  }
+
   const onFilterModePress = () => {
     setShowFilterChooser(true);
   }
@@ -267,50 +294,19 @@ function CollectionScreen({ props, navigation }) {
   const keyExtractor = useCallback((item, index) =>
     collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item));
 
-  const renderHeader = () => {
-    return (
-    <View style={{ flexDirection: 'row', marginTop: -8 }}>
-      <View style={{ flex: 1 }}>
-        <SearchBar
-          placeholder={(collectionType == 1 && filterMode != 0) ?
-            filterModesSearch[filterMode] :
-            'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
-          onChangeText={onSearchChanged}
-          value={keywords}
-          platform='ios'
-          autoCapitalize='none'
-          autoCorrect={false}
-          inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
-          containerStyle={[CommonStyles.screenStyle]}
-          inputStyle={{ fontSize: 12 }}
-          cancelButtonTitle='Annuler'
-        />
-      </View>
-      {collectionType == 1 ?
-        <View style={{ flexDirection: 'row', flex: 0 }}>
-          <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 0 }}>
-              <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, margin: 8 }}>
-            <Icon name='sort-variant' size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
-          </TouchableOpacity>
-        </View> : null}
-    </View>);
-  }
-
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ flexDirection: 'row', flex:0 }}>
+      <View style={{ flexDirection: 'row', flex: 0 }}>
         <ButtonGroup
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
           buttons={[{
-              element: () => <Text>
-                {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
-            },{
-              element: () => <Text>
-                {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
-            }]}
+            element: () => <Text>
+              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
+          }, {
+            element: () => <Text>
+              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
+          }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
@@ -319,6 +315,41 @@ function CollectionScreen({ props, navigation }) {
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
+      </View>
+
+      <View style={{ flexDirection: 'row', marginTop: -8 }}>
+        <View style={{ flex: 1 }}>
+          <SearchBar
+            placeholder={(collectionType == 1 && filterMode != 0) ?
+              filterModesSearch[filterMode] :
+              'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
+            onChangeText={onSearchChanged}
+            value={keywords}
+            platform='ios'
+            autoCapitalize='none'
+            autoCorrect={false}
+            inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+            containerStyle={[CommonStyles.screenStyle]}
+            inputStyle={{ fontSize: 12 }}
+            cancelButtonTitle='Annuler'
+          />
+        </View>
+        {collectionType == 0 ?
+          <View style={{ flexDirection: 'row', flex: 0, margin: 5 }}>
+            <TouchableOpacity onPress={onSerieFilterModePress} style={{ flex: 0, margin: 8, marginLeft: 0, marginRight: 5 }}>
+              <Icon name={serieFilterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={serieFilterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+            </TouchableOpacity>
+          </View>
+          :
+          <View style={{ flexDirection: 'row', flex: 0, margin: 5 }}>
+            <TouchableOpacity onPress={onSortModePress} style={{ flex: 0, marginVertical: 8 }}>
+              <Icon name={sortMode == defaultSortMode ? 'sort-variant' : 'sort-variant-remove'} size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, marginTop: 8, margin: 5 }}>
+              <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+            </TouchableOpacity>
+          </View>
+        }
       </View>
 
       {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10, marginBottom: 4 }}/> : null}
@@ -342,7 +373,6 @@ function CollectionScreen({ props, navigation }) {
             index })}
           onRefresh={fetchData}
           refreshing={loading}
-          ListHeaderComponent={renderHeader}
         />
       </View>
 
@@ -364,6 +394,30 @@ function CollectionScreen({ props, navigation }) {
             <ListItem.Content>
               <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title[0]}
+              </ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </BottomSheet>
+
+      {/* Serie filter chooser */}
+      <BottomSheet
+        isVisible={showSerieFilterChooser}
+        containerStyle={CommonStyles.bottomSheetContainerStyle}>
+        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
+          <ListItem.Content>
+            <ListItem.Title>Filtrer</ListItem.Title>
+          </ListItem.Content>
+        </ListItem>
+        {Object.entries(serieFilterModes).map(([mode, title], index) => (
+          <ListItem key={index + 1}
+            containerStyle={serieFilterMode == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
+            onPress={() => {
+              setSerieFilterMode(mode); setShowSerieFilterChooser(false);
+            }}>
+            <ListItem.Content>
+              <ListItem.Title style={serieFilterMode == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
+                {title}
               </ListItem.Title>
             </ListItem.Content>
           </ListItem>

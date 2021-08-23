@@ -226,7 +226,6 @@ class CCollectionManager {
             'Album supprimé de la collection.');
       }
     });
-
   }
 
   addAlbumToWishlist(album, callback = null) {
@@ -401,6 +400,14 @@ class CCollectionManager {
       }
     });
     return count;
+  }
+
+  isSerieComplete(serie) {
+    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
+    if (idx >= 0) {
+      return serie.NB_ALBUM == global.collectionSeries[idx].NB_USER_ALBUM;
+    }
+    return false;
   }
 
 };
