@@ -142,12 +142,21 @@ function AlbumScreen({ route, navigation }) {
     navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
   }
 
+  const getAuteursLabel = () => {
+    const auteurs = Helpers.getAuteurs(album);
+    let len = auteurs.length;
+    if (len == 1 && auteurs[0] == 'Collectif') len++;
+    return Helpers.pluralize(len, 'Auteur')
+  }
+
   const onPressAuteur = (auteur) => {
-    APIManager.fetchAuteur(auteur, (result) => {
-      if (!result.error && result.items.length > 0) {
-        navigation.push('Auteur', { item: result.items[0] });
-      }
-    });
+    if (auteur != 'Collectif') {
+      APIManager.fetchAuteur(auteur, (result) => {
+        if (!result.error && result.items.length > 0) {
+          navigation.push('Auteur', { item: result.items[0] });
+        }
+      });
+    }
   }
 
   const renderSimil = ({ item, index }) => {
@@ -194,15 +203,17 @@ function AlbumScreen({ route, navigation }) {
               Voir la fiche série
             </Text>}
           <View style={{ flexDirection: 'row' }}>
-            <Text>{Helpers.pluralize(Helpers.getAuteurs(album).length, 'Auteur')} : </Text>
+            <Text>{getAuteursLabel()} : </Text>
             {
-              Helpers.getAuteurs(album).map((auteur, index, array) =>
+              Helpers.getAuteurs(album).map((auteur, index, array) => {
+                return (index == 0 && auteur == 'Collectif') ?
+                <Text>{auteur}</Text> :
                 <View style={{ flexDirection: 'row'}}>
                   <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
                      <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur)}</Text>
                   </TouchableOpacity>
                   <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
-                </View>)
+                </View>})
             }
             {
               Helpers.isAlbumBW(album) ? <Text> - N&B</Text> : null
