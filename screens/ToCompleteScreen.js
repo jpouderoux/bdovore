@@ -114,7 +114,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const onAlbumsFetched = async (result) => {
-    console.log('albums ' + (result.done ? ' done' : 'in progress'));
+    console.log('albums ' + (result.done ? 'done' : 'in progress'));
     console.log(result.items.length + ' albums fetched so far');
     setNbTotalAlbums2(result.totalItems);
     nbTotalAlbums = result.totalItems;
@@ -135,7 +135,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const onSeriesFetched = async (result) => {
-    console.log('series ' + (result.done ? ' done' : 'in progress'));
+    console.log('series ' + (result.done ? 'done' : 'in progress'));
     console.log(result.items.length + ' series to complete fetched')
     setNbTotalSeries2(result.totalItems);
     nbTotalSeries = result.totalItems;
@@ -152,8 +152,8 @@ function ToCompleteScreen({ navigation }) {
 
   const renderItem = ({ item, index }) => {
     switch (collectionType) {
-      case 0: return AlbumItem({ navigation, item, index });
-      case 1: return SerieItem({ navigation, item, index });
+      case 0: return AlbumItem({ navigation, item, index, showExclude: true });
+      case 1: return SerieItem({ navigation, item, index, showExclude: true });
     }
   }
 
@@ -191,7 +191,7 @@ function ToCompleteScreen({ navigation }) {
         initialNumToRender={6}
         maxToRenderPerBatch={6}
         windowSize={10}
-        data={(collectionType == 0 ? albums : series)}
+        data={(collectionType == 0 ? albums.filter((album) => album.EXCLUDE != true) : series)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}

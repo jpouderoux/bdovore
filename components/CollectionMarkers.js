@@ -34,11 +34,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import * as APIManager from '../api/APIManager'
 import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 
-export function CollectionMarkers({ item, style, reduceMode }) {
+export function CollectionMarkers({ item, style, reduceMode, showExclude }) {
 
   const [showAllMarks, setShowAllMarks] = useState(false);
   const [initAlbum, setInitAlbum] = useState({});
@@ -49,6 +50,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
   const [isLoan, setIsLoan] = useState(false);
   const [isNum, setIsNum] = useState(false);
   const [isGift, setIsGift] = useState(false);
+  const [isExcluded, setIsExcluded] = useState(false);
 
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
@@ -85,6 +87,7 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     setIsLoan(alb.FLG_PRET && alb.FLG_PRET == 'O');
     setIsNum(alb.FLG_NUM && alb.FLG_NUM == 'O');
     setIsGift(alb.FLG_CADEAU && alb.FLG_CADEAU == 'O');
+    setIsExcluded(alb.EXCLUDE);
     setAlbum(alb);
   }
 
@@ -171,6 +174,20 @@ export function CollectionMarkers({ item, style, reduceMode }) {
     });
   };
 
+  const onExcludeIt = async () => {
+    album.EXCLUDE = album.EXCLUDE ? false : true;
+    setIsExcluded(album.EXCLUDE);
+    if (album.EXCLUDE) {
+      APIManager.excludeAlbum(album, (result) => {
+        console.log('Album excluded ! ', result.error);
+      });
+    } else {
+      APIManager.includeAlbum(album, (result) => {
+        console.log('Album included ! ', result.error);
+      });
+    }
+  }
+
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
@@ -183,6 +200,12 @@ export function CollectionMarkers({ item, style, reduceMode }) {
         <TouchableOpacity onPress={onWantIt} title="" style={CommonStyles.markerStyle}>
           <MaterialCommunityIcons name={(album.FLG_ACHAT == 'O') ? 'heart' : 'heart-outline'} size={25} color={(album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
           <Text style={[CommonStyles.markerTextStyle, (album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Je veux</Text>
+        </TouchableOpacity> : null}
+
+      {!CollectionManager.isAlbumInCollection(album) && showExclude ?
+        <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name='cancel' size={25} color={album.EXCLUDE ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.EXCLUDE ? {fontWeight: 'bold'} : null]} />
+          <Text style={[CommonStyles.markerTextStyle, album.EXCLUDE ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?

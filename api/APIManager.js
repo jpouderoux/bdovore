@@ -372,14 +372,10 @@ export async function fetchAuteur(name, callback, params = {}) {
   });
 }
 
-export async function updateAlbumInCollection(id_tome, callback, params = {}) {
+export async function updateCollection(func, callback, params = {}) {
 
   let token = await checkForToken();
-  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/majcollection' + '?API_TOKEN=' + encodeURI(token), {
-    ...{
-      id_tome: id_tome,
-    }, ...params
-  });
+  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/' + func + '?API_TOKEN=' + encodeURI(token), params);
 
   fetchZIP(url)
     .then((response) => {
@@ -391,23 +387,44 @@ export async function updateAlbumInCollection(id_tome, callback, params = {}) {
     });
 }
 
+export async function updateAlbumInCollection(id_tome, callback, params = {}) {
+
+  updateCollection('majcollection', callback, {
+    ...{
+      id_tome: id_tome,
+    }, ...params
+  });
+}
+
 export async function deleteAlbumInCollection(id_edition, callback, params = {}) {
 
-  let token = await checkForToken();
-  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/deleteAlbum' + '?API_TOKEN=' + encodeURI(token), {
+  updateCollection('deleteAlbum', callback, {
     ...{
       id_edition: id_edition,
     }, ...params
   });
+}
 
-  fetchZIP(url)
-    .then((response) => {
-      callback({ error: (response.status != '200') });
-    })
-    .catch((error) => {
-      console.log(' ==> ' + error.toString());
-      callback({ error: error.toString() });
-    });
+export async function excludeAlbum(album, callback, params = {}) {
+
+  updateCollection('excludeAlbum', callback, {
+    ...{
+      id_tome: album.ID_TOME,
+      id_serie: album.ID_SERIE,
+      id_edition: album.ID_EDITION,
+    }, ...params
+  });
+}
+
+export async function includeAlbum(album, callback, params = {}) {
+
+  updateCollection('includeAlbum', callback, {
+    ...{
+      id_tome: album.ID_TOME,
+      id_serie: album.ID_SERIE,
+      id_edition: album.ID_EDITION,
+    }, ...params
+  });
 }
 
 export function getAlbumCoverURL(item) {
