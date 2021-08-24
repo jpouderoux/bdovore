@@ -363,6 +363,15 @@ export async function fetchAlbumEditions(id_tome, callback, params = {}) {
   });
 };
 
+export async function fetchAuteur(name, callback, params = {}) {
+  fetchJSON('Auteur', null, callback, {
+     ...{
+       term: name,
+       mode: 2
+     }, ...params
+  });
+}
+
 export async function updateAlbumInCollection(id_tome, callback, params = {}) {
 
   let token = await checkForToken();

@@ -54,7 +54,7 @@ export function lowerCaseNoAccentuatedChars(str) {
 
 export function renderSeparator() {
   return <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
-};
+}
 
 export function plural(nb) {
   return nb > 1 ? 's' : '';
@@ -204,11 +204,22 @@ export function removeHTMLTags(text) {
 }
 
 export function getAuteurs(album) {
-  const wb = album.copseudo == '<n&b>';
-  let auteursArray = [album.depseudo, album.scpseudo, wb ? null : album.copseudo];
+  let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
   auteursArray = auteursArray.filter((item) => (item != null && item != '<n&b>' && item != '<indéterminé>'));
   auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
-  return auteursArray.join(' / ') + (wb ? '  - N&B' : '');
+  return auteursArray;
+}
+
+export function reverseAuteurName(name) {
+  const names = name.split(', ');
+  if (names.length >= 2) {
+    return names[1] + ' ' + names[0];
+  }
+  return name;
+}
+
+export function isAlbumBW(album) {
+  return album.copseudo == '<n&b>';
 }
 
 export function makeSection(title = '', data = []) {

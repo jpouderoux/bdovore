@@ -114,6 +114,8 @@ function CollectionScreens({ route, navigation }) {
         options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <CollectionStack.Screen name='Comments' component={CommentsScreen}
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
+      <CollectionStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </CollectionStack.Navigator>
   );
 }
@@ -133,6 +135,8 @@ function WishlistScreens({ navigation }) {
         options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <WishlistStack.Screen name='Comments' component={CommentsScreen}
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
+      <WishlistStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </WishlistStack.Navigator>
   );
 }
@@ -152,6 +156,8 @@ function ToCompleteScreens({ navigation }) {
         options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <ToCompleteStack.Screen name='Comments' component={CommentsScreen}
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
+      <ToCompleteStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </ToCompleteStack.Navigator>
   );
 }
@@ -171,6 +177,8 @@ function NewsScreens({ navigation }) {
         options={{ title: 'Mon commentaire', gestureDirection: 'vertical' }} />
       <NewsStack.Screen name='Comments' component={CommentsScreen}
         options={{ title: 'Commentaires', gestureDirection: 'vertical' }} />
+      <NewsStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
     </NewsStack.Navigator>
   );
 }

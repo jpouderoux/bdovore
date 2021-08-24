@@ -85,13 +85,13 @@ function SearchScreen({ navigation }) {
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, async (result) => onSearchFetched(searchText, result), { term: searchText, mode: 1, });
+        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 1, });
         break;
       case 1:
-        APIManager.fetchAlbum(async (result) => onSearchFetched(searchText, result), { term: searchText });
+        APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
         break;
       case 2:
-        APIManager.fetchJSON('Auteur', null, async (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
+        APIManager.fetchAuteur(searchText, (result) => onSearchFetched(searchText, result));
         break;
     }
   }

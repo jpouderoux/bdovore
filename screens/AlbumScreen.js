@@ -142,6 +142,14 @@ function AlbumScreen({ route, navigation }) {
     navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
   }
 
+  const onPressAuteur = (auteur) => {
+    APIManager.fetchAuteur(auteur, (result) => {
+      if (!result.error && result.items.length > 0) {
+        navigation.push('Auteur', { item: result.items[0] });
+      }
+    });
+  }
+
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
@@ -177,6 +185,7 @@ function AlbumScreen({ route, navigation }) {
           <CollectionMarkers item={album} reduceMode={false}/>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
+
         <View>
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText]}>{album.NOM_SERIE}</Text>
           {dontShowSerieScreen ? null :
@@ -184,7 +193,21 @@ function AlbumScreen({ route, navigation }) {
               onPress={onShowSerieScreen}>
               Voir la fiche série
             </Text>}
-          <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text>{Helpers.pluralize(Helpers.getAuteurs(album).length, 'Auteur')} : </Text>
+            {
+              Helpers.getAuteurs(album).map((auteur, index, array) =>
+                <View style={{ flexDirection: 'row'}}>
+                  <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
+                     <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur)}</Text>
+                  </TouchableOpacity>
+                  <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
+                </View>)
+            }
+            {
+              Helpers.isAlbumBW(album) ? <Text> - N&B</Text> : null
+            }
+          </View>
           <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
@@ -205,6 +228,7 @@ function AlbumScreen({ route, navigation }) {
               Noter / commenter cet album
             </Text> : null}
         </View>
+
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
