@@ -29,24 +29,18 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import EStyleSheet from 'react-native-extended-stylesheet';
-import { bdovorgray, CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
-
+import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 import { CollectionMarkers } from './CollectionMarkers';
 import { RatingStars } from './RatingStars';
 
 
-export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate }) {
+export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude }) {
 
   const onPressAlbum = () => {
     navigation.push('Album', { item, dontShowSerieScreen });
-  }
-
-  const convertDate = (date) => {
-    //return new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // not supported on react
-    return date.split('-').reverse().join('/');
   }
 
   return (
@@ -62,21 +56,13 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "tome " + item.NUM_TOME : ''}{'\n'}
-            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + convertDate(item.DTE_PARUTION) : '' }
+            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : '' }
           </Text>
           {collectionMode ? null :
-            <CollectionMarkers item={item} style={styles.markersStyle} reduceMode={true} />
+            <CollectionMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude ? true : false}/>
           }
         </View>
       </View>
     </TouchableOpacity>
   );
 }
-
-const styles = EStyleSheet.create({
-  markersStyle: {
-    position: 'absolute',
-    bottom: 0,
-    right: 5,
-  },
-});

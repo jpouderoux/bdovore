@@ -28,11 +28,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { AlbumItem } from '../components/AlbumItem';
@@ -49,14 +51,12 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
-  const [refresh, setRefresh] = useState(1);
 
-  useEffect(() => {
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(refresh + 1);
-    });
-    return willFocusSubscription;
-  }, []);
+  useFocusEffect(() => {
+    if (searchMode == 1) {
+      CollectionManager.selectOwnAlbum(data);
+    }
+  });
 
   useEffect(() => {
     onSearch(keywords);
@@ -68,6 +68,9 @@ function SearchScreen({ navigation }) {
     // sure to only take into account the result of the request for
     // the last provided keywords.
     if (searchedText == lastKeywords) {
+      if (!result.error && searchMode == 1) {
+        CollectionManager.selectOwnAlbum(result.items);
+      }
       setData(result.items);
       setErrortext(result.error);
       setLoading(false);
@@ -190,7 +193,7 @@ function SearchScreen({ navigation }) {
             keyExtractor={({ id }, index) => index}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            extraData={refresh, keywords}
+            extraData={keywords, searchMode}
           />)}
       </View>
     </View>

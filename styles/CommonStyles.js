@@ -170,6 +170,12 @@ export let CommonStyles = EStyleSheet.create({
 
   //****************
   // Markers styles
+
+  markersViewStyle: {
+    position: 'absolute',
+    bottom: 0,
+    right: 5,
+  },
   markerStyle: {
     alignItems: 'center',
     alignContent: 'center',

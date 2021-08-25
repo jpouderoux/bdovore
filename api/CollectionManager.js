@@ -410,6 +410,14 @@ class CCollectionManager {
     return false;
   }
 
+  selectOwnAlbum(albumsArray) {
+    for (let i = 0; i < albumsArray.length; i++) {
+      let album = albumsArray[i];
+      albumsArray[i] = this.getFirstAlbumEditionOfSerieInCollection(album);
+    }
+    return albumsArray;
+  }
+
   refreshAlbumSeries(albumsArray) {
     // For each serie, select the first own album of the serie
     for (let t = 0; t < albumsArray.length; t++) {

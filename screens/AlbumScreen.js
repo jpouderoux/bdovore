@@ -231,6 +231,9 @@ function AlbumScreen({ route, navigation }) {
               </Text> :  <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
+          {Helpers.getDateParutionAlbum(album) != '' ?
+            <Text>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
+            : null }
           <AchatSponsorIcon album={album} />
           <Text style={[CommonStyles.defaultText,{ marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) ?

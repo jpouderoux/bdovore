@@ -226,6 +226,26 @@ export function makeSection(title = '', data = []) {
   return { title, data };
 }
 
+export function convertDate(date) {
+  //return new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // not supported on react
+  return date.split('-').reverse().join('/');
+}
+
+export function getDateParutionAlbum(album) {
+  let date = '';
+  if (album.DTE_PARUTION) { date = convertDate(album.DTE_PARUTION); }
+  else if (album.DATE_PARUTION_EDITION) { date = convertDate(album.DATE_PARUTION_EDITION); }
+  if (date.startsWith('01/01/')) {
+    // if date is on January 1st, it should means we don't have exact date, skip day and month
+    date = date.substring(6);
+  }
+  if (date.startsWith('01/')) {
+    // if day is 01, it might mean we don't have the exact day, so skip it to be safe
+    date = date.substring(3);
+  }
+  return date;
+}
+
 export function showToast(isError, text1, text2 = '', duration = 1000) {
   Toast.show({
     visibilityTime: duration,
