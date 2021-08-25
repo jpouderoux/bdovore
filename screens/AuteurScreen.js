@@ -28,9 +28,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
@@ -50,6 +52,10 @@ function AuteurScreen({ route, navigation }) {
   useEffect(() => {
     refreshDataIfNeeded();
   }, []);
+
+  useFocusEffect(() => {
+    CollectionManager.refreshAlbumSeries(auteurAlbums);
+  });
 
   const refreshDataIfNeeded = async () => {
     console.log("refresh author data");
@@ -91,6 +97,8 @@ function AuteurScreen({ route, navigation }) {
     albumsArray.forEach(album => {
       Helpers.sortByAscendingValue(album.data, 'NUM_TOME');
     });
+
+    CollectionManager.refreshAlbumSeries(albumsArray);
 
     setAuteurAlbums(albumsArray);
     setNbSeries(albumsArray.length);

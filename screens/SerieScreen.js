@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -48,10 +48,8 @@ function SerieScreen({ route, navigation }) {
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
 
-  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
-
   useFocusEffect(() => {
-    refreshAlbumSeries();
+    CollectionManager.refreshAlbumSeries(serieAlbums);
   });
 
   const refreshDataIfNeeded = async () => {
@@ -115,17 +113,6 @@ function SerieScreen({ route, navigation }) {
     setLoading(false);
   }
 
-  const refreshAlbumSeries = () => {
-    console.log("refresh series albums");
-    // Select the first album of the series
-    for (let t = 0; t < serieAlbums.length; t++) {
-      for (let i = 0; i < serieAlbums[t].data.length; i++) {
-        let album = serieAlbums[t].data[i];
-        serieAlbums[t].data[i] = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
-      }
-    }
-  }
-
   const renderAlbum = ({ item, index }) => {
     return AlbumItem({ navigation, item, index, dontShowSerieScreen: true});
   }
@@ -142,14 +129,14 @@ function SerieScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ margin: 0, flexDirection: 'row', alignContent: "space-between" }}>
-        <Text style={{ marginTop: 10, marginLeft: 10, width: '33%' }}>
+      <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
+        <Text style={{ marginTop: 10, flex: 1, width: '33%' }}>
           {getCounterText()}{'\n\n'}
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
-        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ flexDirection: 'row', height: 75 }} noResize={true} />
-        <Text style={{ marginTop: 10, flex:1, textAlign: 'right' }}>
-          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}{'    '}
+        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
+        <Text style={{ marginTop: 10, flex: 1, textAlign: 'right', width: '33%' }}>
+          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
         </Text>
       </View>
       {errortext != '' ? (

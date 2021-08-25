@@ -28,17 +28,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
 import { AuteurItem } from '../components/AuteurItem';
 
+
+let lastKeywords = '';
 
 function SearchScreen({ navigation }) {
 
@@ -47,27 +51,35 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
-  const [refresh, setRefresh] = useState(1);
 
-  useEffect(() => {
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      setRefresh(refresh + 1);
-    });
-    return willFocusSubscription;
-  }, []);
+  useFocusEffect(() => {
+    if (searchMode == 1) {
+      CollectionManager.selectOwnAlbum(data);
+    }
+  });
 
   useEffect(() => {
     onSearch(keywords);
   }, [searchMode]);
 
-  const onSearchFetched = async (result) => {
-    setData(result.items);
-    setErrortext(result.error);
-    setLoading(false);
+  const onSearchFetched = async (searchedText, result) => {
+    // As many requests are sent to the server while typing the keywords,
+    // it may happen that answers are not received in order. So we make
+    // sure to only take into account the result of the request for
+    // the last provided keywords.
+    if (searchedText == lastKeywords) {
+      if (!result.error && searchMode == 1) {
+        CollectionManager.selectOwnAlbum(result.items);
+      }
+      setData(result.items);
+      setErrortext(result.error);
+      setLoading(false);
+    }
   }
 
   const onSearch = (searchText) => {
     setKeywords(searchText);
+    lastKeywords = searchText;
     if (searchText == '') {
       setData([]);
       return;
@@ -76,13 +88,13 @@ function SearchScreen({ navigation }) {
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, onSearchFetched, { term: searchText, mode: 1, });
+        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 1, });
         break;
       case 1:
-        APIManager.fetchAlbum(onSearchFetched, { term: searchText });
+        APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
         break;
       case 2:
-        APIManager.fetchJSON('Auteur', null, onSearchFetched, { term: searchText, mode: 2, });
+        APIManager.fetchAuteur(searchText, (result) => onSearchFetched(searchText, result));
         break;
     }
   }
@@ -181,7 +193,7 @@ function SearchScreen({ navigation }) {
             keyExtractor={({ id }, index) => index}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            extraData={refresh}
+            extraData={keywords, searchMode}
           />)}
       </View>
     </View>

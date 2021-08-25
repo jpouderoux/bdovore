@@ -32,17 +32,31 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 export const bdovored = '#990000';
 export const bdovorgray = '#aaaaaa'; // Same as iOS UIColor.lightGray
 
-export const windowWidth = Dimensions.get('window').width;
-export const windowHeight = Dimensions.get('window').height;
+export let windowWidth = Dimensions.get('window').width;
+export let windowHeight = Dimensions.get('window').height;
 
 export const FullAlbumImageWidth = 180;
 export const FullAlbumImageHeight = 244;
 
-export const AlbumImageWidth = windowWidth / 4;
-export const AlbumImageHeight = AlbumImageWidth * (FullAlbumImageHeight / FullAlbumImageWidth);
-export const AlbumItemHeight = AlbumImageHeight + 1;
+export let AlbumImageWidth = Math.min(windowWidth, windowHeight) / 4;
+export let AlbumImageHeight = AlbumImageWidth * (FullAlbumImageHeight / FullAlbumImageWidth);
+export let AlbumItemHeight = AlbumImageHeight + 1;
 
-export const CommonStyles = EStyleSheet.create({
+// TODO - Event Listener for orientation changes
+/*Dimensions.addEventListener('change', () => {
+  rebuildSheet();
+});*/
+
+export function rebuildSheet() {
+  EStyleSheet.build({
+    $theme: global.isDarkMode ? 'light' : 'dark',
+    $rem: Dimensions.get('window').width > 340 ? 16 : 14,
+    $bg: global.isDarkMode ? 'black' : 'white',
+    $textcolor: global.isDarkMode ? 'white' : 'black',
+  });
+}
+
+export let CommonStyles = EStyleSheet.create({
   screenStyle: {
     backgroundColor: '$bg',
     flex: 1,
@@ -69,7 +83,7 @@ export const CommonStyles = EStyleSheet.create({
   },
   fullAlbumImageStyle: {
     resizeMode: 'contain',
-    width: FullAlbumImageWidth,
+    width: windowWidth*0.8,
     height: FullAlbumImageHeight,
   },
   serieImageStyle: {
@@ -156,6 +170,12 @@ export const CommonStyles = EStyleSheet.create({
 
   //****************
   // Markers styles
+
+  markersViewStyle: {
+    position: 'absolute',
+    bottom: 0,
+    right: 5,
+  },
   markerStyle: {
     alignItems: 'center',
     alignContent: 'center',
@@ -284,6 +304,7 @@ export const CommonStyles = EStyleSheet.create({
   // Rating stars styles
   ratingStarColor: {
     color: '$textcolor',
+    backgroundColor: '$bg'
   }
 
 });

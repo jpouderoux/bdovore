@@ -142,12 +142,29 @@ function AlbumScreen({ route, navigation }) {
     navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
   }
 
+  const getAuteursLabel = () => {
+    const auteurs = Helpers.getAuteurs(album);
+    let len = auteurs.length;
+    if (len == 1 && auteurs[0] == 'Collectif') len++;
+    return Helpers.pluralize(len, 'Auteur')
+  }
+
+  const onPressAuteur = (auteur) => {
+    if (auteur != 'Collectif') {
+      APIManager.fetchAuteur(auteur, (result) => {
+        if (!result.error && result.items.length > 0) {
+          navigation.push('Auteur', { item: result.items[0] });
+        }
+      });
+    }
+  }
+
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
-        <View style={{ flexDirection: 'column', width: 100 }}>
+        <View style={{ flexDirection: 'column', width: 110 }}>
           <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-          <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 100, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
+          <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
         </View>
       </TouchableOpacity>);
   }
@@ -177,6 +194,7 @@ function AlbumScreen({ route, navigation }) {
           <CollectionMarkers item={album} reduceMode={false}/>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
+
         <View>
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText]}>{album.NOM_SERIE}</Text>
           {dontShowSerieScreen ? null :
@@ -184,7 +202,23 @@ function AlbumScreen({ route, navigation }) {
               onPress={onShowSerieScreen}>
               Voir la fiche série
             </Text>}
-          <Text>Auteur(s) : {Helpers.getAuteurs(album)}</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text>{getAuteursLabel()} : </Text>
+            {
+              Helpers.getAuteurs(album).map((auteur, index, array) => {
+                return (index == 0 && auteur == 'Collectif') ?
+                <Text>{auteur}</Text> :
+                <View style={{ flexDirection: 'row'}}>
+                  <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
+                     <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur)}</Text>
+                  </TouchableOpacity>
+                  <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
+                </View>})
+            }
+            {
+              Helpers.isAlbumBW(album) ? <Text> - N&B</Text> : null
+            }
+          </View>
           <Text>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
@@ -197,6 +231,9 @@ function AlbumScreen({ route, navigation }) {
               </Text> :  <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
+          {Helpers.getDateParutionAlbum(album) != '' ?
+            <Text>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
+            : null }
           <AchatSponsorIcon album={album} />
           <Text style={[CommonStyles.defaultText,{ marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) ?
@@ -205,6 +242,7 @@ function AlbumScreen({ route, navigation }) {
               Noter / commenter cet album
             </Text> : null}
         </View>
+
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -220,7 +258,7 @@ function AlbumScreen({ route, navigation }) {
               data={similAlbums}
               renderItem={renderSimil}
               keyExtractor={({ item }, index) => index}
-              style={{ height: 150 }}
+              style={{ height: 170 }}
             />
           </View> : null}
 

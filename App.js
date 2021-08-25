@@ -28,42 +28,32 @@
 
 import 'react-native-gesture-handler';
 
-import React,  { useState } from 'react';
-import { Dimensions, useColorScheme } from 'react-native';
+import React from 'react';
+import { useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import EStyleSheet from 'react-native-extended-stylesheet';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
 
 import MainTab from './routes/MainTab';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { Appearance } from 'react-native'; 
+import { rebuildSheet } from './styles/CommonStyles';
+
 
 const App: () => Node = () => {
 
   React.useEffect(() => {
     SplashScreen.hide();
   });
-  
-  global.isDarkMode = useColorScheme() === 'dark';
 
-  let { height, width } = Dimensions.get('window');
-  EStyleSheet.build({
-    $rem: width > 340 ? 16 : 14,
-    $bg: global.isDarkMode ? 'black' : 'white',
-    $textcolor: global.isDarkMode ? 'white' : 'black'
-  });
-  const [isRender, setisRender] = useState(true);
+  global.isDarkMode = useColorScheme() === 'dark';
+  rebuildSheet();
+
+  /* TODO - Support dynamic theme change.
   Appearance.addChangeListener(({ colorScheme }) => {
-    isDarkMode = colorScheme === 'dark';
-    EStyleSheet.build({
-      $rem: width > 340 ? 16 : 14,
-      $bg: isDarkMode ? 'black' : 'white',
-      $textcolor: isDarkMode ? 'white' : 'black'
-    });
-    setisRender(true);
-    console.log(colorScheme);
-  });
+    //global.isDarkMode = colorScheme === 'dark'; // We
+    rebuildSheet();
+    //console.log("Appearance changed: " + colorScheme);
+  });*/
 
   return (
     <NavigationContainer theme={global.isDarkMode ? DarkTheme : DefaultTheme}>

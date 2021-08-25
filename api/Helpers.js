@@ -32,6 +32,18 @@ import Toast from 'react-native-toast-message';
 
 import * as APIManager from '../api/APIManager';
 
+// Returns true if the screen is in portrait mode
+export function isPortrait() {
+  const dim = Dimensions.get('screen');
+  return dim.height >= dim.width;
+}
+
+// Returns true of the screen is in landscape mode
+export function isLandscape() {
+  const dim = Dimensions.get('screen');
+  return dim.width >= dim.height;
+}
+
 String.prototype.replaceAt = function (index, replacement) {
   return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
@@ -42,7 +54,7 @@ export function lowerCaseNoAccentuatedChars(str) {
 
 export function renderSeparator() {
   return <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
-};
+}
 
 export function plural(nb) {
   return nb > 1 ? 's' : '';
@@ -148,10 +160,15 @@ export function addSerieToArrayAndDict(serie, array, dict) {
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
   if (idx >= 0) {
-    delete dict[makeAlbumUID(album)];
+    const uid = makeAlbumUID(album);
+    delete dict[uid];
     array = array.splice(idx, 1);
-  } else {
-    console.warn('Trying to remove an album that is not in the array/dict!');
+    // Refresh dictionary according the new array order once the entry has been removed
+    for (const [key, value] of Object.entries(dict)) {
+      if (value > idx) {
+        dict[key] = value - 1;
+      }
+    }
   }
 }
 
@@ -160,9 +177,12 @@ export function removeSerieFromArrayAndDict(id_serie, array, dict) {
   if (idx >= 0) {
     delete dict[id_serie];
     array = array.splice(idx, 1);
-  }
-  else {
-    console.warn('Trying to remove a serie that is not in the array/dict!');
+    // Refresh dictionary according the new array order once the entry has been removed
+    for (const [key, value] of Object.entries(dict)) {
+      if (value > idx) {
+        dict[key] = value - 1;
+      }
+    }
   }
 }
 
@@ -185,14 +205,45 @@ export function removeHTMLTags(text) {
 
 export function getAuteurs(album) {
   let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
-  auteursArray = auteursArray.filter((item) => item != null);
-  //auteursArray = auteursArray.filter((item) => item != '<n&b>');
+  auteursArray = auteursArray.filter((item) => (item != null && item != '<n&b>' && item != '<indéterminé>'));
   auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
-  return auteursArray.join(' / ');
+  return auteursArray;
+}
+
+export function reverseAuteurName(name) {
+  const names = name.split(', ');
+  if (names.length >= 2) {
+    return names[1] + ' ' + names[0];
+  }
+  return name;
+}
+
+export function isAlbumBW(album) {
+  return album.copseudo == '<n&b>';
 }
 
 export function makeSection(title = '', data = []) {
   return { title, data };
+}
+
+export function convertDate(date) {
+  //return new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // not supported on react
+  return date.split('-').reverse().join('/');
+}
+
+export function getDateParutionAlbum(album) {
+  let date = '';
+  if (album.DTE_PARUTION) { date = convertDate(album.DTE_PARUTION); }
+  else if (album.DATE_PARUTION_EDITION) { date = convertDate(album.DATE_PARUTION_EDITION); }
+  if (date.startsWith('01/01/')) {
+    // if date is on January 1st, it should means we don't have exact date, skip day and month
+    date = date.substring(6);
+  }
+  if (date.startsWith('01/')) {
+    // if day is 01, it might mean we don't have the exact day, so skip it to be safe
+    date = date.substring(3);
+  }
+  return date;
 }
 
 export function showToast(isError, text1, text2 = '', duration = 1000) {

@@ -1,6 +1,7 @@
 package com.bdovore;
 
 import android.os.Bundle;
+import android.content.res.Configuration;
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;
 
@@ -11,6 +12,13 @@ public class MainActivity extends ReactActivity {
     SplashScreen.show(this);
     super.onCreate(savedInstanceState);
   }
+
+  /*// TODO - Uncomment for dynamic theme change support.
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    getReactInstanceManager().onConfigurationChanged(this, newConfig);
+  }*/
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule

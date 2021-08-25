@@ -27,8 +27,8 @@
  */
 
 import React from 'react';
-import { ActivityIndicator, Image, TouchableWithoutFeedback, View } from 'react-native'
-import { windowWidth, windowHeight } from '../styles/CommonStyles';
+import { ActivityIndicator, Dimensions, Image, TouchableWithoutFeedback, View } from 'react-native'
+
 
 function ImageScreen({ route, navigation }) {
   return (
@@ -36,7 +36,7 @@ function ImageScreen({ route, navigation }) {
       <TouchableWithoutFeedback onPress={() => { navigation.goBack(); } }>
       <Image
           source={{ uri: route.params.source }}
-        style={[{ resizeMode: 'contain', width: windowWidth, height: windowHeight }]}
+          style={[{ resizeMode: 'contain', width: Dimensions.get('window').width, height: Dimensions.get('window').height }]}
         PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
       </TouchableWithoutFeedback>
     </View>

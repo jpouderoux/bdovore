@@ -226,7 +226,6 @@ class CCollectionManager {
             'Album supprimé de la collection.');
       }
     });
-
   }
 
   addAlbumToWishlist(album, callback = null) {
@@ -401,6 +400,32 @@ class CCollectionManager {
       }
     });
     return count;
+  }
+
+  isSerieComplete(serie) {
+    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
+    if (idx >= 0) {
+      return serie.NB_ALBUM == global.collectionSeries[idx].NB_USER_ALBUM;
+    }
+    return false;
+  }
+
+  selectOwnAlbum(albumsArray) {
+    for (let i = 0; i < albumsArray.length; i++) {
+      let album = albumsArray[i];
+      albumsArray[i] = this.getFirstAlbumEditionOfSerieInCollection(album);
+    }
+    return albumsArray;
+  }
+
+  refreshAlbumSeries(albumsArray) {
+    // For each serie, select the first own album of the serie
+    for (let t = 0; t < albumsArray.length; t++) {
+      for (let i = 0; i < albumsArray[t].data.length; i++) {
+        let album = albumsArray[t].data[i];
+        albumsArray[t].data[i] = this.getFirstAlbumEditionOfSerieInCollection(album);
+      }
+    }
   }
 
 };
