@@ -1,0 +1,16 @@
+{
+  "name": "bdovore",
+  "displayName": "bdovore",
+  "platforms": [ "android", "ios", "web" ],
+  "version": "0.0.1",
+  "orientation": "portrait",
+  "splash": {
+    "image": "./app/assets/bdovore-167.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#ffffff"
+  },
+  "ios": {
+    "supportsTablet": true,
+    "userInterfaceStyle": "automatic"
+  }
+}

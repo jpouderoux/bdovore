@@ -27,14 +27,15 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import { LinkText } from '../components/LinkText';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
-
+import { Linking, Alert } from 'react-native'
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 function LoginScreen({ navigation }) {
 
@@ -74,6 +75,51 @@ function LoginScreen({ navigation }) {
     }
   }
 
+  const  openlinkAccount = async () => {
+    
+      try {
+        const url = 'https://www.bdovore.com/compte/inscription'
+        if (await InAppBrowser.isAvailable()) {
+          const result = await InAppBrowser.open(url, {
+            // iOS Properties
+            dismissButtonStyle: 'Cancel',
+            preferredBarTintColor: '#FFFFFF',
+            preferredControlTintColor: 'blue',
+            readerMode: false,
+            animated: true,
+            modalPresentationStyle: 'fullScreen',
+            modalTransitionStyle: 'coverVertical',
+            modalEnabled: true,
+            enableBarCollapsing: false,
+            // Android Properties
+            showTitle: true,
+            toolbarColor: 'white',
+            secondaryToolbarColor: 'black',
+            navigationBarColor: 'black',
+            navigationBarDividerColor: 'blue',
+            enableUrlBarHiding: true,
+            enableDefaultShare: false,
+            forceCloseOnRedirection: false,
+            // Specify full animation resource identifier(package:anim/name)
+            // or only resource name(in case of animation bundled with app).
+            animations: {
+              startEnter: 'slide_in_right',
+              startExit: 'slide_out_left',
+              endEnter: 'slide_in_left',
+              endExit: 'slide_out_right'
+            },
+            headers: {
+              'my-custom-header': 'Créer mon compte'
+            }
+          })
+          //Alert.alert(JSON.stringify(result))
+        }
+        else Linking.openURL(url)
+      } catch (error) {
+        Alert.alert(error.message)
+      }
+    
+  }
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
@@ -123,10 +169,8 @@ function LoginScreen({ navigation }) {
             title='Login'>
             <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
           </TouchableOpacity>
-          <LinkText
-            text='Pas encore inscrit ?'
-            url='https://www.bdovore.com/compte/inscription?'
-            style={[CommonStyles.loginRegisterTextStyle, CommonStyles.linkTextStyle]} />
+         
+            <Button title="Créer mon compte" onPress={openlinkAccount} />
         </View>
       }
     </View>
