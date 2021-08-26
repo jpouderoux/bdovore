@@ -27,15 +27,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, Button } from 'react-native';
+import { Button, Image, Linking, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 
 import { CommonStyles } from '../styles/CommonStyles';
-import * as APIManager from '../api/APIManager'
-import { LinkText } from '../components/LinkText';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
-import { Linking, Alert } from 'react-native'
-import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 function LoginScreen({ navigation }) {
 
@@ -75,51 +74,52 @@ function LoginScreen({ navigation }) {
     }
   }
 
-  const  openlinkAccount = async () => {
-    
-      try {
-        const url = 'https://www.bdovore.com/compte/inscription'
-        if (await InAppBrowser.isAvailable()) {
-          const result = await InAppBrowser.open(url, {
-            // iOS Properties
-            dismissButtonStyle: 'Cancel',
-            preferredBarTintColor: '#FFFFFF',
-            preferredControlTintColor: 'blue',
-            readerMode: false,
-            animated: true,
-            modalPresentationStyle: 'fullScreen',
-            modalTransitionStyle: 'coverVertical',
-            modalEnabled: true,
-            enableBarCollapsing: false,
-            // Android Properties
-            showTitle: true,
-            toolbarColor: 'white',
-            secondaryToolbarColor: 'black',
-            navigationBarColor: 'black',
-            navigationBarDividerColor: 'blue',
-            enableUrlBarHiding: true,
-            enableDefaultShare: false,
-            forceCloseOnRedirection: false,
-            // Specify full animation resource identifier(package:anim/name)
-            // or only resource name(in case of animation bundled with app).
-            animations: {
-              startEnter: 'slide_in_right',
-              startExit: 'slide_out_left',
-              endEnter: 'slide_in_left',
-              endExit: 'slide_out_right'
-            },
-            headers: {
-              'my-custom-header': 'Créer mon compte'
-            }
-          })
-          //Alert.alert(JSON.stringify(result))
-        }
-        else Linking.openURL(url)
-      } catch (error) {
-        Alert.alert(error.message)
+  const onRegister = async () => {
+    try {
+      const url = APIManager.bdovoreBaseURL + '/compte/inscription';
+      if (await InAppBrowser.isAvailable()) {
+        const result = await InAppBrowser.open(url, {
+          // iOS Properties
+          dismissButtonStyle: 'Cancel',
+          preferredBarTintColor: '#FFFFFF',
+          preferredControlTintColor: 'blue',
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'fullScreen',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          // Android Properties
+          showTitle: true,
+          toolbarColor: 'white',
+          secondaryToolbarColor: 'black',
+          navigationBarColor: 'black',
+          navigationBarDividerColor: 'blue',
+          enableUrlBarHiding: true,
+          enableDefaultShare: false,
+          forceCloseOnRedirection: false,
+          // Specify full animation resource identifier(package:anim/name)
+          // or only resource name(in case of animation bundled with app).
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right'
+          },
+          headers: {
+            'my-custom-header': 'Créer mon compte'
+          }
+        })
+        //console.log(JSON.stringify(result));
       }
-    
+      else {
+        Linking.openURL(url);
+      }
+    } catch (error) {
+      Helpers.showToast(true, error.message);
+    }
   }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
@@ -169,8 +169,9 @@ function LoginScreen({ navigation }) {
             title='Login'>
             <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
           </TouchableOpacity>
-         
-            <Button title="Créer mon compte" onPress={openlinkAccount} />
+          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
+          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur le site bdovore.com pour en créer un.</Text>
+          <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
         </View>
       }
     </View>
