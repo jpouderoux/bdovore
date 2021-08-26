@@ -29,6 +29,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Switch } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -46,10 +48,13 @@ function SerieScreen({ route, navigation }) {
   const [serie, setSerie] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [serieAlbums, setSerieAlbums] = useState([]);
+  const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
+  const [showExcludedAlbums, setShowExcludedAlbums] = useState(true);
 
   useFocusEffect(() => {
     CollectionManager.refreshAlbumSeries(serieAlbums);
+    refreshFilteredAlbums();
   });
 
   const refreshDataIfNeeded = async () => {
@@ -61,6 +66,10 @@ function SerieScreen({ route, navigation }) {
   }
 
   useEffect(() => {
+    AsyncStorage.getItem('showExcludedAlbums').then((value) => {
+      setShowExcludedAlbums(value != 0);
+      console.log(value != 0);
+    }).catch(() => { });
     refreshDataIfNeeded();
   }, []);
 
@@ -75,6 +84,13 @@ function SerieScreen({ route, navigation }) {
     console.log("serie albums fetched");
 
     let newdata = [
+      { title: 'Albums', data: [] },
+      { title: 'Intégrales', data: [] },
+      { title: 'Coffrets', data: [] },
+      { title: 'Editions spéciales', data: [] },
+    ];
+
+    let filtereddata = [
       { title: 'Albums', data: [] },
       { title: 'Intégrales', data: [] },
       { title: 'Coffrets', data: [] },
@@ -108,13 +124,37 @@ function SerieScreen({ route, navigation }) {
     });
 
     setSerieAlbums(newdata);
+    setFilteredSerieAlbums(filtereddata);
+
+    APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
+      if (!result.error) {
+        // Transform the result array into a dictionary for fast&easy access
+        let dict = result.items.reduce((a, x) => ({...a, [parseInt(x)]: 1}), {});
+        // Check all albums in all sections and set their exclude flag
+        newdata.forEach(section => {
+          section.data.forEach(album => {
+            album.FLG_EXCLUDE = (dict[parseInt(album.ID_TOME)] == 1);
+          })
+        });
+        setSerieAlbums(newdata);
+        for (let i = 0; i < newdata.length; i++) {
+          filtereddata[i].data = newdata[i].data.filter(album => album.FLG_EXCLUDE != true);
+        }
+      }
+    });
 
     setErrortext(result.error);
     setLoading(false);
   }
 
+  const refreshFilteredAlbums = () => {
+    for (let i = 0; i < filteredSerieAlbums.length; i++) {
+      filteredSerieAlbums[i].data = serieAlbums[i].data.filter(album => album.FLG_EXCLUDE != true);
+    }
+  }
+
   const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true});
+    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true, showExclude: true});
   }
 
   const getCounterText = () => {
@@ -123,6 +163,12 @@ function SerieScreen({ route, navigation }) {
       return Helpers.pluralWord(nbTomes, 'tome');
     }
     return Helpers.pluralWord(serie.NB_ALBUM, 'album');
+  }
+
+  const onToggleShowExcludedAlbums = () => {
+    AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
+    setShowExcludedAlbums(showExcludedAlbums => !showExcludedAlbums);
+    refreshFilteredAlbums();
   }
 
   const keyExtractor = useCallback(({ item }, index) => index);
@@ -135,9 +181,16 @@ function SerieScreen({ route, navigation }) {
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
-        <Text style={{ marginTop: 10, flex: 1, textAlign: 'right', width: '33%' }}>
-          {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
-        </Text>
+        <View style={{flexDirection: 'column', width: '33%'}}>
+          <Text style={{ marginTop: 10, flex: 1, textAlign: 'right' }}>
+            {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
+          </Text>
+          <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center' }}>
+            <Text style={[CommonStyles.smallerText, { textAlign: 'center', textAlignVertical: 'center' }]}>Afficher ignorés</Text>
+            <Switch value={showExcludedAlbums}
+              onValueChange={onToggleShowExcludedAlbums} />
+          </View>
+        </View>
       </View>
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>
@@ -149,7 +202,7 @@ function SerieScreen({ route, navigation }) {
           style={{ flex: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          sections={serieAlbums.filter(s => s.data.length > 0)}
+          sections={showExcludedAlbums ? serieAlbums.filter(s => s.data.length > 0) : filteredSerieAlbums.filter(s => s.data.length > 0)}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title } }) => (

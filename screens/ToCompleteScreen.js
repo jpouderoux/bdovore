@@ -191,7 +191,7 @@ function ToCompleteScreen({ navigation }) {
         initialNumToRender={6}
         maxToRenderPerBatch={6}
         windowSize={10}
-        data={(collectionType == 0 ? albums.filter((album) => album.EXCLUDE != true) : series)}
+        data={(collectionType == 0 ? albums.filter((album) => album.FLG_EXCLUDE != true) : series)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Helpers.renderSeparator}

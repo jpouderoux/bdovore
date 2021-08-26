@@ -59,6 +59,7 @@ function AlbumScreen({ route, navigation }) {
 
   useEffect(() => {
     getAlbumEditions();
+    getAlbumIsExclude();
   }, []);
 
   const getAlbumEditions = () => {
@@ -69,6 +70,17 @@ function AlbumScreen({ route, navigation }) {
       CollectionManager.fetchAlbumEditions(album, onAlbumEditionsFetched);
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
+    }
+  }
+
+  const getAlbumIsExclude = () => {
+    if (album.FLG_EXCLUDE == undefined) {
+      APIManager.fetchIsAlbumExcluded(album, (result) => {
+        if (!result.error) {
+          album.FLG_EXCLUDE = result.items != 0;
+          console.log('Album excluded? ' + album.FLG_EXCLUDE);
+        }
+      });
     }
   }
 
@@ -191,12 +203,13 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
-          <CollectionMarkers item={album} reduceMode={false}/>
+          <CollectionMarkers item={album} reduceMode={false} showExclude={true}/>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
 
         <View>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText]}>{album.NOM_SERIE}</Text>
+          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }]}
+            onPress={dontShowSerieScreen ? ()=>{} : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           {dontShowSerieScreen ? null :
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onShowSerieScreen}>

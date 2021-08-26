@@ -87,7 +87,7 @@ export function CollectionMarkers({ item, style, reduceMode, showExclude }) {
     setIsLoan(alb.FLG_PRET && alb.FLG_PRET == 'O');
     setIsNum(alb.FLG_NUM && alb.FLG_NUM == 'O');
     setIsGift(alb.FLG_CADEAU && alb.FLG_CADEAU == 'O');
-    setIsExcluded(alb.EXCLUDE);
+    setIsExcluded(alb.FLG_EXCLUDE);
     setAlbum(alb);
   }
 
@@ -175,16 +175,16 @@ export function CollectionMarkers({ item, style, reduceMode, showExclude }) {
   };
 
   const onExcludeIt = async () => {
-    album.EXCLUDE = album.EXCLUDE ? false : true;
-    setIsExcluded(album.EXCLUDE);
-    if (album.EXCLUDE) {
-      APIManager.excludeAlbum(album, (result) => {
-        console.log('Album excluded ! ', result.error);
-      });
+    const exclude = !album.FLG_EXCLUDE;
+    const callback = (result) => {
+      if (!result.error) {
+        album.FLG_EXCLUDE = exclude;
+        setIsExcluded(exclude);
+      }};
+    if (exclude) {
+      APIManager.excludeAlbum(album, callback);
     } else {
-      APIManager.includeAlbum(album, (result) => {
-        console.log('Album included ! ', result.error);
-      });
+      APIManager.includeAlbum(album, callback);
     }
   }
 
@@ -202,10 +202,10 @@ export function CollectionMarkers({ item, style, reduceMode, showExclude }) {
           <Text style={[CommonStyles.markerTextStyle, (album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Je veux</Text>
         </TouchableOpacity> : null}
 
-      {!CollectionManager.isAlbumInCollection(album) && showExclude ?
+      {(!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={album.EXCLUDE ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.EXCLUDE ? {fontWeight: 'bold'} : null]} />
-          <Text style={[CommonStyles.markerTextStyle, album.EXCLUDE ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+          <MaterialCommunityIcons name='cancel' size={25} color={album.FLG_EXCLUDE ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.FLG_EXCLUDE ? {fontWeight: 'bold'} : null]} />
+          <Text style={[CommonStyles.markerTextStyle, album.FLG_EXCLUDE ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?

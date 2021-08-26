@@ -156,15 +156,18 @@ export async function fetchJSON(request, context, callback, params = {},
   }
 
   let userMode = false;
-  let token = '';
+  let token = await AsyncStorage.getItem('token');
   if (context && context.navigation) {
     token = await checkForToken(context.navigation);
     if (token == '') {
       callback(formatResult([]));
       return;
     }
+  }
+  if (token != '') {
     userMode = true;
   }
+
   const baseUrl = concatParamsToURL(userMode ? getBaseUserURL(token, request) : getBaseURL(request), params);
   let url = baseUrl;
   if (multipage && datamode) {
@@ -401,6 +404,27 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
   updateCollection('deleteAlbum', callback, {
     ...{
       id_edition: id_edition,
+    }, ...params
+  });
+}
+
+export async function fetchExcludeStatusOfSerieAlbums(id_serie, callback, params = {}) {
+
+  fetchJSON('ListTomesExclus', null, callback, {
+    ...{
+      id_serie,
+    }, ...params
+  });
+}
+
+
+export async function fetchIsAlbumExcluded(album, callback, params = {}) {
+
+  fetchJSON('isExclu', null, callback, {
+    ...{
+      id_tome: album.ID_TOME,
+      id_serie: album.ID_SERIE,
+      id_edition: album.ID_EDITION,
     }, ...params
   });
 }

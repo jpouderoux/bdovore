@@ -59,7 +59,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : '' }
           </Text>
           {collectionMode ? null :
-            <CollectionMarkers item={item} style={styles.markersStyle} reduceMode={true} showExclude={showExclude ? true : false}/>
+            <CollectionMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude ? true : false}/>
           }
         </View>
       </View>
