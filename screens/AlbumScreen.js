@@ -57,8 +57,6 @@ function AlbumScreen({ route, navigation }) {
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
-  console.log(album);
-
   useEffect(() => {
     getAlbumEditions();
     getAlbumIsExclude();
@@ -210,13 +208,8 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <View>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }]}
+          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? ()=>{} : onShowSerieScreen}>{album.NOM_SERIE}</Text>
-          {dontShowSerieScreen ? null :
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-              onPress={onShowSerieScreen}>
-              Voir la fiche série
-            </Text>}
           <View style={{ flexDirection: 'row' }}>
             <Text>{getAuteursLabel()} : </Text>
             {

@@ -50,7 +50,7 @@ function SerieScreen({ route, navigation }) {
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
-  const [showExcludedAlbums, setShowExcludedAlbums] = useState(true);
+  const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
 
   useFocusEffect(() => {
     CollectionManager.refreshAlbumSeries(serieAlbums);
@@ -97,7 +97,7 @@ function SerieScreen({ route, navigation }) {
       { title: 'Editions spéciales', data: [] },
     ];
 
-    // Sort albums by type
+    // Sort/split albums by type
     for (let i = 0; i < result.items.length; i++) {
       let section = 0;
       const album = result.items[i];
@@ -119,14 +119,16 @@ function SerieScreen({ route, navigation }) {
       newdata[section].data.push(album);
     }
 
-    // Sort albums by tome number
+    // Sort albums by ascending tome number
     newdata.forEach(entry => {
       Helpers.sortByAscendingValue(entry.data);
     });
 
     setSerieAlbums(newdata);
-    setFilteredSerieAlbums(filtereddata);
+    setErrortext(result.error);
+    setLoading(false);
 
+    // Now fetch the exclude status of the albums of the serie
     APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
       if (!result.error) {
         // Transform the result array into a dictionary for fast&easy access
@@ -137,15 +139,14 @@ function SerieScreen({ route, navigation }) {
             album.FLG_EXCLUDE = (dict[parseInt(album.ID_TOME)] == 1);
           })
         });
-        setSerieAlbums(newdata);
         for (let i = 0; i < newdata.length; i++) {
           filtereddata[i].data = newdata[i].data.filter(album => album.FLG_EXCLUDE != true);
         }
+        setFilteredSerieAlbums(filtereddata);
+      } else {
+        setFilteredSerieAlbums(newdata);
       }
     });
-
-    setErrortext(result.error);
-    setLoading(false);
   }
 
   const refreshFilteredAlbums = () => {
@@ -168,6 +169,7 @@ function SerieScreen({ route, navigation }) {
 
   const onToggleShowExcludedAlbums = () => {
     AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
+    global.showExcludedAlbums = !showExcludedAlbums;
     setShowExcludedAlbums(showExcludedAlbums => !showExcludedAlbums);
     refreshFilteredAlbums();
   }

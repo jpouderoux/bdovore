@@ -43,6 +43,11 @@ class CCollectionManager {
 
     global.wishlistAlbums = [];
     global.wishlistAlbumsDict = {};
+
+    global.showExcludedAlbums = true;
+    AsyncStorage.getItem('showExcludedAlbums').then((value) => {
+      global.showExcludedAlbums(value != 0);
+    }).catch(() => { });
   }
 
   numberOfSeries() {

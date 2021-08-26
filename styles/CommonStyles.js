@@ -30,6 +30,7 @@ import { Dimensions } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 
 export const bdovored = '#990000';
+export const bdovorlightred = '#e90101';
 export const bdovorgray = '#aaaaaa'; // Same as iOS UIColor.lightGray
 
 export let windowWidth = Dimensions.get('window').width;
@@ -167,7 +168,7 @@ export let CommonStyles = EStyleSheet.create({
     backgroundColor: bdovorgray,
   },
   linkTextStyle: {
-    color: 'dodgerblue',
+    color: bdovored, //'dodgerblue',
     //textDecorationLine: 'underline',
   },
 
@@ -214,7 +215,7 @@ export let CommonStyles = EStyleSheet.create({
     fontSize: 16,
   },
   loginConnectionButtonStyle: {
-    backgroundColor: 'red',
+    backgroundColor: bdovorlightred,
     borderWidth: 0,
     color: '$bg',
     borderColor: 'red',

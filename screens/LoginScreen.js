@@ -90,7 +90,7 @@ function LoginScreen({ navigation }) {
           modalEnabled: true,
           enableBarCollapsing: false,
           // Android Properties
-          showTitle: true,
+          showTitle: false,
           toolbarColor: 'white',
           secondaryToolbarColor: 'black',
           navigationBarColor: 'black',
