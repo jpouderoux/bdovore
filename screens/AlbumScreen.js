@@ -57,6 +57,8 @@ function AlbumScreen({ route, navigation }) {
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
+  console.log(album);
+
   useEffect(() => {
     getAlbumEditions();
     getAlbumIsExclude();

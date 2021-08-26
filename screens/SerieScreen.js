@@ -101,13 +101,14 @@ function SerieScreen({ route, navigation }) {
     for (let i = 0; i < result.items.length; i++) {
       let section = 0;
       const album = result.items[i];
-      if (album.FLG_TYPE_TOME == 1) {
+      if (album.FLG_TYPE_TOME == 1 || album.TITRE_TOME.startsWith('Pack ')) {
         section = 2; // Coffret
       } else {
         if (album.FLG_INT_TOME == 'O') {
           section = 1; // Intégrale
         } else {
-          if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')) {
+          if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')
+            || album.TITRE_TOME.includes('(TL)') || album.TITRE_TOME.includes('(TT)')) {
             section = 3; // Edition spéciale
           } else {
             section = 0; // Album
