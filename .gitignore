@@ -60,5 +60,4 @@ buck-out/
 .Rhistory
 package-lock.json
 yarn.lock
-package-lock.json
-package-lock.json
+ios/Podfile.lock
