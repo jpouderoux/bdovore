@@ -30,7 +30,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Image } from 'react-native-elements';
 
-import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
+import { bdovored, CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 
 
 export function CoverImage({ source, style, noResize, largeMode }) {
@@ -55,6 +55,6 @@ export function CoverImage({ source, style, noResize, largeMode }) {
     <Image
       source={{ uri: source }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
-      PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
+      PlaceholderContent={<ActivityIndicator size='small' color={bdovored} />} />
   );
 }

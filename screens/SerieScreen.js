@@ -52,8 +52,6 @@ function SerieScreen({ route, navigation }) {
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
 
-  console.log(serie);
-
   useFocusEffect(() => {
     CollectionManager.refreshAlbumSeries(serieAlbums);
     refreshFilteredAlbums();

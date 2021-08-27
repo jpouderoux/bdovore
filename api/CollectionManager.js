@@ -433,6 +433,20 @@ class CCollectionManager {
     }
   }
 
+  setSerieExcludeFlag(serie, isExcluded) {
+    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
+    if (idx >= 0) {
+      global.collectionSeries[idx].IS_EXCLU = isExcluded ? '1' : '0';
+    }
+  }
+
+  isSerieExcluded(serie) {
+    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
+    if (idx >= 0) {
+      return global.collectionSeries[idx].IS_EXCLU == 1;
+    }
+    return serie.IS_EXCLU == 1;
+  }
 };
 
 const CollectionManager = new CCollectionManager();

@@ -170,7 +170,7 @@ function LoginScreen({ navigation }) {
             <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
           </TouchableOpacity>
           <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
-          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur le site bdovore.com pour en créer un.</Text>
+          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
           <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
         </View>
       }

@@ -352,7 +352,7 @@ function CollectionScreen({ props, navigation }) {
         }
       </View>
 
-      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10, marginBottom: 4 }}/> : null}
+      {loading ? <Progress.Bar progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle}/> : null}
       <View style={{flex:1}}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>

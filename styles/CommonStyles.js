@@ -315,7 +315,15 @@ export let CommonStyles = EStyleSheet.create({
   ratingStarColor: {
     color: '$textcolor',
     backgroundColor: '$bg'
-  }
+  },
+
+  //*********************
+  // Progress bar styles
+  progressBarStyle: {
+    marginHorizontal: 10,
+    marginVertical: 1,
+    color: 'rgba(153, 0, 0, 1)',
+  },
 
 });
 

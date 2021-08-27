@@ -32,7 +32,8 @@ import { useIsFocused } from '@react-navigation/native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as APIManager from '../api/APIManager'
+import * as APIManager from '../api/APIManager';
+import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 
@@ -44,7 +45,7 @@ export function SerieMarkers({ item, style, showExclude }) {
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   const refresh = () => {
-    setIsExcluded(serie.IS_EXCLU == '1');
+    setIsExcluded(CollectionManager.isSerieExcluded(serie));
   }
 
   useEffect(() => {
@@ -60,8 +61,10 @@ export function SerieMarkers({ item, style, showExclude }) {
       }};
     if (exclude) {
       APIManager.excludeSerie(serie, callback);
+      CollectionManager.setSerieExcludeFlag(serie, true);
     } else {
       APIManager.includeSerie(serie, callback);
+      CollectionManager.setSerieExcludeFlag(serie, false);
     }
   }
 

@@ -179,7 +179,7 @@ function ToCompleteScreen({ navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
-      {loading ? <Progress.Bar progress={progressRate} width={null} style={{ marginLeft: 10, marginRight: 10 }} /> : null}
+      {loading ? <Progress.Bar progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
       {errortext != '' ? (
         <View style={{ alignItems: 'center', marginBottom: 5 }}>
           <Text style={CommonStyles.errorTextStyle}>
