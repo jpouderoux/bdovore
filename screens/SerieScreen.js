@@ -189,8 +189,8 @@ function SerieScreen({ route, navigation }) {
         <View style={{flexDirection: 'column', width: '33%', height: 75}}>
           <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: 0}]} reduceMode={true} showExclude={true} />
           <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', position: 'absolute', bottom: 0 }}>
-            <Text style={[CommonStyles.smallerText, { textAlign: 'center', textAlignVertical: 'center' }]}>Afficher ignorés</Text>
-            <Switch value={showExcludedAlbums}
+            <Text style={[CommonStyles.smallerText, { textAlign: 'center', textAlignVertical: 'center' }]}>Voir ignorés</Text>
+            <Switch value={showExcludedAlbums} style={{ transform: [{ scaleX: .5 }, { scaleY: .5 }] }}
               onValueChange={onToggleShowExcludedAlbums} />
           </View>
         </View>
