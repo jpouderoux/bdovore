@@ -203,7 +203,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
-          <AlbumMarkers item={album} reduceMode={false} showExclude={true}/>
+          <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)}/>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
 

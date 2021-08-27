@@ -35,7 +35,7 @@ import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 import { AlbumMarkers } from './AlbumMarkers';
 import { RatingStars } from './RatingStars';
-
+import CollectionManager from '../api/CollectionManager';
 
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude }) {
 
@@ -59,7 +59,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : '' }
           </Text>
           {collectionMode ? null :
-            <AlbumMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude ? true : false}/>
+            <AlbumMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item) > 0 ? true : false}/>
           }
         </View>
       </View>
