@@ -54,6 +54,7 @@ export function rebuildSheet() {
     $rem: Dimensions.get('window').width > 340 ? 16 : 14,
     $bg: global.isDarkMode ? 'black' : 'white',
     $textcolor: global.isDarkMode ? 'white' : 'black',
+    $sectioncolor: global.isDarkMode ? '#333' : '#ddd',
   });
 }
 
@@ -148,12 +149,12 @@ export let CommonStyles = EStyleSheet.create({
     fontSize: 14,
   },
   sectionStyle: {
-    backgroundColor: global.isDarkMode ? '#333' : '#ddd',
+    backgroundColor: '$sectioncolor',
     color: '$textcolor',
     width: '100%',
   },
   sectionAlbumStyle: {
-    backgroundColor: global.isDarkMode ? '#333' : '#ddd',
+    backgroundColor: '$sectioncolor',
     color: 'white',
     width: '100%',
   },
