@@ -451,6 +451,24 @@ export async function includeAlbum(album, callback, params = {}) {
   });
 }
 
+export async function excludeSerie(serie, callback, params = {}) {
+
+  updateCollection('excludeSerie', callback, {
+    ...{
+      id_serie: serie.ID_SERIE,
+    }, ...params
+  });
+}
+
+export async function includeSerie(serie, callback, params = {}) {
+
+  updateCollection('includeSerie', callback, {
+    ...{
+      id_serie: serie.ID_SERIE,
+    }, ...params
+  });
+}
+
 export function getAlbumCoverURL(item) {
   return encodeURI(bdovoreBaseURL + '/images/couv/' + (item.IMG_COUV ?? 'default.png'));
 }

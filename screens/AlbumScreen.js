@@ -35,7 +35,7 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { CommonStyles } from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
-import { CollectionMarkers } from '../components/CollectionMarkers';
+import { AlbumMarkers } from '../components/AlbumMarkers';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 import CollectionManager from '../api/CollectionManager';
@@ -74,11 +74,11 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const getAlbumIsExclude = () => {
-    if (album.FLG_EXCLUDE == undefined) {
+    if (album.IS_EXCLU == undefined) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
-          album.FLG_EXCLUDE = result.items != 0;
-          console.log('Album excluded? ' + album.FLG_EXCLUDE);
+          album.IS_EXCLU = result.items != 0;
+          console.log('Album excluded? ' + album.IS_EXCLU);
         }
       });
     }
@@ -203,7 +203,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
-          <CollectionMarkers item={album} reduceMode={false} showExclude={true}/>
+          <AlbumMarkers item={album} reduceMode={false} showExclude={true}/>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
 

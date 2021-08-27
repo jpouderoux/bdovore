@@ -26,43 +26,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
-import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
-import * as APIManager from '../api/APIManager';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import * as APIManager from '../api/APIManager'
+import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
-import { CoverImage } from './CoverImage';
-import { AlbumMarkers } from './AlbumMarkers';
-import { RatingStars } from './RatingStars';
 
+export function SerieMarkers({ item, style, showExclude }) {
 
-export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude }) {
+  const [serie, setSerie] = useState(item);
+  const [isExcluded, setIsExcluded] = useState(false);
 
-  const onPressAlbum = () => {
-    navigation.push('Album', { item, dontShowSerieScreen });
+  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
+
+  const refresh = () => {
+    setIsExcluded(serie.IS_EXCLU == '1');
+  }
+
+  useEffect(() => {
+    refresh();
+  }, [item]);
+
+  const onExcludeIt = async () => {
+    const exclude = !(serie.IS_EXCLU == '1');
+    const callback = (result) => {
+      if (!result.error) {
+        serie.IS_EXCLU = exclude ? '1' : '0';
+        setIsExcluded(exclude == '1');
+      }};
+    if (exclude) {
+      APIManager.excludeSerie(serie, callback);
+    } else {
+      APIManager.includeSerie(serie, callback);
+    }
   }
 
   return (
-    <TouchableOpacity key={index} onPress={onPressAlbum}>
-      <View style={{ flexDirection: 'row', }}>
-        <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-          <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-        </View>
-        <View style={CommonStyles.itemTextContent}>
-          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
-            {item.TITRE_TOME}
-          </Text>
-          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
-            {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "tome " + item.NUM_TOME : ''}{'\n'}
-            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : '' }
-          </Text>
-          {collectionMode ? null :
-            <AlbumMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude ? true : false}/>
-          }
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+    <View style={[{ flexDirection: 'row' }, style]}>
+
+      {showExclude ?
+        <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == '1' ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? {fontWeight: 'bold'} : null]} />
+          <Text style={[CommonStyles.markerTextStyle, serie.IS_EXCLU == '1' ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+        </TouchableOpacity> : null}
+
+    </View>);
 }

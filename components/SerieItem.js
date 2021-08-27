@@ -29,16 +29,17 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { bdovorgray, CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
+import { SerieMarkers } from './SerieMarkers';
 
 import { CoverImage } from './CoverImage';
 import { RatingStars } from './RatingStars';
 
 
-export function SerieItem({ navigation, item, index, collectionMode }) {
+export function SerieItem({ navigation, item, index, collectionMode, showExclude }) {
 
   const onPressSerie = (navigation, item) => {
 
@@ -78,6 +79,9 @@ export function SerieItem({ navigation, item, index, collectionMode }) {
             <Text style={[CommonStyles.largerText, CommonStyles.itemText, { marginTop: 10 }]}>
               {Helpers.pluralWord(item.nb_album, 'album') + ' ' + Helpers.pluralize(item.nb_album, 'manquant')}
             </Text> : null}
+          {showExclude ?
+            <SerieMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude} />
+            : null }
         </View>
       </View>
     </TouchableOpacity >

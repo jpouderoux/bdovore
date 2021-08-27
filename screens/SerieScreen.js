@@ -40,7 +40,7 @@ import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-
+import { SerieMarkers } from '../components/SerieMarkers';
 
 function SerieScreen({ route, navigation }) {
 
@@ -51,6 +51,8 @@ function SerieScreen({ route, navigation }) {
   const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
+
+  console.log(serie);
 
   useFocusEffect(() => {
     CollectionManager.refreshAlbumSeries(serieAlbums);
@@ -136,11 +138,11 @@ function SerieScreen({ route, navigation }) {
         // Check all albums in all sections and set their exclude flag
         newdata.forEach(section => {
           section.data.forEach(album => {
-            album.FLG_EXCLUDE = (dict[parseInt(album.ID_TOME)] == 1);
+            album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1);
           })
         });
         for (let i = 0; i < newdata.length; i++) {
-          filtereddata[i].data = newdata[i].data.filter(album => album.FLG_EXCLUDE != true);
+          filtereddata[i].data = newdata[i].data.filter(album => album.IS_EXCLU != true);
         }
         setFilteredSerieAlbums(filtereddata);
       } else {
@@ -151,7 +153,7 @@ function SerieScreen({ route, navigation }) {
 
   const refreshFilteredAlbums = () => {
     for (let i = 0; i < filteredSerieAlbums.length; i++) {
-      filteredSerieAlbums[i].data = serieAlbums[i].data.filter(album => album.FLG_EXCLUDE != true);
+      filteredSerieAlbums[i].data = serieAlbums[i].data.filter(album => album.IS_EXCLU != true);
     }
   }
 
@@ -180,15 +182,15 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
         <Text style={{ marginTop: 10, flex: 1, width: '33%' }}>
-          {getCounterText()}{'\n\n'}
+          {getCounterText()}{' '}
+            ({CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
+          {'\n\n'}
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
-        <View style={{flexDirection: 'column', width: '33%'}}>
-          <Text style={{ marginTop: 10, flex: 1, textAlign: 'right' }}>
-            {CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
-          </Text>
-          <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center' }}>
+        <View style={{flexDirection: 'column', width: '33%', height: 75}}>
+          <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: 0}]} reduceMode={true} showExclude={true} />
+          <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', position: 'absolute', bottom: 0 }}>
             <Text style={[CommonStyles.smallerText, { textAlign: 'center', textAlignVertical: 'center' }]}>Afficher ignorés</Text>
             <Switch value={showExcludedAlbums}
               onValueChange={onToggleShowExcludedAlbums} />
