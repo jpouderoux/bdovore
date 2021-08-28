@@ -157,13 +157,13 @@ function AlbumScreen({ route, navigation }) {
   const getAuteursLabel = () => {
     const auteurs = Helpers.getAuteurs(album);
     let len = auteurs.length;
-    if (len == 1 && auteurs[0] == 'Collectif') len++;
+    if (len == 1 && auteurs.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
   }
 
   const onPressAuteur = (auteur) => {
     if (auteur != 'Collectif') {
-      APIManager.fetchAuteur(auteur, (result) => {
+      APIManager.fetchAuteur(auteur.id, (result) => {
         if (!result.error && result.items.length > 0) {
           navigation.push('Auteur', { item: result.items[0] });
         }
@@ -216,11 +216,11 @@ function AlbumScreen({ route, navigation }) {
             <Text style={CommonStyles.defaultText}>{getAuteursLabel()} : </Text>
             {
               Helpers.getAuteurs(album).map((auteur, index, array) => {
-                return (index == 0 && auteur == 'Collectif') ?
-                <Text key={index}>{auteur}</Text> :
+                return (index == 0 && auteur.name == 'Collectif') ?
+                <Text key={index}>{auteur.name}</Text> :
                 <View key={index} style={{ flexDirection: 'row'}}>
                   <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
-                     <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur)}</Text>
+                     <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur.name)}</Text>
                   </TouchableOpacity>
                   <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
                 </View>})

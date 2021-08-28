@@ -361,15 +361,15 @@ export async function fetchAlbumEditions(id_tome, callback, params = {}) {
 
   fetchJSON('Edition', null, callback, {
     ...{
-      id_tome: id_tome,
+      id_tome,
     }, ...params
   });
 };
 
-export async function fetchAuteur(name, callback, params = {}) {
+export async function fetchAuteur(id_auteur, callback, params = {}) {
   fetchJSON('Auteur', null, callback, {
      ...{
-       term: name,
+       id_auteur,
        mode: 2
      }, ...params
   });
