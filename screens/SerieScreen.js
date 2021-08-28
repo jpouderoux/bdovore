@@ -178,8 +178,8 @@ function SerieScreen({ route, navigation }) {
 
   const ignoredSwitch = () => {
     return (
-      <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', right: 0 }}>
-        <Text style={[CommonStyles.smallerText, { textAlignVertical: 'center' }]}>Voir ignorés</Text>
+      <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', right: 5 }}>
+        <Text style={[{ textAlignVertical: 'center' }]}>Voir ignorés</Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
@@ -197,12 +197,11 @@ function SerieScreen({ route, navigation }) {
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
-        {nbOfUserAlbums > 0 ?
-          <View style={{ flexDirection: 'column', width: '33%', height: 75 }}>
-            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: null, bottom: -5 }]} reduceMode={true} showExclude={true} />
-          </View> :
-          <View style={{ flexDirection: 'column', width: '33%', height: 75 }} />
-      }
+        <View style={{ flexDirection: 'column', width: '33%', height: 75 }}>
+          {nbOfUserAlbums > 0 ?
+            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: null, bottom: 0 }]} reduceMode={true} showExclude={true} />
+            : null}
+        </View>
       </View>
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>
@@ -221,7 +220,7 @@ function SerieScreen({ route, navigation }) {
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
             <View style={{ width: '100%', flex:1,flexDirection: 'row', height: 25, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
-              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { width: null, paddingLeft: 10 }]}>{title}</Text>
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { width: null, paddingLeft: 10 }]}>{title}</Text>
               {index == 0 ? ignoredSwitch() : null}
             </View>)}
           stickySectionHeadersEnabled={true}

@@ -167,7 +167,7 @@ export let CommonStyles = EStyleSheet.create({
     borderRadius: 5,
   },
   sectionListStyle: {
-    backgroundColor: bdovorgray,
+    backgroundColor: '$sectioncolor',
   },
   linkTextStyle: {
     color: bdovored, //'dodgerblue',
