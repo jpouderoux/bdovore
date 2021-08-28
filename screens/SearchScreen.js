@@ -95,7 +95,7 @@ function SearchScreen({ navigation }) {
         APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
         break;
       case 2:
-        APIManager.fetchAuteur(searchText, (result) => onSearchFetched(searchText, result));
+        APIManager.fetchJSON('Auteur', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
         break;
     }
   }
