@@ -92,7 +92,7 @@ const onSharePress = async (item) => {
 
 const defaultStackOptions = {
   headerTintColor: global.isDarkMode ? 'white' : bdovored,
-  headerTruncatedBackTitle: 'Retour'
+  headerTruncatedBackTitle: ''
 };
 
 function CollectionScreens({ route, navigation }) {
