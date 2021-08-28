@@ -89,7 +89,7 @@ function SearchScreen({ navigation }) {
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 1, });
+        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
         break;
       case 1:
         APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
