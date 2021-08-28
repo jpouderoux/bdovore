@@ -178,8 +178,8 @@ function SerieScreen({ route, navigation }) {
 
   const ignoredSwitch = () => {
     return (
-      <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', right: 5 }}>
-        <Text style={[{ textAlignVertical: 'center' }]}>Voir ignorés</Text>
+      <View style={{ flex: 1, alignItems: 'center',flexDirection: 'row', position: 'absolute', right: 5 }}>
+        <Text style={[{ textAlignVertical: 'center' }, CommonStyles.defaultText]}>Voir ignorés </Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
@@ -190,7 +190,7 @@ function SerieScreen({ route, navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
-        <Text style={{ marginTop: 10, flex: 1, width: '33%' }}>
+        <Text style={[{ marginTop: 10, flex: 1, width: '33%' },CommonStyles.defaultText]}>
           {getCounterText()}{' '}
           ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
           {'\n\n'}
@@ -219,9 +219,9 @@ function SerieScreen({ route, navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
-            <View style={{ width: '100%', flex:1,flexDirection: 'row', height: 25, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
+            <View style={{ width: '100%', alignItems: 'center',flex:1,flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
               <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { width: null, paddingLeft: 10 }]}>{title}</Text>
-              {index == 0 ? ignoredSwitch() : null}
+              {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
