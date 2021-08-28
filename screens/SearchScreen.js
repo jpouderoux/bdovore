@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
@@ -72,6 +72,7 @@ function SearchScreen({ navigation }) {
         CollectionManager.selectOwnAlbum(result.items);
       }
       setData(result.items);
+      console.log(result.items);
       setErrortext(result.error);
       setLoading(false);
     }
@@ -105,8 +106,11 @@ function SearchScreen({ navigation }) {
   }
 
   const onPressTypeButton = (selectedIndex) => {
-    setSearchMode(selectedIndex);
-  };
+    if (selectedIndex != searchMode) {
+      setSearchMode(selectedIndex);
+      setData([]);
+    }
+  }
 
   const onBarcodeSearch = () => {
     navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); } });
@@ -126,6 +130,13 @@ function SearchScreen({ navigation }) {
       }, params);
     }
   }
+
+  const keyExtractor = useCallback((item, index) => {
+    switch (parseInt(searchMode)) {
+      case 0: return parseInt(item.ID_SERIE);
+      case 1: return Helpers.makeAlbumUID(item);
+      case 2: return parseInt(item.ID_AUTEUR);
+    }});
 
   const renderItem = ({ item, index }) => {
     switch (parseInt(searchMode)) {
@@ -190,7 +201,7 @@ function SearchScreen({ navigation }) {
             maxToRenderPerBatch={6}
             windowSize={10}
             data={data}
-            keyExtractor={({ id }, index) => index}
+            keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
             extraData={keywords, searchMode}
