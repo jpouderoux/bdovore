@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -171,6 +171,8 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
+  const keyExtractor = useCallback((item, index) => Helpers.makeAlbumUID(item));
+
   const renderSimil = ({ item, index }) => {
     return (
       <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
@@ -215,8 +217,8 @@ function AlbumScreen({ route, navigation }) {
             {
               Helpers.getAuteurs(album).map((auteur, index, array) => {
                 return (index == 0 && auteur == 'Collectif') ?
-                <Text>{auteur}</Text> :
-                <View style={{ flexDirection: 'row'}}>
+                <Text key={index}>{auteur}</Text> :
+                <View key={index} style={{ flexDirection: 'row'}}>
                   <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
                      <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur)}</Text>
                   </TouchableOpacity>
@@ -265,7 +267,7 @@ function AlbumScreen({ route, navigation }) {
               legacyImplementation={false}
               data={similAlbums}
               renderItem={renderSimil}
-              keyExtractor={({ item }, index) => index}
+              keyExtractor={keyExtractor}
               style={{ height: 170 }}
             />
           </View> : null}
@@ -281,7 +283,7 @@ function AlbumScreen({ route, navigation }) {
             </ListItem.Content>
           </ListItem>
           {albumEditionsData.map((item, index) => (
-            <ListItem key={index + 1}
+            <ListItem key={keyExtractor}
               containerStyle={
                 (index == editionIndex ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle)}
               onPress={() => {
