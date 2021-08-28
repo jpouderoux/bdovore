@@ -204,9 +204,14 @@ export function removeHTMLTags(text) {
 }
 
 export function getAuteurs(album) {
-  let auteursArray = [album.depseudo, album.scpseudo, album.copseudo];
-  auteursArray = auteursArray.filter((item) => (item != null && item != '<n&b>' && item != '<indéterminé>'));
-  auteursArray = auteursArray.filter((item, pos, self) => self.indexOf(item) == pos);
+  let auteursArray = [
+    { name: album.depseudo, id: album.ID_DESSIN},
+    { name: album.scpseudo, id: album.ID_SCENAR},
+    { name: album.copseudo, id: album.ID_COLOR}];
+  // Remove useless entries
+  auteursArray = auteursArray.filter((item) => (item.name != null && item.name != '<n&b>' && item.name != '<indéterminé>'));
+  // Remove duplicated entries
+  auteursArray = auteursArray.filter((item, pos, self) => self.findIndex((it) => (it.id == item.id)) == pos);
   return auteursArray;
 }
 
