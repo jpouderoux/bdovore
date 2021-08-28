@@ -47,7 +47,7 @@ export function CoverImage({ source, style, noResize, largeMode }) {
           setWidth(FullAlbumImageWidth);
           setHeight(FullAlbumImageHeight);
         }
-      }, (error) => { console.log(error); });
+      }, (error) => { console.debug(error); });
     }
   });
 

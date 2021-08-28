@@ -152,6 +152,7 @@ export let CommonStyles = EStyleSheet.create({
     backgroundColor: '$sectioncolor',
     color: '$textcolor',
     width: '100%',
+    textAlignVertical: 'center',
   },
   sectionAlbumStyle: {
     backgroundColor: '$sectioncolor',
@@ -184,7 +185,7 @@ export let CommonStyles = EStyleSheet.create({
   markersSerieViewStyle: {
     position: 'absolute',
     marginTop: -5,
-    top: 0,
+    bottom: 0,
     right: 0,
   },
   markerStyle: {
@@ -277,19 +278,27 @@ export let CommonStyles = EStyleSheet.create({
     backgroundColor: '$bg',
   },
   bottomSheetSelectedItemContainerStyle: {
-    backgroundColor: 'dodgerblue',
+    backgroundColor: bdovored,
   },
   bottomSheetItemTextStyle: {
-    color: 'dodgerblue',
+    color: bdovored,
   },
   bottomSheetSelectedItemTextStyle: {
-    color: '$textcolor',
+    color: '$bg',
   },
 
   //***************
   // Search styles
   searchContainerStyle: {
     backgroundColor: '#eee',
+  },
+
+  //***************
+  // Switch styles
+  switchStyle: {
+    color: bdovored, // thumb color
+    backgroundColor: 'rgba(153, 0, 0, 0.5)', // enabled track color
+    borderColor: 'lightgrey', // disabled track color
   },
 
   //**********************

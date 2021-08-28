@@ -57,31 +57,31 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
   const refresh = () => {
     setInitAlbum(item);
     if (!item) { return; }
-    //console.log("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
-    //console.log(item);
+    //console.debug("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
+    //console.debug(item);
     let alb = null;
     alb = CollectionManager.getAlbumInWishlist(item);
     if (alb) {
       setShowAllMarks(false);
       setIsOwn(false);
-      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
+      //console.debug('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in wishlist with flag: ' + alb.FLG_ACHAT);
     } else {
       alb = CollectionManager.getAlbumInCollection(item);
       if (alb) {
         setShowAllMarks(!reduceMode);
         setIsOwn(true);
-        //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
+        //console.debug('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' found in collection');
       }
     }
     if (!alb) {
       alb = item;
       setShowAllMarks(false);
       setIsOwn(false);
-      //console.log('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
+      //console.debug('Album ' + alb.ID_TOME + ' série ' + alb.ID_SERIE + ' edition ' + alb.ID_EDITION + ' not found in collection or wishlist');
       CollectionManager.resetAlbumFlags(alb);
     }
 
-    //console.log(alb);
+    //console.debug(alb);
     setIsWanted(alb.FLG_ACHAT && alb.FLG_ACHAT == 'O');
     setIsRead(alb.FLG_LU && alb.FLG_LU == 'O');
     setIsLoan(alb.FLG_PRET && alb.FLG_PRET == 'O');

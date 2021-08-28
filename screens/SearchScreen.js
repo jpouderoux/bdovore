@@ -72,7 +72,7 @@ function SearchScreen({ navigation }) {
         CollectionManager.selectOwnAlbum(result.items);
       }
       setData(result.items);
-      console.log(result.items);
+      console.debug(result.items);
       setErrortext(result.error);
       setLoading(false);
     }

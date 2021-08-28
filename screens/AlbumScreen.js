@@ -78,7 +78,7 @@ function AlbumScreen({ route, navigation }) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
           album.IS_EXCLU = result.items != 0;
-          console.log('Album excluded? ' + album.IS_EXCLU);
+          console.debug('Album excluded? ' + album.IS_EXCLU);
         }
       });
     }
@@ -130,7 +130,7 @@ function AlbumScreen({ route, navigation }) {
       let rate = 5;
       comments.forEach(entry => {
         if (entry.username == pseudo) {
-          //console.log('Found user comment ! ' + comment.COMMENT);
+          //console.debug('Found user comment ! ' + comment.COMMENT);
           comment = entry.COMMENT;
           rate = entry.NOTE;
         }

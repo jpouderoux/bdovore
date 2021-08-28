@@ -113,7 +113,7 @@ function CollectionScreen({ props, navigation }) {
   function refreshDataIfNeeded() {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
-        console.log('refresh collection data because token changed to ' + token);
+        console.debug('refresh collection data because token changed to ' + token);
         setCachedToken(token);
         cachedToken = token;
         fetchData();
@@ -225,14 +225,14 @@ function CollectionScreen({ props, navigation }) {
 
     if (loadingSteps == 0) {
       const millis = Date.now() - loadTime;
-      console.log('Collection loaded in ' + millis / 1000 + ' seconds');
+      console.debug('Collection loaded in ' + millis / 1000 + ' seconds');
     }
 
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
       const rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
       setProgressRate(rate);
-      //console.log("progress rate " + rate + " nbtotal:" + nbTotalItems + " loaded: " + parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()));
+      //console.debug("progress rate " + rate + " nbtotal:" + nbTotalItems + " loaded: " + parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()));
     }
   }
 

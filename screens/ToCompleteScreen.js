@@ -66,7 +66,7 @@ function ToCompleteScreen({ navigation }) {
   const refreshDataIfNeeded = () => {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
-        console.log("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
+        console.debug("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
         setCachedToken(token);
         cachedToken = token;
         fetchData();
@@ -90,7 +90,7 @@ function ToCompleteScreen({ navigation }) {
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
       const rate = parseFloat(loadedAlbums + loadedSeries) / nbTotalItems;
-      //console.log(loadedAlbums + ", " + loadedSeries + " rate : " + rate + "   " + nbTotalAlbums + " , "+ nbTotalSeries);
+      //console.debug(loadedAlbums + ", " + loadedSeries + " rate : " + rate + "   " + nbTotalAlbums + " , "+ nbTotalSeries);
       setProgressRate(rate);
     }
   }
@@ -110,12 +110,12 @@ function ToCompleteScreen({ navigation }) {
     setNbTotalAlbums2(0);
     loadedAlbums = 0;
     APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   const onAlbumsFetched = async (result) => {
-    console.log('albums ' + (result.done ? 'done' : 'in progress'));
-    console.log(result.items.length + ' albums fetched so far');
+    console.debug('albums ' + (result.done ? 'done' : 'in progress'));
+    console.debug(result.items.length + ' albums fetched so far');
     setNbTotalAlbums2(result.totalItems);
     nbTotalAlbums = result.totalItems;
     setAlbums(result.items);
@@ -131,12 +131,12 @@ function ToCompleteScreen({ navigation }) {
     setNbTotalSeries2(0);
     loadedSeries = 0;
     APIManager.fetchSeriesManquants({ navigation: navigation }, onSeriesFetched)
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   const onSeriesFetched = async (result) => {
-    console.log('series ' + (result.done ? 'done' : 'in progress'));
-    console.log(result.items.length + ' series to complete fetched')
+    console.debug('series ' + (result.done ? 'done' : 'in progress'));
+    console.debug(result.items.length + ' series to complete fetched')
     setNbTotalSeries2(result.totalItems);
     nbTotalSeries = result.totalItems;
     setSeries(result.items);

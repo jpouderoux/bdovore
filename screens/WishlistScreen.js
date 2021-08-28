@@ -31,7 +31,7 @@ import { FlatList, Switch, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
-import { bdovorgray, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 
 
@@ -80,8 +80,9 @@ function WishlistScreen({ navigation }) {
         <View></View>
         <View style={{ flexDirection: 'row' }}>
           <Text style={{ margin: 5, fontSize: 16 }}>Tri par ajout</Text>
-          <Switch value={filterByDate}
-            onValueChange={toggleFilterByDate} />
+          <Switch value={filterByDate} onValueChange={toggleFilterByDate}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>
         </View>
       </View>
       <FlatList

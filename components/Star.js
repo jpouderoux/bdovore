@@ -21,7 +21,7 @@ class Star extends React.PureComponent {
     let voidStarCount = STAR_COUNT - fullStarCount;
     const dif = (score / scale) - fullStarCount
     if (0 <= dif && dif < 0.3) {
-      // console.log('0 <= dif && 0 < 0.3');
+      // console.debug('0 <= dif && 0 < 0.3');
     } else if (0.3 <= dif && dif < 0.8) {
       halfStarCount = 1;
       voidStarCount--;

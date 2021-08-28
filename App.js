@@ -52,7 +52,7 @@ const App: () => Node = () => {
   Appearance.addChangeListener(({ colorScheme }) => {
     //global.isDarkMode = colorScheme === 'dark'; // We
     rebuildSheet();
-    //console.log("Appearance changed: " + colorScheme);
+    //console.debug("Appearance changed: " + colorScheme);
   });*/
 
   return (

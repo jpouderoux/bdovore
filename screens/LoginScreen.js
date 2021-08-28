@@ -47,7 +47,7 @@ function LoginScreen({ navigation }) {
     AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {
       setPseudo(response[0][1]);
       setPasswd(response[1][1]);
-    }).catch((error) => { console.log(error) });
+    }).catch((error) => { console.debug(error) });
   }, []);
 
   const onLoginPress = () => {
@@ -70,7 +70,7 @@ function LoginScreen({ navigation }) {
       );
     }
     else {
-      console.log('error on connection: ' + data.error);
+      console.debug('error on connection: ' + data.error);
     }
   }
 
@@ -110,7 +110,7 @@ function LoginScreen({ navigation }) {
             'my-custom-header': 'Créer mon compte'
           }
         })
-        //console.log(JSON.stringify(result));
+        //console.debug(JSON.stringify(result));
       }
       else {
         Linking.openURL(url);

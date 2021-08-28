@@ -34,7 +34,7 @@ import * as Helpers from '../api/Helpers';
 class CCollectionManager {
 
   constructor() {
-    console.log('init collection manager');
+    console.debug('init collection manager');
     global.collectionAlbums = [];
     global.collectionAlbumsDict = {};
 
@@ -70,12 +70,12 @@ class CCollectionManager {
 
     APIManager.fetchCollectionData('Userserie', { navigation: navigation },
       (result) => this.onSeriesFetched(result, callback))
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   onSeriesFetched(result, callback) {
 
-    console.log(result.items.length + ' series fetched');
+    console.debug(result.items.length + ' series fetched');
     global.collectionSeries = result.items;
     global.collectionSeriesDict = {};
     Helpers.createSeriesDict(global.collectionSeries, global.collectionSeriesDict);
@@ -91,12 +91,12 @@ class CCollectionManager {
 
     APIManager.fetchCollectionData('Useralbum', { navigation: navigation },
       (result) => this.onAlbumsFetched(result, callback))
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   onAlbumsFetched(result, callback) {
 
-    console.log(result.items.length + ' albums fetched');
+    console.debug(result.items.length + ' albums fetched');
 
     // Save albums in global scope
     global.collectionAlbums = result.items;
@@ -115,12 +115,12 @@ class CCollectionManager {
   fetchWishlist(navigation, callback) {
     APIManager.fetchWishlist({ navigation: navigation }, (result) =>
       this.onWishlistFetched(result, callback))
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   onWishlistFetched(result, callback) {
 
-    console.log(result.items.length + ' albums in wishlist fetched');
+    console.debug(result.items.length + ' albums in wishlist fetched');
 
     global.wishlistAlbums = result.items;
     global.wishlistAlbumsDict = {};
@@ -150,7 +150,7 @@ class CCollectionManager {
         // Remove the album from the wishlist if needed
         album.FLG_ACHAT = 'N';
         Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
-        console.log('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
+        console.debug('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
 
         // Add the album in local collection
         Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
@@ -163,13 +163,13 @@ class CCollectionManager {
         // Increment the serie's counter
         let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
         if (idx === null || idx == undefined) {
-          console.log('serie ' + album.ID_SERIE + ' not found in collection, let\'s add it');
+          console.debug('serie ' + album.ID_SERIE + ' not found in collection, let\'s add it');
           APIManager.fetchSerie(album.ID_SERIE, (result) => {
             if (result.error == '') {
               const serie = result.items[0];
               const idx = Helpers.addSerieToArrayAndDict(serie, global.collectionSeries, global.collectionSeriesDict);
               global.collectionSeries[idx].NB_USER_ALBUM = 1;
-              console.log('serie ' + album.ID_SERIE + ' added to collection');
+              console.debug('serie ' + album.ID_SERIE + ' added to collection');
             }
           });
         } else {
@@ -200,7 +200,7 @@ class CCollectionManager {
     APIManager.deleteAlbumInCollection(album.ID_EDITION, (result) => {
       if (!result.error) {
         Helpers.removeAlbumFromArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
-        console.log('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
+        console.debug('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
 
         if (CollectionManager.isAlbumInCollection(album)) {
           console.error('Album removed but still found in collection!');
@@ -214,7 +214,7 @@ class CCollectionManager {
           global.collectionSeries[idx].NB_USER_ALBUM--;
           if (global.collectionSeries[idx].NB_USER_ALBUM == 0) {
             Helpers.removeSerieFromArrayAndDict(album.ID_SERIE, global.collectionSeries, global.collectionSeriesDict);
-            console.log('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
+            console.debug('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
           }
         }
         this.resetAlbumFlags(album);
@@ -236,7 +236,7 @@ class CCollectionManager {
   addAlbumToWishlist(album, callback = null) {
     let idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
     if (idx >= 0) {
-      console.log("trying to add an album in wishlist twice!");
+      console.debug("trying to add an album in wishlist twice!");
       return;
     }
     APIManager.updateAlbumInCollection(album.ID_TOME, (result) => {
@@ -247,7 +247,7 @@ class CCollectionManager {
         // Add the album to the wishlist with the FLG_ACHAT flag
         Helpers.addAlbumToArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
 
-        console.log('album ' + album.ID_TOME + ' added to the wishlist');
+        console.debug('album ' + album.ID_TOME + ' added to the wishlist');
       }
 
       if (callback) {
@@ -275,7 +275,7 @@ class CCollectionManager {
         album.FLG_ACHAT = 'N';
 
         Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
-        console.log('album ' + album.ID_TOME + ' removed from the wishlist: ' + this.isAlbumInWishlist(album));
+        console.debug('album ' + album.ID_TOME + ' removed from the wishlist: ' + this.isAlbumInWishlist(album));
       }
 
       if (callback) {
@@ -392,7 +392,7 @@ class CCollectionManager {
     if (!retalb) {
       retalb = global.wishlistAlbums.find(alb =>
         (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
-      //console.log('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
+      //console.debug('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
     }
     return retalb ? retalb : album;
   }

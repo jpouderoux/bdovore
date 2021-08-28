@@ -78,7 +78,7 @@ function NewsScreen({ navigation }) {
       if (token !== cachedToken) {
         setCachedToken(token);
         cachedToken = token;
-        console.log("refresh news data");
+        console.debug("refresh news data");
         fetchData();
       }
     }).catch(() => { });
@@ -90,7 +90,7 @@ function NewsScreen({ navigation }) {
 
   useEffect(() => {
     const willFocusSubscription = navigation.addListener('focus', () => {
-      console.log(new Date().getTime());
+      console.debug(new Date().getTime());
       setRefresh(new Date().getTime());
       refreshDataIfNeeded();
     });
@@ -118,22 +118,22 @@ function NewsScreen({ navigation }) {
 
     setFilteredUserNewsDataArray(createUserNewsSection());
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12'})
-    .then().catch((error) => console.log(error));
+    .then().catch((error) => console.debug(error));
 
     setFilteredUserNewsToComeDataArray(createUserNewsToComeSection());
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsToComeFetched, { nb_mois: '-1' })
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   const fetchNewsData = async (newsMode) => {
     setLoading(true);
     setNewsDataArray(createNewsSection());
     APIManager.fetchNews(newsModeMap[newsMode], { navigation: navigation }, onNewsFetched)
-      .then().catch((error) => console.log(error));
+      .then().catch((error) => console.debug(error));
   }
 
   const onUserNewsFetched = async (result) => {
-    console.log('user news fetched!');
+    console.debug('user news fetched!');
     setUserNewsDataArray(result.items);
     setFilteredUserNewsDataArray(
       createUserNewsSection(Helpers.stripNewsByOrigin(result.items, newsModeMap[newsMode])));
@@ -142,7 +142,7 @@ function NewsScreen({ navigation }) {
   }
 
   const onUserNewsToComeFetched = async (result) => {
-    console.log('user news to come fetched!');
+    console.debug('user news to come fetched!');
     setUserNewsToComeDataArray(result.items);
     setFilteredUserNewsToComeDataArray(
       createUserNewsToComeSection(Helpers.stripNewsByOrigin(result.items, newsModeMap[newsMode])));
@@ -151,7 +151,7 @@ function NewsScreen({ navigation }) {
   }
 
   const onNewsFetched = async (result) => {
-    console.log('news fetched!');
+    console.debug('news fetched!');
     setNewsDataArray(createNewsSection(result.items));
     setErrortext(result.error);
     setLoading(false);

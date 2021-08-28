@@ -27,9 +27,8 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, Text, View } from 'react-native';
+import { SectionList, Switch, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as Helpers from '../api/Helpers';
@@ -58,7 +57,7 @@ function SerieScreen({ route, navigation }) {
   });
 
   const refreshDataIfNeeded = async () => {
-    console.log("refresh data serie " + serie.ID_SERIE);
+    console.debug("refresh data serie " + serie.ID_SERIE);
     if (!serieAlbumsLoaded) {
       setSerieAlbumsLoaded(true);
       fetchData();
@@ -68,7 +67,6 @@ function SerieScreen({ route, navigation }) {
   useEffect(() => {
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
       setShowExcludedAlbums(value != 0);
-      console.log(value != 0);
     }).catch(() => { });
     refreshDataIfNeeded();
   }, []);
@@ -81,7 +79,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const onSerieAlbumsFetched = async (result) => {
-    console.log("serie albums fetched");
+    console.debug("serie albums fetched");
 
     let newdata = [
       { title: 'Albums', data: [] },
@@ -176,24 +174,35 @@ function SerieScreen({ route, navigation }) {
 
   const keyExtractor = useCallback(({ item }, index) => index);
 
+  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+
+  const ignoredSwitch = () => {
+    return (
+      <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', right: 0 }}>
+        <Text style={[CommonStyles.smallerText, { textAlignVertical: 'center' }]}>Voir ignorés</Text>
+        <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
+          thumbColor={CommonStyles.switchStyle.color}
+          trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
+          style={{ /*transform: [{ scaleX: .5 }, { scaleY: .5 }] */ }} />
+      </View >);
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
         <Text style={{ marginTop: 10, flex: 1, width: '33%' }}>
           {getCounterText()}{' '}
-            ({CollectionManager.getNbOfUserAlbumsInSerie(serie)} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
+          ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
           {'\n\n'}
           {serie.LIB_FLG_FINI_SERIE}
         </Text>
         <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
-        { CollectionManager.getNbOfUserAlbumsInSerie(serie) > 0 ? (<View style={{flexDirection: 'column', width: '33%', height: 75}}>
-          <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: 0}]} reduceMode={true} showExclude={true} />
-          <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', position: 'absolute', bottom: 0 }}>
-            <Text style={[CommonStyles.smallerText, { textAlign: 'center', textAlignVertical: 'center' }]}>Voir ignorés</Text>
-            <Switch value={showExcludedAlbums} style={{ transform: [{ scaleX: .5 }, { scaleY: .5 }] }}
-              onValueChange={onToggleShowExcludedAlbums} />
-          </View>
-        </View>): (<View style={{flexDirection: 'column', width: '33%', height: 75}}></View>)}
+        {nbOfUserAlbums > 0 ?
+          <View style={{ flexDirection: 'column', width: '33%', height: 75 }}>
+            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: null, bottom: -5 }]} reduceMode={true} showExclude={true} />
+          </View> :
+          <View style={{ flexDirection: 'column', width: '33%', height: 75 }} />
+      }
       </View>
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>
@@ -205,11 +214,16 @@ function SerieScreen({ route, navigation }) {
           style={{ flex: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          sections={showExcludedAlbums ? serieAlbums.filter(s => s.data.length > 0) : filteredSerieAlbums.filter(s => s.data.length > 0)}
+          sections={(showExcludedAlbums || nbOfUserAlbums == 0 ?
+            serieAlbums.filter(s => s.data.length > 0) :
+            filteredSerieAlbums.filter(s => s.data.length > 0)).map((section, index) => ({ ...section, index }))}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10 }]}>{title}</Text>)}
+          renderSectionHeader={({ section: { title, index } }) => (
+            <View style={{ width: '100%', flex:1,flexDirection: 'row', height: 25, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { width: null, paddingLeft: 10 }]}>{title}</Text>
+              {index == 0 ? ignoredSwitch() : null}
+            </View>)}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
         />

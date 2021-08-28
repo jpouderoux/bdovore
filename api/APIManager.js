@@ -57,7 +57,7 @@ const GETHeaders = new Headers({
 });
 
 const fetchZIP = async (url) => {
-  console.log("fetchZIP: " + url);
+  console.debug("fetchZIP: " + url);
   return fetch(url, {
     method: 'GET',
     compress: true,
@@ -87,7 +87,7 @@ export function reloginBdovore(navigation, callback = null) {
       const passwd = response[1][1];
       loginBdovore(pseudo, passwd, (response) => {
         AsyncStorage.setItem('token', response.token);
-        console.log("New token " + response.token + " fetched!");
+        console.debug("New token " + response.token + " fetched!");
         if (callback) {
           callback();
         }
@@ -105,7 +105,7 @@ export function loginBdovore(pseudo, passwd, callback) {
     return { connected, token, error };
   }
 
-  console.log("Login...");
+  console.debug("Login...");
   if (!pseudo) {
     callback(formatResult(false, null, 'Veuillez renseigner le pseudo.'));
     return;
@@ -126,7 +126,7 @@ export function loginBdovore(pseudo, passwd, callback) {
     .then((response) => response.json())
     .then((responseJson) => {
       if (responseJson.Error === '') {
-        console.log("New token: " + responseJson.Token);
+        console.debug("New token: " + responseJson.Token);
         callback(formatResult(true, responseJson.Token));
       } else {
         callback(formatResult(false, responseJson.Token, responseJson.Error));
@@ -187,7 +187,7 @@ export async function fetchJSON(request, context, callback, params = {},
 
       const loadPage = (page) => {
         const url = baseUrl + '&page=' + page + '&length=' + pageLength;
-        //console.log("Fetching page " + i + '/' + nbPages);
+        //console.debug("Fetching page " + i + '/' + nbPages);
         fetchZIP(url)
           .then((response) => response.json())
           .then((json) => {
@@ -204,7 +204,7 @@ export async function fetchJSON(request, context, callback, params = {},
     })
     .catch((error) => {
       if (retry > 0) {
-        console.log("Retry " + retry);
+        console.debug("Retry " + retry);
         reloginBdovore(context ? context.navigation : null, () => {
           fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
         });
@@ -309,7 +309,7 @@ export async function fetchSimilAlbums(id_tome, callback) {
       callback({ error: '', items: json, nbItems: Object.keys(json).length, });
     })
     .catch((error) => {
-      console.log('==> error : ' + error.toString())
+      console.debug('==> error : ' + error.toString())
       callback({ error: error.toString(), items: [], nbItems: 0 });
     });
 }
@@ -323,7 +323,7 @@ export async function fetchAlbumComments(id_tome, callback) {
       callback({ error: '', items: json, nbItems: Object.keys(json).length, });
     })
     .catch((error) => {
-      console.log('==> error : ' + error.toString())
+      console.debug('==> error : ' + error.toString())
       callback({ error: error.toString(), items: [], nbItems: 0 });
     });
 }
@@ -343,7 +343,7 @@ export async function sendAlbumComment(id_tome, callback, note = 0, comment = ''
       callback({ error: (response.status != '200') });
     })
     .catch((error) => {
-      console.log('==> error : ' + error.toString())
+      console.debug('==> error : ' + error.toString())
       callback({ error: error.toString() });
     });
 }
@@ -385,7 +385,7 @@ export async function updateCollection(func, callback, params = {}) {
       callback({ error: (response.status != '200') });
     })
     .catch((error) => {
-      console.log('==> error : ' + error.toString())
+      console.debug('==> error : ' + error.toString())
       callback({ error: error.toString() });
     });
 }
