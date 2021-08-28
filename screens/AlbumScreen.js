@@ -213,7 +213,7 @@ function AlbumScreen({ route, navigation }) {
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? ()=>{} : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text>{getAuteursLabel()} : </Text>
+            <Text style={CommonStyles.defaultText}>{getAuteursLabel()} : </Text>
             {
               Helpers.getAuteurs(album).map((auteur, index, array) => {
                 return (index == 0 && auteur == 'Collectif') ?
@@ -279,7 +279,7 @@ function AlbumScreen({ route, navigation }) {
           containerStyle={CommonStyles.bottomSheetContainerStyle}>
           <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
             <ListItem.Content>
-              <ListItem.Title>Editions</ListItem.Title>
+              <ListItem.Title style={CommonStyles.defaultText}>Editions</ListItem.Title>
             </ListItem.Content>
           </ListItem>
           {albumEditionsData.map((item, index) => (
