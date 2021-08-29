@@ -243,7 +243,7 @@ export async function fetchSerieByTerm(term, callback, params = {}) {
   fetchJSON('Serie', null, callback, {
     ...{
       term,
-      mode: 1,
+      mode: 2,
     }, ...params
   });
 }
