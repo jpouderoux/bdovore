@@ -72,7 +72,6 @@ function SearchScreen({ navigation }) {
         CollectionManager.selectOwnAlbum(result.items);
       }
       setData(result.items);
-      console.debug(result.items);
       setErrortext(result.error);
       setLoading(false);
     }
@@ -86,16 +85,17 @@ function SearchScreen({ navigation }) {
       return;
     }
 
+    const callback = (result) => onSearchFetched(searchText, result);
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
+        APIManager.fetchSerieByTerm(searchText, callback);
         break;
       case 1:
-        APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
+        APIManager.fetchAlbum(callback, { term: searchText });
         break;
       case 2:
-        APIManager.fetchAuteur(searchText, (result) => onSearchFetched(searchText, result));
+        APIManager.fetchAuteurByTerm(searchText, callback);
         break;
     }
   }

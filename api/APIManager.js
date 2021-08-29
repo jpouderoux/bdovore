@@ -232,7 +232,17 @@ export async function fetchSerie(id_serie, callback, params = {}) {
 
   fetchJSON('Serie', null, callback, {
     ...{
-      id_serie: id_serie,
+      id_serie,
+      mode: 1,
+    }, ...params
+  });
+}
+
+export async function fetchSerieByTerm(term, callback, params = {}) {
+
+  fetchJSON('Serie', null, callback, {
+    ...{
+      term,
       mode: 1,
     }, ...params
   });
@@ -242,7 +252,7 @@ export async function fetchSerieAlbums(id_serie, callback, params = {}) {
 
   fetchJSON('Album', null, callback, {
     ...{
-      id_serie: id_serie,
+      id_serie,
       mode: 1,
     }, ...params
   });
@@ -270,7 +280,7 @@ export async function fetchNews(origine, context, callback, params = {}) {
 
   fetchJSON('Actu', context, callback, {
     ...{
-      origine: origine,
+      origine,
       mode: 2,
       page: 1,
       length: 100
@@ -375,6 +385,15 @@ export async function fetchAuteur(id_auteur, callback, params = {}) {
   });
 }
 
+export async function fetchAuteurByTerm(term, callback, params = {}) {
+  fetchJSON('Auteur', null, callback, {
+    ...{
+      term,
+      mode: 2
+    }, ...params
+  });
+}
+
 export async function updateCollection(func, callback, params = {}) {
 
   let token = await checkForToken();
@@ -394,7 +413,7 @@ export async function updateAlbumInCollection(id_tome, callback, params = {}) {
 
   updateCollection('majcollection', callback, {
     ...{
-      id_tome: id_tome,
+      id_tome,
     }, ...params
   });
 }
@@ -403,7 +422,7 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
 
   updateCollection('deleteAlbum', callback, {
     ...{
-      id_edition: id_edition,
+      id_edition,
     }, ...params
   });
 }

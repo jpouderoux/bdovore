@@ -68,7 +68,7 @@ function AuteurScreen({ route, navigation }) {
     setNbSeries(-1);
     setNbAlbums(-1);
     setErrortext('');
-    APIManager.fetchAlbum(onAuteurAlbumsFetched, { id_auteur: item.ID_AUTEUR});
+    APIManager.fetchAlbum(onAuteurAlbumsFetched, { id_auteur: item.ID_AUTEUR });
   }
 
   const onAuteurAlbumsFetched = async (result) => {
