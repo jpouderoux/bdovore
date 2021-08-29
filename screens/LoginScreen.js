@@ -26,8 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Button, Image, Linking, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Linking, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 
@@ -42,6 +42,9 @@ function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [passwd, setPasswd] = useState("dummypwd");
   const [pseudo, setPseudo] = useState('dummyuser');
+  const [showAbout, setShowAbout] = useState(false);
+  //const [fadeAnim, setFadeAnim] = useState(0);
+  const fadeAnim = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
 
   useEffect(() => {
     AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {
@@ -120,10 +123,28 @@ function LoginScreen({ navigation }) {
     }
   }
 
+  const onAboutPress = () => {
+    setShowAbout(showAbout => !showAbout);
+    fadeAnim.setValue(0);
+    if (!showAbout) {
+      Animated.timing(
+        fadeAnim,
+        {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }
+      ).start();
+    }
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
-        <Image source={require('../assets/bdovore-167.png')} />
+        <TouchableOpacity onPress={onAboutPress}
+          title='About'>
+          <Image source={require('../assets/bdovore-167.png')} />
+        </TouchableOpacity>
       </View>
       <Text style={[CommonStyles.defaultText, {  marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
       <Text style={[CommonStyles.defaultText,{ textAlign: 'center'  }]}>Login</Text>
@@ -173,6 +194,14 @@ function LoginScreen({ navigation }) {
           <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
           <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
         </View>
+      }
+      {showAbout ?
+        <Animated.View style={[CommonStyles.commentsTextInputStyle, {
+          flexDirection: 'column', width: null, alignItems: 'center',  marginTop: 20, opacity: fadeAnim, marginLeft: 35, marginRight: 35, borderRadius: 30}]}>
+          <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>Bdovore - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
+          <Text style={[CommonStyles.defaultText]}>Version 1.0 - Septembre 2021</Text>
+          <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+        </Animated.View> : null
       }
     </View>
   );
