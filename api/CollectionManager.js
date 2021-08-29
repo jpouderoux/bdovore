@@ -34,6 +34,10 @@ import * as Helpers from '../api/Helpers';
 class CCollectionManager {
 
   constructor() {
+    this.initialize();
+  }
+
+  initialize() {
     console.debug('init collection manager');
     global.collectionAlbums = [];
     global.collectionAlbumsDict = {};
@@ -45,6 +49,7 @@ class CCollectionManager {
     global.wishlistAlbumsDict = {};
 
     global.showExcludedAlbums = true;
+    global.collectionManquantsUpdated = false;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
       global.showExcludedAlbums(value != 0);
     }).catch(() => { });
@@ -60,6 +65,10 @@ class CCollectionManager {
 
   numberOfWishAlbums() {
     return global.wishlistAlbums.length;
+  }
+
+  isCollectionEmpty() {
+    return global.collectionAlbums.length == 0;
   }
 
   // Fetch all the series within the collection
@@ -175,8 +184,9 @@ class CCollectionManager {
         } else {
           global.collectionSeries[idx].NB_USER_ALBUM++;
         }
-      }
 
+        global.collectionManquantsUpdated = false;
+      }
 
       if (callback) {
         callback(result);
@@ -218,6 +228,8 @@ class CCollectionManager {
           }
         }
         this.resetAlbumFlags(album);
+
+        global.collectionManquantsUpdated = false;
       }
 
       if (callback) {

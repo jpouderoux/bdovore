@@ -83,6 +83,9 @@ const filterModesSearch = {
   3: 'Rechercher dans mes albums numériques...',
 }
 
+let loadTime = 0;
+let loadingSteps = 0;
+
 function CollectionScreen({ props, navigation }) {
 
   const [collectionGenre, setCollectionGenre] = useState(0);
@@ -102,8 +105,6 @@ function CollectionScreen({ props, navigation }) {
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
-  let loadTime = 0;
-  let loadingSteps = 0;
   let [cachedToken, setCachedToken] = useState('');
 
   const isFocused = useIsFocused();
@@ -228,12 +229,13 @@ function CollectionScreen({ props, navigation }) {
       console.debug('Collection loaded in ' + millis / 1000 + ' seconds');
     }
 
+    let rate = 1;
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
-      const rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
-      setProgressRate(rate);
+      rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
       //console.debug("progress rate " + rate + " nbtotal:" + nbTotalItems + " loaded: " + parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()));
     }
+    setProgressRate(rate);
   }
 
   const onSeriesFetched = async (result) => {
@@ -352,7 +354,18 @@ function CollectionScreen({ props, navigation }) {
         }
       </View>
 
-      {loading ? <Progress.Bar progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle}/> : null}
+      {loading ?
+        <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle}/> :
+        null}
+      {!loading && CollectionManager.isCollectionEmpty() ?
+        <View style={[CommonStyles.screenStyle, {alignItems: 'center', height: '50%', flexDirection: 'column'}]}>
+        <View style={{flex: 1}}></View>
+          <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
+          <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+        <View style={{flex: 1}}></View>
+      </View>
+      :
       <View style={{flex:1}}>
         {errortext != '' ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -374,7 +387,7 @@ function CollectionScreen({ props, navigation }) {
           onRefresh={fetchData}
           refreshing={loading}
         />
-      </View>
+      </View>}
 
       {/* Collection chooser */}
       <BottomSheet

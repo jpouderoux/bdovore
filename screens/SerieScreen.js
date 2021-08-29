@@ -41,6 +41,7 @@ import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieMarkers } from '../components/SerieMarkers';
 
+
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');

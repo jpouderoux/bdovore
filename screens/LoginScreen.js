@@ -35,6 +35,8 @@ import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
+import CollectionManager from '../api/CollectionManager';
+
 
 function LoginScreen({ navigation }) {
 
@@ -63,6 +65,7 @@ function LoginScreen({ navigation }) {
     setErrortext(data.error);
 
     if (data.error == '') {
+      CollectionManager.initialize();
       AsyncStorage.setItem('token', data.token).then(() => {
         AsyncStorage.multiSet([
           ['pseudo', pseudo],

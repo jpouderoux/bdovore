@@ -33,6 +33,7 @@ import * as Helpers from '../api/Helpers';
 import { CommonStyles } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
 
+
 function CommentsScreen({ route, navigation }) {
 
   const [comments, setComments] = useState(route.params.comments);

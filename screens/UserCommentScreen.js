@@ -30,7 +30,7 @@ import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native'
 
 import * as APIManager from '../api/APIManager';
-import { bdovorgray, CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 

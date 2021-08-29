@@ -39,7 +39,12 @@ import * as APIManager from '../api/APIManager';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
+import CollectionManager from '../api/CollectionManager';
 
+
+let loadingSteps = 0;
+let loadedAlbums = 0;
+let loadedSeries = 0;
 
 function ToCompleteScreen({ navigation }) {
 
@@ -55,20 +60,26 @@ function ToCompleteScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
-  let loadingSteps = 0;
-  let loadedAlbums = 0;
-  let loadedSeries = 0;
 
   const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
   const refreshDataIfNeeded = () => {
+    if (CollectionManager.isCollectionEmpty()) {
+      setNbTotalAlbums2(0);
+      setNbTotalSeries2(0);
+      setAlbums([]);
+      setSeries([]);
+    }
+
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.debug("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
         setCachedToken(token);
         cachedToken = token;
+        fetchData();
+      } else if (!global.collectionManquantsUpdated) {
         fetchData();
       }
     }).catch(() => { });
@@ -96,6 +107,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const fetchData = () => {
+    global.collectionManquantsUpdated = true;
     setLoading(true);
     setProgressRate(0);
     loadingSteps = 2;
@@ -179,7 +191,7 @@ function ToCompleteScreen({ navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
-      {loading ? <Progress.Bar progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
+      {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
       {errortext != '' ? (
         <View style={{ alignItems: 'center', marginBottom: 5 }}>
           <Text style={CommonStyles.errorTextStyle}>
@@ -187,24 +199,33 @@ function ToCompleteScreen({ navigation }) {
           </Text>
         </View>
       ) : null}
-      <FlatList
-        initialNumToRender={6}
-        maxToRenderPerBatch={6}
-        windowSize={10}
-        data={(collectionType == 0 ?
-          albums.filter((album) => album.IS_EXCLU != true) :
-          series.filter((serie) => serie.IS_EXCLU != true))}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        ItemSeparatorComponent={Helpers.renderSeparator}
-        getItemLayout={(data, index) => ({
-          length: AlbumItemHeight,
-          offset: AlbumItemHeight * index,
-          index
-        })}
-        onRefresh={fetchData}
-        refreshing={loading}
-      />
+      {!loading && CollectionManager.isCollectionEmpty() ?
+        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          <View style={{ flex: 1 }}></View>
+          <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
+          <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+          <View style={{ flex: 1 }}></View>
+        </View>
+        :
+        <FlatList
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          windowSize={10}
+          data={(collectionType == 0 ?
+            albums.filter((album) => album.IS_EXCLU != true) :
+            series.filter((serie) => serie.IS_EXCLU != true))}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+          getItemLayout={(data, index) => ({
+            length: AlbumItemHeight,
+            offset: AlbumItemHeight * index,
+            index
+          })}
+          onRefresh={fetchData}
+          refreshing={loading}
+        />}
     </View>
   );
 }

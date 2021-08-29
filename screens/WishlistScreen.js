@@ -29,10 +29,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
+import CollectionManager from '../api/CollectionManager';
 
 
 function WishlistScreen({ navigation }) {
@@ -84,20 +86,34 @@ function WishlistScreen({ navigation }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>
         </View>
       </View>
-      <FlatList
-        style={{ flex: 1 }}
-        maxToRenderPerBatch={6}
-        windowSize={10}
-        data={filteredData ? filteredData : global.wishlistAlbums}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        ItemSeparatorComponent={Helpers.renderSeparator}
-        getItemLayout={(data, index) => ({
-          length: AlbumItemHeight,
-          offset: AlbumItemHeight * index,
-          index
-        })}
-      />
+      {CollectionManager.numberOfWishAlbums() == 0 ?
+        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          <View style={{ flex: 1 }}></View>
+          <Text style={CommonStyles.defaultText}>Aucun album dans la wishlist.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Ajoutez les albums que vous souhaitez</Text>
+          <Text style={CommonStyles.defaultText}>acquérir via les boutons</Text>
+          <View style={{ flexDirection: 'column' }}>
+            <MaterialCommunityIcons name='heart-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+            <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Je veux</Text>
+          </View>
+          <View style={{ flex: 1 }}></View>
+        </View>
+        :
+        <FlatList
+          style={{ flex: 1 }}
+          maxToRenderPerBatch={6}
+          windowSize={10}
+          data={filteredData ? filteredData : global.wishlistAlbums}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+          getItemLayout={(data, index) => ({
+            length: AlbumItemHeight,
+            offset: AlbumItemHeight * index,
+            index
+          })}
+        />
+      }
     </View>
   );
 }
