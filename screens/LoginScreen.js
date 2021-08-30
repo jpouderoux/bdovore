@@ -141,6 +141,14 @@ function LoginScreen({ navigation }) {
     }
   }
 
+  const onToggleSponsoredLinks = () => {
+    if (Platform.OS != 'ios') {
+      global.hideSponsoredLinks = !global.hideSponsoredLinks;
+      AsyncStorage.setItem('hideSponsoredLinks', global.hideSponsoredLinks.toString());
+      Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');
+    }
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
@@ -203,7 +211,7 @@ function LoginScreen({ navigation }) {
           flexDirection: 'column', width: null, alignItems: 'center',  marginTop: 20, opacity: fadeAnim, marginLeft: 35, marginRight: 35, borderRadius: 30}]}>
           <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>Bdovore - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
           <Text style={[CommonStyles.defaultText]}>Version 1.0 - Septembre 2021</Text>
-          <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+          <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
         </Animated.View> : null
       }
     </View>

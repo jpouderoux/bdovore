@@ -28,11 +28,12 @@
 
 import 'react-native-gesture-handler';
 
-import React from 'react';
-import { useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MainTab from './routes/MainTab';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -41,12 +42,19 @@ import { rebuildSheet } from './styles/CommonStyles';
 
 const App: () => Node = () => {
 
-  React.useEffect(() => {
+  useEffect(() => {
     SplashScreen.hide();
+
+    global.hideSponsoredLinks = Platform.OS == 'ios';
+
+    AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
+      global.hideSponsoredLinks = value == 'true';
+    }).catch(() => { });
   });
 
   global.isDarkMode = useColorScheme() === 'dark';
   rebuildSheet();
+
 
   /* TODO - Support dynamic theme change.
   Appearance.addChangeListener(({ colorScheme }) => {
