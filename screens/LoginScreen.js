@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Linking, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 
@@ -37,6 +37,7 @@ import * as Helpers from '../api/Helpers';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import CollectionManager from '../api/CollectionManager';
 
+const pkg = require('../app.json');
 
 function LoginScreen({ navigation }) {
 
@@ -150,69 +151,73 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
-        <TouchableOpacity onPress={onAboutPress}
-          title='About'>
-          <Image source={require('../assets/bdovore-167.png')} />
-        </TouchableOpacity>
-      </View>
-      <Text style={[CommonStyles.defaultText, {  marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
-      <Text style={[CommonStyles.defaultText,{ textAlign: 'center'  }]}>Login</Text>
-      <TextInput
-        style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
-        placeholder='Login'
-        autoCapitalize='none'
-        returnKeyType='next'
-        blurOnSubmit={false}
-        value={pseudo}
-        textContentType='username'  // iOS
-        autoCompleteType='username' // Android
-        onChangeText={(pseudo) => setPseudo(pseudo)}
-      />
-      <Text style={[CommonStyles.defaultText,{ textAlign: 'center' }]}>Mot de passe</Text>
-      <TextInput
-        style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
-        placeholder='Mot de passe'
-        secureTextEntry={true}
-        value={passwd}
-        autoCapitalize='none'
-        blurOnSubmit={true}
-        returnKeyType='next'
-        textContentType='password'  // iOS
-        autoCompleteType='password' // Android
-        onChangeText={(passwd) => setPasswd(passwd)}
-      />
-      {errortext != '' ? (
-        <Text style={CommonStyles.errorTextStyle}>
-          {errortext}
-        </Text>
-      ) : null}
-      {loading ?
-        <SmallLoadingIndicator style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          padding: 10
-        }} /> :
-        <View>
-          <TouchableOpacity
-            style={CommonStyles.loginConnectionButtonStyle}
-            onPress={onLoginPress}
-            title='Login'>
-            <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
+      <ScrollView>
+        <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
+          <TouchableOpacity onPress={onAboutPress}
+            title='About'>
+            <Image source={require('../assets/bdovore-167.png')} />
           </TouchableOpacity>
-          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
-          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
-          <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
         </View>
-      }
-      {showAbout ?
-        <Animated.View style={[CommonStyles.commentsTextInputStyle, {
-          flexDirection: 'column', width: null, alignItems: 'center',  marginTop: 20, opacity: fadeAnim, marginLeft: 35, marginRight: 35, borderRadius: 30}]}>
-          <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>Bdovore - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
-          <Text style={[CommonStyles.defaultText]}>Version 1.0 - Septembre 2021</Text>
-          <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
-        </Animated.View> : null
-      }
+        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
+        <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text>
+        <TextInput
+          style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+          placeholder='Login'
+          autoCapitalize='none'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          value={pseudo}
+          textContentType='username'  // iOS
+          autoCompleteType='username' // Android
+          onChangeText={(pseudo) => setPseudo(pseudo)}
+        />
+        <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text>
+        <TextInput
+          style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+          placeholder='Mot de passe'
+          secureTextEntry={true}
+          value={passwd}
+          autoCapitalize='none'
+          blurOnSubmit={true}
+          returnKeyType='next'
+          textContentType='password'  // iOS
+          autoCompleteType='password' // Android
+          onChangeText={(passwd) => setPasswd(passwd)}
+        />
+        {errortext != '' ? (
+          <Text style={CommonStyles.errorTextStyle}>
+            {errortext}
+          </Text>
+        ) : null}
+        {loading ?
+          <SmallLoadingIndicator style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            padding: 10
+          }} /> :
+          <View>
+            <TouchableOpacity
+              style={CommonStyles.loginConnectionButtonStyle}
+              onPress={onLoginPress}
+              title='Login'>
+              <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
+            </TouchableOpacity>
+            <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
+            <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
+          </View>
+        }
+        {showAbout ?
+          <Animated.View style={[CommonStyles.commentsTextInputStyle, {
+            flexDirection: 'column', width: null, alignItems: 'center', marginVertical: 20, opacity: fadeAnim, marginLeft: 35, marginRight: 35, borderRadius: 30
+          }]}>
+            <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
+            <Text style={[CommonStyles.defaultText]}>Version {pkg.version} - Septembre 2021</Text>
+            <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+          </Animated.View> : null
+        }
+        <View style={{height: 20}}></View>
+      </ScrollView>
     </View>
   );
 }

@@ -1,8 +1,8 @@
 {
   "name": "bdovore",
-  "displayName": "bdovore",
+  "displayName": "Bdovore",
   "platforms": [ "android", "ios", "web" ],
-  "version": "0.0.1",
+  "version": "1.0.0",
   "orientation": "portrait",
   "splash": {
     "image": "./app/assets/bdovore-167.png",
