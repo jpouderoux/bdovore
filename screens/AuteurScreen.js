@@ -53,9 +53,9 @@ function AuteurScreen({ route, navigation }) {
     refreshDataIfNeeded();
   }, []);
 
-  useFocusEffect(() => {
+  useFocusEffect(useCallback(() => {
     CollectionManager.refreshAlbumSeries(auteurAlbums);
-  });
+  }, [auteurAlbums]));
 
   const refreshDataIfNeeded = async () => {
     console.debug("refresh author data");

@@ -27,13 +27,13 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
 
-import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 
@@ -223,8 +223,11 @@ function ToCompleteScreen({ navigation }) {
             offset: AlbumItemHeight * index,
             index
           })}
-          onRefresh={fetchData}
-          refreshing={loading}
+          refreshControl={<RefreshControl
+            colors={[bdovorlightred, bdovored]}
+            tintColor={bdovored}
+            refreshing={loading}
+            onRefresh={fetchData} />}
         />}
     </View>
   );

@@ -27,16 +27,16 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers'
 
@@ -85,6 +85,9 @@ const filterModesSearch = {
 
 let loadTime = 0;
 let loadingSteps = 0;
+let cachedToken = '';
+let nbTotalAlbums = 0;
+let nbTotalSeries = 0;
 
 function CollectionScreen({ props, navigation }) {
 
@@ -97,39 +100,26 @@ function CollectionScreen({ props, navigation }) {
   const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
-  let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
-  let [nbTotalSeries, setNbTotalSeries] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
-  let [cachedToken, setCachedToken] = useState('');
 
   const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
-  function refreshDataIfNeeded() {
+  useFocusEffect(() => {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.debug('refresh collection data because token changed to ' + token);
-        setCachedToken(token);
         cachedToken = token;
         fetchData();
       }
-    }).catch(() => { });
-  }
-
-  useEffect(() => {
-    refreshDataIfNeeded();
-    // Make sure data is refreshed when login/token changed
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      refreshDataIfNeeded();
-    });
-    return willFocusSubscription;
-  }, [cachedToken]);
+    }).catch(() => {});
+  });
 
   useEffect(() => {
     navigation.setOptions({
@@ -141,7 +131,6 @@ function CollectionScreen({ props, navigation }) {
   useEffect(() => {
     applyFilters();
   }, [collectionType, filterMode, serieFilterMode, sortMode, keywords]);
-
 
   const filterCollection = (collection, mode) => {
 
@@ -384,8 +373,11 @@ function CollectionScreen({ props, navigation }) {
             length: AlbumItemHeight,
             offset: AlbumItemHeight * index,
             index })}
-          onRefresh={fetchData}
-          refreshing={loading}
+          refreshControl={<RefreshControl
+              colors={[bdovorlightred, bdovored]}
+              tintColor={bdovored}
+              refreshing={loading}
+              onRefresh={fetchData} />}
         />
       </View>}
 

@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -51,6 +51,8 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
+
+  const isFocused = useIsFocused();
 
   useFocusEffect(() => {
     if (searchMode == 1) {

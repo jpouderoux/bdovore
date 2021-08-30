@@ -27,15 +27,15 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, Text, View } from 'react-native';
+import { RefreshControl, SectionList, Text, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
 import { AlbumItem } from '../components/AlbumItem';
-import { CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
 
 
 let newsModeMap = {
@@ -56,6 +56,8 @@ function createNewsSection(data = []) {
   return { title: 'Albums tendances', idx: 2, data };
 }
 
+let cachedToken = '';
+
 function NewsScreen({ navigation }) {
 
   const [errortext, setErrortext] = useState('');
@@ -67,36 +69,20 @@ function NewsScreen({ navigation }) {
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   const [refresh, setRefresh] = useState(1);
-  let [cachedToken, setCachedToken] = useState('');
 
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   Helpers.checkForToken(navigation);
 
-  const refreshDataIfNeeded = async () => {
+  useFocusEffect(() => {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
-        setCachedToken(token);
+        console.debug('refresh collection data because token changed to ' + token);
         cachedToken = token;
-        console.debug("refresh news data");
         fetchData();
       }
     }).catch(() => { });
-  }
-
-  useEffect(() => {
-    refreshDataIfNeeded();
-  }, [cachedToken]);
-
-  useEffect(() => {
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      console.debug(new Date().getTime());
-      setRefresh(new Date().getTime());
-      refreshDataIfNeeded();
-    });
-    return willFocusSubscription;
-  }, []);
-
+  });
 
   useEffect(() => {
     // Filter the user news according the current news mode
@@ -201,8 +187,11 @@ function NewsScreen({ navigation }) {
             <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
           extraData={refresh}
-          onRefresh={fetchData}
-          refreshing={loading}
+          refreshControl={<RefreshControl
+            colors={[bdovorlightred, bdovored]}
+            tintColor={bdovored}
+            refreshing={loading}
+            onRefresh={fetchData} />}
         />
       </View>
     </View>

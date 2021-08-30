@@ -45,7 +45,6 @@ function LoginScreen({ navigation }) {
   const [passwd, setPasswd] = useState("dummypwd");
   const [pseudo, setPseudo] = useState('dummyuser');
   const [showAbout, setShowAbout] = useState(false);
-  //const [fadeAnim, setFadeAnim] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
 
   useEffect(() => {
