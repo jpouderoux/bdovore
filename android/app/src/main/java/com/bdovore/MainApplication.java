@@ -8,6 +8,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    long size = 100L * 1024L * 1024L; // 100 MB
+    com.facebook.react.modules.storage.ReactDatabaseSupplier.getInstance(getApplicationContext()).setMaximumSize(size);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

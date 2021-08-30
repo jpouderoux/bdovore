@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
@@ -85,7 +85,6 @@ const filterModesSearch = {
 
 let loadTime = 0;
 let loadingSteps = 0;
-let cachedToken = '';
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
 
@@ -112,10 +111,11 @@ function CollectionScreen({ route, navigation }) {
 
   Helpers.checkForToken(navigation);
 
-  useFocusEffect(() => {
+  function refreshDataIfNeeded() {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.debug('refresh collection data because token changed to ' + token);
+        setCachedToken(token);
         cachedToken = token;
         fetchData();
       }
@@ -239,7 +239,7 @@ function CollectionScreen({ route, navigation }) {
 
   const onSeriesFetched = async (result) => {
     setErrortext(result.error);
-    nbTotalSeries = result.totalItems;
+    nbTotalSeries = result.totalItems ?? result.items.length;
 
     applyFilters();
 
@@ -248,7 +248,7 @@ function CollectionScreen({ route, navigation }) {
 
   const onAlbumsFetched = async (result) => {
     setErrortext(result.error);
-    nbTotalAlbums = result.totalItems;
+    nbTotalAlbums = result.totalItems ?? result.items.length;
 
     applyFilters();
 

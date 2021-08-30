@@ -69,7 +69,7 @@ function AlbumScreen({ route, navigation }) {
   }, []);
 
   const getAlbumEditions = () => {
-    if (!editionsLoaded) {
+    if (!editionsLoaded && global.isConnected) {
       setLoading(true);
       setEditionsLoaded(true);
       setSimilAlbums([]);
@@ -80,7 +80,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const getAlbumIsExclude = () => {
-    if (album.IS_EXCLU == undefined) {
+    if (album.IS_EXCLU == undefined && global.isConnected) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
           album.IS_EXCLU = result.items != 0;
@@ -131,30 +131,33 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onUserComment = async () => {
-    AsyncStorage.getItem('pseudo').then(pseudo => {
-      let comment = '';
-      let rate = 5;
-      comments.forEach(entry => {
-        if (entry.username == pseudo) {
-          comment = entry.COMMENT;
-          rate = entry.NOTE;
-        }
-      });
-      setUserComment(comment);
-      setUserRate(rate);
-      setShowUserComment(true);
-    }).catch(error => { });
+    if (global.isConnected) {
+      AsyncStorage.getItem('pseudo').then(pseudo => {
+        let comment = '';
+        let rate = 5;
+        comments.forEach(entry => {
+          if (entry.username == pseudo) {
+            comment = entry.COMMENT;
+            rate = entry.NOTE;
+          }
+        });
+        setUserComment(comment);
+        setUserRate(rate);
+        setShowUserComment(true);
+      }).catch(error => { });
+    }
   }
 
   const onShowSerieScreen = async () => {
-
-    setLoading(true);
-    APIManager.fetchSerie(album.ID_SERIE, (result) => {
-      setLoading(false);
-      if (result.error == '') {
-        navigation.push('Serie', { item: result.items[0] });
-      }
-    });
+    if (global.isConnected) {
+      setLoading(true);
+      APIManager.fetchSerie(album.ID_SERIE, (result) => {
+        setLoading(false);
+        if (result.error == '') {
+          navigation.push('Serie', { item: result.items[0] });
+        }
+      });
+    }
   }
 
   const onShowFullscreenCover = () => {
@@ -169,7 +172,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onPressAuteur = (auteur) => {
-    if (auteur != 'Collectif') {
+    if (auteur != 'Collectif' && global.isConnected) {
       APIManager.fetchAuteur(auteur.id, (result) => {
         if (!result.error && result.items.length > 0) {
           navigation.push('Auteur', { item: result.items[0] });
@@ -276,7 +279,7 @@ function AlbumScreen({ route, navigation }) {
             : null }
           <AchatSponsorIcon album={album} />
           <Text style={[CommonStyles.defaultText,{ marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-          {CollectionManager.isAlbumInCollection(album) ?
+          {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onUserComment}>
               Noter / commenter cet album

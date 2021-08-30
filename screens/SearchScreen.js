@@ -32,14 +32,14 @@ import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as Helpers from '../api/Helpers';
-import * as APIManager from '../api/APIManager';
-import CollectionManager from '../api/CollectionManager';
+import { AlbumItem } from '../components/AlbumItem';
+import { AuteurItem } from '../components/AuteurItem';
 import { CommonStyles } from '../styles/CommonStyles';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
-import { AuteurItem } from '../components/AuteurItem';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
+import CollectionManager from '../api/CollectionManager';
 
 
 let lastKeywords = '';

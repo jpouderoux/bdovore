@@ -81,23 +81,25 @@ export async function checkForToken(navigation = null) {
 
 export function reloginBdovore(navigation, callback = null) {
 
-  AsyncStorage.multiGet(['pseudo', 'passwd'])
-    .then((response) => {
-      const pseudo = response[0][1];
-      const passwd = response[1][1];
-      loginBdovore(pseudo, passwd, (response) => {
-        AsyncStorage.setItem('token', response.token);
-        console.debug("New token " + response.token + " fetched!");
-        if (callback) {
-          callback();
+  if (global.isConnected) {
+    AsyncStorage.multiGet(['pseudo', 'passwd'])
+      .then((response) => {
+        const pseudo = response[0][1];
+        const passwd = response[1][1];
+        loginBdovore(pseudo, passwd, (response) => {
+          AsyncStorage.setItem('token', response.token);
+          console.debug("New token " + response.token + " fetched!");
+          if (callback) {
+            callback();
+          }
+        });
+      })
+      .catch((error) => {
+        if (navigation) {
+          navigation.navigate('Login');
         }
       });
-    })
-    .catch((error) => {
-      if (navigation) {
-        navigation.navigate('Login');
-      }
-    });
+  }
 }
 
 export function loginBdovore(pseudo, passwd, callback) {
@@ -203,7 +205,7 @@ export async function fetchJSON(request, context, callback, params = {},
       }
     })
     .catch((error) => {
-      if (retry > 0) {
+      if (retry > 0 && global.isConnected) {
         console.debug("Retry " + retry);
         reloginBdovore(context ? context.navigation : null, () => {
           fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);

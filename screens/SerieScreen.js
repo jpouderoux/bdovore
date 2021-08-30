@@ -35,8 +35,8 @@ import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
 
-import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
+import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieMarkers } from '../components/SerieMarkers';
@@ -45,10 +45,10 @@ import { SerieMarkers } from '../components/SerieMarkers';
 function SerieScreen({ route, navigation }) {
 
   const [errortext, setErrortext] = useState('');
-  const [serie, setSerie] = useState(route.params.item);
-  const [loading, setLoading] = useState(false);
-  const [serieAlbums, setSerieAlbums] = useState([]);
   const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [serie, setSerie] = useState(route.params.item);
+  const [serieAlbums, setSerieAlbums] = useState([]);
   const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
 
@@ -73,10 +73,12 @@ function SerieScreen({ route, navigation }) {
   }, []);
 
   const fetchData = () => {
-    setLoading(true);
-    setErrortext('');
-    setSerieAlbums([]);
-    APIManager.fetchSerieAlbums(serie.ID_SERIE, onSerieAlbumsFetched);
+    if (global.isConnected) {
+      setLoading(true);
+      setErrortext('');
+      setSerieAlbums([]);
+      APIManager.fetchSerieAlbums(serie.ID_SERIE, onSerieAlbumsFetched);
+    }
   }
 
   const onSerieAlbumsFetched = async (result) => {

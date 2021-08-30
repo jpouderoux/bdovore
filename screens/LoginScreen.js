@@ -30,6 +30,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
+import NetInfo from "@react-native-community/netinfo";
 
 import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
@@ -57,7 +58,19 @@ function LoginScreen({ navigation }) {
 
   const onLoginPress = () => {
     setLoading(true);
-    APIManager.loginBdovore(pseudo, passwd, onConnected);
+    global.isConnected = true;
+    //if (global.isConnected) {
+      APIManager.loginBdovore(pseudo, passwd, onConnected);
+    /*} else {
+      Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion internet désactivée.")
+      onConnected({ error: '', token: 'offline-' + Date.now() });
+    }*/
+  }
+
+  const onOfflinePress = () => {
+    global.isConnected = false;
+    Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion internet désactivée.")
+    onConnected({ error: '', token: 'offline-' + Date.now() });
   }
 
   const onConnected = (data) => {
@@ -72,8 +85,7 @@ function LoginScreen({ navigation }) {
           ['passwd', passwd],
           ['collecFetched', 'false']], () => { });
         navigation.goBack();
-      }
-      );
+      });
     }
     else {
       console.debug('error on connection: ' + data.error);
@@ -202,6 +214,7 @@ function LoginScreen({ navigation }) {
               title='Login'>
               <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
             </TouchableOpacity>
+            <Text onPress={onOfflinePress} style={[CommonStyles.linkTextStyle, { textAlign: 'center', marginBottom: 10 }]}>Mode offline</Text>
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>

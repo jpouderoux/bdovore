@@ -71,23 +71,46 @@ class CCollectionManager {
     return global.collectionAlbums.length == 0;
   }
 
+  saveSeries() {
+    AsyncStorage.setItem('collectionSeries', JSON.stringify(global.collectionSeries)).catch(error => { console.log(error); });
+  }
+
+  saveAlbums() {
+    AsyncStorage.setItem('collectionAlbums', JSON.stringify(global.collectionAlbums)).catch(error => { console.log(error); });
+  }
+
+  saveWishlist() {
+    AsyncStorage.setItem('wishlistAlbums', JSON.stringify(global.wishlistAlbums)).catch(error => { console.log(error); });
+  }
+
+
   // Fetch all the series within the collection
   fetchSeries(navigation, callback) {
 
     global.collectionSeries = [];
     global.collectionSeriesDict = {};
 
+    if (!global.isConnected) {
+      AsyncStorage.getItem('collectionSeries',
+        (error, result) => this.onSeriesFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
+        .catch((error)=> console.debug(error));
+    } else {
     APIManager.fetchCollectionData('Userserie', { navigation: navigation },
-      (result) => this.onSeriesFetched(result, callback))
+      (result) => this.onSeriesFetched(result, callback, false))
       .then().catch((error) => console.debug(error));
+    }
   }
 
-  onSeriesFetched(result, callback) {
+  onSeriesFetched(result, callback, isOffline) {
 
     console.debug(result.items.length + ' series fetched');
     global.collectionSeries = result.items;
     global.collectionSeriesDict = {};
     Helpers.createSeriesDict(global.collectionSeries, global.collectionSeriesDict);
+
+    if (result.done && !isOffline) {
+      this.saveSeries();
+    }
 
     callback(result);
   }
@@ -98,12 +121,18 @@ class CCollectionManager {
     global.collectionAlbums = [];
     global.collectionAlbumsDict = {};
 
-    APIManager.fetchCollectionData('Useralbum', { navigation: navigation },
-      (result) => this.onAlbumsFetched(result, callback))
-      .then().catch((error) => console.debug(error));
+    if (!global.isConnected) {
+      AsyncStorage.getItem('collectionAlbums',
+        (error, result) => this.onAlbumsFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
+        .catch((error) => console.debug(error));
+    } else {
+      APIManager.fetchCollectionData('Useralbum', { navigation: navigation },
+        (result) => this.onAlbumsFetched(result, callback, false))
+        .then().catch((error) => console.debug(error));
+    }
   }
 
-  onAlbumsFetched(result, callback) {
+  onAlbumsFetched(result, callback, isOffline) {
 
     console.debug(result.items.length + ' albums fetched');
 
@@ -113,27 +142,38 @@ class CCollectionManager {
     global.collectionAlbumsDict = {};
     Helpers.createAlbumDict(global.collectionAlbums, global.collectionAlbumsDict);
 
-    /*AsyncStorage.multiSet([
-      [ 'collectionAlbums', JSON.stringify(result.items) ],
-      [ 'collecFetched', (result.error === null) ? 'true' : 'false' ]], ()=>{});*/
+    if (result.done && !isOffline) {
+      this.saveAlbums();
+    }
 
     callback(result);
   }
 
   // Fetch the wishlist collection
-  fetchWishlist(navigation, callback) {
-    APIManager.fetchWishlist({ navigation: navigation }, (result) =>
-      this.onWishlistFetched(result, callback))
-      .then().catch((error) => console.debug(error));
+  fetchWishlist(navigation, callback, isOffline = false) {
+
+    if (!global.isConnected) {
+      AsyncStorage.getItem('wishlistAlbums',
+        (error, result) => this.onWishlistFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
+        .catch((error) => console.debug(error));
+    } else {
+      APIManager.fetchWishlist({ navigation: navigation }, (result) =>
+        this.onWishlistFetched(result, callback, false))
+        .then().catch((error) => console.debug(error));
+    }
   }
 
-  onWishlistFetched(result, callback) {
+  onWishlistFetched(result, callback, isOffline) {
 
     console.debug(result.items.length + ' albums in wishlist fetched');
 
     global.wishlistAlbums = result.items;
     global.wishlistAlbumsDict = {};
     Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
+
+    if (result.done && !isOffline) {
+      this.saveWishlist();
+    }
 
     callback(result);
   }
@@ -185,6 +225,7 @@ class CCollectionManager {
           global.collectionSeries[idx].NB_USER_ALBUM++;
         }
 
+        this.saveAlbums();
         global.collectionManquantsUpdated = false;
       }
 
@@ -229,6 +270,8 @@ class CCollectionManager {
         }
         this.resetAlbumFlags(album);
 
+        this.saveAlbums();
+
         global.collectionManquantsUpdated = false;
       }
 
@@ -258,6 +301,8 @@ class CCollectionManager {
 
         // Add the album to the wishlist with the FLG_ACHAT flag
         Helpers.addAlbumToArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+
+        this.saveWishlist();
 
         console.debug('album ' + album.ID_TOME + ' added to the wishlist');
       }
@@ -363,6 +408,7 @@ class CCollectionManager {
     APIManager.updateAlbumInCollection(album.ID_TOME, (result) => {
       if (callback) {
         callback(result);
+        this.saveAlbums();
       }
       if (result.error) {
         Helpers.showToast(result.error,

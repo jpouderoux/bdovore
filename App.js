@@ -34,10 +34,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from "@react-native-community/netinfo";
 
 import MainTab from './routes/MainTab';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
+import * as Helpers from './api/Helpers';
 
 
 const App: () => Node = () => {
@@ -57,6 +59,14 @@ const App: () => Node = () => {
   global.isDarkMode = useColorScheme() === 'dark';
   rebuildSheet();
 
+  // Subscribe
+  NetInfo.addEventListener(state => {
+    console.log("Connection type", state.type);
+    console.log("Is connected?", state.isConnected);
+    //global.isConnected = state.isConnected;
+    global.isConnected = false;// state.type == 'wifi';
+    Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
+  });
 
   /* TODO - Support dynamic theme change.
   Appearance.addChangeListener(({ colorScheme }) => {

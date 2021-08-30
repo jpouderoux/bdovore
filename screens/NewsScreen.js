@@ -66,9 +66,9 @@ function NewsScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [newsDataArray, setNewsDataArray] = useState(createNewsSection());
   const [newsMode, setNewsMode] = useState(0);
+  const [refresh, setRefresh] = useState(1);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
-  const [refresh, setRefresh] = useState(1);
 
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
