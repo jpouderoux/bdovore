@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -52,6 +52,8 @@ function SearchScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
 
+  const isFocused = useIsFocused();
+
   useFocusEffect(() => {
     if (searchMode == 1) {
       CollectionManager.selectOwnAlbum(data);
@@ -72,7 +74,6 @@ function SearchScreen({ navigation }) {
         CollectionManager.selectOwnAlbum(result.items);
       }
       setData(result.items);
-      console.debug(result.items);
       setErrortext(result.error);
       setLoading(false);
     }
@@ -86,16 +87,17 @@ function SearchScreen({ navigation }) {
       return;
     }
 
+    const callback = (result) => onSearchFetched(searchText, result);
     setLoading(true);
     switch (parseInt(searchMode)) {
       case 0:
-        APIManager.fetchJSON('Serie', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
+        APIManager.fetchSerieByTerm(searchText, callback);
         break;
       case 1:
-        APIManager.fetchAlbum((result) => onSearchFetched(searchText, result), { term: searchText });
+        APIManager.fetchAlbum(callback, { term: searchText });
         break;
       case 2:
-        APIManager.fetchJSON('Auteur', null, (result) => onSearchFetched(searchText, result), { term: searchText, mode: 2, });
+        APIManager.fetchAuteurByTerm(searchText, callback);
         break;
     }
   }

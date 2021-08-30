@@ -31,7 +31,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { CommonStyles } from '../styles/CommonStyles';
 
 
 function BarcodeScanner({ route, navigation }) {
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
   preview: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   cameraIcon: {
     margin: 10,
@@ -105,10 +104,11 @@ const styles = StyleSheet.create({
     width: 40,
     padding: 5,
     backgroundColor: 'white',
+    borderRadius: 30,
   },
   bottomOverlay: {
     position: "absolute",
-    right: 0
+    right: 0,
   },
 });
 

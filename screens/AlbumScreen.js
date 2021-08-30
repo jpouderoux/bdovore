@@ -283,7 +283,7 @@ function AlbumScreen({ route, navigation }) {
             </ListItem.Content>
           </ListItem>
           {albumEditionsData.map((item, index) => (
-            <ListItem key={keyExtractor}
+            <ListItem key={index+1}
               containerStyle={
                 (index == editionIndex ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle)}
               onPress={() => {
