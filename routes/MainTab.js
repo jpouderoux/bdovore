@@ -50,6 +50,7 @@ import UserCommentScreen from '../screens/UserCommentScreen'
 import WishlistScreen from '../screens/WishlistScreen';
 import * as APIManager from '../api/APIManager';
 import { bdovored, CommonStyles } from '../styles/CommonStyles';
+import SettingsScreen from '../screens/SettingsScreen';
 
 
 // The main tab navigator
@@ -72,6 +73,18 @@ const accountButton = (navigation) => {
 
 const onAccountPress = (navigation) => {
   navigation.navigate('Login');
+};
+
+const settingsButton = (navigation) => {
+  return (
+    <TouchableOpacity onPress={() => onSettingsPress(navigation)} style={{ margin: 8 }}>
+      <MaterialCommunityIcons name='cog-outline' size={25} color={CommonStyles.iconStyle.color} />
+    </TouchableOpacity>
+  );
+}
+
+const onSettingsPress = (navigation) => {
+  navigation.navigate('Settings');
 };
 
 const shareButton = (item) => {
@@ -101,7 +114,8 @@ function CollectionScreens({ route, navigation }) {
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => ({
-          headerLeft: () => accountButton(navigation)
+          headerLeft: () => accountButton(navigation),
+          headerRight: () => settingsButton(navigation)
         })} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
@@ -289,6 +303,7 @@ function MainTab() {
     <RootStack.Navigator mode="modal" headerMode="none">
       <RootStack.Screen name="MainTab2" component={MainTab2} />
       <RootStack.Screen name="Login" component={LoginScreen} />
+      <RootStack.Screen name="Settings" component={SettingsScreen} />
       <RootStack.Screen name="Image" component={ImageScreen} />
     </RootStack.Navigator>
   );
