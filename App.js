@@ -45,11 +45,13 @@ const App: () => Node = () => {
   useEffect(() => {
     SplashScreen.hide();
 
-    global.hideSponsoredLinks = Platform.OS == 'ios';
-
-    AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
-      global.hideSponsoredLinks = value == 'true';
-    }).catch(() => { });
+    if (Platform.OS == 'ios') {
+      global.hideSponsoredLinks = true;
+    } else {
+      AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
+        global.hideSponsoredLinks = (value == 'true');
+      }).catch(() => { });
+    }
   });
 
   global.isDarkMode = useColorScheme() === 'dark';
