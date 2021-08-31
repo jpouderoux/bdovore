@@ -53,7 +53,7 @@ export function lowerCaseNoAccentuatedChars(str) {
 }
 
 export function renderSeparator() {
-  return <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
+  return <View style={{ borderBottomColor: global.isDarkMode ? '#333' : '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
 }
 
 export function plural(nb) {

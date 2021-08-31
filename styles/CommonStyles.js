@@ -55,6 +55,8 @@ export function rebuildSheet() {
     $bg: global.isDarkMode ? 'black' : 'white',
     $textcolor: global.isDarkMode ? 'white' : 'black',
     $sectioncolor: global.isDarkMode ? '#333' : '#ddd',
+    $buttongroupcolor: global.isDarkMode ? '#333' : '#eee',
+    $buttongroupselectcolor : global.isDarkMode ? '#777' : 'white',
   });
 }
 
@@ -290,7 +292,7 @@ export let CommonStyles = EStyleSheet.create({
   //***************
   // Search styles
   searchContainerStyle: {
-    backgroundColor: '#eee',
+    backgroundColor: '$buttongroupcolor',
   },
 
   //***************
@@ -306,15 +308,15 @@ export let CommonStyles = EStyleSheet.create({
   buttonGroupContainerStyle: {
     height: 30,
     borderRadius: 8,
-    backgroundColor: '#eee',
+    backgroundColor: '$buttongroupcolor',
   },
   buttonGroupButtonStyle: {
     borderRadius: 8,
     margin: 2,
-    backgroundColor: '#eee',
+    backgroundColor: '$buttongroupcolor',
   },
   buttonGroupSelectedButtonStyle: {
-    backgroundColor: 'white',
+    backgroundColor: '$buttongroupselectcolor',
   },
   buttonGroupInnerBorderStyle: {
     width: 0,

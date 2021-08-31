@@ -161,9 +161,9 @@ function NewsScreen({ navigation }) {
           onPress={onPressNewsMode}
           selectedIndex={newsMode}
           buttons={[
-            { element: () => <Text>{newsModeMap[0]}</Text> },
-            { element: () => <Text>{newsModeMap[1]}</Text> },
-            { element: () => <Text>{newsModeMap[2]}</Text> }]}
+            { element: () => <Text  style={CommonStyles.defaultText}>{newsModeMap[0]}</Text> },
+            { element: () => <Text  style={CommonStyles.defaultText}>{newsModeMap[1]}</Text> },
+            { element: () => <Text  style={CommonStyles.defaultText}>{newsModeMap[2]}</Text> }]}
           containerStyle={[CommonStyles.buttonGroupContainerStyle, {height: 40}]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
