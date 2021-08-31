@@ -134,18 +134,25 @@ function SearchScreen({ navigation }) {
   }
 
   const keyExtractor = useCallback((item, index) => {
-    switch (parseInt(searchMode)) {
-      case 0: return parseInt(item.ID_SERIE);
-      case 1: return Helpers.makeAlbumUID(item);
-      case 2: return parseInt(item.ID_AUTEUR);
-    }});
+    if (Helpers.isValid(item)) {
+      switch (parseInt(searchMode)) {
+        case 0: return parseInt(item.ID_SERIE);
+        case 1: return Helpers.makeAlbumUID(item);
+        case 2: return parseInt(item.ID_AUTEUR);
+      }
+    }
+    return index;
+  });
 
   const renderItem = ({ item, index }) => {
-    switch (parseInt(searchMode)) {
-      case 0: return SerieItem({ navigation, item, index });
-      case 1: return AlbumItem({ navigation, item, index });
-      case 2: return AuteurItem({ navigation, item, index });
+    if (Helpers.isValid(item)) {
+      switch (parseInt(searchMode)) {
+        case 0: return SerieItem({ navigation, item: Helpers.toDict(item), index });
+        case 1: return AlbumItem({ navigation, item: Helpers.toDict(item), index });
+        case 2: return AuteurItem({ navigation, item, index });
+      }
     }
+    return null;
   }
 
   return (

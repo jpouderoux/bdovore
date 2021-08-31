@@ -189,9 +189,9 @@ function CollectionScreen({ route, navigation }) {
   const applyFilters = () => {
 
     if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
-      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(global.collectionAlbums) : null);
+      setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(CollectionManager.getAlbums()) : null);
     } else {
-      const filteredAlbums = filterCollection(global.collectionAlbums, 1);
+      const filteredAlbums = filterCollection(CollectionManager.getAlbums(), 1);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
     }
 
@@ -199,19 +199,19 @@ function CollectionScreen({ route, navigation }) {
       setFilteredSeries(null);
     }
     else {
-      setFilteredSeries(filterCollection(global.collectionSeries, 0));
+      setFilteredSeries(filterCollection(CollectionManager.getSeries(), 0));
     }
   }
 
   const fetchData = () => {
-    setLoading(true);
     setKeywords('');
     setSortMode(defaultSortMode);
-    nbTotalSeries = 0;
-    nbTotalAlbums = 0;
+    setLoading(true);
     setFilteredSeries(null);
     setFilteredAlbums(null);
     setProgressRate(0);
+    nbTotalSeries = 0;
+    nbTotalAlbums = 0;
     loadingSteps = 3;
     loadTime = Date.now();
     CollectionManager.fetchWishlist(navigation, onWishlistFetched);
@@ -286,14 +286,17 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const renderItem = ({ item, index }) => {
-    switch (parseInt(collectionType)) {
-      case 0: return SerieItem({ navigation, item, index, collectionMode: true });
-      case 1: return AlbumItem({ navigation, item, index, collectionMode: true });
+    if (Helpers.isValid(item)) {
+      switch (parseInt(collectionType)) {
+        case 0: return SerieItem({ navigation, item: Helpers.toDict(item), index, collectionMode: true });
+        case 1: return AlbumItem({ navigation, item: Helpers.toDict(item), index, collectionMode: true });
+      }
     }
+    return null;
   }
 
   const keyExtractor = useCallback((item, index) =>
-    collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item));
+    Helpers.isValid(item) ? (collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item)) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -303,10 +306,10 @@ function CollectionScreen({ route, navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
+              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : CollectionManager.numberOfSeries(), 'série')}</Text>
           }, {
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
+              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : CollectionManager.numberOfAlbums(), 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
@@ -368,11 +371,11 @@ function CollectionScreen({ route, navigation }) {
             {errortext}
           </Text>
         ) : null}
-        <FlatList
+        {<FlatList
           initialNumToRender={6}
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={(collectionType == 0 ? (filteredSeries ? filteredSeries : global.collectionSeries) : (filteredAlbums ? filteredAlbums : global.collectionAlbums))}
+          data={(collectionType == 0 ? (filteredSeries ? filteredSeries : CollectionManager.getSeries()) : (filteredAlbums ? filteredAlbums : CollectionManager.getAlbums()))}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}
@@ -385,7 +388,7 @@ function CollectionScreen({ route, navigation }) {
               tintColor={bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
-        />
+        />}
       </View>}
 
       {/* Serie filter chooser */}

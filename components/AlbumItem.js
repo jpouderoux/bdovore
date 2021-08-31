@@ -40,7 +40,7 @@ import CollectionManager from '../api/CollectionManager';
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude }) {
 
   const onPressAlbum = () => {
-    navigation.push('Album', { item, dontShowSerieScreen });
+    navigation.push('Album', { item: Helpers.toDict(item), dontShowSerieScreen });
   }
 
   return (

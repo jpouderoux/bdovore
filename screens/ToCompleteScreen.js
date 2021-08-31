@@ -163,14 +163,18 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const renderItem = ({ item, index }) => {
-    switch (collectionType) {
-      case 0: return AlbumItem({ navigation, item, index, showExclude: true });
-      case 1: return SerieItem({ navigation, item, index, showExclude: true });
+    if (Helpers.isValid(item)) {
+      switch (collectionType) {
+        case 0: return AlbumItem({ navigation, item: Helpers.toDict(item), index, showExclude: true });
+        case 1: return SerieItem({ navigation, item: Helpers.toDict(item), index, showExclude: true });
+      }
     }
+    return null;
   }
 
   const keyExtractor = useCallback((item, index) =>
-    item.IMG_COUV_SERIE ? item.ID_SERIE + 1000000 : Helpers.makeAlbumUID(item));
+    Helpers.isValid(item) ?
+      (item.IMG_COUV_SERIE ? item.ID_SERIE + 1000000 : Helpers.makeAlbumUID(item)) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>

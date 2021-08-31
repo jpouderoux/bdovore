@@ -84,7 +84,6 @@ function AlbumScreen({ route, navigation }) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
           album.IS_EXCLU = result.items != 0;
-          console.debug('Album excluded? ' + album.IS_EXCLU);
         }
       });
     }
@@ -123,7 +122,7 @@ function AlbumScreen({ route, navigation }) {
   const onChooseEdition = (index) => {
     setShowEditionsChooser(false);
     setEditionIndex(index);
-    setAlbum(albumEditionsData[index]);
+    setAlbum(Helpers.toDict(albumEditionsData[index]));
   }
 
   const onSimilPress = (item) => {

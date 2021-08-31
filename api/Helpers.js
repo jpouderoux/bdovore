@@ -45,6 +45,26 @@ export function isLandscape() {
   return dim.width >= dim.height;
 }
 
+export function toDict(item) {
+  if (!item) { return item; }
+  let object = {};
+  let keys = Object.getOwnPropertyDescriptors(item);
+  if (typeof item.objectSchema === 'function') {
+    keys = item.objectSchema().properties;
+  }
+  for (const key in keys) {
+    if (key != '_id') {
+      object[key] = item[key];
+    }
+  }
+  return object;
+}
+
+export function isValid(item) {
+  if (!item) { return false };
+  return (typeof item.isValid === 'function') ? item.isValid() : true;
+}
+
 String.prototype.replaceAt = function (index, replacement) {
   return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }

@@ -107,11 +107,11 @@ function AuteurScreen({ route, navigation }) {
     setLoading(false);
   }
 
-  const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true });
-  }
+  const renderAlbum = ({ item, index }) =>
+    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, dontShowSerieScreen: true }) : null;
 
-  const keyExtractor = useCallback(({ item }, index) => index);
+  const keyExtractor = useCallback((item, index) =>
+    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>

@@ -31,23 +31,135 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
+const Realm = require('realm');
+
+const AlbumSchema =
+{
+  _id: 'int',
+  DATE_ACHAT: 'string?',
+  DATE_AJOUT: 'string?',
+  DTE_PARUTION: 'string?',
+  EAN_EDITION: 'string?',
+  EMAIL_PRET: 'string?',
+  FLG_ACHAT: 'string?',
+  FLG_CADEAU: 'string?',
+  FLG_DEDICACE: 'string?',
+  FLG_FINI: 'string?',
+  FLG_INT_TOME: 'string?',
+  FLG_LU: 'string?',
+  FLG_NUM: 'string?',
+  FLG_PRET: 'string?',
+  FLG_TETE: 'string?',
+  FLG_TYPE_TOME: 'string?',
+  HISTOIRE_TOME: 'string?',
+  ID_COLLECTION: 'int',
+  ID_COLOR: 'int',
+  ID_COLOR_ALT: 'int',
+  ID_DESSIN: 'string?',
+  ID_DESSIN_ALT: 'int',
+  ID_EDITEUR: 'int',
+  ID_EDITION: 'int',
+  ID_GENRE: 'int',
+  ID_SCENAR: 'int',
+  ID_SCENAR_ALT: 'int',
+  ID_SERIE: 'int',
+  ID_TOME: 'int',
+  IMG_COUV: 'string?',
+  ISBN_EDITION: 'string?',
+  MOYENNE_NOTE_TOME: 'string?',
+  NB_NOTE_TOME: 'string?',
+  NOM_COLLECTION: 'string?',
+  NOM_EDITEUR: 'string?',
+  NOM_EDITION: 'string?',
+  NOM_GENRE: 'string?',
+  NOM_PRET: 'string?',
+  NOM_SERIE: 'string?',
+  NUM_TOME: 'string?',
+  ORIGINE: 'string?',
+  PRIX_BDNET: 'string?',
+  TITRE_TOME: 'string?',
+  USER_ID: 'string?',
+  annee_achat: 'string?',
+  coapseudo: 'string?',
+  comment: 'string?',
+  copseudo: 'string?',
+  cote: 'string?',
+  deapseudo: 'string?',
+  depseudo: 'string?',
+  mois_achat: 'string?',
+  scapseudo: 'string?',
+  scpseudo: 'string?',
+  IS_EXCLU: 'int?',
+};
+
+const SerieSchema = {
+  _id: 'int',
+  FLG_FINI_SERIE: 'string?',
+  HISTOIRE_SERIE: 'string?',
+  ID_GENRE: 'int',
+  ID_SERIE: 'int',
+  IMG_COUV_SERIE: 'string?',
+  IS_EXCLU: 'int?',
+  LIB_FLG_FINI_SERIE: 'string?',
+  NB_ALBUM: 'int',
+  NB_NOTE_SERIE: 'int',
+  NB_TOME: 'int?',
+  NB_TOME_FINAL: 'int?',
+  NB_USER_ALBUM: 'int',
+  NOM_GENRE: 'string?',
+  NOM_SERIE: 'string?',
+  NOTE_SERIE: 'string?',
+  ORIGINE: 'string?',
+  TRI_SERIE: 'string?',
+};
+
+function createEntry(schema, item) {
+  let album = {};
+  for (const [key, value] of Object.entries(item)) {
+    if (key in schema && schema[key].startsWith('int')) {
+      album[key] = value == null ? 0 : parseInt(value);
+    } else {
+      album[key] = value;
+    }
+  }
+  if (album.ID_EDITION && album.ID_TOME) {
+    album['_id'] = Helpers.makeAlbumUID(item);
+  } else if (schema == SerieSchema) {
+    album['_id'] = parseInt(item.ID_SERIE);
+  }
+  return album;
+}
+
 class CCollectionManager {
 
   constructor() {
+    this.release();
+
+    Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
+    global.db = null;
+    Realm.open({
+      schema: [
+        { name: 'Albums', primaryKey: '_id', properties: AlbumSchema },
+        { name: 'Series', primaryKey: '_id', properties: SerieSchema },
+        { name: 'Wishes', primaryKey: '_id', properties: AlbumSchema }]
+    }).then(realm => {
+      global.db = realm;
+      console.debug('db initialized');
+      //realm.write(() => { realm.deleteAll(); });
+    }).catch(error => console.error(error));
+
     this.initialize();
+  }
+
+  release() {
+    if (global.db) {
+      global.db.close();
+      global.db = null;
+    }
   }
 
   initialize() {
     console.debug('init collection manager');
-    global.collectionAlbums = [];
-    global.collectionAlbumsDict = {};
-
-    global.collectionSeries = [];
-    global.collectionSeriesDict = {};
-
-    global.wishlistAlbums = [];
-    global.wishlistAlbumsDict = {};
-
     global.showExcludedAlbums = true;
     global.collectionManquantsUpdated = false;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -55,61 +167,61 @@ class CCollectionManager {
     }).catch(() => { });
   }
 
+  getAlbums() {
+    return global.db.objects('Albums');
+  }
+
+  getSeries() {
+    return global.db.objects('Series');
+  }
+
+  getWishes() {
+    return global.db.objects('Wishes');
+  }
+
   numberOfSeries() {
-    return global.collectionSeries.length;
+    return this.getSeries().length;
   }
 
   numberOfAlbums() {
-    return global.collectionAlbums.length;
+    return this.getAlbums().length;
   }
 
   numberOfWishAlbums() {
-    return global.wishlistAlbums.length;
+    return this.getWishes().length;
   }
 
   isCollectionEmpty() {
-    return global.collectionAlbums.length == 0;
+    return this.numberOfAlbums() == 0;
   }
-
-  saveSeries() {
-    AsyncStorage.setItem('collectionSeries', JSON.stringify(global.collectionSeries)).catch(error => { console.log(error); });
-  }
-
-  saveAlbums() {
-    AsyncStorage.setItem('collectionAlbums', JSON.stringify(global.collectionAlbums)).catch(error => { console.log(error); });
-  }
-
-  saveWishlist() {
-    AsyncStorage.setItem('wishlistAlbums', JSON.stringify(global.wishlistAlbums)).catch(error => { console.log(error); });
-  }
-
 
   // Fetch all the series within the collection
   fetchSeries(navigation, callback) {
 
-    global.collectionSeries = [];
-    global.collectionSeriesDict = {};
-
-    if (!global.isConnected) {
-      AsyncStorage.getItem('collectionSeries',
-        (error, result) => this.onSeriesFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
-        .catch((error)=> console.debug(error));
+    if (global.isConnected) {
+      APIManager.fetchCollectionData('Userserie', { navigation: navigation },
+        (result) => this.onSeriesFetched(result, callback, false))
+        .then().catch((error) => console.debug(error));
     } else {
-    APIManager.fetchCollectionData('Userserie', { navigation: navigation },
-      (result) => this.onSeriesFetched(result, callback, false))
-      .then().catch((error) => console.debug(error));
+      this.onSeriesFetched({ done: true, items: this.getSeries() }, callback, true);
     }
   }
 
   onSeriesFetched(result, callback, isOffline) {
 
     console.debug(result.items.length + ' series fetched');
-    global.collectionSeries = result.items;
-    global.collectionSeriesDict = {};
-    Helpers.createSeriesDict(global.collectionSeries, global.collectionSeriesDict);
 
-    if (result.done && !isOffline) {
-      this.saveSeries();
+    if (!isOffline) {
+      result.items.forEach(item => {
+        try {
+          global.db.write(() => {
+            global.db.create('Series', createEntry(SerieSchema, item));
+          });
+        }
+        catch (error) {
+          //console.log(error);
+        }
+      });
     }
 
     callback(result);
@@ -118,32 +230,28 @@ class CCollectionManager {
   // Fetch all the albums within the collection
   fetchAlbums(navigation, callback) {
 
-    global.collectionAlbums = [];
-    global.collectionAlbumsDict = {};
-
-    if (!global.isConnected) {
-      AsyncStorage.getItem('collectionAlbums',
-        (error, result) => this.onAlbumsFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
-        .catch((error) => console.debug(error));
-    } else {
+    if (global.isConnected) {
       APIManager.fetchCollectionData('Useralbum', { navigation: navigation },
         (result) => this.onAlbumsFetched(result, callback, false))
         .then().catch((error) => console.debug(error));
+    } else {
+      this.onAlbumsFetched({ done: true, items: this.getAlbums() }, callback, true);
     }
   }
 
   onAlbumsFetched(result, callback, isOffline) {
 
     console.debug(result.items.length + ' albums fetched');
-
-    // Save albums in global scope
-    global.collectionAlbums = result.items;
-    // Create an album dictionary [{ID_TOME, ID_EDITION}=>index_in_collection]
-    global.collectionAlbumsDict = {};
-    Helpers.createAlbumDict(global.collectionAlbums, global.collectionAlbumsDict);
-
-    if (result.done && !isOffline) {
-      this.saveAlbums();
+    if (!isOffline) {
+      result.items.forEach(item => {
+        try {
+          global.db.write(() => {
+            global.db.create('Albums', createEntry(AlbumSchema, item));
+          });
+        } catch (error) {
+          //console.log(error);
+        }
+      });
     }
 
     callback(result);
@@ -152,14 +260,12 @@ class CCollectionManager {
   // Fetch the wishlist collection
   fetchWishlist(navigation, callback, isOffline = false) {
 
-    if (!global.isConnected) {
-      AsyncStorage.getItem('wishlistAlbums',
-        (error, result) => this.onWishlistFetched({ items: JSON.parse(result) ?? [], done: true }, callback, true))
-        .catch((error) => console.debug(error));
-    } else {
+    if (global.isConnected) {
       APIManager.fetchWishlist({ navigation: navigation }, (result) =>
         this.onWishlistFetched(result, callback, false))
         .then().catch((error) => console.debug(error));
+    } else {
+      this.onWishlistFetched({ done: true, items: this.getWishes() }, callback, true);
     }
   }
 
@@ -167,13 +273,14 @@ class CCollectionManager {
 
     console.debug(result.items.length + ' albums in wishlist fetched');
 
-    global.wishlistAlbums = result.items;
-    global.wishlistAlbumsDict = {};
-    Helpers.createAlbumDict(global.wishlistAlbums, global.wishlistAlbumsDict);
-
-    if (result.done && !isOffline) {
-      this.saveWishlist();
-    }
+    result.items.forEach(item => {
+      try {
+        global.db.write(() => {
+          global.db.create('Wishes', createEntry(AlbumSchema, item));
+        });
+      } catch (error) {
+      }
+    });
 
     callback(result);
   }
@@ -197,35 +304,46 @@ class CCollectionManager {
 
       if (!result.error) {
         // Remove the album from the wishlist if needed
-        album.FLG_ACHAT = 'N';
-        Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
-        console.debug('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
+        global.db.write(() => {
+          album.FLG_ACHAT = 'N';
+          album.DATE_AJOUT = Helpers.getNowDateString();
+        });
+
+        const albWish = this.getAlbumInWishlist(album);
+        if (albWish) {
+          global.db.write(() => { global.db.delete(albWish); });
+        }
 
         // Add the album in local collection
-        Helpers.addAlbumToArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
-        album.DATE_AJOUT = Helpers.getNowDateString();
+        global.db.write(() => {
+          global.db.create('Albums', createEntry(AlbumSchema, album));
+        })
+
+        console.debug('album ' + album.ID_TOME + ' added to collection and removed from wishlist');
 
         if (!CollectionManager.getAlbumInCollection(album)) {
           console.error("/!\\ Album added but not found in collection!");
         }
 
         // Increment the serie's counter
-        let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
-        if (idx === null || idx == undefined) {
+        let serie = this.getSerieInCollection({ ID_SERIE: album.ID_SERIE });
+        if (!serie) {
           console.debug('serie ' + album.ID_SERIE + ' not found in collection, let\'s add it');
           APIManager.fetchSerie(album.ID_SERIE, (result) => {
             if (result.error == '') {
               const serie = result.items[0];
-              const idx = Helpers.addSerieToArrayAndDict(serie, global.collectionSeries, global.collectionSeriesDict);
-              global.collectionSeries[idx].NB_USER_ALBUM = 1;
-              console.debug('serie ' + album.ID_SERIE + ' added to collection');
+              global.db.write(() => {
+                serie.NB_USER_ALBUM = 1;
+                global.db.create('Series', createEntry(SerieSchema, serie));
+                console.debug('serie ' + album.ID_SERIE + ' added to collection');
+              });
             }
           });
         } else {
-          global.collectionSeries[idx].NB_USER_ALBUM++;
+          global.db.write(() => { serie.NB_USER_ALBUM++; });
         }
 
-        this.saveAlbums();
+        //this.saveAlbums();
         global.collectionManquantsUpdated = false;
       }
 
@@ -234,10 +352,9 @@ class CCollectionManager {
       }
 
       if (result.error) {
-        Helpers.showToast(result.error,
-          result.error ?
-            'Erreur de connexion au serveur.' :
-            'Album ajouté à la collection.');
+        Helpers.showToast(result.error, result.error ?
+          'Erreur de connexion au serveur.' :
+          'Album ajouté à la collection.');
       }
     }, {
       'id_edition': album.ID_EDITION,
@@ -250,28 +367,30 @@ class CCollectionManager {
     // Remove the album from the collection
     APIManager.deleteAlbumInCollection(album.ID_EDITION, (result) => {
       if (!result.error) {
-        Helpers.removeAlbumFromArrayAndDict(album, global.collectionAlbums, global.collectionAlbumsDict);
-        console.debug('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
+
+        const alb = this.getAlbumInCollection(album);
+        if (alb) {
+          console.debug('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
+          global.db.write(() => { global.db.delete(alb); });
+        }
 
         if (CollectionManager.isAlbumInCollection(album)) {
           console.error('Album removed but still found in collection!');
         }
-        if (Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict)) {
-          console.error('Album removed but still found in collection dict!');
-        }
 
-        let idx = Helpers.getSerieIdxInArray(album.ID_SERIE, global.collectionSeriesDict);
-        if (idx >= 0) {
-          global.collectionSeries[idx].NB_USER_ALBUM--;
-          if (global.collectionSeries[idx].NB_USER_ALBUM == 0) {
-            Helpers.removeSerieFromArrayAndDict(album.ID_SERIE, global.collectionSeries, global.collectionSeriesDict);
-            console.debug('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
-          }
+        // Decrement the serie's counter
+        let serie = this.getSerieInCollection({ ID_SERIE: album.ID_SERIE });
+        if (serie) {
+          global.db.write(() => {
+            if (serie.NB_USER_ALBUM == 1) {
+              global.db.write(() => global.db.delete(serie));
+              console.debug('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
+            } else {
+              serie.NB_USER_ALBUM--;
+            }
+          });
         }
         this.resetAlbumFlags(album);
-
-        this.saveAlbums();
-
         global.collectionManquantsUpdated = false;
       }
 
@@ -280,29 +399,26 @@ class CCollectionManager {
       }
 
       if (result.error) {
-        Helpers.showToast(result.error,
-          result.error ?
-            'Erreur de connexion au serveur.' :
-            'Album supprimé de la collection.');
+        Helpers.showToast(result.error, result.error ?
+          'Erreur de connexion au serveur.' :
+          'Album supprimé de la collection.');
       }
     });
   }
 
   addAlbumToWishlist(album, callback = null) {
-    let idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
-    if (idx >= 0) {
+    if (this.getAlbumInCollection(album)) {
       console.debug("trying to add an album in wishlist twice!");
       return;
     }
     APIManager.updateAlbumInCollection(album.ID_TOME, (result) => {
       if (!result.error) {
-        album.DATE_AJOUT = Helpers.getNowDateString();
-        album.FLG_ACHAT = 'O';
-
         // Add the album to the wishlist with the FLG_ACHAT flag
-        Helpers.addAlbumToArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
-
-        this.saveWishlist();
+        global.db.write(() => {
+          album.DATE_AJOUT = Helpers.getNowDateString();
+          album.FLG_ACHAT = 'O';
+          global.db.create('Wishes', createEntry(AlbumSchema, album));
+        });
 
         console.debug('album ' + album.ID_TOME + ' added to the wishlist');
       }
@@ -312,10 +428,9 @@ class CCollectionManager {
       }
 
       if (result.error) {
-        Helpers.showToast(result.error,
-          result.error ?
-            'Erreur de connexion au serveur.' :
-            'Album ajouté à la wishlist.');
+        Helpers.showToast(result.error, result.error ?
+          'Erreur de connexion au serveur.' :
+          'Album ajouté à la wishlist.');
       }
     }, {
       'id_edition': album.ID_EDITION,
@@ -329,9 +444,14 @@ class CCollectionManager {
     APIManager.deleteAlbumInCollection(album.ID_EDITION, (result) => {
       if (!result.error) {
         // Remove the album from the wishlist
-        album.FLG_ACHAT = 'N';
+        global.db.write(() => {
+          album.FLG_ACHAT = 'N';
+        });
 
-        Helpers.removeAlbumFromArrayAndDict(album, global.wishlistAlbums, global.wishlistAlbumsDict);
+        const alb = this.getAlbumInWishlist(album);
+        if (alb) {
+          global.db.write(() => { global.db.delete(alb); });
+        }
         console.debug('album ' + album.ID_TOME + ' removed from the wishlist: ' + this.isAlbumInWishlist(album));
       }
 
@@ -340,75 +460,55 @@ class CCollectionManager {
       }
 
       if (result.error) {
-        Helpers.showToast(result.error,
-          result.error ?
-            'Erreur de connexion au serveur' :
-            'Album supprimé de la wishlist.');
+        Helpers.showToast(result.error, result.error ?
+          'Erreur de connexion au serveur' :
+          'Album supprimé de la wishlist.');
       }
     });
   }
 
   resetAlbumFlags(album) {
-    album.FLG_ACHAT = 'N';
-    album.FLG_LU = 'N';
-    album.FLG_PRET = 'N';
-    album.FLG_NUM = 'N';
-    album.FLG_CADEAU = 'N';
+    global.db.write(() => {
+      album.FLG_ACHAT = 'N';
+      album.FLG_LU = 'N';
+      album.FLG_PRET = 'N';
+      album.FLG_NUM = 'N';
+      album.FLG_CADEAU = 'N';
+    });
   }
 
-  setAlbumReadFlag(album, flag, callback = null) {
-    album.FLG_LU = flag ? 'O' : 'N';
+  setAlbumFlag(album, flagName, flag, callback = null) {
+    global.db.write(() => { album[flagName] = flag ? 'O' : 'N'; });
     this.updateAlbumEdition(album, (result) => {
       if (result.error) {
-        album.FLG_LU = flag ? 'N' : 'O';
+        global.db.write(() => { album[flagName] = flag ? 'N' : 'O'; });
       }
       if (callback) {
         callback(result);
       }
     });
+  }
+
+  setAlbumReadFlag(album, flag, callback = null) {
+    this.setAlbumFlag(album, 'FLG_LU', flag, callback);
   }
 
   setAlbumLendFlag(album, flag, callback = null) {
-    album.FLG_PRET = flag ? 'O' : 'N';
-    this.updateAlbumEdition(album, (result) => {
-      if (result.error) {
-        album.FLG_PRET = flag ? 'N' : 'O';
-      }
-      if (callback) {
-        callback(result);
-      }
-    });
+    this.setAlbumFlag(album, 'FLG_PRET', flag, callback);
   }
 
   setAlbumNumEdFlag(album, flag, callback = null) {
-    album.FLG_NUM = flag ? 'O' : 'N';
-    this.updateAlbumEdition(album, (result) => {
-      if (result.error) {
-        album.FLG_NUM = flag ? 'N' : 'O';
-      }
-      if (callback) {
-        callback(result);
-      }
-    });
+    this.setAlbumFlag(album, 'FLG_NUM', flag, callback);
   };
 
   setAlbumGiftFlag(album, flag, callback = null) {
-    album.FLG_CADEAU = flag ? 'O' : 'N';
-    this.updateAlbumEdition(album, (result) => {
-      if (result.error) {
-        album.FLG_CADEAU = flag ? 'N' : 'O';
-      }
-      if (callback) {
-        callback(result);
-      }
-    });
+    this.setAlbumFlag(album, 'FLG_CADEAU', flag, callback);
   };
 
   updateAlbumEdition(album, callback = null) {
     APIManager.updateAlbumInCollection(album.ID_TOME, (result) => {
       if (callback) {
         callback(result);
-        this.saveAlbums();
       }
       if (result.error) {
         Helpers.showToast(result.error,
@@ -427,50 +527,43 @@ class CCollectionManager {
   }
 
   isAlbumInCollection(album) {
-    return Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict) >= 0;
+    return this.getAlbumInCollection(album) != null;
   }
 
   isAlbumInWishlist(album) {
-    return Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict) >= 0;
+    return this.getAlbumInWishlist(album) != null;
   }
 
   getAlbumInCollection(album) {
-    const idx = Helpers.getAlbumIdxInArray(album, global.collectionAlbumsDict);
-    return idx >= 0 ? global.collectionAlbums[idx] : null;
+    const ret = this.getAlbums().filtered('_id == ' + Helpers.makeAlbumUID(album));
+    return ret.length > 0 ? ret[0] : null;
   }
 
   getAlbumInWishlist(album) {
-    const idx = Helpers.getAlbumIdxInArray(album, global.wishlistAlbumsDict);
-    return idx >= 0 ? global.wishlistAlbums[idx] : null;
+    const ret = this.getWishes().filtered('_id == ' + Helpers.makeAlbumUID(album));
+    return ret.length > 0 ? ret[0] : null;
   }
 
   getFirstAlbumEditionOfSerieInCollection(album) {
-    let retalb = global.collectionAlbums.find(alb =>
-      (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
-    if (!retalb) {
-      retalb = global.wishlistAlbums.find(alb =>
-        (alb.ID_SERIE == album.ID_SERIE && alb.ID_TOME == album.ID_TOME));
-      //console.debug('Album ' + album.ID_TOME + ' série ' + album.ID_SERIE + ' not found in collection but in wish ? ' + (retalb ? 'true' : 'false'));
-    }
-    return retalb ? retalb : album;
+    let ret = this.getAlbums().filtered('ID_SERIE == ' + album.ID_SERIE + ' && ID_TOME == ' + album.ID_TOME);
+    if (ret.length > 0) return ret[0];
+
+    ret = this.getWishes().filtered('ID_SERIE == ' + album.ID_SERIE + ' && ID_TOME == ' + album.ID_TOME);
+    return (ret.length > 0) ? ret[0] : album;
   }
 
   getNbOfUserAlbumsInSerie(serie) {
-    let count = 0;
-    global.collectionAlbums.forEach(album => {
-      if (album.ID_SERIE == serie.ID_SERIE) {
-        count++;
-      }
-    });
-    return count;
+    return this.getAlbums().filtered('_id == ' + serie.ID_SERIE).length;
+  }
+
+  getSerieInCollection(serie) {
+    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
+    return ret.length > 0 ? ret[0] : null;
   }
 
   isSerieComplete(serie) {
-    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
-    if (idx >= 0) {
-      return serie.NB_ALBUM == global.collectionSeries[idx].NB_USER_ALBUM;
-    }
-    return false;
+    const cs = this.getSerieInCollection(serie);
+    return cs ? cs.NB_USER_ALBUM == serie.NB_ALBUM : false;
   }
 
   selectOwnAlbum(albumsArray) {
@@ -486,24 +579,21 @@ class CCollectionManager {
     for (let t = 0; t < albumsArray.length; t++) {
       for (let i = 0; i < albumsArray[t].data.length; i++) {
         let album = albumsArray[t].data[i];
-        albumsArray[t].data[i] = this.getFirstAlbumEditionOfSerieInCollection(album);
+        albumsArray[t].data[i] = Helpers.toDict(this.getFirstAlbumEditionOfSerieInCollection(album));
       }
     }
   }
 
   setSerieExcludeFlag(serie, isExcluded) {
-    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
-    if (idx >= 0) {
-      global.collectionSeries[idx].IS_EXCLU = isExcluded ? '1' : '0';
+    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
+    if (ret.length > 0) {
+      ret[0].IS_EXCLU = isExcluded ? '1' : '0';
     }
   }
 
   isSerieExcluded(serie) {
-    let idx = Helpers.getSerieIdxInArray(serie.ID_SERIE, global.collectionSeriesDict);
-    if (idx >= 0) {
-      return global.collectionSeries[idx].IS_EXCLU == 1;
-    }
-    return serie.IS_EXCLU == 1;
+    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
+    return (ret.length > 0) ? (ret[0].IS_EXCLU == 1) : (serie.IS_EXCLU == 1);
   }
 };
 

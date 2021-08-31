@@ -27,10 +27,11 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, SectionList, Text, View } from 'react-native';
+import { RefreshControl, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager'
@@ -69,6 +70,7 @@ function NewsScreen({ navigation }) {
   const [refresh, setRefresh] = useState(1);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
+  const [offline, setOffline] = useState(false);
 
   const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
@@ -95,8 +97,11 @@ function NewsScreen({ navigation }) {
   }, [newsMode]);
 
   const fetchData = () => {
-    fetchUserNewsData();
-    fetchNewsData(newsMode);
+    setOffline(!global.isConnected);
+    if (global.isConnected) {
+      fetchUserNewsData();
+      fetchNewsData(newsMode);
+    }
   }
 
   const fetchUserNewsData = async () => {
@@ -148,11 +153,11 @@ function NewsScreen({ navigation }) {
     fetchNewsData(selectedIndex);
   };
 
-  const renderAlbum = ({ item, section, index }) => {
-    return AlbumItem({ navigation, item, index, showEditionDate: (section.idx == 1) });
-  }
+  const renderAlbum = ({ item, section, index }) =>
+    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, showEditionDate: (section.idx == 1) }) : null;
 
-  const keyExtractor = useCallback(({ item }, index) => index);
+  const keyExtractor = useCallback((item, index) =>
+    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -176,7 +181,7 @@ function NewsScreen({ navigation }) {
             {errortext}
           </Text>
         ) : null}
-        <SectionList
+        {!offline ? <SectionList
           maxToRenderPerBatch={6}
           windowSize={10}
           ItemSeparatorComponent={Helpers.renderSeparator}
@@ -192,7 +197,16 @@ function NewsScreen({ navigation }) {
             tintColor={bdovored}
             refreshing={loading}
             onRefresh={fetchData} />}
-        />
+        /> :
+          <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+            <View style={{ flex: 1 }}></View>
+            <Text style={CommonStyles.defaultText}>Pas d'actualité en mode non-connecté.{'\n'}</Text>
+            <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
+            <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={fetchData}>
+              <MaterialCommunityIcons name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+            </TouchableOpacity>
+            <View style={{ flex: 1 }}></View>
+          </View>}
       </View>
     </View>
   );

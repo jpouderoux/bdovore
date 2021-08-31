@@ -156,9 +156,8 @@ function SerieScreen({ route, navigation }) {
     }
   }
 
-  const renderAlbum = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index, dontShowSerieScreen: true, showExclude: true});
-  }
+  const renderAlbum = ({ item, index }) =>
+    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, dontShowSerieScreen: true, showExclude: true}) : null;
 
   const getCounterText = () => {
     const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
@@ -175,7 +174,8 @@ function SerieScreen({ route, navigation }) {
     refreshFilteredAlbums();
   }
 
-  const keyExtractor = useCallback(({ item }, index) => index);
+  const keyExtractor = useCallback((item, index) =>
+    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
 

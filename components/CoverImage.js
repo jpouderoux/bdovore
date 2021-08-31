@@ -53,8 +53,12 @@ export function CoverImage({ source, style, noResize, largeMode }) {
 
   return (
     <Image
-      source={{ uri: source }}
+      source={{
+        uri: source,
+        cache: !global.isConnected || (global.imageOnWifi && global.connectionType == 'wifi') ? 'only-if-cached' : 'default',
+      }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
-      PlaceholderContent={<ActivityIndicator size='small' color={bdovored} />} />
+      PlaceholderContent={<ActivityIndicator size='small' color={bdovored} />}
+    />
   );
 }

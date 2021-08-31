@@ -88,6 +88,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
     setIsNum(alb.FLG_NUM && alb.FLG_NUM == 'O');
     setIsGift(alb.FLG_CADEAU && alb.FLG_CADEAU == 'O');
     setIsExcluded(alb.IS_EXCLU);
+    alb = Helpers.toDict(alb);
     setAlbum(alb);
   }
 
@@ -121,7 +122,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
 
   const onWantIt = async () => {
     // Switch the want it flag
-    const wantIt = !(album.FLG_ACHAT === 'O');
+    const wantIt = !(album.FLG_ACHAT == 'O');
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album, (result) => {
         if (!result.error) {

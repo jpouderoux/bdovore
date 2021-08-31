@@ -33,11 +33,11 @@ import { ActivityIndicator, Dimensions, Image, TouchableWithoutFeedback, View } 
 function ImageScreen({ route, navigation }) {
   return (
     <View style={{ backgroundColor: 'black', height: '100%', width: '100%' }}>
-      <TouchableWithoutFeedback onPress={() => { navigation.goBack(); } }>
-      <Image
+      <TouchableWithoutFeedback onPress={() => { navigation.goBack(); }}>
+        <Image
           source={{ uri: route.params.source }}
           style={[{ resizeMode: 'contain', width: Dimensions.get('window').width, height: Dimensions.get('window').height }]}
-        PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
+          PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
       </TouchableWithoutFeedback>
     </View>
   );

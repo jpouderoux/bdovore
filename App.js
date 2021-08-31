@@ -41,6 +41,8 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
 import * as Helpers from './api/Helpers';
 
+const Realm = require('realm');
+
 
 const App: () => Node = () => {
 
@@ -63,8 +65,8 @@ const App: () => Node = () => {
   NetInfo.addEventListener(state => {
     console.log("Connection type", state.type);
     console.log("Is connected?", state.isConnected);
-    //global.isConnected = state.isConnected;
-    global.isConnected = false;// state.type == 'wifi';
+    global.connectionType = state.type;
+    global.isConnected = state.isConnected;// state.type == 'wifi';
     Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
   });
 

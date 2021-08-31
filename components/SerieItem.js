@@ -52,7 +52,7 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
         }
       });
     } else {
-      navigation.push('Serie', { item });
+      navigation.push('Serie', { item: Helpers.toDict(item) });
     }
   }
 

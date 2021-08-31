@@ -59,25 +59,24 @@ function WishlistScreen({ navigation }) {
   }, [filterByDate]);
 
   const refreshData = () => {
-    setFilteredData(filterByDate ? Helpers.sliceSortByDate(global.wishlistAlbums) : null);
+    setFilteredData(filterByDate ? Helpers.sliceSortByDate(CollectionManager.getWishes()) : null);
   }
 
   const toggleFilterByDate = () => {
     setFilterByDate(previousState => !previousState);
   }
 
-  const renderItem = ({ item, index }) => {
-    return AlbumItem({ navigation, item, index });
-  }
+  const renderItem = ({ item, index }) =>
+    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index }) : null;
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.makeAlbumUID(item));
+    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={[CommonStyles.sectionListStyle, { flexDirection: 'row', alignItems: 'center', marginBottom: 5, paddingLeft: 10 }]}>
-        <Text style={[{ flex: 1, margin: 5}, CommonStyles.bold, CommonStyles.largerText, CommonStyles.defaultText]}>
-          {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
+        <Text style={[{ flex: 1, margin: 5 }, CommonStyles.bold, CommonStyles.largerText, CommonStyles.defaultText]}>
+          {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(), 'album')}
         </Text>
         <View style={{ flexDirection: 'row', position: 'absolute', right: 5 }}>
           <Text style={[CommonStyles.defaultText, { margin: 5 }]}>Tri par ajout</Text>
@@ -103,7 +102,7 @@ function WishlistScreen({ navigation }) {
           style={{ flex: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={filteredData ? filteredData : global.wishlistAlbums}
+          data={filteredData ? filteredData : CollectionManager.getWishes()}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}
