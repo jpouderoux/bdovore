@@ -179,10 +179,10 @@ function ToCompleteScreen({ navigation }) {
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
           buttons={[{
-            element: () => <Text>
+            element: () => <Text style={CommonStyles.defaultText}>
               {Helpers.pluralWord(nbTotalAlbums2, 'album')}</Text>
           }, {
-            element: () => <Text>
+            element: () => <Text style={CommonStyles.defaultText}>
               {Helpers.pluralWord(nbTotalSeries2, 'série')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}

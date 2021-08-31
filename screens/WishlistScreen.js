@@ -76,11 +76,11 @@ function WishlistScreen({ navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={[CommonStyles.sectionListStyle, { flexDirection: 'row', alignItems: 'center', marginBottom: 5, paddingLeft: 10 }]}>
-        <Text style={[{ flex: 1, margin: 5}, CommonStyles.bold, CommonStyles.largerText]}>
+        <Text style={[{ flex: 1, margin: 5}, CommonStyles.bold, CommonStyles.largerText, CommonStyles.defaultText]}>
           {Helpers.pluralWord(filteredData ? filteredData.length : global.wishlistAlbums.length, 'album')}
         </Text>
         <View style={{ flexDirection: 'row', position: 'absolute', right: 5 }}>
-          <Text style={{ margin: 5 }}>Tri par ajout</Text>
+          <Text style={[CommonStyles.defaultText, { margin: 5 }]}>Tri par ajout</Text>
           <Switch value={filterByDate} onValueChange={toggleFilterByDate}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>

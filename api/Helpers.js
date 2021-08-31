@@ -31,6 +31,7 @@ import { StyleSheet, View  } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import * as APIManager from '../api/APIManager';
+import { CommonStyles } from '../styles/CommonStyles';
 
 // Returns true if the screen is in portrait mode
 export function isPortrait() {
@@ -53,7 +54,7 @@ export function lowerCaseNoAccentuatedChars(str) {
 }
 
 export function renderSeparator() {
-  return <View style={{ borderBottomColor: '#eee', borderBottomWidth: StyleSheet.hairlineWidth * 2, }} />
+  return <View style={CommonStyles.separatorStyle} />
 }
 
 export function plural(nb) {

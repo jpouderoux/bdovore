@@ -292,10 +292,10 @@ function CollectionScreen({ props, navigation }) {
           onPress={onPressCollectionType}
           selectedIndex={collectionType}
           buttons={[{
-            element: () => <Text>
+            element: () => <Text style={CommonStyles.defaultText}>
               {Helpers.pluralWord(filteredSeries ? filteredSeries.length : global.collectionSeries.length, 'série')}</Text>
           }, {
-            element: () => <Text>
+            element: () => <Text style={CommonStyles.defaultText}>
               {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : global.collectionAlbums.length, 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
@@ -321,7 +321,7 @@ function CollectionScreen({ props, navigation }) {
             autoCorrect={false}
             inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
             containerStyle={[CommonStyles.screenStyle]}
-            inputStyle={{ fontSize: 12 }}
+            inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
             cancelButtonTitle='Annuler'
           />
         </View>

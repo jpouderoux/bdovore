@@ -165,6 +165,7 @@ function SearchScreen({ navigation }) {
               inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
               containerStyle={[CommonStyles.screenStyle]}
               cancelButtonTitle='Annuler'
+              inputStyle={CommonStyles.defaultText}
             />
           </View>
           <TouchableOpacity
@@ -182,9 +183,9 @@ function SearchScreen({ navigation }) {
             onPress={onPressTypeButton}
             selectedIndex={searchMode}
             buttons={[
-              { element: () => <Text>Série</Text> },
-              { element: () => <Text>Album</Text> },
-              { element: () => <Text>Auteur</Text> }]}
+              { element: () => <Text style={CommonStyles.defaultText}>Série</Text> },
+              { element: () => <Text style={CommonStyles.defaultText}>Album</Text> },
+              { element: () => <Text style={CommonStyles.defaultText}>Auteur</Text> }]}
             containerStyle={CommonStyles.buttonGroupContainerStyle}
             buttonStyle={CommonStyles.buttonGroupButtonStyle}
             selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
