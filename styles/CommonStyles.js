@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 
 export const bdovored = '#990000';
