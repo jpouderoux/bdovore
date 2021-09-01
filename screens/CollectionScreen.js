@@ -89,9 +89,8 @@ let cachedToken = '';
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
 
-function CollectionScreen({ props, navigation }) {
+function CollectionScreen({ route, navigation }) {
 
-  const [collectionGenre, setCollectionGenre] = useState(0);
   const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState(null);
   const [filteredSeries, setFilteredSeries] = useState(null);
@@ -106,6 +105,8 @@ function CollectionScreen({ props, navigation }) {
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
+  let [cachedToken, setCachedToken] = useState('');
+  let collectionGenre = route.params.collectionGenre;
 
   const isFocused = useIsFocused();
 
@@ -119,7 +120,16 @@ function CollectionScreen({ props, navigation }) {
         fetchData();
       }
     }).catch(() => {});
-  });
+  }
+
+  useEffect(() => {
+    refreshDataIfNeeded();
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      refreshDataIfNeeded();
+    });
+    return willFocusSubscription;
+  }, [cachedToken]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -303,9 +313,6 @@ function CollectionScreen({ props, navigation }) {
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
-        <TouchableOpacity onPress={onCollectionGenrePress} style={{ flex: 0, marginRight: 8, paddingTop: 6 }}>
-          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
-        </TouchableOpacity>
       </View>
 
       <View style={{ flexDirection: 'row', marginBottom: 4 }}>
@@ -380,30 +387,6 @@ function CollectionScreen({ props, navigation }) {
               onRefresh={fetchData} />}
         />
       </View>}
-
-      {/* Collection chooser */}
-      <BottomSheet
-        isVisible={showCollectionChooser}
-        containerStyle={CommonStyles.bottomSheetContainerStyle}>
-        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
-          <ListItem.Content>
-            <ListItem.Title >Collection à afficher</ListItem.Title>
-          </ListItem.Content>
-        </ListItem>
-        {Object.entries(collectionGenres).map(([mode, title], index) => (
-          <ListItem key={index + 1}
-            containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
-            onPress={() => {
-              setCollectionGenre(mode); setShowCollectionChooser(false);
-            }}>
-            <ListItem.Content>
-              <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
-                {title[0]}
-              </ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        ))}
-      </BottomSheet>
 
       {/* Serie filter chooser */}
       <BottomSheet

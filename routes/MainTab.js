@@ -26,10 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { Share, TouchableOpacity, useColorScheme } from 'react-native';
+import React, { useState } from 'react';
+import { Share, TouchableOpacity, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomSheet, ListItem } from 'react-native-elements';
+import { CommonActions } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -75,18 +77,6 @@ const onAccountPress = (navigation) => {
   navigation.navigate('Login');
 };
 
-const settingsButton = (navigation) => {
-  return (
-    <TouchableOpacity onPress={() => onSettingsPress(navigation)} style={{ margin: 8 }}>
-      <MaterialCommunityIcons name='cog-outline' size={25} color={CommonStyles.iconStyle.color} />
-    </TouchableOpacity>
-  );
-}
-
-const onSettingsPress = (navigation) => {
-  navigation.navigate('Settings');
-};
-
 const shareButton = (item) => {
   return (
     <TouchableOpacity onPress={() => onSharePress(item)} style={{ margin: 8 }}>
@@ -109,14 +99,80 @@ const defaultStackOptions = {
 };
 
 function CollectionScreens({ route, navigation }) {
+
+  const [collectionGenre, setCollectionGenre] = useState(0);
+  const [showCollectionChooser, setShowCollectionChooser] = useState(0);
+
+  const collectionGenres = {
+    0: ['Tout', ''],
+    1: ['BD', ' BD'],
+    2: ['Mangas', ' mangas'],
+    3: ['Comics', ' comics'],
+  };
+
+  const onCollectionGenrePress = (navigation) => {
+    setShowCollectionChooser(!showCollectionChooser);
+  }
+
+  const onCollectionGenreChanged = (route, navigation, mode) => {
+    setCollectionGenre(mode);
+    setShowCollectionChooser(false);
+    navigation.dispatch({
+      ...CommonActions.setParams({
+        collectionGenre: mode }),
+      source: route.key,
+    });
+  }
+
+  const settingsButton = (route, navigation) => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={() => onCollectionGenrePress(navigation)} style={{ margin: 8 }}>
+          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onSettingsPress(navigation)} style={{ margin: 8 }}>
+          <MaterialCommunityIcons name='dots-vertical' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+
+        <BottomSheet
+          isVisible={showCollectionChooser}
+          containerStyle={CommonStyles.bottomSheetContainerStyle}>
+          <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
+            <ListItem.Content>
+              <ListItem.Title >Collection à afficher</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+          {Object.entries(collectionGenres).map(([mode, title], index) => (
+            <ListItem key={index + 1}
+              containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
+              onPress={() => onCollectionGenreChanged(route, navigation, mode) }>
+              <ListItem.Content>
+                <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
+                  {title[0]}
+                </ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </BottomSheet>
+      </View>
+    );
+  }
+
+  const onSettingsPress = (navigation) => {
+    navigation.navigate('Settings');
+  };
+
   return (
     <CollectionStack.Navigator screenOptions={defaultStackOptions}>
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
-        options={({ route }) => ({
-          headerLeft: () => accountButton(navigation),
-          headerRight: () => settingsButton(navigation)
-        })} />
+        options={({ route }) => {
+          route.params = { collectionGenre: collectionGenre };
+          return {
+            headerLeft: () => accountButton(navigation),
+            headerRight: () => settingsButton(route, navigation),
+          };
+        }} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
