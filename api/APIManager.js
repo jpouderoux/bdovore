@@ -57,6 +57,12 @@ const GETHeaders = new Headers({
 });
 
 const fetchZIP = async (url) => {
+  if (url.includes('TOKEN=offline')) {
+    const msg = 'Won\'t perform fetch with offline token: ' + url;
+    console.debug(msg);
+    throw msg;
+  }
+
   console.debug("fetchZIP: " + url);
   return fetch(url, {
     method: 'GET',

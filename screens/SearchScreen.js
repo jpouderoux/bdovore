@@ -30,7 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
@@ -80,6 +80,7 @@ function SearchScreen({ navigation }) {
   }
 
   const onSearch = (searchText) => {
+    if (!global.isConnected) { return; }
     setKeywords(searchText);
     lastKeywords = searchText;
     if (searchText == '') {
@@ -115,7 +116,9 @@ function SearchScreen({ navigation }) {
   }
 
   const onBarcodeSearch = () => {
-    navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); } });
+    if (global.isConnected) {
+      navigation.push('BarcodeScanner', { onGoBack: (ean) => { onSearchWithEAN(ean); } });
+    }
   }
 
   const onSearchWithEAN = async (ean) => {
@@ -179,7 +182,7 @@ function SearchScreen({ navigation }) {
             onPress={onBarcodeSearch}
             title="Search"
             style={{ marginLeft: 8 }}>
-            <Icon
+            <MaterialCommunityIcons
               name='barcode-scan'
               size={45}
               color={CommonStyles.iconStyle.color}/>
@@ -200,23 +203,33 @@ function SearchScreen({ navigation }) {
           />
         </View>
       </View>
-      <View style={{ flex: 1 }}>
-        {errortext != '' ? (
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
-          </Text>
-        ) : null}
-        {loading ? LoadingIndicator() : (
-          <FlatList
-            maxToRenderPerBatch={6}
-            windowSize={10}
-            data={data}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            ItemSeparatorComponent={Helpers.renderSeparator}
-            extraData={keywords, searchMode}
-          />)}
-      </View>
+      {global.isConnected ?
+        <View style={{ flex: 1 }}>
+          {errortext != '' ? (
+            <Text style={CommonStyles.errorTextStyle}>
+              {errortext}
+            </Text>
+          ) : null}
+          {loading ? LoadingIndicator() : (
+            <FlatList
+              maxToRenderPerBatch={6}
+              windowSize={10}
+              data={data}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              ItemSeparatorComponent={Helpers.renderSeparator}
+              extraData={keywords, searchMode}
+            />)}
+        </View> :
+        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          <View style={{ flex: 1 }}></View>
+          <Text style={CommonStyles.defaultText}>Recherche indisponible en mode non-connecté.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
+          <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={onSearch}>
+            <MaterialCommunityIcons name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}></View>
+        </View>}
     </View>
   );
 }

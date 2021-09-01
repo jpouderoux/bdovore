@@ -27,11 +27,12 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
@@ -107,13 +108,15 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const fetchData = () => {
-    global.collectionManquantsUpdated = true;
-    setLoading(true);
-    setProgressRate(0);
-    loadingSteps = 2;
-    setErrortext('');
-    fetchSeries();
-    fetchAlbums();
+    if (global.isConnected) {
+      global.collectionManquantsUpdated = true;
+      setLoading(true);
+      setProgressRate(0);
+      loadingSteps = 2;
+      setErrortext('');
+      fetchSeries();
+      fetchAlbums();
+    }
   }
 
   const fetchAlbums = () => {
@@ -195,44 +198,56 @@ function ToCompleteScreen({ navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
-      {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
-      {errortext != '' ? (
-        <View style={{ alignItems: 'center', marginBottom: 5 }}>
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
-          </Text>
-        </View>
-      ) : null}
-      {!loading && CollectionManager.isCollectionEmpty() ?
+      {global.isConnected ?
+        <View>
+          {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
+          {errortext != '' ? (
+            <View style={{ alignItems: 'center', marginBottom: 5 }}>
+              <Text style={CommonStyles.errorTextStyle}>
+                {errortext}
+              </Text>
+            </View>
+          ) : null}
+          {!loading && CollectionManager.isCollectionEmpty() ?
+            <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+              <View style={{ flex: 1 }}></View>
+              <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
+              <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
+              <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+              <View style={{ flex: 1 }}></View>
+            </View>
+            :
+            <FlatList
+              initialNumToRender={6}
+              maxToRenderPerBatch={6}
+              windowSize={10}
+              data={(collectionType == 0 ?
+                albums.filter((album) => album.IS_EXCLU != true) :
+                series.filter((serie) => serie.IS_EXCLU != true))}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              ItemSeparatorComponent={Helpers.renderSeparator}
+              getItemLayout={(data, index) => ({
+                length: AlbumItemHeight,
+                offset: AlbumItemHeight * index,
+                index
+              })}
+              refreshControl={<RefreshControl
+                colors={[bdovorlightred, bdovored]}
+                tintColor={bdovored}
+                refreshing={loading}
+                onRefresh={fetchData} />}
+            />}
+        </View> :
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
-          <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
-          <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
-          <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+          <Text style={CommonStyles.defaultText}>Informations indisponibles en mode non-connecté.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
+          <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={fetchData}>
+            <MaterialCommunityIcons name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+          </TouchableOpacity>
           <View style={{ flex: 1 }}></View>
-        </View>
-        :
-        <FlatList
-          initialNumToRender={6}
-          maxToRenderPerBatch={6}
-          windowSize={10}
-          data={(collectionType == 0 ?
-            albums.filter((album) => album.IS_EXCLU != true) :
-            series.filter((serie) => serie.IS_EXCLU != true))}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-          getItemLayout={(data, index) => ({
-            length: AlbumItemHeight,
-            offset: AlbumItemHeight * index,
-            index
-          })}
-          refreshControl={<RefreshControl
-            colors={[bdovorlightred, bdovored]}
-            tintColor={bdovored}
-            refreshing={loading}
-            onRefresh={fetchData} />}
-        />}
+        </View>}
     </View>
   );
 }
