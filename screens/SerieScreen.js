@@ -133,7 +133,7 @@ function SerieScreen({ route, navigation }) {
     APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
       if (!result.error) {
         // Transform the result array into a dictionary for fast&easy access
-        let dict = result.items.reduce((a, x) => ({...a, [parseInt(x)]: 1}), {});
+        let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
         // Check all albums in all sections and set their exclude flag
         newdata.forEach(section => {
           section.data.forEach(album => {
@@ -157,7 +157,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) =>
-    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, dontShowSerieScreen: true, showExclude: true}) : null;
+    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, dontShowSerieScreen: true, showExclude: true }) : null;
 
   const getCounterText = () => {
     const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
@@ -181,7 +181,7 @@ function SerieScreen({ route, navigation }) {
 
   const ignoredSwitch = () => {
     return (
-      <View style={{ flex: 1, alignItems: 'center',flexDirection: 'row', position: 'absolute', right: 5 }}>
+      <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', position: 'absolute', right: 5 }}>
         <Text style={[{ textAlignVertical: 'center' }, CommonStyles.defaultText]}>Voir ignorés </Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
@@ -193,7 +193,7 @@ function SerieScreen({ route, navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
-        <Text style={[{ marginTop: 10, flex: 1, width: '33%' },CommonStyles.defaultText]}>
+        <Text style={[{ marginTop: 10, flex: 1, width: '33%' }, CommonStyles.defaultText]}>
           {getCounterText()}{' '}
           ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
           {'\n\n'}
@@ -222,7 +222,7 @@ function SerieScreen({ route, navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
-            <View style={{ width: '100%', alignItems: 'center',flex:1,flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
+            <View style={{ width: '100%', alignItems: 'center', flex: 1, flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
               <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { width: null, paddingLeft: 10 }]}>{title}</Text>
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}

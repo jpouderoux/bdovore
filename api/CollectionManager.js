@@ -553,7 +553,7 @@ class CCollectionManager {
   }
 
   getNbOfUserAlbumsInSerie(serie) {
-    return this.getAlbums().filtered('_id == ' + serie.ID_SERIE).length;
+    return this.getAlbums().filtered('ID_SERIE == ' + serie.ID_SERIE).length;
   }
 
   getSerieInCollection(serie) {

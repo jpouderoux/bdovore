@@ -96,7 +96,7 @@ function AlbumScreen({ route, navigation }) {
 
     // Initialize the edition index with the current album edition
     for (let i = 0; i < result.items.length; i++) {
-      if (result.items[i].ID_EDITION == album.ID_EDITION ) {
+      if (result.items[i].ID_EDITION == album.ID_EDITION) {
         setEditionIndex(i);
         break;
       }
@@ -110,7 +110,9 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onCommentsFetched = (result) => {
-    setComments(result.items);
+    // strip empty comments
+    const coms = result.items.filter((comment) => comment.NOTE != null && comment.COMMENT != '');
+    setComments(coms);
     setErrortext(result.error);
     setLoading(false);
   }
@@ -202,6 +204,12 @@ function AlbumScreen({ route, navigation }) {
         </View> : null);
   }
 
+  const onShowComments = () => {
+    if (comments.length > 0) {
+      setShowComments(true);
+    }
+  }
+
   const onSaveComment = () => {
     setLoading(true);
     setErrortext('');
@@ -223,39 +231,39 @@ function AlbumScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
         <View style={{ margin: 0, alignItems: 'center' }}>
-          <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText,{ fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
-          <View style={{ marginTop: 10}}>
+          <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
+          <View style={{ marginTop: 10 }}>
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
           {loading ? LoadingIndicator() : null}
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-              onPress={() => {
-                setShowComments(true);; }}>
+              onPress={onShowComments}>
               Lire les avis
             </Text> : null}
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
-          <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)}/>
+          <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
         </View>
 
         <View>
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
-            onPress={dontShowSerieScreen ? ()=>{} : onShowSerieScreen}>{album.NOM_SERIE}</Text>
+            onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>{getAuteursLabel()} : </Text>
             {
               Helpers.getAuteurs(album).map((auteur, index, array) => {
                 return (index == 0 && auteur.name == 'Collectif') ?
-                <Text key={index}>{auteur.name}</Text> :
-                <View key={index} style={{ flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
-                     <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur.name)}</Text>
-                  </TouchableOpacity>
-                  <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
-                </View>})
+                  <Text key={index}>{auteur.name}</Text> :
+                  <View key={index} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
+                      <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+                    </TouchableOpacity>
+                    <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
+                  </View>
+              })
             }
             {
               Helpers.isAlbumBW(album) ? <Text> - N&B</Text> : null
@@ -269,15 +277,15 @@ function AlbumScreen({ route, navigation }) {
               title="Editions">
               {albumEditionsData.length > 1 ?
                 <Text style={CommonStyles.albumEditionButtonStyle}>
-                {' '}{album.NOM_EDITION}{' '}
-              </Text> :  <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
+                  {' '}{album.NOM_EDITION}{' '}
+                </Text> : <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
           {Helpers.getDateParutionAlbum(album) != '' ?
             <Text>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
-            : null }
+            : null}
           <AchatSponsorIcon album={album} />
-          <Text style={[CommonStyles.defaultText,{ marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+          <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
               onPress={onUserComment}>
@@ -314,7 +322,7 @@ function AlbumScreen({ route, navigation }) {
             </ListItem.Content>
           </ListItem>
           {albumEditionsData.map((item, index) => (
-            <ListItem key={index+1}
+            <ListItem key={index + 1}
               containerStyle={
                 (index == editionIndex ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle)}
               onPress={() => {
@@ -367,7 +375,7 @@ function AlbumScreen({ route, navigation }) {
         useNativeDriver={false}
         propagateSwipe>
         <View style={CommonStyles.modalViewStyle}>
-          <View style={{ marginTop: 10, width:'80%' }}>
+          <View style={{ marginTop: 10, width: '80%' }}>
             <View style={{ margin: 0, alignItems: 'center' }}>
               <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
               <View style={{ marginVertical: 10 }}>
@@ -378,7 +386,7 @@ function AlbumScreen({ route, navigation }) {
                 numberOfLines={10}
                 editable
                 textContentType={'none'}
-                style={[CommonStyles.commentsTextInputStyle, {flex:0, width:'100%', margin:0} ]}
+                style={[CommonStyles.commentsTextInputStyle, { flex: 0, width: '100%', margin: 0 }]}
                 onChangeText={(comment) => setUserComment(comment)}
                 value={userComment}
                 autoFocus={true}

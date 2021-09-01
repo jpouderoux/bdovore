@@ -98,7 +98,6 @@ function CollectionScreen({ route, navigation }) {
   const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
@@ -119,7 +118,7 @@ function CollectionScreen({ route, navigation }) {
         cachedToken = token;
         fetchData();
       }
-    }).catch(() => {});
+    }).catch(() => { });
   }
 
   useEffect(() => {
@@ -265,10 +264,6 @@ function CollectionScreen({ route, navigation }) {
     setCollectionType(parseInt(selectedIndex));
   }
 
-  const onCollectionGenrePress = () => {
-    setShowCollectionChooser(true);
-  }
-
   const onSerieFilterModePress = () => {
     setShowSerieFilterChooser(true);
   }
@@ -354,42 +349,43 @@ function CollectionScreen({ route, navigation }) {
       </View>
 
       {loading ?
-        <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle}/> :
+        <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> :
         null}
       {!loading && CollectionManager.isCollectionEmpty() ?
-        <View style={[CommonStyles.screenStyle, {alignItems: 'center', height: '50%', flexDirection: 'column'}]}>
-        <View style={{flex: 1}}></View>
+        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          <View style={{ flex: 1 }}></View>
           <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
           <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
           <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
-        <View style={{flex: 1}}></View>
-      </View>
-      :
-      <View style={{flex:1}}>
-        {errortext != '' ? (
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
-          </Text>
-        ) : null}
-        {<FlatList
-          initialNumToRender={6}
-          maxToRenderPerBatch={6}
-          windowSize={10}
-          data={(collectionType == 0 ? (filteredSeries ? filteredSeries : CollectionManager.getSeries()) : (filteredAlbums ? filteredAlbums : CollectionManager.getAlbums()))}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-          getItemLayout={(data, index) => ({
-            length: AlbumItemHeight,
-            offset: AlbumItemHeight * index,
-            index })}
-          refreshControl={<RefreshControl
+          <View style={{ flex: 1 }}></View>
+        </View>
+        :
+        <View style={{ flex: 1 }}>
+          {errortext != '' ? (
+            <Text style={CommonStyles.errorTextStyle}>
+              {errortext}
+            </Text>
+          ) : null}
+          {<FlatList
+            initialNumToRender={6}
+            maxToRenderPerBatch={6}
+            windowSize={10}
+            data={(collectionType == 0 ? (filteredSeries ? filteredSeries : CollectionManager.getSeries()) : (filteredAlbums ? filteredAlbums : CollectionManager.getAlbums()))}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            ItemSeparatorComponent={Helpers.renderSeparator}
+            getItemLayout={(data, index) => ({
+              length: AlbumItemHeight,
+              offset: AlbumItemHeight * index,
+              index
+            })}
+            refreshControl={<RefreshControl
               colors={[bdovorlightred, bdovored]}
               tintColor={bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
-        />}
-      </View>}
+          />}
+        </View>}
 
       {/* Serie filter chooser */}
       <BottomSheet
