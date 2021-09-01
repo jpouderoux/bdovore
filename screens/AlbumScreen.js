@@ -27,9 +27,10 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { BottomSheet, ListItem } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -40,6 +41,7 @@ import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 import CollectionManager from '../api/CollectionManager';
 import { CoverImage } from '../components/CoverImage';
+import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
 function AlbumScreen({ route, navigation }) {
@@ -54,6 +56,10 @@ function AlbumScreen({ route, navigation }) {
   const [similAlbums, setSimilAlbums] = useState([]);
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
+  const [showComments, setShowComments] = useState(false);
+  const [showUserComment, setShowUserComment] = useState(false);
+  const [userComment, setUserComment] = useState('');
+  const [userRate, setUserRate] = useState(5);
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
@@ -130,12 +136,13 @@ function AlbumScreen({ route, navigation }) {
       let rate = 5;
       comments.forEach(entry => {
         if (entry.username == pseudo) {
-          //console.debug('Found user comment ! ' + comment.COMMENT);
           comment = entry.COMMENT;
           rate = entry.NOTE;
         }
       });
-      navigation.push('UserComment', { album, rate, comment });
+      setUserComment(comment);
+      setUserRate(rate);
+      setShowUserComment(true);
     }).catch(error => { });
   }
 
@@ -183,6 +190,28 @@ function AlbumScreen({ route, navigation }) {
       </TouchableOpacity>);
   }
 
+  const renderComment = ({ index, item }) => {
+    return (
+      item.NOTE > 0 ?
+        <View style={{ margin: 10 }}>
+          <RatingStars note={item.NOTE} />
+          <Text style={CommonStyles.commentsTextStyle}>{item.username}</Text>
+          <Text style={CommonStyles.defaultText}>{item.COMMENT}</Text>
+        </View> : null);
+  }
+
+  const onSaveComment = () => {
+    setLoading(true);
+    setErrortext('');
+    APIManager.sendAlbumComment(album.ID_TOME, onCommentSaved, userRate * 2., userComment).then(() => { }).catch(() => { });
+  }
+
+  const onCommentSaved = (result) => {
+    setErrortext(result.error);
+    setLoading(false);
+    setShowUserComment(false);
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{ margin: 10 }}>
@@ -199,7 +228,8 @@ function AlbumScreen({ route, navigation }) {
           {loading ? LoadingIndicator() : null}
           {comments.length > 0 ?
             <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-            onPress={() => { navigation.push('Comments', { comments }); }}>
+              onPress={() => {
+                setShowComments(true);; }}>
               Lire les avis
             </Text> : null}
         </View>
@@ -272,7 +302,6 @@ function AlbumScreen({ route, navigation }) {
             />
           </View> : null}
 
-
         {/* Editions chooser */}
         <BottomSheet
           isVisible={showEditionsChooser}
@@ -300,6 +329,72 @@ function AlbumScreen({ route, navigation }) {
         </BottomSheet>
 
       </ScrollView>
+
+      {/* Comments */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        isVisible={showComments}
+        onBackdropPress={() => setShowComments(false)}
+        onRequestClose={() => setShowComments(false)}
+        onSwipeComplete={() => setShowComments(false)}
+        swipeDirection={['down']}
+        useNativeDriver={false}
+        propagateSwipe>
+        <View style={CommonStyles.modalViewStyle}>
+          <FlatList
+            legacyImplementation={false}
+            data={comments}
+            renderItem={renderComment}
+            keyExtractor={({ item }, index) => index}
+            ItemSeparatorComponent={Helpers.renderSeparator}
+            style={{ width: '100%' }}
+          />
+        </View>
+      </Modal>
+
+      {/* Comments */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        isVisible={showUserComment}
+        onBackdropPress={() => setShowUserComment(false)}
+        onRequestClose={() => setShowUserComment(false)}
+        onSwipeComplete={() => setShowUserComment(false)}
+        swipeDirection={['down']}
+        useNativeDriver={false}
+        propagateSwipe>
+        <View style={CommonStyles.modalViewStyle}>
+          <View style={{ marginTop: 10, width:'80%' }}>
+            <View style={{ margin: 0, alignItems: 'center' }}>
+              <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
+              <View style={{ marginVertical: 10 }}>
+                <RatingStars note={userRate} editable={true} callback={setUserRate} />
+              </View>
+              <TextInput
+                multiline={true}
+                numberOfLines={10}
+                editable
+                textContentType={'none'}
+                style={[CommonStyles.commentsTextInputStyle, {flex:0, width:'100%', margin:0} ]}
+                onChangeText={(comment) => setUserComment(comment)}
+                value={userComment}
+                autoFocus={true}
+              />
+              <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
+                onPress={onSaveComment}>
+                Enregistrer votre avis
+              </Text>
+            </View>
+            {loading ? <SmallLoadingIndicator /> : null}
+            {errortext != '' ? (
+              <Text style={CommonStyles.errorTextStyle}>
+                {errortext}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

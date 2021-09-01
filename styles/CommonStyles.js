@@ -66,6 +66,15 @@ export let CommonStyles = EStyleSheet.create({
     flex: 1,
   },
 
+  modalViewStyle: {
+    backgroundColor: '$bg',
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 0,
+    marginTop: 40,
+    borderRadius: 10
+  },
+
   // *************
   // Image styles
   albumImageStyle: {
@@ -261,6 +270,7 @@ export let CommonStyles = EStyleSheet.create({
     right: 10,
   },
   commentsTextInputStyle: {
+    color: 'black',
     backgroundColor: 'lightgrey',
     marginTop: 10,
     textAlignVertical: 'top',
