@@ -51,14 +51,16 @@ export function CoverImage({ source, style, noResize, largeMode }) {
     }
   });
 
+  const nodownload = !global.isConnected || (global.imageOnWifi && global.connectionType == 'wifi');
+
   return (
     <Image
       source={{
         uri: source,
-        cache: /*!global.isConnected || (global.imageOnWifi && global.connectionType == 'wifi') */ true ? 'only-if-cached' : 'default',
+        cache: nodownload ? 'only-if-cached' : 'default',
       }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
-      PlaceholderContent={<ActivityIndicator size='small' color={bdovored} />}
+      PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
     />
   );
 }

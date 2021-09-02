@@ -147,7 +147,7 @@ class CCollectionManager {
   constructor() {
     this.release();
 
-    // Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
+    //Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
     global.db = null;
     Realm.open({
       schema: [
@@ -185,6 +185,10 @@ class CCollectionManager {
 
   getAlbums(origine = 0) {
     return this.filterByOrigine(global.db.objects('Albums'), origine);
+  }
+
+  getAlbumsInSerie(id_serie) {
+    return this.getAlbums().filtered("ID_SERIE == $0", parseInt(id_serie));
   }
 
   getSeries(origine = 0) {
@@ -551,29 +555,34 @@ class CCollectionManager {
   }
 
   getAlbumInCollection(album) {
-    const ret = this.getAlbums().filtered('_id == ' + Helpers.makeAlbumUID(album));
+    const ret = this.getAlbums().filtered('_id == $0', Helpers.makeAlbumUID(album));
     return ret.length > 0 ? ret[0] : null;
   }
 
   getAlbumInWishlist(album) {
-    const ret = this.getWishes().filtered('_id == ' + Helpers.makeAlbumUID(album));
+    const ret = this.getWishes().filtered('_id == $0', Helpers.makeAlbumUID(album));
     return ret.length > 0 ? ret[0] : null;
   }
 
   getFirstAlbumEditionOfSerieInCollection(album) {
-    let ret = this.getAlbums().filtered('ID_SERIE == ' + album.ID_SERIE + ' && ID_TOME == ' + album.ID_TOME);
+    let ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
     if (ret.length > 0) return ret[0];
 
-    ret = this.getWishes().filtered('ID_SERIE == ' + album.ID_SERIE + ' && ID_TOME == ' + album.ID_TOME);
+    ret = this.getWishes().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
     return (ret.length > 0) ? ret[0] : album;
   }
 
   getNbOfUserAlbumsInSerie(serie) {
-    return this.getAlbums().filtered('ID_SERIE == ' + serie.ID_SERIE).length;
+    return this.getAlbums().filtered('ID_SERIE == $0', parseInt(serie.ID_SERIE)).length;
+  }
+
+  getAlbumEditionsInCollection(id_tome, id_serie) {
+    let ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(id_serie), parseInt(id_tome));
+    return (ret.length > 0) ? ret : [];
   }
 
   getSerieInCollection(serie) {
-    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
+    let ret = this.getSeries().filtered('_id == $0', parseInt(serie.ID_SERIE));
     return ret.length > 0 ? ret[0] : null;
   }
 

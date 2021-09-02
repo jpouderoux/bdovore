@@ -62,7 +62,7 @@ function AlbumScreen({ route, navigation }) {
   const [userRate, setUserRate] = useState(5);
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
-console.log(album);
+
   useEffect(() => {
     getAlbumEditions();
     getAlbumIsExclude();
@@ -76,6 +76,9 @@ console.log(album);
       CollectionManager.fetchAlbumEditions(album, onAlbumEditionsFetched);
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
+    }
+    if (!global.isConnected) {
+      onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: ''});
     }
   }
 
@@ -161,10 +164,6 @@ console.log(album);
     }
   }
 
-  const onShowFullscreenCover = () => {
-    navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
-  }
-
   const getAuteursLabel = () => {
     const auteurs = Helpers.getAuteurs(album);
     let len = auteurs.length;
@@ -226,7 +225,7 @@ console.log(album);
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{ margin: 10 }}>
         <View style={{ margin: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={onShowFullscreenCover}>
+          <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) })}>
             <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
           </TouchableOpacity>
         </View>

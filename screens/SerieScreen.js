@@ -73,11 +73,13 @@ function SerieScreen({ route, navigation }) {
   }, []);
 
   const fetchData = () => {
+    setSerieAlbums([]);
     if (global.isConnected) {
       setLoading(true);
       setErrortext('');
-      setSerieAlbums([]);
       APIManager.fetchSerieAlbums(serie.ID_SERIE, onSerieAlbumsFetched);
+    } else {
+      onSerieAlbumsFetched({items: CollectionManager.getAlbumsInSerie(serie.ID_SERIE), error: ''});
     }
   }
 
@@ -117,7 +119,9 @@ function SerieScreen({ route, navigation }) {
         }
       }
       album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
-      newdata[section].data.push(album);
+      if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
+        newdata[section].data.push(album);
+      }
     }
 
     // Sort albums by ascending tome number
@@ -129,25 +133,27 @@ function SerieScreen({ route, navigation }) {
     setErrortext(result.error);
     setLoading(false);
 
-    // Now fetch the exclude status of the albums of the serie
-    APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
-      if (!result.error) {
-        // Transform the result array into a dictionary for fast&easy access
-        let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
-        // Check all albums in all sections and set their exclude flag
-        newdata.forEach(section => {
-          section.data.forEach(album => {
-            album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1);
-          })
-        });
-        for (let i = 0; i < newdata.length; i++) {
-          filtereddata[i].data = newdata[i].data.filter(album => album.IS_EXCLU != true);
+    if (global.isConnected) {
+      // Now fetch the exclude status of the albums of the serie
+      APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
+        if (!result.error) {
+          // Transform the result array into a dictionary for fast&easy access
+          let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
+          // Check all albums in all sections and set their exclude flag
+          newdata.forEach(section => {
+            section.data.forEach(album => {
+              album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1);
+            })
+          });
+          for (let i = 0; i < newdata.length; i++) {
+            filtereddata[i].data = newdata[i].data.filter(album => album.IS_EXCLU != true);
+          }
+          setFilteredSerieAlbums(filtereddata);
+        } else {
+          setFilteredSerieAlbums(newdata);
         }
-        setFilteredSerieAlbums(filtereddata);
-      } else {
-        setFilteredSerieAlbums(newdata);
-      }
-    });
+      });
+    }
   }
 
   const refreshFilteredAlbums = () => {
