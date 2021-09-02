@@ -45,8 +45,6 @@ function WishlistScreen({ route, navigation }) {
 
   collectionGenre = route.params.collectionGenre;
 
-  console.log(collectionGenre);
-
   const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
@@ -54,7 +52,6 @@ function WishlistScreen({ route, navigation }) {
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
     const willFocusSubscription = navigation.addListener('focus', () => {
-      console.log('focus with ' + collectionGenre );
       refreshData();
     });
     return willFocusSubscription;
@@ -72,10 +69,7 @@ function WishlistScreen({ route, navigation }) {
   }, [collectionGenre]);
 
   const refreshData = () => {
-    let cgenre = collectionGenre; //genre ?? collectionGenre;
-    console.log("refresh with " + cgenre + ' ' + CollectionManager.CollectionGenres[cgenre][0]);
-    const collec = CollectionManager.getWishes(cgenre > 0 ? CollectionManager.CollectionGenres[cgenre][0] : null);
-    console.log(collec);
+    const collec = CollectionManager.getWishes(collectionGenre);
     setFilteredData(filterByDate ?  Helpers.sliceSortByDate(collec) : collec);
   }
 

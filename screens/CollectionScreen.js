@@ -76,6 +76,7 @@ let loadTime = 0;
 let loadingSteps = 0;
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
+let collectionGenre = 0;
 
 function CollectionScreen({ route, navigation }) {
 
@@ -93,7 +94,8 @@ function CollectionScreen({ route, navigation }) {
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
-  let collectionGenre = route.params.collectionGenre;
+
+  collectionGenre = route.params.collectionGenre;
 
   const isFocused = useIsFocused();
 
@@ -134,17 +136,7 @@ function CollectionScreen({ route, navigation }) {
 
     const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(keywords);
 
-    const isInCurrentCollectionGenre = (item) =>
-      (collectionGenre == 0) ||
-      (collectionGenre == 1 && item.ORIGINE === 'BD') ||
-      (collectionGenre == 2 && item.ORIGINE === 'Mangas') ||
-      (collectionGenre == 3 && item.ORIGINE === 'Comics');
-
     return collection.filter((item) => {
-      // Check if album/serie is in currently selection collection genre (All/BD/Mangas/Comics)
-      if (!isInCurrentCollectionGenre(item)) {
-        return false;
-      }
       // Search for keywords if provided
       if (keywords != '') {
         // search text in lowercase title without taking accents
@@ -179,7 +171,7 @@ function CollectionScreen({ route, navigation }) {
     if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(CollectionManager.getAlbums()) : null);
     } else {
-      const filteredAlbums = filterCollection(CollectionManager.getAlbums(), 1);
+      const filteredAlbums = filterCollection(CollectionManager.getAlbums(collectionGenre), 1);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
     }
 
@@ -187,7 +179,7 @@ function CollectionScreen({ route, navigation }) {
       setFilteredSeries(null);
     }
     else {
-      setFilteredSeries(filterCollection(CollectionManager.getSeries(), 0));
+      setFilteredSeries(filterCollection(CollectionManager.getSeries(collectionGenre), 0));
     }
   }
 
@@ -290,10 +282,10 @@ function CollectionScreen({ route, navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : CollectionManager.numberOfSeries(), 'série')}</Text>
+              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : CollectionManager.numberOfSeries(collectionGenre), 'série')}</Text>
           }, {
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : CollectionManager.numberOfAlbums(), 'album')}</Text>
+              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : CollectionManager.numberOfAlbums(collectionGenre), 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
@@ -343,7 +335,7 @@ function CollectionScreen({ route, navigation }) {
       {!loading && CollectionManager.isCollectionEmpty() ?
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
-          <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
           <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
           <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
           <View style={{ flex: 1 }}></View>

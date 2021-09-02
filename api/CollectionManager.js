@@ -179,33 +179,36 @@ class CCollectionManager {
     }).catch(() => { });
   }
 
-  getAlbums() {
-    return global.db.objects('Albums');
+  filterByOrigine(items, origine) {
+    return origine > 0 ? items.filtered("ORIGINE == $0 || NOM_GENRE CONTAINS[c] $0", this.CollectionGenres[origine][0]) : items;
   }
 
-  getSeries() {
-    return global.db.objects('Series');
+  getAlbums(origine = 0) {
+    return this.filterByOrigine(global.db.objects('Albums'), origine);
   }
 
-  getWishes(origine = null) {
-    const wishes = global.db.objects('Wishes');
-    return origine ? wishes.filtered("ORIGINE == $0 || NOM_GENRE CONTAINS[c] $0", origine) : wishes;
+  getSeries(origine = 0) {
+    return this.filterByOrigine(global.db.objects('Series'), origine);
   }
 
-  numberOfSeries() {
-    return this.getSeries().length;
+  getWishes(origine = 0) {
+    return this.filterByOrigine(global.db.objects('Wishes'), origine);
   }
 
-  numberOfAlbums() {
-    return this.getAlbums().length;
+  numberOfSeries(origine = 0) {
+    return this.getSeries(origine).length;
   }
 
-  numberOfWishAlbums(origine = null) {
+  numberOfAlbums(origine = 0) {
+    return this.getAlbums(origine).length;
+  }
+
+  numberOfWishAlbums(origine = 0) {
     return this.getWishes(origine).length;
   }
 
-  isCollectionEmpty() {
-    return this.numberOfAlbums() == 0;
+  isCollectionEmpty(origine = 0) {
+    return this.numberOfAlbums(origine) == 0;
   }
 
   // Fetch all the series within the collection
@@ -396,7 +399,7 @@ class CCollectionManager {
         if (serie) {
           global.db.write(() => {
             if (serie.NB_USER_ALBUM == 1) {
-              global.db.write(() => global.db.delete(serie));
+              global.db.delete(serie);
               console.debug('serie ' + album.ID_SERIE + ' removed from collection because no more albums owned');
             } else {
               serie.NB_USER_ALBUM--;
