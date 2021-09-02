@@ -228,7 +228,7 @@ function SerieScreen({ route, navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
-            <View style={{ width: '100%', alignItems: 'center', flex: 1, flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }}>
+            <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
               <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { width: null, paddingLeft: 10 }]}>{title}</Text>
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}

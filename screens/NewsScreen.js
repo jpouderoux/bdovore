@@ -161,7 +161,7 @@ function NewsScreen({ navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{marginLeft:-10, marginRight:-10, marginTop:-5, marginBottom:-5}}>
+      <View style={{ marginBottom:0}}>
         <ButtonGroup
           onPress={onPressNewsMode}
           selectedIndex={newsMode}

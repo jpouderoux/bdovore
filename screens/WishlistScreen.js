@@ -30,6 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ButtonGroup } from 'react-native-elements';
 
 import * as Helpers from '../api/Helpers';
 import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -42,6 +43,7 @@ function WishlistScreen({ route, navigation }) {
 
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
+  const [collectionType, setCollectionType] = useState(0);
 
   collectionGenre = route.params.collectionGenre;
 
@@ -85,12 +87,21 @@ function WishlistScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={[CommonStyles.sectionListStyle, { flexDirection: 'row', alignItems: 'center', marginBottom: 5, paddingLeft: 10 }]}>
-        <Text style={[{ flex: 1, margin: 5 }, CommonStyles.bold, CommonStyles.largerText, CommonStyles.defaultText]}>
-          {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null), 'album')}
-        </Text>
-        <View style={{ flexDirection: 'row', position: 'absolute', right: 5 }}>
-          <Text style={[CommonStyles.defaultText, { margin: 5 }]}>Tri par ajout</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <ButtonGroup
+          onPress={()=>{}}
+          selectedIndex={collectionType}
+          buttons={[{
+            element: () => <Text style={CommonStyles.defaultText}>
+              {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null), 'album')}</Text>
+          }]}
+          containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
+          buttonStyle={CommonStyles.buttonGroupButtonStyle}
+          selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
+          innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
+        />
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[CommonStyles.defaultText, { margin: 5, marginTop: 10 }]}>Tri par ajout</Text>
           <Switch value={filterByDate} onValueChange={toggleFilterByDate}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>

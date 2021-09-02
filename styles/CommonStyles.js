@@ -164,6 +164,8 @@ export let CommonStyles = EStyleSheet.create({
     color: '$textcolor',
     width: '100%',
     textAlignVertical: 'center',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   sectionAlbumStyle: {
     backgroundColor: '$sectioncolor',
