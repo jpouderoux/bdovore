@@ -161,6 +161,11 @@ function AlbumScreen({ route, navigation }) {
           navigation.push('Serie', { item: result.items[0] });
         }
       });
+    } else {
+      const serie = CollectionManager.getSerieInCollection(album.ID_SERIE);
+      if (serie) {
+        navigation.push('Serie', { item: Helpers.toDict(serie) });
+      }
     }
   }
 

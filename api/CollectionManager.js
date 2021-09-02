@@ -346,7 +346,7 @@ class CCollectionManager {
         }
 
         // Increment the serie's counter
-        let serie = this.getSerieInCollection({ ID_SERIE: album.ID_SERIE });
+        let serie = this.getSerieInCollection(album.ID_SERIE);
         if (!serie) {
           console.debug('serie ' + album.ID_SERIE + ' not found in collection, let\'s add it');
           APIManager.fetchSerie(album.ID_SERIE, (result) => {
@@ -399,7 +399,7 @@ class CCollectionManager {
         }
 
         // Decrement the serie's counter
-        let serie = this.getSerieInCollection({ ID_SERIE: album.ID_SERIE });
+        let serie = this.getSerieInCollection(album.ID_SERIE);
         if (serie) {
           global.db.write(() => {
             if (serie.NB_USER_ALBUM == 1) {
@@ -581,13 +581,13 @@ class CCollectionManager {
     return (ret.length > 0) ? ret : [];
   }
 
-  getSerieInCollection(serie) {
-    let ret = this.getSeries().filtered('_id == $0', parseInt(serie.ID_SERIE));
+  getSerieInCollection(id_serie) {
+    let ret = this.getSeries().filtered('_id == $0', parseInt(id_serie));
     return ret.length > 0 ? ret[0] : null;
   }
 
   isSerieComplete(serie) {
-    const cs = this.getSerieInCollection(serie);
+    const cs = this.getSerieInCollection(serie.ID_SERIE);
     return cs ? cs.NB_USER_ALBUM == serie.NB_ALBUM : false;
   }
 
