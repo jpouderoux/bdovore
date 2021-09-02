@@ -294,7 +294,7 @@ function CollectionScreen({ route, navigation }) {
         />
       </View>
 
-      <View style={{ flexDirection: 'row', marginBottom: -15 }}>
+      <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
@@ -342,7 +342,7 @@ function CollectionScreen({ route, navigation }) {
         </View>
         :
         <View style={{ flex: 1 }}>
-          {errortext != '' ? (
+          {errortext ? (
             <Text style={CommonStyles.errorTextStyle}>
               {errortext}
             </Text>

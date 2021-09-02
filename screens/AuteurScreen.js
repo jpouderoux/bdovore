@@ -119,7 +119,7 @@ function AuteurScreen({ route, navigation }) {
         <AuteurItem navigation={navigation} item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true} canViewFullscreenImage={true}/>
         {loading ? <SmallLoadingIndicator /> : null}
       </View>
-      {errortext != '' ? (
+      {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
         </Text>

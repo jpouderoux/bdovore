@@ -58,7 +58,7 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
         <CoverImage source={APIManager.getAuteurCoverURL(item)} />
         }
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{item.PSEUDO}</Text>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{Helpers.reverseAuteurName(item.PSEUDO)}</Text>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>{fonctionString}</Text>
           {nbSeries && nbSeries > 0 ?
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>

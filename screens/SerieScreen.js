@@ -212,7 +212,7 @@ function SerieScreen({ route, navigation }) {
             : null}
         </View>
       </View>
-      {errortext != '' ? (
+      {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
         </Text>

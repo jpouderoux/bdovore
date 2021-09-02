@@ -297,7 +297,7 @@ function AlbumScreen({ route, navigation }) {
             </Text> : null}
         </View>
 
-        {errortext != '' ? (
+        {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
@@ -401,7 +401,7 @@ function AlbumScreen({ route, navigation }) {
               </Text>
             </View>
             {loading ? <SmallLoadingIndicator /> : null}
-            {errortext != '' ? (
+            {errortext ? (
               <Text style={CommonStyles.errorTextStyle}>
                 {errortext}
               </Text>

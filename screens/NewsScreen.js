@@ -176,7 +176,7 @@ function NewsScreen({ navigation }) {
         />
       </View>
       <View style={{ flex: 1 }}>
-        {errortext != '' ? (
+        {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>

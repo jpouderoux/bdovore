@@ -196,7 +196,7 @@ function LoginScreen({ navigation }) {
           autoCompleteType='password' // Android
           onChangeText={(passwd) => setPasswd(passwd)}
         />
-        {errortext != '' ? (
+        {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>

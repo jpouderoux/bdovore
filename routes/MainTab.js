@@ -48,11 +48,12 @@ import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
 import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import { bdovored, CommonStyles } from '../styles/CommonStyles';
-import SettingsScreen from '../screens/SettingsScreen';
 
 
 // The main tab navigator
@@ -174,7 +175,7 @@ function CollectionScreens({ route, navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <CollectionStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
+        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
     </CollectionStack.Navigator>
   );
 }
@@ -247,7 +248,7 @@ function WishlistScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <WishlistStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
+        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
     </WishlistStack.Navigator>
   );
 }
@@ -264,7 +265,7 @@ function ToCompleteScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <ToCompleteStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
+        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
     </ToCompleteStack.Navigator>
   );
 }
@@ -281,7 +282,7 @@ function NewsScreens({ navigation }) {
       <NewsStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <NewsStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
+        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
     </NewsStack.Navigator>
   );
 }
@@ -298,7 +299,7 @@ function SearchScreens({ navigation }) {
           headerRight: () => shareButton(route.params.item)
         })} />
       <SearchStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: route.params.item.PSEUDO })} />
+        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
       <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner}
         options={({ title: 'Scan code-barre' })} />
     </SearchStack.Navigator>
