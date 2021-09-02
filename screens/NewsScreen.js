@@ -169,7 +169,7 @@ function NewsScreen({ navigation }) {
             { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[0]}</Text> },
             { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[1]}</Text> },
             { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[2]}</Text> }]}
-          containerStyle={[CommonStyles.buttonGroupContainerStyle, {height: 40}]}
+          containerStyle={[CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}

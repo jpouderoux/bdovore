@@ -284,19 +284,32 @@ export let CommonStyles = EStyleSheet.create({
   },
   bottomSheetTitleStyle: {
     backgroundColor: '$bg',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
     color: '$textcolor',
+    alignSelf: 'center',
+    borderBottomWidth: 1.0,
+    borderColor: 'lightgray'
   },
   bottomSheetItemContainerStyle: {
     backgroundColor: '$bg',
+    alignSelf: 'center',
+    borderBottomWidth: 1.0,
+    borderColor: 'lightgray'
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: bdovored,
+    alignSelf: 'center',
+    borderBottomWidth: 1.0,
+    borderColor: 'lightgray'
   },
   bottomSheetItemTextStyle: {
     color: bdovored,
+    alignSelf: 'center',
   },
   bottomSheetSelectedItemTextStyle: {
     color: '$bg',
+    alignSelf: 'center',
   },
 
   //***************

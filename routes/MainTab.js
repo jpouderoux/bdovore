@@ -137,7 +137,7 @@ function CollectionScreens({ route, navigation }) {
           containerStyle={CommonStyles.bottomSheetContainerStyle}>
           <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
             <ListItem.Content>
-              <ListItem.Title >Collection à afficher</ListItem.Title>
+              <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
             </ListItem.Content>
           </ListItem>
           {Object.entries(collectionGenres).map(([mode, title], index) => (

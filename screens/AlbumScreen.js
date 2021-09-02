@@ -318,7 +318,7 @@ function AlbumScreen({ route, navigation }) {
           containerStyle={CommonStyles.bottomSheetContainerStyle}>
           <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
             <ListItem.Content>
-              <ListItem.Title style={CommonStyles.defaultText}>Editions</ListItem.Title>
+              <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Editions</ListItem.Title>
             </ListItem.Content>
           </ListItem>
           {albumEditionsData.map((item, index) => (

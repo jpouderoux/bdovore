@@ -29,7 +29,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomSheet, ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
+import { ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
@@ -39,6 +39,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers'
+import { BottomSheet } from '../components/BottomSheet';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { SerieItem } from '../components/SerieItem';
@@ -390,10 +391,11 @@ function CollectionScreen({ route, navigation }) {
       {/* Serie filter chooser */}
       <BottomSheet
         isVisible={showSerieFilterChooser}
+        visibleSetter={setShowSerieFilterChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
-            <ListItem.Title>Filtrer</ListItem.Title>
+            <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Filtrer</ListItem.Title>
           </ListItem.Content>
         </ListItem>
         {Object.entries(serieFilterModes).map(([mode, title], index) => (
@@ -414,10 +416,11 @@ function CollectionScreen({ route, navigation }) {
       {/* Filter chooser */}
       <BottomSheet
         isVisible={showFilterChooser}
+        visibleSetter={setShowFilterChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
-            <ListItem.Title>Filtrer</ListItem.Title>
+            <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Filtrer</ListItem.Title>
           </ListItem.Content>
         </ListItem>
         {Object.entries(filterModes).map(([mode, title], index) => (
@@ -438,10 +441,11 @@ function CollectionScreen({ route, navigation }) {
       {/* Sort chooser */}
       <BottomSheet
         isVisible={showSortChooser}
+        visibleSetter={setShowSortChooser}
         containerStyle={CommonStyles.bottomSheetContainerStyle}>
         <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
-            <ListItem.Title>Trier</ListItem.Title>
+            <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Trier</ListItem.Title>
           </ListItem.Content>
         </ListItem>
         {Object.entries(sortModes).map(([mode, title], index) => (
@@ -450,7 +454,7 @@ function CollectionScreen({ route, navigation }) {
             onPress={() => {
               setSortMode(mode); setShowSortChooser(false);
             }}>
-            <ListItem.Content>
+            <ListItem.Content style={{flexDirection: 'column'}}>
               <ListItem.Title style={sortMode == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title}
               </ListItem.Title>
