@@ -36,11 +36,16 @@ import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 import CollectionManager from '../api/CollectionManager';
 
+let collectionGenre = 0;
 
-function WishlistScreen({ navigation }) {
+function WishlistScreen({ route, navigation }) {
 
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
+
+  collectionGenre = route.params.collectionGenre;
+
+  console.log(collectionGenre);
 
   const isFocused = useIsFocused();
 
@@ -49,6 +54,7 @@ function WishlistScreen({ navigation }) {
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
     const willFocusSubscription = navigation.addListener('focus', () => {
+      console.log('focus with ' + collectionGenre );
       refreshData();
     });
     return willFocusSubscription;
@@ -58,8 +64,19 @@ function WishlistScreen({ navigation }) {
     refreshData();
   }, [filterByDate]);
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: ('Mes envies' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
+    });
+    refreshData();
+  }, [collectionGenre]);
+
   const refreshData = () => {
-    setFilteredData(filterByDate ? Helpers.sliceSortByDate(CollectionManager.getWishes()) : null);
+    let cgenre = collectionGenre; //genre ?? collectionGenre;
+    console.log("refresh with " + cgenre + ' ' + CollectionManager.CollectionGenres[cgenre][0]);
+    const collec = CollectionManager.getWishes(cgenre > 0 ? CollectionManager.CollectionGenres[cgenre][0] : null);
+    console.log(collec);
+    setFilteredData(filterByDate ?  Helpers.sliceSortByDate(collec) : collec);
   }
 
   const toggleFilterByDate = () => {
@@ -76,7 +93,7 @@ function WishlistScreen({ navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={[CommonStyles.sectionListStyle, { flexDirection: 'row', alignItems: 'center', marginBottom: 5, paddingLeft: 10 }]}>
         <Text style={[{ flex: 1, margin: 5 }, CommonStyles.bold, CommonStyles.largerText, CommonStyles.defaultText]}>
-          {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(), 'album')}
+          {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null), 'album')}
         </Text>
         <View style={{ flexDirection: 'row', position: 'absolute', right: 5 }}>
           <Text style={[CommonStyles.defaultText, { margin: 5 }]}>Tri par ajout</Text>
@@ -85,10 +102,10 @@ function WishlistScreen({ navigation }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>
         </View>
       </View>
-      {CollectionManager.numberOfWishAlbums() == 0 ?
+      {CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null) == 0 ?
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
-          <Text style={CommonStyles.defaultText}>Aucun album dans la wishlist.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la wishlist.{'\n'}</Text>
           <Text style={CommonStyles.defaultText}>Ajoutez les albums que vous souhaitez</Text>
           <Text style={CommonStyles.defaultText}>acquérir via les boutons</Text>
           <View style={{ flexDirection: 'column' }}>
@@ -102,7 +119,7 @@ function WishlistScreen({ navigation }) {
           style={{ flex: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={filteredData ? filteredData : CollectionManager.getWishes()}
+          data={filteredData}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}

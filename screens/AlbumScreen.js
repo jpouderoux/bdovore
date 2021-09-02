@@ -62,7 +62,7 @@ function AlbumScreen({ route, navigation }) {
   const [userRate, setUserRate] = useState(5);
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
-
+console.log(album);
   useEffect(() => {
     getAlbumEditions();
     getAlbumIsExclude();

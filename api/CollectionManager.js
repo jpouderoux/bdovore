@@ -132,6 +132,18 @@ function createEntry(schema, item) {
 
 class CCollectionManager {
 
+  CollectionTypes = {
+    0: 'série',
+    1: 'album',
+  };
+
+  CollectionGenres = {
+    0: ['Tout', ''],
+    1: ['BD', ' BD'],
+    2: ['Mangas', ' manga'],
+    3: ['Comics', ' comic'],
+  };
+
   constructor() {
     this.release();
 
@@ -175,8 +187,9 @@ class CCollectionManager {
     return global.db.objects('Series');
   }
 
-  getWishes() {
-    return global.db.objects('Wishes');
+  getWishes(origine = null) {
+    const wishes = global.db.objects('Wishes');
+    return origine ? wishes.filtered("ORIGINE == $0 || NOM_GENRE CONTAINS[c] $0", origine) : wishes;
   }
 
   numberOfSeries() {
@@ -187,8 +200,8 @@ class CCollectionManager {
     return this.getAlbums().length;
   }
 
-  numberOfWishAlbums() {
-    return this.getWishes().length;
+  numberOfWishAlbums(origine = null) {
+    return this.getWishes(origine).length;
   }
 
   isCollectionEmpty() {

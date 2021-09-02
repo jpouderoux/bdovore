@@ -47,18 +47,6 @@ import { SerieItem } from '../components/SerieItem';
 
 const defaultSortMode = 1;
 
-const collectionTypes = {
-  0: 'série',
-  1: 'album',
-}
-
-const collectionGenres = {
-  0: ['Tout', ''],
-  1: ['BD', ' BD'],
-  2: ['Mangas', ' mangas'],
-  3: ['Comics', ' comics'],
-};
-
 const sortModes = {
   0: 'Tri par série',
   1: 'Tri par date d\'ajout',
@@ -133,7 +121,7 @@ function CollectionScreen({ route, navigation }) {
 
   useEffect(() => {
     navigation.setOptions({
-      title: ('Ma collection' + (collectionGenre > 0 ? (' - ' + collectionGenres[collectionGenre][0]) : '')),
+      title: ('Ma collection' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
     });
     applyFilters();
   }, [collectionGenre]);
@@ -319,7 +307,7 @@ function CollectionScreen({ route, navigation }) {
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
               filterModesSearch[filterMode] :
-              'Rechercher dans mes ' + collectionTypes[collectionType] + 's' + collectionGenres[collectionGenre][1] + '...'}
+              'Rechercher dans mes ' + CollectionManager.CollectionTypes[collectionType] + 's' + CollectionManager.CollectionGenres[collectionGenre][1] + 's...'}
             onChangeText={onSearchChanged}
             value={keywords}
             platform='ios'

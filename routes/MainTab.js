@@ -30,7 +30,7 @@ import React, { useState } from 'react';
 import { Share, TouchableOpacity, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomSheet, ListItem } from 'react-native-elements';
+import { ListItem } from 'react-native-elements';
 import { CommonActions } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -40,7 +40,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
+import { BottomSheet } from '../components/BottomSheet';
 import CollectionScreen from '../screens/CollectionScreen';
+import CollectionManager from '../api/CollectionManager';
 import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
@@ -99,14 +101,7 @@ const defaultStackOptions = {
 function CollectionScreens({ route, navigation }) {
 
   const [collectionGenre, setCollectionGenre] = useState(0);
-  const [showCollectionChooser, setShowCollectionChooser] = useState(0);
-
-  const collectionGenres = {
-    0: ['Tout', ''],
-    1: ['BD', ' BD'],
-    2: ['Mangas', ' mangas'],
-    3: ['Comics', ' comics'],
-  };
+  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
 
   const onCollectionGenrePress = (navigation) => {
     setShowCollectionChooser(!showCollectionChooser);
@@ -140,7 +135,7 @@ function CollectionScreens({ route, navigation }) {
               <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
             </ListItem.Content>
           </ListItem>
-          {Object.entries(collectionGenres).map(([mode, title], index) => (
+          {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
             <ListItem key={index + 1}
               containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
               onPress={() => onCollectionGenreChanged(route, navigation, mode) }>
@@ -185,9 +180,65 @@ function CollectionScreens({ route, navigation }) {
 }
 
 function WishlistScreens({ navigation }) {
+
+  const [collectionGenre, setCollectionGenre] = useState(0);
+  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+
+  const onCollectionGenrePress = (navigation) => {
+    setShowCollectionChooser(!showCollectionChooser);
+  }
+
+  const onCollectionGenreChanged = (route, navigation, mode) => {
+    setCollectionGenre(mode);
+    setShowCollectionChooser(false);
+    navigation.dispatch({
+      ...CommonActions.setParams({
+        collectionGenre: mode
+      }),
+      source: route.key,
+    });
+  }
+
+  const settingsButton = (route, navigation) => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={() => onCollectionGenrePress(navigation)} style={{ margin: 8 }}>
+          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+
+        <BottomSheet
+          isVisible={showCollectionChooser}
+          containerStyle={CommonStyles.bottomSheetContainerStyle}>
+          <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
+            <ListItem.Content>
+              <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+          {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
+            <ListItem key={index + 1}
+              containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
+              onPress={() => onCollectionGenreChanged(route, navigation, mode)}>
+              <ListItem.Content>
+                <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
+                  {title[0]}
+                </ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </BottomSheet>
+      </View>
+    );
+  }
   return (
     <WishlistStack.Navigator screenOptions={defaultStackOptions}>
-      <WishlistStack.Screen name='Mes envies BD' component={WishlistScreen} />
+      <WishlistStack.Screen name='Mes envies'
+        component={WishlistScreen}
+        options={({ route }) => {
+          route.params = { collectionGenre: collectionGenre };
+          return {
+            headerRight: () => settingsButton(route, navigation),
+          };}}
+      />
       <WishlistStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <WishlistStack.Screen name='Album' component={AlbumScreen}
