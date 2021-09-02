@@ -299,7 +299,7 @@ function CollectionScreen({ route, navigation }) {
           <SearchBar
             placeholder={(collectionType == 1 && filterMode != 0) ?
               filterModesSearch[filterMode] :
-              'Rechercher dans mes ' + CollectionManager.CollectionTypes[collectionType] + 's' + CollectionManager.CollectionGenres[collectionGenre][1] + 's...'}
+              'Rechercher dans mes ' + CollectionManager.CollectionTypes[collectionType] + 's' + CollectionManager.CollectionGenres[collectionGenre][2] + '...'}
             onChangeText={onSearchChanged}
             value={keywords}
             platform='ios'

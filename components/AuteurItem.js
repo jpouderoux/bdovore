@@ -35,7 +35,7 @@ import * as Helpers from '../api/Helpers';
 import { CoverImage } from './CoverImage';
 
 
-export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index }) {
+export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index, canViewFullscreenImage }) {
 
   const onPressAuteur = (navigation, item) => {
     navigation.push('Auteur', { item });
@@ -51,7 +51,12 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
   return (
     <TouchableOpacity key={index} disabled={noPressAction ? true : false} onPress={() => onPressAuteur(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
+        {canViewFullscreenImage ?
+        <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAuteurCoverURL(item) })}>
+          <CoverImage source={APIManager.getAuteurCoverURL(item)} />
+        </TouchableOpacity> :
         <CoverImage source={APIManager.getAuteurCoverURL(item)} />
+        }
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{item.PSEUDO}</Text>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>{fonctionString}</Text>

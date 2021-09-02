@@ -138,16 +138,16 @@ class CCollectionManager {
   };
 
   CollectionGenres = {
-    0: ['Tout', ''],
-    1: ['BD', ' BD'],
-    2: ['Mangas', ' manga'],
-    3: ['Comics', ' comic'],
+    0: ['Tout', '', ''],
+    1: ['BD', ' BD', ' BD'],
+    2: ['Mangas', ' manga', ' mangas'],
+    3: ['Comics', ' comic', ' comics'],
   };
 
   constructor() {
     this.release();
 
-    Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
+    // Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
     global.db = null;
     Realm.open({
       schema: [
