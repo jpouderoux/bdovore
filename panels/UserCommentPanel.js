@@ -27,14 +27,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import { BottomSheet } from '../components/BottomSheet';
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, windowHeight } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
@@ -125,8 +125,8 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
 
   return (
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10 }]}>
-        <View style={{ marginTop: 10, marginBottom: 10, width: '80%' }}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: Platform.OS == 'ios' ? windowHeight * 0.7 : null }]}>
+        <View style={{ marginTop: 10, marginBottom: 10,  width: '80%' }}>
           <View style={{ margin: 0, alignItems: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
             <View style={{ marginVertical: 10 }}>
@@ -153,7 +153,6 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
                 <MaterialCommunityIcons name='file-send-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
                 <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Enregistrer</Text>
               </TouchableOpacity>
-
             </View>
 
           </View>
