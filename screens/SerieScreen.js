@@ -190,7 +190,7 @@ function SerieScreen({ route, navigation }) {
     AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
     global.showExcludedAlbums = !showExcludedAlbums;
     setShowExcludedAlbums(showExcludedAlbums => !showExcludedAlbums);
-    refreshFilteredAlbums();
+    refreshAlbums();
   }
 
   const keyExtractor = useCallback((item, index) =>
