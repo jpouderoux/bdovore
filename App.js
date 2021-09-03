@@ -48,14 +48,6 @@ const App: () => Node = () => {
 
   useEffect(() => {
     SplashScreen.hide();
-
-    if (Platform.OS == 'ios') {
-      global.hideSponsoredLinks = true;
-    } else {
-      AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
-        global.hideSponsoredLinks = (value == 'true');
-      }).catch(() => { });
-    }
   });
 
   global.isDarkMode = useColorScheme() === 'dark';
@@ -63,11 +55,12 @@ const App: () => Node = () => {
 
   // Subscribe
   NetInfo.addEventListener(state => {
-    console.log("Connection type", state.type);
-    console.log("Is connected?", state.isConnected);
+    console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
     global.connectionType = state.type;
-    global.isConnected = state.isConnected;// state.type == 'wifi';
-    Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
+    if (!global.forceOffline && global.isConnected != state.isConnected) {
+      global.isConnected = state.isConnected;
+      Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
+    }
   });
 
   /* TODO - Support dynamic theme change.

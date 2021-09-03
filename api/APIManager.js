@@ -88,15 +88,21 @@ export async function checkForToken(navigation = null) {
 export function reloginBdovore(navigation, callback = null) {
 
   if (global.isConnected) {
-    AsyncStorage.multiGet(['pseudo', 'passwd'])
+    AsyncStorage.multiGet(['login', 'passwd'])
       .then((response) => {
         const pseudo = response[0][1];
         const passwd = response[1][1];
         loginBdovore(pseudo, passwd, (response) => {
-          AsyncStorage.setItem('token', response.token);
-          console.debug("New token " + response.token + " fetched!");
-          if (callback) {
-            callback();
+          if (response.error) {
+            if (navigation) {
+              navigation.navigate('Login');
+            }
+          } else {
+            AsyncStorage.setItem('token', response.token);
+            console.debug("New token " + response.token + " fetched!");
+            if (callback) {
+              callback();
+            }
           }
         });
       })

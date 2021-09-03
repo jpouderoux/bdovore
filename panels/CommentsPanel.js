@@ -27,27 +27,54 @@
  */
 
 import React from 'react';
-import { Image, Linking, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
+import { RatingStars } from '../components/RatingStars';
 
 
-export function AchatSponsorIcon({ album, style }) {
+function CommentsPanel({ comments, isVisible, visibleSetter }) {
+
+  const renderComment = (item) => {
     return (
-      (global.hideSponsoredLinks || !global.isConnected) ? null : // Sponsored links are disabled on iOS according AppStore rules.
-      <View style={{ flexDirection: 'row', marginTop: 10 }}>
-        {album.EAN_EDITION ? <TouchableOpacity
-          onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ean=' + album.EAN_EDITION + "&ref=295"); }}
-          title="Acheter sur BDFugue" >
-          <Image source={require('../assets/bdfugue.png')} style={CommonStyles.bdfugueIcon} />
-        </TouchableOpacity> : null}
-        <TouchableOpacity
-          onPress={() => { Linking.openURL(album.ISBN_EDITION ?
-            ('https://www.amazon.fr/exec/obidos/ASIN/' + album.ISBN_EDITION + "/bdovorecom-21/") :
-            encodeURI('https://www.amazon.fr/exec/obidos/external-search?tag=bdovorecom-21&mode=books-fr&keyword=' + album.TITRE_TOME)); }}
-          title="Acheter sur Amazon" >
-          <Image source={require('../assets/amazon.png')} style={CommonStyles.amazonIcon} />
-        </TouchableOpacity>
-    </View>);
+      item[1].NOTE > 0 ?
+        <View key={item[0]} style={{
+          marginHorizontal: 10,
+          marginTop: parseInt(item[0]) == 0 ? 10 : 0,
+          paddingBottom: 10,
+          paddingTop: 10,
+          borderTopWidth: parseInt(item[0]) == 0 ? 0 : 1.0,
+          borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
+          <View style={{ flexDirection: 'row' }}>
+            <RatingStars note={item[1].NOTE} />
+            <Text style={CommonStyles.commentsTextStyle}>{item[1].username}</Text>
+          </View>
+          <Text style={CommonStyles.defaultText}>{item[1].COMMENT}</Text>
+        </View> : null);
+  }
+
+  return (
+    <BottomSheet
+      isVisible={isVisible}
+      visibleSetter={visibleSetter}
+      containerStyle={CommonStyles.bottomSheetContainerStyle}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10 }]}>
+        <View style={{ marginBottom: 10, width: '100%' }}>
+          {Object.entries(comments).map((item) => renderComment(item))}
+          {/*<FlatList
+          legacyImplementation={false}
+          data={comments}
+          renderItem={renderComment}
+          keyExtractor={({ item }, index) => index}
+          ItemSeparatorComponent={Helpers.renderSeparator}
+          style={{ width: '100%' }}
+      />*/}
+        </View>
+      </View>
+    </BottomSheet>
+  );
 }
 
+export default CommentsPanel;

@@ -37,24 +37,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { bdovored, CommonStyles } from '../styles/CommonStyles';
+import { BottomSheet } from '../components/BottomSheet';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
-import { BottomSheet } from '../components/BottomSheet';
-import CollectionScreen from '../screens/CollectionScreen';
 import CollectionManager from '../api/CollectionManager';
+import CollectionPanel from '../panels/CollectionPanel';
+import CollectionScreen from '../screens/CollectionScreen';
 import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import SettingsPanel from '../panels/SettingsPanel';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
-import * as APIManager from '../api/APIManager';
-import * as Helpers from '../api/Helpers';
-import { bdovored, CommonStyles } from '../styles/CommonStyles';
-
 
 // The main tab navigator
 const Tab = createBottomTabNavigator();
@@ -103,58 +103,40 @@ function CollectionScreens({ route, navigation }) {
 
   const [collectionGenre, setCollectionGenre] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
-  const onCollectionGenrePress = (navigation) => {
+  const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
 
-  const onCollectionGenreChanged = (route, navigation, mode) => {
-    setCollectionGenre(mode);
-    setShowCollectionChooser(false);
-    navigation.dispatch({
-      ...CommonActions.setParams({
-        collectionGenre: mode }),
-      source: route.key,
-    });
-  }
+  const onSettingsPress = () => {
+    setShowSettingsPanel(true);
+  };
 
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={() => onCollectionGenrePress(navigation)} style={{ margin: 8 }}>
+        <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onSettingsPress(navigation)} style={{ margin: 8 }}>
+
+        <TouchableOpacity onPress={onSettingsPress} style={{ margin: 8 }}>
           <MaterialCommunityIcons name='dots-vertical' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
-        <BottomSheet
+        <CollectionPanel route={route}
+          navigation={navigation}
           isVisible={showCollectionChooser}
-          containerStyle={CommonStyles.bottomSheetContainerStyle}>
-          <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
-            <ListItem.Content>
-              <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-          {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
-            <ListItem key={index + 1}
-              containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
-              onPress={() => onCollectionGenreChanged(route, navigation, mode) }>
-              <ListItem.Content>
-                <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
-                  {title[0]}
-                </ListItem.Title>
-              </ListItem.Content>
-            </ListItem>
-          ))}
-        </BottomSheet>
+          visibleSetter={setShowCollectionChooser}
+          collectionGenre={collectionGenre}
+          setCollectionGenre={setCollectionGenre} />
+
+        <SettingsPanel navigation={navigation}
+          isVisible={showSettingsPanel}
+          visibleSetter={setShowSettingsPanel} />
       </View>
     );
   }
-
-  const onSettingsPress = (navigation) => {
-    navigation.navigate('Settings');
-  };
 
   return (
     <CollectionStack.Navigator screenOptions={defaultStackOptions}>
@@ -185,48 +167,23 @@ function WishlistScreens({ navigation }) {
   const [collectionGenre, setCollectionGenre] = useState(0);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
 
-  const onCollectionGenrePress = (navigation) => {
+  const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
-  }
-
-  const onCollectionGenreChanged = (route, navigation, mode) => {
-    setCollectionGenre(mode);
-    setShowCollectionChooser(false);
-    navigation.dispatch({
-      ...CommonActions.setParams({
-        collectionGenre: mode
-      }),
-      source: route.key,
-    });
   }
 
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={() => onCollectionGenrePress(navigation)} style={{ margin: 8 }}>
+        <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
-        <BottomSheet
+        <CollectionPanel route={route}
+          navigation={navigation}
           isVisible={showCollectionChooser}
-          containerStyle={CommonStyles.bottomSheetContainerStyle}>
-          <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
-            <ListItem.Content>
-              <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-          {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
-            <ListItem key={index + 1}
-              containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
-              onPress={() => onCollectionGenreChanged(route, navigation, mode)}>
-              <ListItem.Content>
-                <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
-                  {title[0]}
-                </ListItem.Title>
-              </ListItem.Content>
-            </ListItem>
-          ))}
-        </BottomSheet>
+          visibleSetter={setShowCollectionChooser}
+          collectionGenre={collectionGenre}
+          setCollectionGenre={setCollectionGenre} />
       </View>
     );
   }
@@ -389,7 +346,6 @@ function MainTab() {
     <RootStack.Navigator mode="modal" headerMode="none">
       <RootStack.Screen name="MainTab2" component={MainTab2} />
       <RootStack.Screen name="Login" component={LoginScreen} />
-      <RootStack.Screen name="Settings" component={SettingsScreen} />
       <RootStack.Screen name="Image" component={ImageScreen} />
     </RootStack.Navigator>
   );

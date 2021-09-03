@@ -27,21 +27,22 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { BottomSheet, ListItem } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Modal from 'react-native-modal';
+import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ListItem } from 'react-native-elements';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as APIManager from '../api/APIManager';
-import * as Helpers from '../api/Helpers';
-import { CommonStyles } from '../styles/CommonStyles';
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
+import { CommonStyles } from '../styles/CommonStyles';
+import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
-import { CoverImage } from '../components/CoverImage';
-import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
+import CommentsPanel from '../panels/CommentsPanel';
+import UserCommentPanel from '../panels/UserCommentPanel';
+import { BottomSheet } from '../components/BottomSheet';
 
 
 function AlbumScreen({ route, navigation }) {
@@ -52,21 +53,20 @@ function AlbumScreen({ route, navigation }) {
   const [errortext, setErrortext] = useState('');
   const [album, setAlbum] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
-  const [showEditionsChooser, setShowEditionsChooser] = useState(0);
+  const [showEditionsChooser, setShowEditionsChooser] = useState(false);
   const [similAlbums, setSimilAlbums] = useState([]);
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
   const [showComments, setShowComments] = useState(false);
   const [showUserComment, setShowUserComment] = useState(false);
-  const [userComment, setUserComment] = useState('');
-  const [userRate, setUserRate] = useState(5);
+  const [showMoreInfos, setShowMoreInfos] = useState(false);
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
     getAlbumEditions();
     getAlbumIsExclude();
-  }, []);
+  }, [album]);
 
   const getAlbumEditions = () => {
     if (!editionsLoaded && global.isConnected) {
@@ -112,10 +112,13 @@ function AlbumScreen({ route, navigation }) {
     setLoading(false);
   }
 
-  const onCommentsFetched = (result) => {
+  const filteredComments = () => {
     // strip empty comments
-    const coms = result.items.filter((comment) => comment.NOTE != null && comment.COMMENT != '');
-    setComments(coms);
+    return comments.filter((comment) => comment.NOTE != null && comment.COMMENT != '');
+  }
+
+  const onCommentsFetched = (result) => {
+    setComments(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
@@ -132,24 +135,6 @@ function AlbumScreen({ route, navigation }) {
 
   const onSimilPress = (item) => {
     navigation.push('Album', { item });
-  }
-
-  const onUserComment = async () => {
-    if (global.isConnected) {
-      AsyncStorage.getItem('pseudo').then(pseudo => {
-        let comment = '';
-        let rate = 5;
-        comments.forEach(entry => {
-          if (entry.username == pseudo) {
-            comment = entry.COMMENT;
-            rate = entry.NOTE;
-          }
-        });
-        setUserComment(comment);
-        setUserRate(rate);
-        setShowUserComment(true);
-      }).catch(error => { });
-    }
   }
 
   const onShowSerieScreen = async () => {
@@ -198,32 +183,10 @@ function AlbumScreen({ route, navigation }) {
       </TouchableOpacity>);
   }
 
-  const renderComment = ({ index, item }) => {
-    return (
-      item.NOTE > 0 ?
-        <View style={{ margin: 10 }}>
-          <RatingStars note={item.NOTE} />
-          <Text style={CommonStyles.commentsTextStyle}>{item.username}</Text>
-          <Text style={CommonStyles.defaultText}>{item.COMMENT}</Text>
-        </View> : null);
-  }
-
   const onShowComments = () => {
-    if (comments.length > 0) {
+    if (filteredComments().length > 0) {
       setShowComments(true);
     }
-  }
-
-  const onSaveComment = () => {
-    setLoading(true);
-    setErrortext('');
-    APIManager.sendAlbumComment(album.ID_TOME, onCommentSaved, userRate * 2., userComment).then(() => { }).catch(() => { });
-  }
-
-  const onCommentSaved = (result) => {
-    setErrortext(result.error);
-    setLoading(false);
-    setShowUserComment(false);
   }
 
   return (
@@ -240,16 +203,23 @@ function AlbumScreen({ route, navigation }) {
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
           {loading ? LoadingIndicator() : null}
-          {comments.length > 0 ?
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow:1, marginTop: 10, marginBottom: 10 }}>
+          {filteredComments().length > 0 ?
+              <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
               onPress={onShowComments}>
               Lire les avis
             </Text> : null}
+          {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+            <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+              onPress={() => setShowUserComment(true)}>
+              Noter cet album
+            </Text> : null}
+            </View>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
           <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
-          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Info Album</Text>
+          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Infos Album</Text>
         </View>
 
         <View>
@@ -265,15 +235,15 @@ function AlbumScreen({ route, navigation }) {
                     <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
                       <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur.name)}</Text>
                     </TouchableOpacity>
-                    <Text>{index != (array.length - 1) ? ' / ' : ''}</Text>
+                    <Text style={CommonStyles.defaultText}>{index != (array.length - 1) ? ' / ' : ''}</Text>
                   </View>
               })
             }
             {
-              Helpers.isAlbumBW(album) ? <Text> - N&B</Text> : null
+              Helpers.isAlbumBW(album) ? <Text style={CommonStyles.defaultText}> - N&B</Text> : null
             }
           </View>
-          <Text>Genre : {album.NOM_GENRE}</Text>
+          <Text style={CommonStyles.defaultText}>Genre : {album.NOM_GENRE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
             <TouchableOpacity
@@ -281,20 +251,27 @@ function AlbumScreen({ route, navigation }) {
               title="Editions">
               {albumEditionsData.length > 1 ?
                 <Text style={CommonStyles.albumEditionButtonStyle}>
-                  {' '}{album.NOM_EDITION}{' '}
+                  {' '}{album.NOM_EDITION} <MaterialCommunityIcons name='menu-down' size={16} color={CommonStyles.markerIconStyle} />{' '}
                 </Text> : <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
           {Helpers.getDateParutionAlbum(album) != '' ?
-            <Text>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
+            <Text style={CommonStyles.defaultText}>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
             : null}
-          <AchatSponsorIcon album={album} />
+          <TouchableOpacity onPress={() => setShowMoreInfos(showMoreInfos => !showMoreInfos)}>
+            <Text style={[CommonStyles.defaultText, { textAlign: 'right' }]}>
+              <MaterialCommunityIcons name={showMoreInfos ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />
+            </Text>
+            {showMoreInfos && album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
+            {showMoreInfos && album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
+            {showMoreInfos && album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
+            {showMoreInfos && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
+            {showMoreInfos && album.PRIX_BDNET ? <Text style={CommonStyles.defaultText}>Prix BDNET : {album.PRIX_BDNET}€</Text> : null}
+          </TouchableOpacity>
+          <AchatSponsorIcon album={album}/>
+          {album.HISTOIRE_TOME ?
           <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-          {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-              onPress={onUserComment}>
-              Noter / commenter cet album
-            </Text> : null}
+          : null}
         </View>
 
         {errortext ? (
@@ -303,7 +280,7 @@ function AlbumScreen({ route, navigation }) {
           </Text>
         ) : null}
         {similAlbums.length > 0 ?
-          <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
+          <View style={{ marginVertical: 10, alignItems: 'center' }}>
             <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText, { marginBottom: 10 }]}>A voir aussi</Text>
             <FlatList
               horizontal
@@ -318,8 +295,7 @@ function AlbumScreen({ route, navigation }) {
 
         {/* Editions chooser */}
         <BottomSheet
-          isVisible={showEditionsChooser}
-          containerStyle={CommonStyles.bottomSheetContainerStyle}>
+          isVisible={showEditionsChooser}>
           <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
             <ListItem.Content>
               <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Editions</ListItem.Title>
@@ -345,70 +321,17 @@ function AlbumScreen({ route, navigation }) {
       </ScrollView>
 
       {/* Comments */}
-      <Modal
-        animationType='slide'
-        transparent={true}
+      <CommentsPanel
+        comments={comments}
         isVisible={showComments}
-        onBackdropPress={() => setShowComments(false)}
-        onRequestClose={() => setShowComments(false)}
-        onSwipeComplete={() => setShowComments(false)}
-        swipeDirection={['down']}
-        useNativeDriver={false}
-        propagateSwipe>
-        <View style={CommonStyles.modalViewStyle}>
-          <FlatList
-            legacyImplementation={false}
-            data={comments}
-            renderItem={renderComment}
-            keyExtractor={({ item }, index) => index}
-            ItemSeparatorComponent={Helpers.renderSeparator}
-            style={{ width: '100%' }}
-          />
-        </View>
-      </Modal>
+        visibleSetter={setShowComments} />
 
       {/* Comments */}
-      <Modal
-        animationType='slide'
-        transparent={true}
+      <UserCommentPanel
+        album={album}
         isVisible={showUserComment}
-        onBackdropPress={() => setShowUserComment(false)}
-        onRequestClose={() => setShowUserComment(false)}
-        onSwipeComplete={() => setShowUserComment(false)}
-        swipeDirection={['down']}
-        useNativeDriver={false}
-        propagateSwipe>
-        <View style={CommonStyles.modalViewStyle}>
-          <View style={{ marginTop: 10, width: '80%' }}>
-            <View style={{ margin: 0, alignItems: 'center' }}>
-              <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
-              <View style={{ marginVertical: 10 }}>
-                <RatingStars note={userRate} editable={true} callback={setUserRate} />
-              </View>
-              <TextInput
-                multiline={true}
-                numberOfLines={10}
-                editable
-                textContentType={'none'}
-                style={[CommonStyles.commentsTextInputStyle, { flex: 0, width: '100%', margin: 0 }]}
-                onChangeText={(comment) => setUserComment(comment)}
-                value={userComment}
-                autoFocus={true}
-              />
-              <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-                onPress={onSaveComment}>
-                Enregistrer votre avis
-              </Text>
-            </View>
-            {loading ? <SmallLoadingIndicator /> : null}
-            {errortext ? (
-              <Text style={CommonStyles.errorTextStyle}>
-                {errortext}
-              </Text>
-            ) : null}
-          </View>
-        </View>
-      </Modal>
+        visibleSetter={setShowUserComment}
+        comments={comments} />
     </View>
   );
 }

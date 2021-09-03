@@ -169,8 +169,10 @@ export let CommonStyles = EStyleSheet.create({
   },
   sectionAlbumStyle: {
     backgroundColor: '$sectioncolor',
-    color: 'white',
+    color: '$textcolor',
     width: '100%',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   albumEditionButtonStyle: {
     backgroundColor: bdovorgray,
@@ -290,20 +292,18 @@ export let CommonStyles = EStyleSheet.create({
     borderTopRightRadius: 10,
     color: '$textcolor',
     alignSelf: 'center',
-    borderBottomWidth: 1.0,
-    borderColor: 'lightgray'
   },
   bottomSheetItemContainerStyle: {
     backgroundColor: '$bg',
     alignSelf: 'center',
-    borderBottomWidth: 1.0,
-    borderColor: 'lightgray'
+    borderTopWidth: 1,
+    borderColor: '$sectioncolor'
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: bdovored,
     alignSelf: 'center',
-    borderBottomWidth: 1.0,
-    borderColor: 'lightgray'
+    borderTopWidth: 1,
+    borderColor: '$sectioncolor'
   },
   bottomSheetItemTextStyle: {
     color: bdovored,

@@ -27,40 +27,42 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
-import { Image } from 'react-native-elements';
+import { Switch, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { bdovored, CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
+import { BottomSheet } from '../components/BottomSheet';
 
+function SettingsPanel({ isVisible, visibleSetter }) {
 
-export function CoverImage({ source, style, noResize, largeMode }) {
-  const [width, setWidth] = useState(AlbumImageWidth);
-  const [height, setHeight] = useState(AlbumImageHeight);
+  const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
 
   useEffect(() => {
-    if (largeMode) {
-      Image.getSize(source, (srcWidth, srcHeight) => {
-        if (srcWidth > srcHeight) {
-          setWidth(FullAlbumImageHeight * 2);
-          setHeight(FullAlbumImageHeight);
-        } else {
-          setWidth(FullAlbumImageWidth);
-          setHeight(FullAlbumImageHeight);
-        }
-      }, (error) => { console.debug(error); });
-    }
-  });
+  }, []);
 
-  const nodownload = !global.isConnected || (global.imageOnWifi && global.connectionType != 'wifi');
+  const onSwitchImageOnWifi = (value) => {
+    setImageOnWifi(value);
+    global.imageOnWifi = value;
+    AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => {});
+  };
 
   return (
-    <Image
-      source={{
-        uri: source,
-        cache: nodownload ? 'only-if-cached' : 'default',
-      }}
-      style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
-      PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
-    />
+    <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
+      <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
+        <View style={{ flexDirection: 'row', flex:1, width: '80%', marginHorizontal: 10, justifyContent: 'space-between' }}>
+          <Text style={[CommonStyles.defaultText,]}>Images uniquement en Wifi</Text>
+          <View style={{flex:1}}></View>
+          <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
+            style={{ marginTop: -5}}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+        <View style={{ height: 20 }}></View>
+        <Text style={[CommonStyles.defaultText, CommonStyles.linkTextStyle, CommonStyles.center]}
+          onPress={() => visibleSetter(false)}>Fermer</Text>
+      </View>
+    </BottomSheet>
   );
 }
+
+export default SettingsPanel;

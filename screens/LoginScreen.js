@@ -44,33 +44,49 @@ function LoginScreen({ navigation }) {
 
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
-  const [passwd, setPasswd] = useState("dummypwd");
-  const [pseudo, setPseudo] = useState('dummyuser');
+  const [passwd, setPasswd] = useState('');
+  const [pseudo, setPseudo] = useState('');
   const [showAbout, setShowAbout] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
 
   useEffect(() => {
-    AsyncStorage.multiGet(['pseudo', 'passwd']).then((response) => {
+    AsyncStorage.multiGet(['login', 'passwd']).then((response) => {
       setPseudo(response[0][1]);
       setPasswd(response[1][1]);
     }).catch((error) => { console.debug(error) });
   }, []);
 
+  const checkLoginForDatabase = (callback) => {
+    AsyncStorage.getItem('login').then(log => {
+      if (login != log) {
+        console.debug('User change - resetting the database');
+        CollectionManager.resetDatabase();
+        callback();
+      }
+    }).catch((error) => {
+        callback();
+     });
+  }
+
   const onLoginPress = () => {
     setLoading(true);
-    global.isConnected = true;
-    //if (global.isConnected) {
+    global.forceOffline = false;
+    if (global.isConnected) {
+      CollectionManager.resetDatabase();
       APIManager.loginBdovore(pseudo, passwd, onConnected);
-    /*} else {
-      Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion internet désactivée.")
+    } else {
+      Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion Internet désactivée.")
       onConnected({ error: '', token: 'offline-' + Date.now() });
-    }*/
+    }
   }
 
   const onOfflinePress = () => {
+    global.forceOffline = true;
     global.isConnected = false;
-    Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion internet désactivée.")
-    onConnected({ error: '', token: 'offline-' + Date.now() });
+    checkLoginForDatabase(() => {
+      Helpers.showToast(false, 'Utilisation forcée en mode off-line.', 'Connexion au serveur désactivée.')
+      onConnected({ error: '', token: 'offline-' + Date.now() });
+    });
   }
 
   const onConnected = (data) => {
@@ -79,13 +95,13 @@ function LoginScreen({ navigation }) {
 
     if (data.error == '') {
       CollectionManager.initialize();
-      AsyncStorage.setItem('token', data.token).then(() => {
-        AsyncStorage.multiSet([
-          ['pseudo', pseudo],
-          ['passwd', passwd],
-          ['collecFetched', 'false']], () => { });
-        navigation.goBack();
-      });
+      AsyncStorage.multiSet([
+        ['token', data.token],
+        ['login', pseudo],
+        ['passwd', passwd],
+        ['collecFetched', 'false']], () => { }).then(() => {
+          navigation.goBack();
+        }).catch((error) => console.debug(error));
     }
     else {
       console.debug('error on connection: ' + data.error);
@@ -156,7 +172,7 @@ function LoginScreen({ navigation }) {
   const onToggleSponsoredLinks = () => {
     if (Platform.OS != 'ios') {
       global.hideSponsoredLinks = !global.hideSponsoredLinks;
-      AsyncStorage.setItem('hideSponsoredLinks', global.hideSponsoredLinks.toString());
+      AsyncStorage.setItem('hideSponsoredLinks', global.hideSponsoredLinks ? '1' : '0');
       Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');
     }
   }

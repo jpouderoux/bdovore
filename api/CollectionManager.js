@@ -52,22 +52,23 @@ const AlbumSchema =
   FLG_TETE: 'string?',
   FLG_TYPE_TOME: 'string?',
   HISTOIRE_TOME: 'string?',
-  ID_COLLECTION: 'int',
-  ID_COLOR: 'int',
-  ID_COLOR_ALT: 'int',
+  ID_COLLECTION: 'int?',
+  ID_COLOR: 'int?',
+  ID_COLOR_ALT: 'int?',
   ID_DESSIN: 'string?',
-  ID_DESSIN_ALT: 'int',
+  ID_DESSIN_ALT: 'int?',
   ID_EDITEUR: 'int',
   ID_EDITION: 'int',
-  ID_GENRE: 'int',
-  ID_SCENAR: 'int',
-  ID_SCENAR_ALT: 'int',
+  ID_GENRE: 'int?',
+  ID_SCENAR: 'int?',
+  ID_SCENAR_ALT: 'int?',
   ID_SERIE: 'int',
   ID_TOME: 'int',
   IMG_COUV: 'string?',
   ISBN_EDITION: 'string?',
   MOYENNE_NOTE_TOME: 'string?',
-  NB_NOTE_TOME: 'string?',
+  NB_NOTE_TOME: 'int?',
+  NBR_USER_ID_TOME: 'int?',
   NOM_COLLECTION: 'string?',
   NOM_EDITEUR: 'string?',
   NOM_EDITION: 'string?',
@@ -116,10 +117,20 @@ const SerieSchema = {
 function createEntry(schema, item) {
   let album = {};
   for (const [key, value] of Object.entries(item)) {
-    if (key in schema && schema[key].startsWith('int')) {
-      album[key] = value == null ? 0 : parseInt(value);
-    } else {
-      album[key] = value;
+    if (value != null && key in schema) {
+      const keytype = schema[key] ?? '';
+      if (keytype.startsWith('int')) {
+        album[key] = isNaN(parseInt(value)) ? 0 : parseInt(value);
+      } else if (keytype.startsWith('float')) {
+        album[key] = parseFloat(value);
+      } else if (keytype.startsWith('string')) {
+        album[key] = value;
+      } else {
+        //console.debug('Unknown type (' + keytype + ') for key ' + key);
+      }
+    }
+    else {
+      //console.debug('skip ' + key+ ' = ' + value);
     }
   }
   if (album.ID_EDITION && album.ID_TOME) {
@@ -146,20 +157,6 @@ class CCollectionManager {
 
   constructor() {
     this.release();
-
-    //Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
-    global.db = null;
-    Realm.open({
-      schema: [
-        { name: 'Albums', primaryKey: '_id', properties: AlbumSchema },
-        { name: 'Series', primaryKey: '_id', properties: SerieSchema },
-        { name: 'Wishes', primaryKey: '_id', properties: AlbumSchema }]
-    }).then(realm => {
-      global.db = realm;
-      console.debug('db initialized');
-      //realm.write(() => { realm.deleteAll(); });
-    }).catch(error => console.error(error));
-
     this.initialize();
   }
 
@@ -172,11 +169,51 @@ class CCollectionManager {
 
   initialize() {
     console.debug('init collection manager');
-    global.showExcludedAlbums = true;
+
+    this.initializeSettings();
+
+    this.initializeDatabase();
+  }
+
+  initializeSettings() {
     global.collectionManquantsUpdated = false;
+
+    global.showExcludedAlbums = true;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
-      global.showExcludedAlbums(value != 0);
+      global.showExcludedAlbums(value != '0');
     }).catch(() => { });
+
+    global.imageOnWifi = false;
+    AsyncStorage.getItem('imageOnWifi').then((value) => {
+      global.imageOnWifi(value != '0');
+    }).catch(() => { });
+
+    global.hideSponsoredLinks = true;
+    if (Platform.OS != 'ios') {
+      global.hideSponsoredLinks = false;
+      AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
+        global.hideSponsoredLinks(value != '0');
+      }).catch(() => { });
+    }
+  }
+
+  resetDatabase() {
+    Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
+    this.initializeDatabase();
+  }
+
+  initializeDatabase() {
+    this.release();
+    Realm.open({
+      schema: [
+        { name: 'Albums', primaryKey: '_id', properties: AlbumSchema },
+        { name: 'Series', primaryKey: '_id', properties: SerieSchema },
+        { name: 'Wishes', primaryKey: '_id', properties: AlbumSchema }]
+    }).then(realm => {
+      global.db = realm;
+      console.debug('db initialized');
+      //realm.write(() => { realm.deleteAll(); });
+    }).catch(error => console.error(error));
   }
 
   filterByOrigine(items, origine) {
@@ -488,20 +525,42 @@ class CCollectionManager {
   }
 
   resetAlbumFlags(album) {
+    const colAlb = this.getAlbumInCollection(album) ?? album;
+    if (!colAlb) {
+      console.debug('Error: unable to find album ' + album.ID_TOME + ' of serie ' + album.ID_SERIE + ' in collection!');
+      return;
+    }
     global.db.write(() => {
       album.FLG_ACHAT = 'N';
       album.FLG_LU = 'N';
       album.FLG_PRET = 'N';
       album.FLG_NUM = 'N';
       album.FLG_CADEAU = 'N';
+
+      colAlb.FLG_ACHAT = 'N';
+      colAlb.FLG_LU = 'N';
+      colAlb.FLG_PRET = 'N';
+      colAlb.FLG_NUM = 'N';
+      colAlb.FLG_CADEAU = 'N';
     });
   }
 
   setAlbumFlag(album, flagName, flag, callback = null) {
-    global.db.write(() => { album[flagName] = flag ? 'O' : 'N'; });
+    const colAlb = this.getAlbumInCollection(album) ?? album;
+    if (!colAlb) {
+      console.debug('Error: unable to find album ' + album.ID_TOME + ' of serie ' + album.ID_SERIE + ' in collection!');
+      return;
+    }
+    global.db.write(() => {
+      album[flagName] = flag ? 'O' : 'N';
+      colAlb[flagName] = flag ? 'O' : 'N';
+    });
     this.updateAlbumEdition(album, (result) => {
       if (result.error) {
-        global.db.write(() => { album[flagName] = flag ? 'N' : 'O'; });
+        global.db.write(() => {
+          album[flagName] = flag ? 'N' : 'O';
+          colAlb[flagName] = flag ? 'N' : 'O';
+      });
       }
       if (callback) {
         callback(result);
