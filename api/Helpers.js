@@ -220,7 +220,11 @@ export function removeHTMLTags(text) {
     text = text.replace(/&lt;/g, '<');
     text = text.replace(/&gt;/g, '>');
     text = text.replace(/&.*?;/gi, ' '); // catch any other "&...;" special chars
+    text = text.replace(/[\r\n]+$/, ''); // remove trailing carriage returns
+    text = text.replace(/^[\r\n]+/, ''); // remove trailing carriage returns
   }
+  console.log(text);
+  console.log("----")
   return text;
 }
 

@@ -187,6 +187,7 @@ function WishlistScreens({ navigation }) {
       </View>
     );
   }
+
   return (
     <WishlistStack.Navigator screenOptions={defaultStackOptions}>
       <WishlistStack.Screen name='Mes envies'
@@ -211,9 +212,41 @@ function WishlistScreens({ navigation }) {
 }
 
 function ToCompleteScreens({ navigation }) {
+
+  const [collectionGenre, setCollectionGenre] = useState(0);
+  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+
+  const onCollectionGenrePress = () => {
+    setShowCollectionChooser(!showCollectionChooser);
+  }
+
+  const settingsButton = (route, navigation) => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
+          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+
+        <CollectionPanel route={route}
+          navigation={navigation}
+          isVisible={showCollectionChooser}
+          visibleSetter={setShowCollectionChooser}
+          collectionGenre={collectionGenre}
+          setCollectionGenre={setCollectionGenre} />
+      </View>
+    );
+  }
+
   return (
     <ToCompleteStack.Navigator screenOptions={defaultStackOptions}>
-      <ToCompleteStack.Screen name='Albums manquants' component={ToCompleteScreen} />
+      <ToCompleteStack.Screen name='Albums manquants'
+        component={ToCompleteScreen}
+        options={({ route }) => {
+          route.params = { collectionGenre: collectionGenre };
+          return {
+            headerRight: () => settingsButton(route, navigation),
+          };
+        }} />
       <ToCompleteStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
       <ToCompleteStack.Screen name='Album' component={AlbumScreen}

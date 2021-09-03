@@ -46,11 +46,14 @@ import CollectionManager from '../api/CollectionManager';
 let loadingSteps = 0;
 let loadedAlbums = 0;
 let loadedSeries = 0;
+let collectionGenre = 0;
+let albums = [];
+let series = [];
 
-function ToCompleteScreen({ navigation }) {
+function ToCompleteScreen({ route, navigation }) {
 
-  const [albums, setAlbums] = useState([]);
-  const [series, setSeries] = useState([]);
+  const [filteredAlbums, setFilteredAlbums] = useState([]);
+  const [filteredSeries, setFilteredSeries] = useState([]);
   const [collectionType, setCollectionType] = useState(0); // 0: Albums, 1: Series
   const [nbTotalAlbums2, setNbTotalAlbums2] = useState(0);
   const [nbTotalSeries2, setNbTotalSeries2] = useState(0);
@@ -62,16 +65,28 @@ function ToCompleteScreen({ navigation }) {
   const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
 
+  collectionGenre = route.params.collectionGenre;
+
   const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: ('Albums manquants' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
+    });
+
+    applyAlbumsFilters();
+    applySeriesFilters();
+  }, [collectionGenre]);
+
   const refreshDataIfNeeded = () => {
     if (CollectionManager.isCollectionEmpty()) {
+      console.log("reseting!!!");
       setNbTotalAlbums2(0);
       setNbTotalSeries2(0);
-      setAlbums([]);
-      setSeries([]);
+      albums = [];
+      series = [];
     }
 
     AsyncStorage.getItem('token').then((token) => {
@@ -84,6 +99,21 @@ function ToCompleteScreen({ navigation }) {
         fetchData();
       }
     }).catch(() => { });
+
+    applyAlbumsFilters();
+    applySeriesFilters();
+  }
+
+  const applyAlbumsFilters = () => {
+    const genre = CollectionManager.CollectionGenres[collectionGenre][0];
+    setFilteredAlbums(albums.filter((album) =>
+      album.IS_EXCLU != true && (collectionGenre == 0 ? true : (album.ORIGINE == genre || (album.NOM_GENRE ? album.NOM_GENRE.startsWith(genre) : false)))));
+  }
+
+  const applySeriesFilters = () => {
+    const genre = CollectionManager.CollectionGenres[collectionGenre][0];
+    setFilteredSeries(series.filter((serie) =>
+      serie.IS_EXCLU != true && (collectionGenre == 0 ? true : (serie.ORIGINE == genre || (serie.NOM_GENRE ? serie.NOM_GENRE.startsWith(genre) : false)))));
   }
 
   useEffect(() => {
@@ -120,7 +150,7 @@ function ToCompleteScreen({ navigation }) {
   }
 
   const fetchAlbums = () => {
-    setAlbums([]);
+    albums = [];
     setNbTotalAlbums(0);
     setNbTotalAlbums2(0);
     loadedAlbums = 0;
@@ -133,15 +163,17 @@ function ToCompleteScreen({ navigation }) {
     console.debug(result.items.length + ' albums fetched so far');
     setNbTotalAlbums2(result.totalItems);
     nbTotalAlbums = result.totalItems;
-    setAlbums(result.items);
+    albums = result.items;
     setErrortext(result.error);
     loadedAlbums = result.items.length;
+
+    applyAlbumsFilters();
 
     makeProgress(result);
   }
 
   const fetchSeries = () => {
-    setSeries([]);
+    series = [];
     setNbTotalSeries(0);
     setNbTotalSeries2(0);
     loadedSeries = 0;
@@ -154,9 +186,11 @@ function ToCompleteScreen({ navigation }) {
     console.debug(result.items.length + ' series to complete fetched')
     setNbTotalSeries2(result.totalItems);
     nbTotalSeries = result.totalItems;
-    setSeries(result.items);
+    series = result.items;
     setErrortext(result.error);
     loadedSeries = result.items.length;
+
+    applySeriesFilters();
 
     makeProgress(result);
   }
@@ -187,10 +221,10 @@ function ToCompleteScreen({ navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(nbTotalAlbums2, 'album')}</Text>
+              {Helpers.pluralWord(filteredAlbums.length, 'album')}</Text>
           }, {
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(nbTotalSeries2, 'série')}</Text>
+              {Helpers.pluralWord(filteredSeries.length, 'série')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
@@ -211,7 +245,7 @@ function ToCompleteScreen({ navigation }) {
           {!loading && CollectionManager.isCollectionEmpty() ?
             <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
               <View style={{ flex: 1 }}></View>
-              <Text style={CommonStyles.defaultText}>Aucun album dans la collection.{'\n'}</Text>
+              <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
               <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
               <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
               <View style={{ flex: 1 }}></View>
@@ -221,9 +255,7 @@ function ToCompleteScreen({ navigation }) {
               initialNumToRender={6}
               maxToRenderPerBatch={6}
               windowSize={10}
-              data={(collectionType == 0 ?
-                albums.filter((album) => album.IS_EXCLU != true) :
-                series.filter((serie) => serie.IS_EXCLU != true))}
+              data={(collectionType == 0 ? filteredAlbums : filteredSeries)}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               ItemSeparatorComponent={Helpers.renderSeparator}
