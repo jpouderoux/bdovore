@@ -107,13 +107,13 @@ function ToCompleteScreen({ route, navigation }) {
   const applyAlbumsFilters = () => {
     const genre = CollectionManager.CollectionGenres[collectionGenre][0];
     setFilteredAlbums(albums.filter((album) =>
-      album.IS_EXCLU != true && (collectionGenre == 0 ? true : (album.ORIGINE == genre || (album.NOM_GENRE ? album.NOM_GENRE.startsWith(genre) : false)))));
+      album.IS_EXCLU != 1 && (collectionGenre == 0 ? true : (album.ORIGINE == genre || (album.NOM_GENRE ? album.NOM_GENRE.startsWith(genre) : false)))));
   }
 
   const applySeriesFilters = () => {
     const genre = CollectionManager.CollectionGenres[collectionGenre][0];
     setFilteredSeries(series.filter((serie) =>
-      serie.IS_EXCLU != true && (collectionGenre == 0 ? true : (serie.ORIGINE == genre || (serie.NOM_GENRE ? serie.NOM_GENRE.startsWith(genre) : false)))));
+      serie.IS_EXCLU != 1 && (collectionGenre == 0 ? true : (serie.ORIGINE == genre || (serie.NOM_GENRE ? serie.NOM_GENRE.startsWith(genre) : false)))));
   }
 
   useEffect(() => {

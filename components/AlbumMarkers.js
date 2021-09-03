@@ -176,10 +176,10 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
   };
 
   const onExcludeIt = async () => {
-    const exclude = !album.IS_EXCLU;
+    const exclude = !(album.IS_EXCLU == 1);
     const callback = (result) => {
       if (!result.error) {
-        album.IS_EXCLU = exclude;
+        album.IS_EXCLU = exclude ? 1 : 0;
         setIsExcluded(exclude);
       }};
     if (exclude) {

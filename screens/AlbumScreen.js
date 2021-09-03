@@ -86,7 +86,7 @@ function AlbumScreen({ route, navigation }) {
     if (album.IS_EXCLU == undefined && global.isConnected) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
-          album.IS_EXCLU = result.items != 0;
+          album.IS_EXCLU = (result.items != 0) ? 1 : 0;
         }
       });
     }
@@ -137,7 +137,7 @@ function AlbumScreen({ route, navigation }) {
     navigation.push('Album', { item });
   }
 
-  const onShowSerieScreen = async () => {
+  const onShowSerieScreen = () => {
     if (global.isConnected) {
       setLoading(true);
       APIManager.fetchSerie(album.ID_SERIE, (result) => {

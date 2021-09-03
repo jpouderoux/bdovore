@@ -117,20 +117,31 @@ const SerieSchema = {
 function createEntry(schema, item) {
   let album = {};
   for (const [key, value] of Object.entries(item)) {
-    if (value != null && key in schema) {
-      const keytype = schema[key] ?? '';
-      if (keytype.startsWith('int')) {
-        album[key] = isNaN(parseInt(value)) ? 0 : parseInt(value);
-      } else if (keytype.startsWith('float')) {
-        album[key] = parseFloat(value);
-      } else if (keytype.startsWith('string')) {
-        album[key] = value;
-      } else {
-        //console.debug('Unknown type (' + keytype + ') for key ' + key);
+    try {
+      if (value != null && key in schema) {
+        const keytype = schema[key] ?? '';
+        if (keytype.startsWith('int')) {
+          if (value == true) {
+            album[key] = 1;
+          } if (value == false) {
+            album[key] = 0;
+          } else {
+            album[key] = isNaN(parseInt(value)) ? 0 : parseInt(value);
+          }
+        } else if (keytype.startsWith('float')) {
+          album[key] = parseFloat(value);
+        } else if (keytype.startsWith('string')) {
+          album[key] = value;
+        } else {
+          //console.debug('Unknown type (' + keytype + ') for key ' + key);
+        }
+      }
+      else {
+        //console.debug('skip ' + key+ ' = ' + value);
       }
     }
-    else {
-      //console.debug('skip ' + key+ ' = ' + value);
+    catch (error) {
+      console.debug(error);
     }
   }
   if (album.ID_EDITION && album.ID_TOME) {
@@ -671,7 +682,10 @@ class CCollectionManager {
   setSerieExcludeFlag(serie, isExcluded) {
     let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
     if (ret.length > 0) {
-      ret[0].IS_EXCLU = isExcluded ? '1' : '0';
+      global.db.write(() => {
+        ret[0].IS_EXCLU = isExcluded ? 1 : 0;
+        serie.IS_EXCLU = isExcluded ? 1 : 0;
+      });
     }
   }
 

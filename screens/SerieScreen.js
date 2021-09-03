@@ -53,27 +53,34 @@ function SerieScreen({ route, navigation }) {
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
 
   useFocusEffect(() => {
-    CollectionManager.refreshAlbumSeries(serieAlbums);
-    refreshFilteredAlbums();
+    refreshAlbums();
   });
 
-  const refreshDataIfNeeded = async () => {
-    console.debug("refresh data serie " + serie.ID_SERIE);
+  const refreshDataIfNeeded = () => {
     if (!serieAlbumsLoaded) {
-      setSerieAlbumsLoaded(true);
+      console.debug("refresh data serie " + serie.ID_SERIE);
       fetchData();
     }
+    refreshAlbums();
   }
 
   useEffect(() => {
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
       setShowExcludedAlbums(value != 0);
     }).catch(() => { });
-    refreshDataIfNeeded();
+  }, []);
+
+  useEffect(() => {
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      refreshDataIfNeeded();
+    });
+    return willFocusSubscription;
   }, []);
 
   const fetchData = () => {
     setSerieAlbums([]);
+    setSerieAlbumsLoaded(true);
     if (global.isConnected) {
       setLoading(true);
       setErrortext('');
@@ -140,13 +147,15 @@ function SerieScreen({ route, navigation }) {
           // Transform the result array into a dictionary for fast&easy access
           let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
           // Check all albums in all sections and set their exclude flag
-          newdata.forEach(section => {
-            section.data.forEach(album => {
-              album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1);
+          global.db.write(() => {
+            newdata.forEach(section => {
+              section.data.forEach(album => {
+                album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1) ? 1 : 0;
+              })
             })
           });
           for (let i = 0; i < newdata.length; i++) {
-            filtereddata[i].data = newdata[i].data.filter(album => album.IS_EXCLU != true);
+            filtereddata[i].data = newdata[i].data.filter(album => !album.IS_EXCLU);
           }
           setFilteredSerieAlbums(filtereddata);
         } else {
@@ -156,10 +165,14 @@ function SerieScreen({ route, navigation }) {
     }
   }
 
-  const refreshFilteredAlbums = () => {
-    for (let i = 0; i < filteredSerieAlbums.length; i++) {
-      filteredSerieAlbums[i].data = serieAlbums[i].data.filter(album => album.IS_EXCLU != true);
+  const refreshAlbums = () => {
+    if (!showExcludedAlbums) {
+      for (let i = 0; i < filteredSerieAlbums.length; i++) {
+        filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !album.IS_EXCLU);
+      }
     }
+    CollectionManager.refreshAlbumSeries(serieAlbums);
+    CollectionManager.refreshAlbumSeries(filteredSerieAlbums);
   }
 
   const renderAlbum = ({ item, index }) =>

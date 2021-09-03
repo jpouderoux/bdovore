@@ -53,11 +53,13 @@ export function SerieMarkers({ item, style, showExclude }) {
   }, [item]);
 
   const onExcludeIt = async () => {
-    const exclude = !(serie.IS_EXCLU == '1');
+    const exclude = !(serie.IS_EXCLU == 1);
     const callback = (result) => {
       if (!result.error) {
-        serie.IS_EXCLU = exclude ? '1' : '0';
-        setIsExcluded(exclude == '1');
+        global.db.write(() => {
+          serie.IS_EXCLU = exclude ? 1 : 0;
+        });
+        setIsExcluded(exclude == 1);
       }};
     if (exclude) {
       APIManager.excludeSerie(serie, callback);
@@ -73,8 +75,8 @@ export function SerieMarkers({ item, style, showExclude }) {
 
       {showExclude ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == '1' ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? {fontWeight: 'bold'} : null]} />
-          <Text style={[CommonStyles.markerTextStyle, serie.IS_EXCLU == '1' ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? {fontWeight: 'bold'} : null]} />
+          <Text style={[CommonStyles.markerTextStyle, serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 
     </View>);

@@ -223,8 +223,6 @@ export function removeHTMLTags(text) {
     text = text.replace(/[\r\n]+$/, ''); // remove trailing carriage returns
     text = text.replace(/^[\r\n]+/, ''); // remove trailing carriage returns
   }
-  console.log(text);
-  console.log("----")
   return text;
 }
 
