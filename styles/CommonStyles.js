@@ -175,11 +175,12 @@ export let CommonStyles = EStyleSheet.create({
     borderTopRightRadius: 10,
   },
   albumEditionButtonStyle: {
-    backgroundColor: bdovorgray,
+    backgroundColor: '$sectioncolor',
     borderColor: '$textcolor',
     color: '$textcolor',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderRadius: 5,
+    paddingLeft: 5,
   },
   sectionListStyle: {
     backgroundColor: '$sectioncolor',

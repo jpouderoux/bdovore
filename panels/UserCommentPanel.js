@@ -27,8 +27,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -90,7 +91,6 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
     setErrortext(result.error);
     setLoading(false);
     if (!result.error) {
-      visibleSetter(false);
       // Add the updated or new comment into the local/temporary copy of album comments
       const existingComment = comments.find((item) => item.username == login);
       if (existingComment) {
@@ -100,6 +100,26 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
       } else {
         comments.unshift(MakeComment(album, comment, rate * 2., login));
       }
+      visibleSetter(false);
+    }
+  }
+
+  const onDeleteComment = () => {
+    setLoading(true);
+    setErrortext('');
+    APIManager.sendAlbumComment(album.ID_TOME, onDeleteCommentSaved, 0, '').then(() => { }).catch(() => { });
+  }
+
+  const onDeleteCommentSaved = (result) => {
+    setErrortext(result.error);
+    setLoading(false);
+    if (!result.error) {
+      // Add the updated or new comment into the local/temporary copy of album comments
+      const existingComment = comments.find((item) => item.username == login);
+      if (existingComment) {
+        comments.splice(existingComment, 1);
+      }
+      visibleSetter(false);
     }
   }
 
@@ -122,10 +142,20 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
               value={comment}
               autoFocus={true}
             />
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, marginBottom: 10 }]}
-              onPress={onSaveComment}>
-              Enregistrer votre avis
-            </Text>
+
+            <View style={{ flexDirection: 'row', marginVertical: 15}}>
+              <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center' }} onPress={onDeleteComment}>
+                <MaterialCommunityIcons name='trash-can-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+                <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Supprimer</Text>
+              </TouchableOpacity>
+              <View style={{width:'50%'}}></View>
+              <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center' }} onPress={onSaveComment}>
+                <MaterialCommunityIcons name='file-send-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+                <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Enregistrer</Text>
+              </TouchableOpacity>
+
+            </View>
+
           </View>
           {loading ? <SmallLoadingIndicator /> : null}
           {errortext ? (

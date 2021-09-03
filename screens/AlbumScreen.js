@@ -78,7 +78,7 @@ function AlbumScreen({ route, navigation }) {
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
     }
     if (!global.isConnected) {
-      onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: ''});
+      onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
     }
   }
 
@@ -203,18 +203,18 @@ function AlbumScreen({ route, navigation }) {
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
           </View>
           {loading ? LoadingIndicator() : null}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow:1, marginTop: 10, marginBottom: 10 }}>
-          {filteredComments().length > 0 ?
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10, marginBottom: 10 }}>
+            {filteredComments().length > 0 ?
               <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
-              onPress={onShowComments}>
-              Lire les avis
-            </Text> : null}
-          {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
-            <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
-              onPress={() => setShowUserComment(true)}>
-              Noter cet album
-            </Text> : null}
-            </View>
+                onPress={onShowComments}>
+                Lire les avis
+              </Text> : null}
+            {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+              <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+                onPress={() => setShowUserComment(true)}>
+                Noter cet album
+              </Text> : null}
+          </View>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
           <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
@@ -251,7 +251,7 @@ function AlbumScreen({ route, navigation }) {
               title="Editions">
               {albumEditionsData.length > 1 ?
                 <Text style={CommonStyles.albumEditionButtonStyle}>
-                  {' '}{album.NOM_EDITION} <MaterialCommunityIcons name='menu-down' size={16} color={CommonStyles.markerIconStyle} />{' '}
+                  {' '}{album.NOM_EDITION} <MaterialCommunityIcons name={showEditionsChooser ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />{' '}
                 </Text> : <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>
@@ -268,10 +268,10 @@ function AlbumScreen({ route, navigation }) {
             {showMoreInfos && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
             {showMoreInfos && album.PRIX_BDNET ? <Text style={CommonStyles.defaultText}>Prix BDNET : {album.PRIX_BDNET}€</Text> : null}
           </TouchableOpacity>
-          <AchatSponsorIcon album={album}/>
+          <AchatSponsorIcon album={album} />
           {album.HISTOIRE_TOME ?
-          <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-          : null}
+            <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+            : null}
         </View>
 
         {errortext ? (
