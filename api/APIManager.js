@@ -29,6 +29,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
+import { showToast } from '../api/Helpers';
 
 const bdovoreUserAgent = 'bdovore ' + Platform.OS + ' v0.1';
 
@@ -147,7 +148,7 @@ export function loginBdovore(pseudo, passwd, callback) {
       }
     })
     .catch((error) => {
-      Helpers.showToast(true,
+      showToast(true,
         'Erreur de connexion au serveur.',
         'Vérifiez la connexion internet.',
         1500);
@@ -219,7 +220,7 @@ export async function fetchJSON(request, context, callback, params = {},
     .catch((error) => {
       if (retry > 0 && global.isConnected) {
         if (global.verbose) {
-          Helpers.showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
+          showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
         }
         console.debug("Retry " + retry);
         reloginBdovore(context ? context.navigation : null, () => {

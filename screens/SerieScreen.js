@@ -41,6 +41,7 @@ import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieMarkers } from '../components/SerieMarkers';
 
+let serieAlbumsLoaded = 0;
 
 function SerieScreen({ route, navigation }) {
 
@@ -49,7 +50,6 @@ function SerieScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [serie, setSerie] = useState(route.params.item);
   const [serieAlbums, setSerieAlbums] = useState([]);
-  const [serieAlbumsLoaded, setSerieAlbumsLoaded] = useState(false);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
 
   useFocusEffect(() => {
@@ -57,8 +57,9 @@ function SerieScreen({ route, navigation }) {
   });
 
   const refreshDataIfNeeded = () => {
-    if (!serieAlbumsLoaded) {
+    if (serieAlbumsLoaded != serie.ID_SERIE) {
       console.debug("refresh data serie " + serie.ID_SERIE);
+      serieAlbumsLoaded = serie.ID_SERIE;
       fetchData();
     }
     refreshAlbums();
@@ -80,7 +81,6 @@ function SerieScreen({ route, navigation }) {
 
   const fetchData = () => {
     setSerieAlbums([]);
-    setSerieAlbumsLoaded(true);
     if (global.verbose) {
       Helpers.showToast(false, 'Téléchargement de la série...');
     }
@@ -95,6 +95,7 @@ function SerieScreen({ route, navigation }) {
 
   const onSerieAlbumsFetched = async (result) => {
     console.debug("serie albums fetched");
+    console.log('loaded:' + serieAlbumsLoaded);
 
     let newdata = [
       { title: 'Albums', data: [] },
