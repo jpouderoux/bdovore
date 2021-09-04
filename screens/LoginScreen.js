@@ -71,16 +71,21 @@ function LoginScreen({ navigation }) {
   const onLoginPress = () => {
     setLoading(true);
     global.forceOffline = false;
-    if (global.isConnected) {
-      CollectionManager.resetDatabase();
-      APIManager.loginBdovore(pseudo, passwd, onConnected);
-    } else {
-      Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion Internet désactivée.")
-      onConnected({ error: '', token: 'offline-' + Date.now() });
-    }
+
+    NetInfo.fetch().then(state => {
+      global.isConnected = state.isConnected;
+      if (global.isConnected) {
+        CollectionManager.resetDatabase();
+        APIManager.loginBdovore(pseudo, passwd, onConnected);
+      } else {
+        Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion Internet désactivée.")
+        onConnected({ error: '', token: 'offline-' + Date.now() });
+      }
+    });
   }
 
   const onOfflinePress = () => {
+    setLoading(true);
     global.forceOffline = true;
     global.isConnected = false;
     checkLoginForDatabase(() => {

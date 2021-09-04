@@ -29,11 +29,10 @@
 import 'react-native-gesture-handler';
 
 import React, { useEffect } from 'react';
-import { Platform, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 
 import MainTab from './routes/MainTab';

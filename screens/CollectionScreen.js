@@ -76,6 +76,7 @@ let loadingSteps = 0;
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
 let collectionGenre = 0;
+let cachedToken = '';
 
 function CollectionScreen({ route, navigation }) {
 
@@ -92,7 +93,6 @@ function CollectionScreen({ route, navigation }) {
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const [progressRate, setProgressRate] = useState(0);
-  let [cachedToken, setCachedToken] = useState('');
 
   collectionGenre = route.params.collectionGenre;
 
@@ -104,7 +104,6 @@ function CollectionScreen({ route, navigation }) {
     AsyncStorage.getItem('token').then((token) => {
       if (token !== cachedToken) {
         console.debug('refresh collection data because token changed to ' + token);
-        setCachedToken(token);
         cachedToken = token;
         fetchData();
       }
@@ -118,7 +117,7 @@ function CollectionScreen({ route, navigation }) {
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, [cachedToken]);
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
