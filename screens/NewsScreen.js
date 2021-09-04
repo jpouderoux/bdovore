@@ -99,6 +99,9 @@ function NewsScreen({ navigation }) {
   const fetchData = () => {
     setOffline(!global.isConnected);
     if (global.isConnected) {
+      if (global.verbose) {
+        Helpers.showToast(false, 'Téléchargement des news...');
+      }
       fetchUserNewsData();
       fetchNewsData(newsMode);
     }

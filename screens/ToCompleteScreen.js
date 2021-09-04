@@ -139,6 +139,9 @@ function ToCompleteScreen({ route, navigation }) {
 
   const fetchData = () => {
     if (global.isConnected) {
+      if (global.verbose) {
+        Helpers.showToast(false, 'Téléchargement des albums/séries manquants...');
+      }
       global.collectionManquantsUpdated = true;
       setLoading(true);
       setProgressRate(0);

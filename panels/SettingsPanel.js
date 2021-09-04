@@ -36,6 +36,7 @@ import { BottomSheet } from '../components/BottomSheet';
 function SettingsPanel({ isVisible, visibleSetter }) {
 
   const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
+  const [verbose, setVerbose] = useState(global.verbose);
 
   useEffect(() => {
   }, []);
@@ -46,10 +47,17 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => {});
   };
 
+  const onSwitchVerbose = (value) => {
+    setVerbose(value);
+    global.verbose = value;
+    AsyncStorage.setItem('verbose', value ? '1' : '0').catch((error) => { });
+  };
+
   return (
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
-        <View style={{ flexDirection: 'row', flex:1, width: '80%', marginHorizontal: 10, justifyContent: 'space-between' }}>
+
+        <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
           <Text style={[CommonStyles.defaultText,]}>Images uniquement en Wifi</Text>
           <View style={{flex:1}}></View>
           <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
@@ -57,6 +65,19 @@ function SettingsPanel({ isVisible, visibleSetter }) {
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
+
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0,
+          borderTopColor: CommonStyles.separatorStyle.borderBottomColor}}>
+          <Text style={[CommonStyles.defaultText,]}>Informations de débogage</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={verbose} onValueChange={onSwitchVerbose}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
         <View style={{ height: 20 }}></View>
         <Text style={[CommonStyles.defaultText, CommonStyles.linkTextStyle, CommonStyles.center]}
           onPress={() => visibleSetter(false)}>Fermer</Text>

@@ -81,6 +81,9 @@ function SerieScreen({ route, navigation }) {
   const fetchData = () => {
     setSerieAlbums([]);
     setSerieAlbumsLoaded(true);
+    if (global.verbose) {
+      Helpers.showToast(false, 'Téléchargement de la série...');
+    }
     if (global.isConnected) {
       setLoading(true);
       setErrortext('');

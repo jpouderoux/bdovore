@@ -73,6 +73,9 @@ function AlbumScreen({ route, navigation }) {
       setLoading(true);
       setEditionsLoaded(true);
       setSimilAlbums([]);
+      if (global.verbose) {
+        Helpers.showToast(false, 'Téléchargement de l\'album...');
+      }
       CollectionManager.fetchAlbumEditions(album, onAlbumEditionsFetched);
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);

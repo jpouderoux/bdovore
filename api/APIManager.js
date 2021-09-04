@@ -218,6 +218,9 @@ export async function fetchJSON(request, context, callback, params = {},
     })
     .catch((error) => {
       if (retry > 0 && global.isConnected) {
+        if (global.verbose) {
+          Helpers.showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
+        }
         console.debug("Retry " + retry);
         reloginBdovore(context ? context.navigation : null, () => {
           fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);

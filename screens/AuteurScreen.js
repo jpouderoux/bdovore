@@ -68,6 +68,9 @@ function AuteurScreen({ route, navigation }) {
     setNbSeries(-1);
     setNbAlbums(-1);
     setErrortext('');
+    if (global.verbose) {
+      Helpers.showToast(false, 'Téléchargement de l\'auteur...');
+    }
     APIManager.fetchAlbum(onAuteurAlbumsFetched, { id_auteur: item.ID_AUTEUR });
   }
 
