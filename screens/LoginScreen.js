@@ -48,6 +48,7 @@ function LoginScreen({ navigation }) {
   const [pseudo, setPseudo] = useState('');
   const [showAbout, setShowAbout] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
+  const passwdInputRef = useRef();
 
   useEffect(() => {
     AsyncStorage.multiGet(['login', 'passwd']).then((response) => {
@@ -89,6 +90,7 @@ function LoginScreen({ navigation }) {
     global.forceOffline = true;
     global.isConnected = false;
     checkLoginForDatabase(() => {
+      console.debug('Utilisation forcée en mode off - line.');
       Helpers.showToast(false, 'Utilisation forcée en mode off-line.', 'Connexion au serveur désactivée.')
       onConnected({ error: '', token: 'offline-' + Date.now() });
     });
@@ -99,7 +101,7 @@ function LoginScreen({ navigation }) {
     setErrortext(data.error);
 
     if (data.error == '') {
-      CollectionManager.initialize();
+      //CollectionManager.initialize();
       AsyncStorage.multiSet([
         ['token', data.token],
         ['login', pseudo],
@@ -203,19 +205,23 @@ function LoginScreen({ navigation }) {
           textContentType='username'  // iOS
           autoCompleteType='username' // Android
           onChangeText={(pseudo) => setPseudo(pseudo)}
+          onSubmitEditing={() => { passwdInputRef.current.focus(); }}
+          blurOnSubmit={false}
         />
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text>
         <TextInput
           style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+          ref={passwdInputRef}
           placeholder='Mot de passe'
           secureTextEntry={true}
           value={passwd}
           autoCapitalize='none'
-          blurOnSubmit={true}
-          returnKeyType='next'
+          returnKeyType='go'
           textContentType='password'  // iOS
           autoCompleteType='password' // Android
           onChangeText={(passwd) => setPasswd(passwd)}
+          onSubmitEditing={onLoginPress}
+          blurOnSubmit={false}
         />
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>

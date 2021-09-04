@@ -192,7 +192,7 @@ function CollectionScreen({ route, navigation }) {
     nbTotalAlbums = 0;
     loadingSteps = 3;
     loadTime = Date.now();
-    if (global.verbose) {
+    if (global.verbose && global.isConnected) {
       Helpers.showToast(false, 'Téléchargement de la collection...');
     }
     CollectionManager.fetchWishlist(navigation, onWishlistFetched);

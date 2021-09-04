@@ -322,6 +322,15 @@ function MainTab2() {
       animationEnabled={true}
     >
       <Tab.Screen
+        name='Ma collection'
+        component={CollectionScreens}
+        options={{
+          tabBarIcon: (p) => {
+            return setTabBarMatComIcons('home', p);
+          }
+        }}
+      />
+      <Tab.Screen
         name='Wishlist'
         component={WishlistScreens}
         options={{
@@ -336,15 +345,6 @@ function MainTab2() {
         options={{
           tabBarIcon: (p) => {
             return setTabBarMatIcons('list-alt', p);
-          }
-        }}
-      />
-      <Tab.Screen
-        name='Ma collection'
-        component={CollectionScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return setTabBarMatComIcons('home', p);
           }
         }}
       />

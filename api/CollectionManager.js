@@ -167,6 +167,8 @@ class CCollectionManager {
   };
 
   constructor() {
+    global.db = null;
+
     this.release();
     this.initialize();
   }

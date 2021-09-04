@@ -29,7 +29,6 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -138,22 +137,17 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
               numberOfLines={10}
               editable
               textContentType='none'
+              autoCapitalize='sentences'
               style={[CommonStyles.commentsTextInputStyle, { flex: 0, width: '100%', margin: 0, height: 200 }]}
               onChangeText={(comment) => setComment(comment)}
               value={comment}
               autoFocus={true}
             />
 
-            <View style={{ flexDirection: 'row', marginVertical: 15}}>
-              <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center' }} onPress={onDeleteComment}>
-                <MaterialCommunityIcons name='trash-can-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-                <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Supprimer</Text>
-              </TouchableOpacity>
-              <View style={{width:'50%'}}></View>
-              <TouchableOpacity style={{ flexDirection: 'column', alignItems: 'center' }} onPress={onSaveComment}>
-                <MaterialCommunityIcons name='file-send-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-                <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Enregistrer</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginVertical: 15 }}>
+              <Text style={CommonStyles.linkTextStyle} onPress={onDeleteComment}>Supprimer</Text>
+              <View style={{ width: '30%' }}></View>
+              <Text style={CommonStyles.linkTextStyle} onPress={onSaveComment}>Enregistrer</Text>
             </View>
 
           </View>
