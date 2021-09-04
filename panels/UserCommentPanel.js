@@ -124,7 +124,7 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
 
   return (
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: Platform.OS == 'ios' ? windowHeight  : null }]}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: Platform.OS == 'ios' ? windowHeight*0.95  : null }]}>
         <View style={{ marginTop: 10, marginBottom: 10,  width: '80%' }}>
           <View style={{ margin: 0, alignItems: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
