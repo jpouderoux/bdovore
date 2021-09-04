@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "Logo v2.0.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "bdo_fond_blanc.jpg",
+      "filename" : "Logo v2.0@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Logo v2.0@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
