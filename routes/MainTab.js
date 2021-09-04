@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+/* Copyright 2021 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,24 +27,20 @@
  */
 
 import React, { useState } from 'react';
-import { Share, TouchableOpacity, View } from 'react-native';
+import { Platform, Share, TouchableOpacity, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ListItem } from 'react-native-elements';
-import { CommonActions } from '@react-navigation/native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { bdovored, CommonStyles } from '../styles/CommonStyles';
-import { BottomSheet } from '../components/BottomSheet';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import AlbumScreen from '../screens/AlbumScreen';
 import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
-import CollectionManager from '../api/CollectionManager';
 import CollectionPanel from '../panels/CollectionPanel';
 import CollectionScreen from '../screens/CollectionScreen';
 import ImageScreen from '../screens/ImageScreen';
@@ -81,7 +77,9 @@ const onAccountPress = (navigation) => {
 const shareButton = (item) => {
   return (
     <TouchableOpacity onPress={() => onSharePress(item)} style={{ margin: 8 }}>
-      <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />
+      {Platform.OS == 'ios' ?
+        <Ionicons name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
+        <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />}
     </TouchableOpacity>
   );
 }

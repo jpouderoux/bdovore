@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+/* Copyright 2021 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -268,9 +268,9 @@ function AlbumScreen({ route, navigation }) {
             {showMoreInfos && album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
             {showMoreInfos && album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
             {showMoreInfos && album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
-            {showMoreInfos && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
+            {showMoreInfos && !album.EAN_EDITION && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
             {showMoreInfos && album.PRIX_BDNET ? <Text style={CommonStyles.defaultText}>Prix BDNET : {album.PRIX_BDNET}€</Text> : null}
-            {showMoreInfos ? <Text style={CommonStyles.defaultText}>Id Bdovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
+            {showMoreInfos ? <Text style={CommonStyles.defaultText}>Ids BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
           </TouchableOpacity>
           <AchatSponsorIcon album={album} />
           {album.HISTOIRE_TOME ?

@@ -4,12 +4,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff">
-  <ImageView android:src="@drawable/bdo_fond_blanc"
+  <ImageView android:src="@drawable/logo_v2"
              android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_alignParentTop="true"
+             android:layout_height="match_parent"
              android:layout_centerHorizontal="true"
-             android:adjustViewBounds="true"
-             android:gravity="fill_horizontal"
+			 android:layout_centerVertical="true"
              />
 </RelativeLayout>

@@ -508,7 +508,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bdovore.Bdovore;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bdovore.BDovore;
 				PRODUCT_NAME = bdovore;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -537,7 +537,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bdovore.Bdovore;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bdovore.BDovore;
 				PRODUCT_NAME = bdovore;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

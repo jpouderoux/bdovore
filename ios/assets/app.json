@@ -1,6 +1,6 @@
 {
   "name": "bdovore",
-  "displayName": "Bdovore",
+  "displayName": "BDovore",
   "platforms": [ "android", "ios", "web" ],
   "version": "1.0.0",
   "orientation": "portrait",

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+/* Copyright 2021 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ function SettingsScreen({ navigation }) {
     <View style={CommonStyles.screenStyle}>
       <ScrollView>
 
-        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
+        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte BDovore</Text>
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text>
 
         <View style={{ height: 20 }}></View>

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+/* Copyright 2021 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ function LoginScreen({ navigation }) {
       global.isConnected = state.isConnected;
       if (global.isConnected) {
         CollectionManager.resetDatabase();
-        APIManager.loginBdovore(pseudo, passwd, onConnected);
+        APIManager.loginBDovore(pseudo, passwd, onConnected);
       } else {
         Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion Internet désactivée.")
         onConnected({ error: '', token: 'offline-' + Date.now() });
@@ -188,10 +188,10 @@ function LoginScreen({ navigation }) {
         <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
           <TouchableOpacity onPress={onAboutPress}
             title='About'>
-            <Image source={require('../assets/bdovore-167.png')} />
+            <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width:320 }}/>
           </TouchableOpacity>
         </View>
-        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte Bdovore</Text>
+        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte BDovore</Text>
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text>
         <TextInput
           style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}

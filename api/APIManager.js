@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association Bdovore
+/* Copyright 2021 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -79,21 +79,21 @@ export async function checkForToken(navigation = null) {
   if (token === null && navigation) {
     navigation.navigate('Login');
   } else if (token === 'expired' && navigation) {
-    reloginBdovore(navigation);
+    reloginBDovore(navigation);
   } else {
     return token;
   }
   return '';
 }
 
-export function reloginBdovore(navigation, callback = null) {
+export function reloginBDovore(navigation, callback = null) {
 
   if (global.isConnected) {
     AsyncStorage.multiGet(['login', 'passwd'])
       .then((response) => {
         const pseudo = response[0][1];
         const passwd = response[1][1];
-        loginBdovore(pseudo, passwd, (response) => {
+        loginBDovore(pseudo, passwd, (response) => {
           if (response.error) {
             if (navigation) {
               navigation.navigate('Login');
@@ -115,7 +115,7 @@ export function reloginBdovore(navigation, callback = null) {
   }
 }
 
-export function loginBdovore(pseudo, passwd, callback) {
+export function loginBDovore(pseudo, passwd, callback) {
   const formatResult = (connected, token, error = '') => {
     return { connected, token, error };
   }
@@ -223,7 +223,7 @@ export async function fetchJSON(request, context, callback, params = {},
           showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
         }
         console.debug("Retry " + retry);
-        reloginBdovore(context ? context.navigation : null, () => {
+        reloginBDovore(context ? context.navigation : null, () => {
           fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
         });
       } else {
