@@ -187,7 +187,7 @@ function LoginScreen({ navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView>
-        <View style={{ marginTop: 10, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
+        <View style={{ marginTop: 20, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
           <TouchableOpacity onPress={onAboutPress}
             title='About'>
             <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width:320 }}/>
