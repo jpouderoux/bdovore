@@ -96,6 +96,8 @@ export function checkForToken(navigation) {
 
 export function sortByDate(data, field = 'DATE_AJOUT') {
   data.sort(function (item1, item2) {
+    if (!item1 || !item1[field]) return item2;
+    if (!item2 || !item2[field]) return item1;
     return new Date(item2[field].replaceAt(10, 'T')) - new Date(item1[field].replaceAt(10, 'T'));
   });
   return data;
@@ -220,6 +222,7 @@ export function removeHTMLTags(text) {
     text = text.replace(/&lt;/g, '<');
     text = text.replace(/&gt;/g, '>');
     text = text.replace(/&.*?;/gi, ' '); // catch any other "&...;" special chars
+    text = text.replace(/\n[\n]+/, '\n'); // remove multiple returns occurences
     text = text.replace(/[\r\n]+$/, ''); // remove trailing carriage returns
     text = text.replace(/^[\r\n]+/, ''); // remove trailing carriage returns
   }

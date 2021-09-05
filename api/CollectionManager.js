@@ -411,6 +411,8 @@ class CCollectionManager {
           global.db.write(() => {
             serieAlbums.forEach((album) => {
               // Add the album in local collection
+              album.FLG_ACHAT = 'N';
+              album.DATE_AJOUT = Helpers.getNowDateString();
               global.db.create('Albums', createEntry(AlbumSchema, album));
             });
           });
@@ -433,13 +435,16 @@ class CCollectionManager {
     })
   }
 
-  addSerieAlbumsToCollection(serie, serieAlbums) {
+  addSerieAlbumsToCollection(serie, serieAlbums, callback) {
     try {
       let nbalbums = 0;
       global.db.write(() => {
         serieAlbums.forEach((album) => {
           if (this.getAlbumType(album) == 0) {
             // Add the album in local collection
+            // Add the album in local collection
+            album.FLG_ACHAT = 'N';
+            album.DATE_AJOUT = Helpers.getNowDateString();
             global.db.create('Albums', createEntry(AlbumSchema, album));
             //console.log('Add album ' + album.TITRE_TOME);
             nbalbums++;
@@ -447,8 +452,10 @@ class CCollectionManager {
         });
       });
       console.debug('série ' + serie.ID_SERIE + ' (' + nbalbums + ' albums seulement) added to collection');
+      callback({ error: '' });
     } catch (error) {
       console.debug("Erreur inattendue lors de l'ajout de la série");
+      callback({ error: "Erreur inattendue lors de l'ajout de la série" });
     }
   }
 

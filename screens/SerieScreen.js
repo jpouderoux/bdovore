@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
@@ -57,13 +57,20 @@ function SerieScreen({ route, navigation }) {
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const [showMoreInfos, setShowMoreInfos] = useState(false);
   const sectionListRef = useRef();
+  const [toggleElement, setToggleElement] = useState(false);
+
+  const toggle = () => {
+    setToggleElement(v => !v);
+  }
+
+ // const isFocused = useIsFocused();
 
   useFocusEffect(() => {
     refreshAlbums();
   });
 
-  const refreshDataIfNeeded = () => {
-    if (serieAlbumsLoaded != serie.ID_SERIE) {
+  const refreshDataIfNeeded = (force = false) => {
+    if (serieAlbumsLoaded != serie.ID_SERIE || force) {
       console.debug("refresh data serie " + serie.ID_SERIE);
       serieAlbumsLoaded = serie.ID_SERIE;
       fetchData();
@@ -75,6 +82,10 @@ function SerieScreen({ route, navigation }) {
     serieAlbumsLoaded = 0;
     refreshDataIfNeeded();
   }, [serie]);
+
+  useEffect(() => {
+    refreshAlbums();
+  }, [defaultSerieAlbums, toggle]);
 
   useEffect(() => {
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -125,7 +136,7 @@ function SerieScreen({ route, navigation }) {
 
       // Sort/split albums by type
       for (let i = 0; i < result.items.length; i++) {
-        let album = Helpers.toDict(result.items[i]);
+        let album = result.items[i];//Helpers.toDict(result.items[i]);
         const section = CollectionManager.getAlbumType(album);
         album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
         if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
@@ -181,7 +192,8 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) =>
-    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, dontShowSerieScreen: true, showExclude: true }) : null;
+    Helpers.isValid(item) ? <AlbumItem navigation={navigation} item={Helpers.toDict(item)}
+      index={index} dontShowSerieScreen={true} showExclude={true} refreshCallback={() => toggle()} /> : null;
 
   const getCounterText = () => {
     const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
@@ -238,7 +250,12 @@ function SerieScreen({ route, navigation }) {
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ width: '33%', alignSelf: 'center',  alignItems: 'flex-end',}}>
-            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle,]} reduceMode={true} showExclude={true} serieAlbums={defaultSerieAlbums} />
+            <SerieMarkers item={serie}
+              style={[CommonStyles.markersSerieViewStyle,]}
+              reduceMode={true}
+              showExclude={true}
+              serieAlbums={defaultSerieAlbums}
+              refreshCallback={() => { toggle(); refreshDataIfNeeded(true)} } />
           </View>
         </View>
       </View>
@@ -299,6 +316,7 @@ function SerieScreen({ route, navigation }) {
               </Text>*/}
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
+          extraData={[serieAlbums, filteredSerieAlbums]}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={getItemLayout}

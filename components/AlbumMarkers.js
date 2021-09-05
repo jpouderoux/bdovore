@@ -39,7 +39,7 @@ import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 
-export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
+export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = ()=>{} }) {
 
   const [showAllMarks, setShowAllMarks] = useState(false);
   const [initAlbum, setInitAlbum] = useState({});
@@ -105,6 +105,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
           setIsOwn(true);
           setIsWanted(false);
           setShowAllMarks(reduceMode ? false : true);
+          refreshCallback();
         }
       });
     }
@@ -115,6 +116,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
           setIsOwn(false);
           setIsWanted(false);
           setShowAllMarks(false);
+          refreshCallback();
         }
       });
     }
@@ -127,6 +129,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
       CollectionManager.addAlbumToWishlist(album, (result) => {
         if (!result.error) {
           setIsWanted(wantIt);
+          refreshCallback();
         }
       });
     }
@@ -134,6 +137,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
       CollectionManager.removeAlbumFromWishlist(album, (result) => {
         if (!result.error) {
           setIsWanted(wantIt);
+          refreshCallback();
         }
       });
     }
@@ -144,6 +148,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
     CollectionManager.setAlbumReadFlag(album, readIt, (result) => {
       if (!result.error) {
         setIsRead(readIt);
+        refreshCallback();
       }
     });
   };
@@ -153,6 +158,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
     CollectionManager.setAlbumLendFlag(album, lendIt, (result) => {
       if (!result.error) {
         setIsLoan(lendIt);
+        refreshCallback();
       }
     });
   };
@@ -162,6 +168,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
     CollectionManager.setAlbumNumEdFlag(album, numEd, (result) => {
       if (!result.error) {
         setIsNum(numEd);
+        refreshCallback();
       }
     });
   };
@@ -171,6 +178,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
     CollectionManager.setAlbumGiftFlag(album, gift, (result) => {
       if (!result.error) {
         setIsGift(gift);
+        refreshCallback();
       }
     });
   };
@@ -181,6 +189,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude }) {
       if (!result.error) {
         album.IS_EXCLU = exclude ? 1 : 0;
         setIsExcluded(exclude);
+        refreshCallback();
       }};
     if (exclude) {
       APIManager.excludeAlbum(album, callback);

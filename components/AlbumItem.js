@@ -37,7 +37,7 @@ import { AlbumMarkers } from './AlbumMarkers';
 import { RatingStars } from './RatingStars';
 import CollectionManager from '../api/CollectionManager';
 
-export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude }) {
+export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude, refreshCallback }) {
 
   const onPressAlbum = () => {
     navigation.push('Album', { item: Helpers.toDict(item), dontShowSerieScreen });
@@ -56,10 +56,14 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "tome " + item.NUM_TOME : ''}{'\n'}
-            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : '' }
+            {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : ''}
           </Text>
           {collectionMode ? null :
-            <AlbumMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item) > 0 ? true : false}/>
+            <AlbumMarkers item={item}
+              style={CommonStyles.markersViewStyle}
+              reduceMode={true}
+              showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item) > 0 ? true : false}
+              refreshCallback={refreshCallback} />
           }
         </View>
       </View>

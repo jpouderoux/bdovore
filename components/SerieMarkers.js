@@ -37,7 +37,7 @@ import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 
 
-export function SerieMarkers({ item, serieAlbums, style, showExclude }) {
+export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCallback = ()=>{} }) {
 
   const [serie, setSerie] = useState(item);
   const [isExcluded, setIsExcluded] = useState(false);
@@ -52,16 +52,28 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude }) {
     refresh();
   }, []);
 
+  useEffect(() => {
+    refresh();
+  }, [serieAlbums]);
+
+  const addEverything = () => {
+    CollectionManager.addSerieToCollection(serie, serieAlbums, () => { refreshCallback() });
+  }
+
+  const addAlbums = () => {
+    CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums, () => { refreshCallback() });
+  }
+
   const onHaveAll = () => {
     Alert.alert(
       serie.NOM_SERIE,
       "Que souhaitez-vous ajouter à votre collection ?",
       [{
         text: "Tout",
-        onPress: () => { CollectionManager.addSerieToCollection(serie, serieAlbums); }
+        onPress: () => addEverything()
       }, {
         text: "Que les albums",
-        onPress: () => { CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums); }
+        onPress: () => addAlbums()
       }, {
         text: "Annuler",
         onPress: () => { },
@@ -78,6 +90,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude }) {
           serie.IS_EXCLU = exclude ? 1 : 0;
         });
         setIsExcluded(exclude == 1);
+        refreshCallback();
       }};
     if (exclude) {
       APIManager.excludeSerie(serie, callback);
