@@ -81,9 +81,9 @@ function AlbumScreen({ route, navigation }) {
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
     }
-    if (!global.isConnected) {
-      onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
-    }
+     if (!global.isConnected) {
+       onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
+     }
   }
 
   const getAlbumIsExclude = () => {
@@ -232,22 +232,21 @@ function AlbumScreen({ route, navigation }) {
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Albums'>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
+          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginVertical: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={CommonStyles.defaultText}>{getAuteursLabel()} : </Text>
+            <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
             {
               Helpers.getAuteurs(album).map((auteur, index, array) => {
                 return (index == 0 && auteur.name == 'Collectif') ?
-                  <Text key={index}>{auteur.name}</Text> :
-                  <View key={index} style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
-                      <Text style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
-                    </TouchableOpacity>
-                    <Text style={CommonStyles.defaultText}>{index != (array.length - 1) ? ' / ' : ''}</Text>
-                  </View>
+                  <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
+                  <Text key={index} style={CommonStyles.defaultText}>
+                    <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+                    {index != (array.length - 1) ? ' / ' : ''}
+                  </Text>
               })
-            }
+              }
+            </Text>
             {
               Helpers.isAlbumBW(album) ? <Text style={CommonStyles.defaultText}> - N&B</Text> : null
             }

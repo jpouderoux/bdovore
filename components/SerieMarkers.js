@@ -35,7 +35,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
-import * as Helpers from '../api/Helpers';
+
 
 export function SerieMarkers({ item, serieAlbums, style, showExclude }) {
 

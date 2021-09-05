@@ -168,7 +168,9 @@ export let CommonStyles = EStyleSheet.create({
     borderTopRightRadius: 10,
   },
   sectionTextStyle: {
+    textAlignVertical: 'center',
     color: 'white', //$textcolor',
+    fontSize: '1.0rem',
     textShadowRadius: 0.5,
     textShadowOffset: { width: 0.5, height: 0.5 },
   },
@@ -180,7 +182,7 @@ export let CommonStyles = EStyleSheet.create({
     borderTopRightRadius: 10,
   },
   albumEditionButtonStyle: {
-    backgroundColor: '$sectioncolor',
+    backgroundColor: 'lightgrey',
     borderColor: '$textcolor',
     color: '$textcolor',
     borderWidth: 0.5,
@@ -327,7 +329,7 @@ export let CommonStyles = EStyleSheet.create({
   // Switch styles
   switchStyle: {
     color: 'white', // thumb color
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // enabled track color
+    backgroundColor: 'forestgreen', //rgba(0, 1, 0, 0.4)', // enabled track color
     borderColor: 'lightgrey', // disabled track color
   },
 

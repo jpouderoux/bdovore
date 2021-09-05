@@ -26,11 +26,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
@@ -38,7 +38,7 @@ import CollectionManager from '../api/CollectionManager';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { CollapsableSection } from '../components/CollapsableSection';
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, AlbumItemHeight } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
@@ -56,6 +56,7 @@ function SerieScreen({ route, navigation }) {
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const [showMoreInfos, setShowMoreInfos] = useState(false);
+  const sectionListRef = useRef();
 
   useFocusEffect(() => {
     refreshAlbums();
@@ -200,16 +201,26 @@ function SerieScreen({ route, navigation }) {
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
+  const getItemLayout = sectionListGetItemLayout({
+    // The height of the row with rowData at the given sectionIndex and rowIndex
+    getItemHeight: (rowData, sectionIndex, rowIndex) => AlbumItemHeight,
+    // These four properties are optional
+    getSeparatorHeight: () => 1, // The height of your separators
+    getSectionHeaderHeight: () => 15, // The height of your section headers
+    getSectionFooterHeight: () => 0, // The height of your section footers
+    listHeaderHeight: 0, // The height of your list header
+  });
+
   const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
 
   const ignoredSwitch = () => {
     return (
       <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', position: 'absolute', right: 5 }}>
-        <Text style={[{ textAlignVertical: 'center' }, CommonStyles.sectionTextStyle]}>Voir ignorés </Text>
+        <Text style={CommonStyles.sectionTextStyle}>Voir ignorés</Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
-          style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
+          style={{ marginTop: 2, transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
       </View >);
   }
 
@@ -231,7 +242,7 @@ function SerieScreen({ route, navigation }) {
           </View>
         </View>
       </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginBottom: 10 }}>
+      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginTop: 2, marginBottom: 10 }}>
         {serie.NOTE_SERIE ?
           <View style={{ alignItems: 'center', marginTop: 10 }}>
             <RatingStars note={serie.NOTE_SERIE} />
@@ -249,6 +260,7 @@ function SerieScreen({ route, navigation }) {
       {loading ? LoadingIndicator() : (
         <SectionList
           style={{ flex: 1, marginHorizontal: 1 }}
+          ref={sectionListRef}
           maxToRenderPerBatch={6}
           windowSize={10}
           sections={(showExcludedAlbums || nbOfUserAlbums == 0 ?
@@ -258,11 +270,38 @@ function SerieScreen({ route, navigation }) {
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
             <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
-              <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { width: null, paddingLeft: 10 }]}>{title}</Text>
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { width: null, paddingLeft: 10 }]}
+              >{title}</Text>
+              {/*<Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
+                {index > 0 && <MaterialCommunityIcons name='menu-up' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
+                  console.log(index + ' ... ' + (index - 1) % 4);
+                  try {
+                    sectionListRef.current.scrollToLocation({
+                      animated: false,
+                      itemIndex: -1,
+                      sectionIndex: (index - 1) % 4,
+                      viewPosition: 0
+                    });
+                  } catch (error) { }
+                }}/>}
+                {'   '}
+                <MaterialCommunityIcons name='menu-down' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
+                  console.log(index + ' ... ' + (index + 1) % 4);
+                  try {
+                    sectionListRef.current.scrollToLocation({
+                      animated: false,
+                      itemIndex: -1,
+                      sectionIndex: (index + 1) % 4,
+                      viewPosition: 0
+                    });
+                  } catch (error) { }
+                }}/>
+              </Text>*/}
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
+          getItemLayout={getItemLayout}
         />
       )}
     </View >
