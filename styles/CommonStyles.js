@@ -54,7 +54,7 @@ export function rebuildSheet() {
     $rem: Dimensions.get('window').width > 340 ? 16 : 14,
     $bg: global.isDarkMode ? 'black' : 'white',
     $textcolor: global.isDarkMode ? 'white' : 'black',
-    $sectioncolor: global.isDarkMode ? '#333' : '#ddd',
+    $sectioncolor: bdovored, //global.isDarkMode ? '#333' : '#ddd',
     $buttongroupcolor: global.isDarkMode ? '#333' : '#eee',
     $buttongroupselectcolor: global.isDarkMode ? '#777' : 'white',
   });
@@ -161,21 +161,21 @@ export let CommonStyles = EStyleSheet.create({
   },
   sectionStyle: {
     backgroundColor: '$sectioncolor',
-    color: '$textcolor',
+    color: 'white', //$textcolor',
     width: '100%',
     textAlignVertical: 'center',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   sectionAlbumStyle: {
-    backgroundColor: '$sectioncolor',
-    color: '$textcolor',
+    backgroundColor: bdovored, //'$sectioncolor',
+    color: '$bg', //'$textcolor',
     width: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   albumEditionButtonStyle: {
-    backgroundColor: '$sectioncolor',
+    backgroundColor: 'lightgray',
     borderColor: '$textcolor',
     color: '$textcolor',
     borderWidth: 0.5,
@@ -183,7 +183,7 @@ export let CommonStyles = EStyleSheet.create({
     paddingLeft: 5,
   },
   sectionListStyle: {
-    backgroundColor: '$sectioncolor',
+    backgroundColor: bdovored, // '$sectioncolor',
   },
   linkTextStyle: {
     color: bdovored, //'dodgerblue',
@@ -199,10 +199,10 @@ export let CommonStyles = EStyleSheet.create({
     right: 5,
   },
   markersSerieViewStyle: {
-    position: 'absolute',
+    /*position: 'absolute',
     marginTop: -5,
     bottom: 0,
-    right: 0,
+    right: 0,*/
   },
   markerStyle: {
     alignItems: 'center',
@@ -324,8 +324,8 @@ export let CommonStyles = EStyleSheet.create({
   //***************
   // Switch styles
   switchStyle: {
-    color: bdovored, // thumb color
-    backgroundColor: 'rgba(153, 0, 0, 0.5)', // enabled track color
+    color: 'white', // thumb color
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // enabled track color
     borderColor: 'lightgrey', // disabled track color
   },
 

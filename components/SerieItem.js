@@ -73,7 +73,7 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
           </Text> : null}
           {(nbUserAlbums > 0 && item.NB_ALBUM > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 15 }]}>
-              {Helpers.pluralWord(nbUserAlbums, 'album')} sur {Helpers.pluralWord(item.NB_ALBUM, 'album')} dans la base {'\n'}
+              {Helpers.pluralWord(nbUserAlbums, 'album')} sur {item.NB_ALBUM} dans la base {'\n'}
           </Text>) : null}
           {(item.nb_album) ?
             <Text style={[CommonStyles.largerText, CommonStyles.itemText, { marginTop: 10 }]}>

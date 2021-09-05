@@ -33,6 +33,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
+import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -194,19 +195,23 @@ function AlbumScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <ScrollView style={{ margin: 10 }}>
+      <ScrollView style={{ margin: 0 }}>
+
         <View style={{ margin: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) })}>
             <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
           </TouchableOpacity>
         </View>
+
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
+          {album.MOYENNE_NOTE_TOME ?
           <View style={{ marginTop: 10 }}>
             <RatingStars note={album.MOYENNE_NOTE_TOME} />
-          </View>
+          </View> : null}
           {loading ? LoadingIndicator() : null}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10, marginBottom: 10 }}>
+          {filteredComments().length > 0 || CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10  }}>
             {filteredComments().length > 0 ?
               <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
                 onPress={onShowComments}>
@@ -217,15 +222,16 @@ function AlbumScreen({ route, navigation }) {
                 onPress={() => setShowUserComment(true)}>
                 Noter cet album
               </Text> : null}
-          </View>
-        </View>
-        <View style={{ marginTop: 10, marginBottom: 10, alignItems: 'center' }}>
-          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Collection</Text>
-          <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
-          <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText]}>Infos Album</Text>
+          </View> : null }
         </View>
 
-        <View>
+        <CollapsableSection sectionName='Collection'>
+          <View style={{ alignItems: 'center', marginBottom: -10 }}>
+            <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
+          </View>
+        </CollapsableSection>
+
+        <CollapsableSection sectionName='Infos Albums'>
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginBottom: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
@@ -236,7 +242,7 @@ function AlbumScreen({ route, navigation }) {
                   <Text key={index}>{auteur.name}</Text> :
                   <View key={index} style={{ flexDirection: 'row' }}>
                     <TouchableOpacity onPress={() => onPressAuteur(auteur)}>
-                      <Text style={CommonStyles.linkTextStyle}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+                      <Text style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
                     </TouchableOpacity>
                     <Text style={CommonStyles.defaultText}>{index != (array.length - 1) ? ' / ' : ''}</Text>
                   </View>
@@ -261,22 +267,22 @@ function AlbumScreen({ route, navigation }) {
           {Helpers.getDateParutionAlbum(album) != '' ?
             <Text style={CommonStyles.defaultText}>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
             : null}
-          <TouchableOpacity onPress={() => setShowMoreInfos(showMoreInfos => !showMoreInfos)}>
-            <Text style={[CommonStyles.defaultText, { textAlign: 'right' }]}>
-              <MaterialCommunityIcons name={showMoreInfos ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />
-            </Text>
-            {showMoreInfos && album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
-            {showMoreInfos && album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
-            {showMoreInfos && album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
-            {showMoreInfos && !album.EAN_EDITION && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
-            {showMoreInfos && album.PRIX_BDNET ? <Text style={CommonStyles.defaultText}>Prix BDNET : {album.PRIX_BDNET}€</Text> : null}
-            {showMoreInfos ? <Text style={CommonStyles.defaultText}>Ids BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
-          </TouchableOpacity>
+
+          {album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
+          {album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
+          {album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
+          {!album.EAN_EDITION && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
+          {(album.PRIX_BDNET && parseInt(album.PRIX_BDNET > 0)) ? <Text style={CommonStyles.defaultText}>Prix constaté : {album.PRIX_BDNET}€</Text> : null}
+          <Text style={CommonStyles.defaultText}>Ids BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text>
+
           <AchatSponsorIcon album={album} />
-          {album.HISTOIRE_TOME ?
-            <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-            : null}
-        </View>
+        </CollapsableSection>
+
+        {album.HISTOIRE_TOME ?
+        <CollapsableSection sectionName='Histoire'>
+          <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+        </CollapsableSection>
+        : null}
 
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -284,8 +290,8 @@ function AlbumScreen({ route, navigation }) {
           </Text>
         ) : null}
         {similAlbums.length > 0 ?
-          <View style={{ marginVertical: 10, alignItems: 'center' }}>
-            <Text style={[CommonStyles.sectionAlbumStyle, CommonStyles.center, CommonStyles.largerText, { marginBottom: 10 }]}>A voir aussi</Text>
+          <CollapsableSection sectionName='A voir aussi'>
+            <View style={{ marginTop:10 }}>
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -295,7 +301,8 @@ function AlbumScreen({ route, navigation }) {
               keyExtractor={keyExtractor}
               style={{ height: 170 }}
             />
-          </View> : null}
+            </View>
+          </CollapsableSection> : null}
 
         {/* Editions chooser */}
         <BottomSheet

@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Rating } from 'react-native-elements';
 import Star from './Star';
 import { CommonStyles } from '../styles/CommonStyles';
@@ -48,7 +48,10 @@ export function RatingStars({ note, editable, callback, style }) {
           readonly={editable ? false : true}
           onFinishRating={callback ? callback : (rate) => { }}
         /> :
-        <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20 }} starColor={CommonStyles.ratingStarColor.color} />
+        <View style={{ flexDirection: 'row' }}>
+          <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20, marginRight: 10 }} starColor={CommonStyles.ratingStarColor.color} />
+          <Text style={CommonStyles.defaultText}>{(Number.parseFloat(note) / 2.).toFixed(1)}</Text>
+        </View>
       }
     </View> : null);
 }

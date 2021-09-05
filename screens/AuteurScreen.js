@@ -48,7 +48,7 @@ function AuteurScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [nbAlbums, setNbAlbums] = useState(-1);
   const [nbSeries, setNbSeries] = useState(-1);
-
+console.debug(item);
   useEffect(() => {
     refreshDataIfNeeded();
   }, []);

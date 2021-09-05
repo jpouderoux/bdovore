@@ -26,41 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import Modal from 'react-native-modal';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { CommonStyles } from '../styles/CommonStyles';
 
 
-export function BottomSheet({ props, containerStyle, isVisible = false, visibleSetter = (visible)=>{}, modalProps = {}, children }) {
+export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, children }) {
+
+  const [collasped, setCollapsed] = useState(isCollapsed);
+
   return (
-    <Modal
-      animationType='slide'
-      transparent={true}
-      isVisible={isVisible}
-      onBackdropPress={() => visibleSetter(false) }
-      onRequestClose = {() => visibleSetter(false) }
-      onSwipeComplete = {() => visibleSetter(false) }
-      swipeDirection={['down']}
-      useNativeDriver={false}
-      propagateSwipe
-      {...modalProps}
-      style={styles.modalStyle}
-    >
-      <ScrollView style={styles.scrollViewStyle}>{children}</ScrollView>
-    </Modal>);
-};
-
-const styles = StyleSheet.create({
-  modalStyle: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    marginBottom: 0,
-  },
-
-  scrollViewStyle: {
-    flex: 1,
-    flexDirection: 'column-reverse',
-  },
-  listContainer: { backgroundColor: 'white' },
-});
-
+    <View style={[{ marginTop: 10 }, style]}>
+      <TouchableOpacity onPress={() => setCollapsed(isCollapsed => !isCollapsed)}>
+        <View style={[CommonStyles.sectionAlbumStyle, { flexDirection: 'row', alignItems: 'center', }]}>
+          <Text style={[{ color: 'white', width: '100%' }, CommonStyles.center, CommonStyles.largerText]}>{sectionName}</Text>
+          <Text style={[{ color: 'white', position: 'absolute', right: 10 }]}>
+            <MaterialCommunityIcons name={collasped ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />
+          </Text>
+        </View>
+      </TouchableOpacity>
+      {!collasped ? <View style={{ marginHorizontal: 10 }}>{children}</View> : null}
+    </View>);
+}

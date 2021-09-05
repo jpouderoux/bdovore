@@ -27,18 +27,21 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, Switch, Text, View } from 'react-native';
+import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Helpers from '../api/Helpers';
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
 
 import { AlbumItem } from '../components/AlbumItem';
+import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import { RatingStars } from '../components/RatingStars';
 import { SerieMarkers } from '../components/SerieMarkers';
 
 let serieAlbumsLoaded = 0;
@@ -51,6 +54,9 @@ function SerieScreen({ route, navigation }) {
   const [serie, setSerie] = useState(route.params.item);
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
+  const [showMoreInfos, setShowMoreInfos] = useState(false);
+
+  console.log(serie);
 
   useFocusEffect(() => {
     refreshAlbums();
@@ -205,7 +211,7 @@ function SerieScreen({ route, navigation }) {
   const ignoredSwitch = () => {
     return (
       <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', position: 'absolute', right: 5 }}>
-        <Text style={[{ textAlignVertical: 'center' }, CommonStyles.defaultText]}>Voir ignorés </Text>
+        <Text style={[{ textAlignVertical: 'center', color: 'white' }]}>Voir ignorés </Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
@@ -215,20 +221,34 @@ function SerieScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginHorizontal: 10, flexDirection: 'row' }}>
-        <Text style={[{ marginTop: 10, flex: 1, width: '33%' }, CommonStyles.defaultText]}>
-          {getCounterText()}{' '}
-          ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
-          {'\n\n'}
-          {serie.LIB_FLG_FINI_SERIE}
-        </Text>
-        <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
-        <View style={{ flexDirection: 'column', width: '33%', height: 75 }}>
-          {nbOfUserAlbums > 0 ?
-            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle, { right: 0, top: null, bottom: 0 }]} reduceMode={true} showExclude={true} />
-            : null}
+      <View style={{ marginHorizontal: 10 }}>
+        <View style={{ flexDirection: 'row', marginHorizontal: 10 }} >
+        <Text style={[{ marginTop: 0, flex: 1, width: '33%', alignSelf: 'center' }, CommonStyles.defaultText]}>
+            {getCounterText()}{' '}
+            ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
+            {'\n\n'}
+            {serie.LIB_FLG_FINI_SERIE}
+          </Text>
+          <TouchableOpacity onPress={() => showMoreInfos ? navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) }) : setShowMoreInfos(true)}>
+            <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
+          </TouchableOpacity>
+          <View style={{ width: '33%', alignSelf: 'center',  alignItems: 'flex-end',}}>
+            {nbOfUserAlbums > 0 ?
+              <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle,]} reduceMode={true} showExclude={true} />
+              : null}
+          </View>
         </View>
       </View>
+      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginBottom: 10 }}>
+        {serie.NOTE_SERIE ?
+          <View style={{ alignItems: 'center', marginTop: 10 }}>
+            <RatingStars note={serie.NOTE_SERIE} />
+          </View> : null
+        }
+        {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
+        <Text style={CommonStyles.defaultText}>Id BDovore : {serie.ID_SERIE}</Text>
+        {serie.HISTOIRE_SERIE ? <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text> : null}
+      </CollapsableSection>
       {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
