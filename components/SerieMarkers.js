@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -37,7 +37,7 @@ import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
 
-export function SerieMarkers({ item, style, showExclude }) {
+export function SerieMarkers({ item, serieAlbums, style, showExclude }) {
 
   const [serie, setSerie] = useState(item);
   const [isExcluded, setIsExcluded] = useState(false);
@@ -50,7 +50,25 @@ export function SerieMarkers({ item, style, showExclude }) {
 
   useEffect(() => {
     refresh();
-  }, [item]);
+  }, []);
+
+  const onHaveAll = () => {
+    Alert.alert(
+      serie.NOM_SERIE,
+      "Que souhaitez-vous ajouter à votre collection ?",
+      [{
+        text: "Tout",
+        onPress: () => { CollectionManager.addSerieToCollection(serie, serieAlbums); }
+      }, {
+        text: "Que les albums",
+        onPress: () => { CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums); }
+      }, {
+        text: "Annuler",
+        onPress: () => { },
+        style: "cancel"
+      }],
+      { cancelable: true });
+  }
 
   const onExcludeIt = async () => {
     const exclude = !(serie.IS_EXCLU == 1);
@@ -70,12 +88,20 @@ export function SerieMarkers({ item, style, showExclude }) {
     }
   }
 
+  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
-      {showExclude ?
+      {nbOfUserAlbums == 0 && serieAlbums.length > 0 ?
+        <TouchableOpacity onPress={onHaveAll} title="" style={CommonStyles.markerStyle}>
+          <MaterialCommunityIcons name={CollectionManager.isSerieComplete(serie) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isSerieComplete(serie) ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
+          <Text style={[CommonStyles.markerTextStyle, CollectionManager.isSerieComplete(serie) ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>
+        </TouchableOpacity> : null}
+
+      {nbOfUserAlbums > 0 && showExclude ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? {fontWeight: 'bold'} : null]} />
+          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? { fontWeight: 'bold' } : null]} />
           <Text style={[CommonStyles.markerTextStyle, serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 

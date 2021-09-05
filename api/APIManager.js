@@ -445,6 +445,15 @@ export async function deleteAlbumInCollection(id_edition, callback, params = {})
   });
 }
 
+export async function addSerieInCollection(id_serie, callback, params = {}) {
+
+  updateCollection('addSerie', callback, {
+    ...{
+      id_serie,
+    }, ...params
+  });
+}
+
 export async function fetchExcludeStatusOfSerieAlbums(id_serie, callback, params = {}) {
 
   fetchJSON('ListTomesExclus', null, callback, {

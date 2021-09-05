@@ -128,14 +128,14 @@ console.debug(item);
         </Text>
       ) : null}
       <SectionList
-        style={{ flex: 1 }}
+        style={{ flex: 1, marginHorizontal: 1 }}
         maxToRenderPerBatch={6}
         windowSize={10}
         sections={auteurAlbums}
         keyExtractor={keyExtractor}
         renderItem={renderAlbum}
         renderSectionHeader={({ section: { title } }) => (
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, { paddingLeft: 10, height: 30,  }]}>{title}</Text>)}
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { paddingLeft: 10, }]}>{title}</Text>)}
         stickySectionHeadersEnabled={true}
         ItemSeparatorComponent={Helpers.renderSeparator}
       />

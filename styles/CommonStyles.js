@@ -161,29 +161,31 @@ export let CommonStyles = EStyleSheet.create({
   },
   sectionStyle: {
     backgroundColor: '$sectioncolor',
-    color: 'white', //$textcolor',
+    color: '$textcolor',
     width: '100%',
     textAlignVertical: 'center',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
+  sectionTextStyle: {
+    color: 'white', //$textcolor',
+    textShadowRadius: 0.5,
+    textShadowOffset: { width: 0.5, height: 0.5 },
+  },
   sectionAlbumStyle: {
-    backgroundColor: bdovored, //'$sectioncolor',
-    color: '$bg', //'$textcolor',
+    backgroundColor: '$sectioncolor',
+    color: '$textcolor',
     width: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   albumEditionButtonStyle: {
-    backgroundColor: 'lightgray',
+    backgroundColor: '$sectioncolor',
     borderColor: '$textcolor',
     color: '$textcolor',
     borderWidth: 0.5,
     borderRadius: 5,
     paddingLeft: 5,
-  },
-  sectionListStyle: {
-    backgroundColor: bdovored, // '$sectioncolor',
   },
   linkTextStyle: {
     color: bdovored, //'dodgerblue',

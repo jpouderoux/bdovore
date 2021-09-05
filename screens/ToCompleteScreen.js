@@ -82,7 +82,6 @@ function ToCompleteScreen({ route, navigation }) {
 
   const refreshDataIfNeeded = () => {
     if (CollectionManager.isCollectionEmpty()) {
-      console.log("reseting!!!");
       setNbTotalAlbums2(0);
       setNbTotalSeries2(0);
       albums = [];

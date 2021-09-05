@@ -389,6 +389,69 @@ class CCollectionManager {
     }
   }
 
+  getAlbumType(album) {
+    if (album.FLG_TYPE_TOME == 1 || album.TITRE_TOME.startsWith('Pack ')) {
+      return 2; // Coffret
+    }
+    if (album.FLG_INT_TOME == 'O') {
+      return 1; // Intégrale
+    }
+    if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')
+      || album.TITRE_TOME.includes('(TL)') || album.TITRE_TOME.includes('(TT)')) {
+      return 3; // Edition spéciale
+    }
+    return 0; // Album
+  }
+
+  addSerieToCollection(serie, serieAlbums, callback) {
+    APIManager.addSerieInCollection(serie.ID_SERIE, (result) => {
+      try {
+        if (!result.error) {
+
+          global.db.write(() => {
+            serieAlbums.forEach((album) => {
+              // Add the album in local collection
+              global.db.create('Albums', createEntry(AlbumSchema, album));
+            });
+          });
+
+          console.debug('série ' + serie.ID_SERIE + ' (' + serieAlbums.length + ' albums) added to collection');
+        }
+      } catch (error) {
+        result.error = "Erreur inattendue lors de l'ajout de la série";
+      }
+
+      if (callback) {
+        callback(result);
+      }
+
+      if (result.error) {
+        Helpers.showToast(result.error, result.error ?
+          'Erreur de connexion au serveur.' :
+          'Série ajoutée à la collection.');
+      }
+    })
+  }
+
+  addSerieAlbumsToCollection(serie, serieAlbums) {
+    try {
+      let nbalbums = 0;
+      global.db.write(() => {
+        serieAlbums.forEach((album) => {
+          if (this.getAlbumType(album) == 0) {
+            // Add the album in local collection
+            global.db.create('Albums', createEntry(AlbumSchema, album));
+            //console.log('Add album ' + album.TITRE_TOME);
+            nbalbums++;
+          }
+        });
+      });
+      console.debug('série ' + serie.ID_SERIE + ' (' + nbalbums + ' albums seulement) added to collection');
+    } catch (error) {
+      console.debug("Erreur inattendue lors de l'ajout de la série");
+    }
+  }
+
   addAlbumToCollection(album, callback = null) {
 
     // Inform server of the add
@@ -690,7 +753,8 @@ class CCollectionManager {
   }
 
   getNbOfUserAlbumsInSerie(serie) {
-    return this.getAlbums().filtered('ID_SERIE == $0', parseInt(serie.ID_SERIE)).length;
+    const albums = this.getAlbums().filtered('ID_SERIE == $0', parseInt(serie.ID_SERIE));
+    return albums ? albums.length : 0;
   }
 
   getAlbumEditionsInCollection(id_tome, id_serie) {

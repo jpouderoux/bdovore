@@ -178,7 +178,7 @@ function NewsScreen({ navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginHorizontal: 1 }}>
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
@@ -192,7 +192,7 @@ function NewsScreen({ navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section }) => (
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { paddingLeft: 10 }]}>{section.title}</Text>)}
+            <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { paddingLeft: 10 }]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
           extraData={refresh}
           refreshControl={<RefreshControl

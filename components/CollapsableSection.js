@@ -27,10 +27,17 @@
  */
 
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { LayoutAnimation, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CommonStyles } from '../styles/CommonStyles';
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
 
 
 export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, children }) {
@@ -38,12 +45,12 @@ export function CollapsableSection({ props, sectionName, isCollapsed = false, st
   const [collasped, setCollapsed] = useState(isCollapsed);
 
   return (
-    <View style={[{ marginTop: 10 }, style]}>
-      <TouchableOpacity onPress={() => setCollapsed(isCollapsed => !isCollapsed)}>
+    <View style={[{ marginTop: 10, marginHorizontal: 1 }, style]}>
+      <TouchableOpacity onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); setCollapsed(isCollapsed => !isCollapsed); }}>
         <View style={[CommonStyles.sectionAlbumStyle, { flexDirection: 'row', alignItems: 'center', }]}>
-          <Text style={[{ color: 'white', width: '100%' }, CommonStyles.center, CommonStyles.largerText]}>{sectionName}</Text>
-          <Text style={[{ color: 'white', position: 'absolute', right: 10 }]}>
-            <MaterialCommunityIcons name={collasped ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />
+          <Text style={[{ width: '100%', marginLeft: 10 }, CommonStyles.sectionTextStyle]}>{sectionName}</Text>
+          <Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
+            <MaterialCommunityIcons name={collasped ? 'menu-down' : 'menu-up'} size={16} color={CommonStyles.markerIconStyle} />
           </Text>
         </View>
       </TouchableOpacity>

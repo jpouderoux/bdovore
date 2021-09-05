@@ -167,7 +167,7 @@ function SearchScreen({ navigation }) {
         <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, {flex:0}]}>
           <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
-              placeholder={'Rechercher...'}
+              placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album..." : "Nom de l'auteur..."}
               onChangeText={onSearch}
               onCancel={onSearchCancel}
               onClear={onSearchCancel}
@@ -178,7 +178,7 @@ function SearchScreen({ navigation }) {
               inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
               containerStyle={[CommonStyles.screenStyle]}
               cancelButtonTitle='Annuler'
-              inputStyle={CommonStyles.defaultText}
+              inputStyle={[CommonStyles.defaultText, { marginTop: 5 }]}
             />
           </View>
           <TouchableOpacity
@@ -191,7 +191,7 @@ function SearchScreen({ navigation }) {
               color={CommonStyles.iconStyle.color}/>
           </TouchableOpacity>
         </View>
-        <View style={{ marginLeft: -10, marginRight: -10, marginTop: -5, marginBottom: -5 }}>
+        <View style={{ marginLeft: -2, marginRight: -2, marginTop: -5, marginBottom: -5 }}>
           <ButtonGroup
             onPress={onPressTypeButton}
             selectedIndex={searchMode}

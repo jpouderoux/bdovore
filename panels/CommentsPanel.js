@@ -27,10 +27,10 @@
  */
 
 import React from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BottomSheet } from '../components/BottomSheet';
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, windowHeight } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
 
 
@@ -60,18 +60,10 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
       isVisible={isVisible}
       visibleSetter={visibleSetter}
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10 }]}>
-        <View style={{ marginBottom: 10, width: '100%' }}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: windowHeight * 0.9 }]}>
+        <ScrollView style={{ flex: 1, marginBottom: 10 }}>
           {Object.entries(comments).map((item) => renderComment(item))}
-          {/*<FlatList
-          legacyImplementation={false}
-          data={comments}
-          renderItem={renderComment}
-          keyExtractor={({ item }, index) => index}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-          style={{ width: '100%' }}
-      />*/}
-        </View>
+        </ScrollView>
       </View>
     </BottomSheet>
   );

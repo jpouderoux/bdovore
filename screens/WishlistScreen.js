@@ -101,10 +101,11 @@ function WishlistScreen({ route, navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
         <View style={{ flexDirection: 'row' }}>
-          <Text style={[CommonStyles.defaultText, { margin: 5, marginTop: 10 }]}>Tri par ajout</Text>
+          <Text style={[CommonStyles.defaultText, { marginLeft: 10, marginRight: -5, marginTop: 10 }]}>Tri par ajout</Text>
           <Switch value={filterByDate} onValueChange={toggleFilterByDate}
             thumbColor={CommonStyles.switchStyle.color}
-            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}/>
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
+            style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }] }} />
         </View>
       </View>
       {CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null) == 0 ?

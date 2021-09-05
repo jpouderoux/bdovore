@@ -52,11 +52,10 @@ function SerieScreen({ route, navigation }) {
   const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [loading, setLoading] = useState(false);
   const [serie, setSerie] = useState(route.params.item);
+  const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const [showMoreInfos, setShowMoreInfos] = useState(false);
-
-  console.log(serie);
 
   useFocusEffect(() => {
     refreshAlbums();
@@ -70,6 +69,11 @@ function SerieScreen({ route, navigation }) {
     }
     refreshAlbums();
   }
+
+  useEffect(() => {
+    serieAlbumsLoaded = 0;
+    refreshDataIfNeeded();
+  }, [serie]);
 
   useEffect(() => {
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -87,6 +91,7 @@ function SerieScreen({ route, navigation }) {
 
   const fetchData = () => {
     setSerieAlbums([]);
+    setDefaultSerieAlbums([]);
     if (global.verbose) {
       Helpers.showToast(false, 'Téléchargement de la série...');
     }
@@ -100,79 +105,68 @@ function SerieScreen({ route, navigation }) {
   }
 
   const onSerieAlbumsFetched = async (result) => {
+
     console.debug("serie albums fetched");
-    console.log('loaded:' + serieAlbumsLoaded);
 
-    let newdata = [
-      { title: 'Albums', data: [] },
-      { title: 'Intégrales', data: [] },
-      { title: 'Coffrets', data: [] },
-      { title: 'Editions spéciales', data: [] },
-    ];
+    if (!result.error) {
 
-    let filtereddata = [
-      { title: 'Albums', data: [] },
-      { title: 'Intégrales', data: [] },
-      { title: 'Coffrets', data: [] },
-      { title: 'Editions spéciales', data: [] },
-    ];
+      setDefaultSerieAlbums(result.items);
 
-    // Sort/split albums by type
-    for (let i = 0; i < result.items.length; i++) {
-      let section = 0;
-      const album = result.items[i];
-      if (album.FLG_TYPE_TOME == 1 || album.TITRE_TOME.startsWith('Pack ')) {
-        section = 2; // Coffret
-      } else {
-        if (album.FLG_INT_TOME == 'O') {
-          section = 1; // Intégrale
-        } else {
-          if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')
-            || album.TITRE_TOME.includes('(TL)') || album.TITRE_TOME.includes('(TT)')) {
-            section = 3; // Edition spéciale
-          } else {
-            section = 0; // Album
-          }
+      const CreateSerieSections = () => {
+        return [
+          { title: 'Albums', data: [] },
+          { title: 'Intégrales', data: [] },
+          { title: 'Coffrets', data: [] },
+          { title: 'Editions spéciales', data: [] },
+        ]
+      }
+      let newdata = CreateSerieSections();
+
+      // Sort/split albums by type
+      for (let i = 0; i < result.items.length; i++) {
+        let album = Helpers.toDict(result.items[i]);
+        const section = CollectionManager.getAlbumType(album);
+        album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+        if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
+          newdata[section].data.push(album);
         }
       }
-      album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
-      if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
-        newdata[section].data.push(album);
+
+      // Sort albums by ascending tome number
+      newdata.forEach(entry => {
+        Helpers.sortByAscendingValue(entry.data);
+      });
+
+      setSerieAlbums(newdata);
+
+      if (global.isConnected) {
+        // Now fetch the exclude status of the albums of the serie
+        APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
+          if (!result.error) {
+            let filtereddata = CreateSerieSections();
+            // Transform the result array into a dictionary for fast&easy access
+            let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
+            // Check all albums in all sections and set their exclude flag
+            global.db.write(() => {
+              newdata.forEach(section => {
+                section.data.forEach(album => {
+                  album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1) ? 1 : 0;
+                })
+              })
+            });
+            for (let i = 0; i < newdata.length; i++) {
+              filtereddata[i].data = newdata[i].data.filter(album => !album.IS_EXCLU);
+            }
+            setFilteredSerieAlbums(filtereddata);
+          } else {
+            setFilteredSerieAlbums(newdata);
+          }
+        });
       }
     }
 
-    // Sort albums by ascending tome number
-    newdata.forEach(entry => {
-      Helpers.sortByAscendingValue(entry.data);
-    });
-
-    setSerieAlbums(newdata);
     setErrortext(result.error);
     setLoading(false);
-
-    if (global.isConnected) {
-      // Now fetch the exclude status of the albums of the serie
-      APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
-        if (!result.error) {
-          // Transform the result array into a dictionary for fast&easy access
-          let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
-          // Check all albums in all sections and set their exclude flag
-          global.db.write(() => {
-            newdata.forEach(section => {
-              section.data.forEach(album => {
-                album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1) ? 1 : 0;
-              })
-            })
-          });
-          for (let i = 0; i < newdata.length; i++) {
-            filtereddata[i].data = newdata[i].data.filter(album => !album.IS_EXCLU);
-          }
-          setFilteredSerieAlbums(filtereddata);
-        } else {
-          setFilteredSerieAlbums(newdata);
-        }
-      });
-    }
   }
 
   const refreshAlbums = () => {
@@ -211,11 +205,11 @@ function SerieScreen({ route, navigation }) {
   const ignoredSwitch = () => {
     return (
       <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', position: 'absolute', right: 5 }}>
-        <Text style={[{ textAlignVertical: 'center', color: 'white' }]}>Voir ignorés </Text>
+        <Text style={[{ textAlignVertical: 'center' }, CommonStyles.sectionTextStyle]}>Voir ignorés </Text>
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
-          style={{ /*transform: [{ scaleX: .5 }, { scaleY: .5 }] */ }} />
+          style={{ transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
       </View >);
   }
 
@@ -233,9 +227,7 @@ function SerieScreen({ route, navigation }) {
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ width: '33%', alignSelf: 'center',  alignItems: 'flex-end',}}>
-            {nbOfUserAlbums > 0 ?
-              <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle,]} reduceMode={true} showExclude={true} />
-              : null}
+            <SerieMarkers item={serie} style={[CommonStyles.markersSerieViewStyle,]} reduceMode={true} showExclude={true} serieAlbums={defaultSerieAlbums} />
           </View>
         </View>
       </View>
@@ -256,7 +248,7 @@ function SerieScreen({ route, navigation }) {
       ) : null}
       {loading ? LoadingIndicator() : (
         <SectionList
-          style={{ flex: 1 }}
+          style={{ flex: 1, marginHorizontal: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
           sections={(showExcludedAlbums || nbOfUserAlbums == 0 ?
@@ -265,8 +257,8 @@ function SerieScreen({ route, navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, index } }) => (
-            <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', height: 30, backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
-              <Text style={[CommonStyles.sectionStyle, CommonStyles.bold, CommonStyles.largerText, { width: null, paddingLeft: 10 }]}>{title}</Text>
+            <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { width: null, paddingLeft: 10 }]}>{title}</Text>
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
           stickySectionHeadersEnabled={true}
