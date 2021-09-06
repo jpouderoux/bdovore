@@ -81,9 +81,9 @@ function AlbumScreen({ route, navigation }) {
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
       APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
     }
-     if (!global.isConnected) {
-       onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
-     }
+    if (!global.isConnected) {
+      onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
+    }
   }
 
   const getAlbumIsExclude = () => {
@@ -177,15 +177,13 @@ function AlbumScreen({ route, navigation }) {
 
   const keyExtractor = useCallback((item, index) => Helpers.makeAlbumUID(item));
 
-  const renderSimil = ({ item, index }) => {
-    return (
-      <TouchableOpacity onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
-        <View style={{ flexDirection: 'column', width: 110 }}>
-          <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-          <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
-        </View>
-      </TouchableOpacity>);
-  }
+  const renderSimil = ({ item, index }) => (
+    <TouchableOpacity key={index} onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
+      <View style={{ flexDirection: 'column', width: 110 }}>
+        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+        <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
+      </View>
+    </TouchableOpacity>);
 
   const onShowComments = () => {
     if (filteredComments().length > 0) {
@@ -206,23 +204,23 @@ function AlbumScreen({ route, navigation }) {
         <View style={{ margin: 0, alignItems: 'center' }}>
           <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
           {album.MOYENNE_NOTE_TOME ?
-          <View style={{ marginTop: 10 }}>
-            <RatingStars note={album.MOYENNE_NOTE_TOME} />
-          </View> : null}
+            <View style={{ marginTop: 10 }}>
+              <RatingStars note={album.MOYENNE_NOTE_TOME} />
+            </View> : null}
           {loading ? LoadingIndicator() : null}
           {filteredComments().length > 0 || CollectionManager.isAlbumInCollection(album) && global.isConnected ?
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10  }}>
-            {filteredComments().length > 0 ?
-              <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
-                onPress={onShowComments}>
-                Lire les avis
-              </Text> : null}
-            {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
-              <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
-                onPress={() => setShowUserComment(true)}>
-                Noter cet album
-              </Text> : null}
-          </View> : null }
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10 }}>
+              {filteredComments().length > 0 ?
+                <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+                  onPress={onShowComments}>
+                  Lire les avis
+                </Text> : null}
+              {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+                <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+                  onPress={() => setShowUserComment(true)}>
+                  Noter cet album
+                </Text> : null}
+            </View> : null}
         </View>
 
         <CollapsableSection sectionName='Collection'>
@@ -236,15 +234,15 @@ function AlbumScreen({ route, navigation }) {
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
-            {
-              Helpers.getAuteurs(album).map((auteur, index, array) => {
-                return (index == 0 && auteur.name == 'Collectif') ?
-                  <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
-                  <Text key={index} style={CommonStyles.defaultText}>
-                    <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
-                    {index != (array.length - 1) ? ' / ' : ''}
-                  </Text>
-              })
+              {
+                Helpers.getAuteurs(album).map((auteur, index, array) => {
+                  return (index == 0 && auteur.name == 'Collectif') ?
+                    <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
+                    <Text key={index} style={CommonStyles.defaultText}>
+                      <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+                      {index != (array.length - 1) ? ' / ' : ''}
+                    </Text>
+                })
               }
             </Text>
             {
@@ -278,10 +276,10 @@ function AlbumScreen({ route, navigation }) {
         </CollapsableSection>
 
         {album.HISTOIRE_TOME ?
-        <CollapsableSection sectionName='Histoire'>
-          <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-        </CollapsableSection>
-        : null}
+          <CollapsableSection sectionName='Histoire'>
+            <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+          </CollapsableSection>
+          : null}
 
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -290,16 +288,16 @@ function AlbumScreen({ route, navigation }) {
         ) : null}
         {similAlbums.length > 0 ?
           <CollapsableSection sectionName='A voir aussi'>
-            <View style={{ marginTop:10 }}>
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              legacyImplementation={false}
-              data={similAlbums}
-              renderItem={renderSimil}
-              keyExtractor={keyExtractor}
-              style={{ height: 170 }}
-            />
+            <View style={{ marginTop: 10 }}>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                legacyImplementation={false}
+                data={similAlbums}
+                renderItem={renderSimil}
+                keyExtractor={keyExtractor}
+                style={{ height: 170 }}
+              />
             </View>
           </CollapsableSection> : null}
 

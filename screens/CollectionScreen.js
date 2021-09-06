@@ -265,8 +265,8 @@ function CollectionScreen({ route, navigation }) {
   const renderItem = ({ item, index }) => {
     if (Helpers.isValid(item)) {
       switch (parseInt(collectionType)) {
-        case 0: return SerieItem({ navigation, item: Helpers.toDict(item), index, collectionMode: true });
-        case 1: return AlbumItem({ navigation, item: Helpers.toDict(item), index, collectionMode: true });
+        case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
       }
     }
     return null;
@@ -435,7 +435,7 @@ function CollectionScreen({ route, navigation }) {
             onPress={() => {
               setSortMode(mode); setShowSortChooser(false);
             }}>
-            <ListItem.Content style={{flexDirection: 'column'}}>
+            <ListItem.Content style={{ flexDirection: 'column' }}>
               <ListItem.Title style={sortMode == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
                 {title}
               </ListItem.Title>

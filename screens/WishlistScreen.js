@@ -72,7 +72,7 @@ function WishlistScreen({ route, navigation }) {
 
   const refreshData = () => {
     const collec = CollectionManager.getWishes(collectionGenre);
-    setFilteredData(filterByDate ?  Helpers.sliceSortByDate(collec) : collec);
+    setFilteredData(filterByDate ? Helpers.sliceSortByDate(collec) : collec);
   }
 
   const toggleFilterByDate = () => {
@@ -80,7 +80,8 @@ function WishlistScreen({ route, navigation }) {
   }
 
   const renderItem = ({ item, index }) =>
-    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index }) : null;
+    Helpers.isValid(item) &&
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -89,7 +90,7 @@ function WishlistScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={{ flexDirection: 'row' }}>
         <ButtonGroup
-          onPress={()=>{}}
+          onPress={() => { }}
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>

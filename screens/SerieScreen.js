@@ -63,8 +63,6 @@ function SerieScreen({ route, navigation }) {
     setToggleElement(v => !v);
   }
 
- // const isFocused = useIsFocused();
-
   useFocusEffect(() => {
     refreshAlbums();
   });
@@ -192,15 +190,20 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) =>
-    Helpers.isValid(item) ? <AlbumItem navigation={navigation} item={Helpers.toDict(item)}
-      index={index} dontShowSerieScreen={true} showExclude={true} refreshCallback={() => toggle()} /> : null;
+    Helpers.isValid(item) &&
+      <AlbumItem navigation={navigation}
+        item={Helpers.toDict(item)}
+        index={index}
+        dontShowSerieScreen={true}
+        showExclude={true}
+        refreshCallback={() => toggle()}/>;
 
   const getCounterText = () => {
-    const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
+    /*const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
     if (nbTomes > 0) {
       return Helpers.pluralWord(nbTomes, 'tome');
-    }
-    return Helpers.pluralWord(serie.NB_ALBUM, 'album');
+    }*/
+    return Helpers.pluralWord(serie.NB_TOME, 'tome');
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -240,16 +243,18 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10 }}>
         <View style={{ flexDirection: 'row', marginHorizontal: 10 }} >
-        <Text style={[{ marginTop: 0, flex: 1, width: '33%', alignSelf: 'center' }, CommonStyles.defaultText]}>
-            {getCounterText()}{' '}
-            ({nbOfUserAlbums} / {Math.max(serie.NB_TOME, serie.NB_ALBUM)})
+          <Text style={[{ marginTop: 0, flex: 1, width: '33%', alignSelf: 'center' }, CommonStyles.defaultText]}>
+            {getCounterText()}
             {'\n\n'}
             {serie.LIB_FLG_FINI_SERIE}
           </Text>
           <TouchableOpacity onPress={() => showMoreInfos ? navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) }) : setShowMoreInfos(true)}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
-          <View style={{ width: '33%', alignSelf: 'center',  alignItems: 'flex-end',}}>
+          <View style={{ width: '33%', alignItems: 'flex-end', }}>
+            <Text style={[{ flex: 1, textAlignVertical: 'center', alignSelf: 'center' }, CommonStyles.defaultText]}>
+              {nbOfUserAlbums} albums sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
+            </Text>
             <SerieMarkers item={serie}
               style={[CommonStyles.markersSerieViewStyle,]}
               reduceMode={true}
@@ -285,10 +290,10 @@ function SerieScreen({ route, navigation }) {
             filteredSerieAlbums.filter(s => s.data.length > 0)).map((section, index) => ({ ...section, index }))}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
-          renderSectionHeader={({ section: { title, index } }) => (
+          renderSectionHeader={({ section: { title, data, index } }) => (
             <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
               <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { width: null, paddingLeft: 10 }]}
-              >{title}</Text>
+              >{data.length} {title}</Text>
               {/*<Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
                 {index > 0 && <MaterialCommunityIcons name='menu-up' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
                   console.log(index + ' ... ' + (index - 1) % 4);

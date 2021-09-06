@@ -204,8 +204,8 @@ function ToCompleteScreen({ route, navigation }) {
   const renderItem = ({ item, index }) => {
     if (Helpers.isValid(item)) {
       switch (collectionType) {
-        case 0: return AlbumItem({ navigation, item: Helpers.toDict(item), index, showExclude: true });
-        case 1: return SerieItem({ navigation, item: Helpers.toDict(item), index, showExclude: true });
+        case 0: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showExclude={true} />);
+        case 1: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} showExclude={true} />);
       }
     }
     return null;

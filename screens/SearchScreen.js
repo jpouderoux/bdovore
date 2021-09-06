@@ -153,9 +153,9 @@ function SearchScreen({ navigation }) {
   const renderItem = ({ item, index }) => {
     if (Helpers.isValid(item)) {
       switch (parseInt(searchMode)) {
-        case 0: return SerieItem({ navigation, item: Helpers.toDict(item), index });
-        case 1: return AlbumItem({ navigation, item: Helpers.toDict(item), index });
-        case 2: return AuteurItem({ navigation, item, index });
+        case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
+        case 2: return (<AuteurItem navigation={navigation} item={item} index={index} />);
       }
     }
     return null;
@@ -164,7 +164,7 @@ function SearchScreen({ navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View>
-        <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, {flex:0}]}>
+        <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, { flex: 0 }]}>
           <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
               placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album..." : "Nom de l'auteur..."}
@@ -188,7 +188,7 @@ function SearchScreen({ navigation }) {
             <MaterialCommunityIcons
               name='barcode-scan'
               size={45}
-              color={CommonStyles.iconStyle.color}/>
+              color={CommonStyles.iconStyle.color} />
           </TouchableOpacity>
         </View>
         <View style={{ marginLeft: -2, marginRight: -2, marginTop: -5, marginBottom: -5 }}>

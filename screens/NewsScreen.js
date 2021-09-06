@@ -111,8 +111,8 @@ function NewsScreen({ navigation }) {
     setLoading(true);
 
     setFilteredUserNewsDataArray(createUserNewsSection());
-    APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12'})
-    .then().catch((error) => console.debug(error));
+    APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12' })
+      .then().catch((error) => console.debug(error));
 
     setFilteredUserNewsToComeDataArray(createUserNewsToComeSection());
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsToComeFetched, { nb_mois: '-1' })
@@ -157,14 +157,15 @@ function NewsScreen({ navigation }) {
   };
 
   const renderAlbum = ({ item, section, index }) =>
-    Helpers.isValid(item) ? AlbumItem({ navigation, item: Helpers.toDict(item), index, showEditionDate: (section.idx == 1) }) : null;
+    Helpers.isValid(item) &&
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={section.idx == 1} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginBottom:0}}>
+      <View style={{ marginBottom: 0 }}>
         <ButtonGroup
           onPress={onPressNewsMode}
           selectedIndex={newsMode}
