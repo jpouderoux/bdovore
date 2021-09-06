@@ -303,14 +303,14 @@ export let CommonStyles = EStyleSheet.create({
   bottomSheetItemContainerStyle: {
     backgroundColor: '$bg',
     alignSelf: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '$sectioncolor'
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: '$buttongroupcolor'
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: bdovored,
     alignSelf: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '$sectioncolor'
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: '$buttongroupcolor'
   },
   bottomSheetItemTextStyle: {
     color: bdovored,

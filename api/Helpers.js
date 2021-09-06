@@ -60,6 +60,10 @@ export function toDict(item) {
   return object;
 }
 
+export function isNumeric(value) {
+  return /^\d+$/.test(value);
+}
+
 export function isValid(item) {
   if (!item) { return false };
   return (typeof item.isValid === 'function') ? item.isValid() : true;

@@ -95,7 +95,13 @@ function SearchScreen({ navigation }) {
         APIManager.fetchSerieByTerm(searchText, callback);
         break;
       case 1:
-        APIManager.fetchAlbum(callback, { term: searchText });
+        {
+          if (searchText.length >= 8 && Helpers.isNumeric(searchText)) {
+            let params = (searchText.length > 10) ? { EAN: searchText } : { ISBN: searchText };
+            APIManager.fetchAlbum(callback, params);
+          }
+          APIManager.fetchAlbum(callback, { term: searchText });
+        }
         break;
       case 2:
         APIManager.fetchAuteurByTerm(searchText, callback);
@@ -123,9 +129,9 @@ function SearchScreen({ navigation }) {
 
   const onSearchWithEAN = async (ean) => {
     if (ean) {
-      if (global.verbose) {
+      /*if (global.verbose) {
         Helpers.showToast(false, 'Code-barre trouvé : ' + ean);
-      }
+      }*/
       let params = (ean.length > 10) ? { EAN: ean } : { ISBN: ean };
       APIManager.fetchAlbum((result) => {
         if (result.error == '' && result.items.length > 0) {
@@ -167,7 +173,7 @@ function SearchScreen({ navigation }) {
         <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, { flex: 0 }]}>
           <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
-              placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album..." : "Nom de l'auteur..."}
+              placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album ou ISBN..." : "Nom de l'auteur..."}
               onChangeText={onSearch}
               onCancel={onSearchCancel}
               onClear={onSearchCancel}
@@ -175,30 +181,31 @@ function SearchScreen({ navigation }) {
               platform='ios'
               autoCapitalize='none'
               autoCorrect={false}
-              inputContainerStyle={[{ height: 20 }, CommonStyles.searchContainerStyle]}
+              inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
               containerStyle={[CommonStyles.screenStyle]}
               cancelButtonTitle='Annuler'
+              showLoading={loading}
               inputStyle={[CommonStyles.defaultText, { marginTop: 5 }]}
             />
           </View>
           <TouchableOpacity
             onPress={onBarcodeSearch}
             title="Search"
-            style={{ marginLeft: 8 }}>
+            style={{ marginLeft: 8, marginVertical: 0 }}>
             <MaterialCommunityIcons
               name='barcode-scan'
-              size={45}
+              size={36}
               color={CommonStyles.iconStyle.color} />
           </TouchableOpacity>
         </View>
-        <View style={{ marginLeft: -2, marginRight: -2, marginTop: -5, marginBottom: -5 }}>
+        <View style={{ marginLeft: -2, marginRight: -2, marginTop: 0, marginBottom: 0 }}>
           <ButtonGroup
             onPress={onPressTypeButton}
             selectedIndex={searchMode}
             buttons={[
-              { element: () => <Text style={CommonStyles.defaultText}>Série</Text> },
-              { element: () => <Text style={CommonStyles.defaultText}>Album</Text> },
-              { element: () => <Text style={CommonStyles.defaultText}>Auteur</Text> }]}
+              { element: () => <Text style={CommonStyles.defaultText}>Séries</Text> },
+              { element: () => <Text style={CommonStyles.defaultText}>Albums</Text> },
+              { element: () => <Text style={CommonStyles.defaultText}>Auteurs</Text> }]}
             containerStyle={CommonStyles.buttonGroupContainerStyle}
             buttonStyle={CommonStyles.buttonGroupButtonStyle}
             selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
