@@ -342,7 +342,7 @@ function CollectionScreen({ route, navigation }) {
           <View style={{ flex: 1 }}></View>
         </View>
         :
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginTop: 2 }}>
           {errortext ? (
             <Text style={CommonStyles.errorTextStyle}>
               {errortext}

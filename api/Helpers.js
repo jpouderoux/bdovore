@@ -82,7 +82,8 @@ export function plural(nb) {
 }
 
 export function pluralize(nb, word) {
-  return word + plural(nb);
+  return word.split(' ').map(w => w + plural(nb)).join(' ');
+  //return word + plural(nb);
 }
 
 export function pluralWord(nb, word) {

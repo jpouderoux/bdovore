@@ -62,6 +62,8 @@ function AlbumScreen({ route, navigation }) {
   const [showUserComment, setShowUserComment] = useState(false);
   const [showMoreInfos, setShowMoreInfos] = useState(false);
 
+
+  console.log(album);
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
@@ -224,13 +226,11 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <CollapsableSection sectionName='Collection'>
-          <View style={{ alignItems: 'center', marginBottom: -10 }}>
-            <AlbumMarkers item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
-          </View>
+          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Albums'>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, { marginVertical: 5 }, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
+          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
@@ -277,7 +277,7 @@ function AlbumScreen({ route, navigation }) {
 
         {album.HISTOIRE_TOME ?
           <CollapsableSection sectionName='Histoire'>
-            <Text style={[CommonStyles.defaultText, { marginTop: 10 }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+            <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           </CollapsableSection>
           : null}
 
@@ -288,17 +288,15 @@ function AlbumScreen({ route, navigation }) {
         ) : null}
         {similAlbums.length > 0 ?
           <CollapsableSection sectionName='A voir aussi'>
-            <View style={{ marginTop: 10 }}>
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                legacyImplementation={false}
-                data={similAlbums}
-                renderItem={renderSimil}
-                keyExtractor={keyExtractor}
-                style={{ height: 170 }}
-              />
-            </View>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              legacyImplementation={false}
+              data={similAlbums}
+              renderItem={renderSimil}
+              keyExtractor={keyExtractor}
+              style={{ height: 170 }}
+            />
           </CollapsableSection> : null}
 
         {/* Editions chooser */}

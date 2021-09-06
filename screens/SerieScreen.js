@@ -124,10 +124,10 @@ function SerieScreen({ route, navigation }) {
 
       const CreateSerieSections = () => {
         return [
-          { title: 'Albums', data: [] },
-          { title: 'Intégrales', data: [] },
-          { title: 'Coffrets', data: [] },
-          { title: 'Editions spéciales', data: [] },
+          { title: 'Album', data: [] },
+          { title: 'Intégrale', data: [] },
+          { title: 'Coffret', data: [] },
+          { title: 'Edition spéciale', data: [] },
         ]
       }
       let newdata = CreateSerieSections();
@@ -203,7 +203,9 @@ function SerieScreen({ route, navigation }) {
     if (nbTomes > 0) {
       return Helpers.pluralWord(nbTomes, 'tome');
     }*/
-    return Helpers.pluralWord(serie.NB_TOME, 'tome');
+    return serie.NB_TOME > 0 ?
+      Helpers.pluralWord(serie.NB_TOME, 'tome') :
+      Helpers.pluralWord(serie.NB_ALBUM, 'album');
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -253,10 +255,10 @@ function SerieScreen({ route, navigation }) {
           </TouchableOpacity>
           <View style={{ width: '33%', alignItems: 'flex-end', }}>
             <Text style={[{ flex: 1, textAlignVertical: 'center', alignSelf: 'center' }, CommonStyles.defaultText]}>
-              {nbOfUserAlbums} albums sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
+              {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
             </Text>
             <SerieMarkers item={serie}
-              style={[CommonStyles.markersSerieViewStyle,]}
+              style={CommonStyles.markersSerieViewStyle}
               reduceMode={true}
               showExclude={true}
               serieAlbums={defaultSerieAlbums}
@@ -264,9 +266,9 @@ function SerieScreen({ route, navigation }) {
           </View>
         </View>
       </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginTop: 2, marginBottom: 10 }}>
+      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginTop: 2 }}>
         {serie.NOTE_SERIE ?
-          <View style={{ alignItems: 'center', marginTop: 10 }}>
+          <View style={{ alignItems: 'center' }}>
             <RatingStars note={serie.NOTE_SERIE} />
           </View> : null
         }
@@ -281,7 +283,7 @@ function SerieScreen({ route, navigation }) {
       ) : null}
       {loading ? LoadingIndicator() : (
         <SectionList
-          style={{ flex: 1, marginHorizontal: 1 }}
+          style={{ flex: 1, marginTop: 10, marginHorizontal: 1 }}
           ref={sectionListRef}
           maxToRenderPerBatch={6}
           windowSize={10}
@@ -292,8 +294,8 @@ function SerieScreen({ route, navigation }) {
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, data, index } }) => (
             <View style={[CommonStyles.sectionStyle, { alignItems: 'center', flex: 1, flexDirection: 'row', backgroundColor: CommonStyles.sectionStyle.backgroundColor }]}>
-              <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { width: null, paddingLeft: 10 }]}
-              >{data.length} {title}</Text>
+              <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}
+              >{Helpers.pluralWord(data.length, title)}</Text>
               {/*<Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
                 {index > 0 && <MaterialCommunityIcons name='menu-up' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
                   console.log(index + ' ... ' + (index - 1) % 4);

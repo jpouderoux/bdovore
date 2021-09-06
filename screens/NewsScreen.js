@@ -193,7 +193,7 @@ function NewsScreen({ navigation }) {
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section }) => (
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { paddingLeft: 10 }]}>{section.title}</Text>)}
+            <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
           extraData={refresh}
           refreshControl={<RefreshControl

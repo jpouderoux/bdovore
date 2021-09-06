@@ -112,7 +112,7 @@ function AuteurScreen({ route, navigation }) {
 
   const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} ite={Helpers.toDict(item)} index={index} dontShowSerieScreen={true} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={true} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -136,7 +136,7 @@ function AuteurScreen({ route, navigation }) {
         keyExtractor={keyExtractor}
         renderItem={renderAlbum}
         renderSectionHeader={({ section: { title } }) => (
-          <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle, { paddingLeft: 10, }]}>{title}</Text>)}
+          <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]} numberOfLines={1} textBreakStrategy='balanced'>{title}</Text>)}
         stickySectionHeadersEnabled={true}
         ItemSeparatorComponent={Helpers.renderSeparator}
       />

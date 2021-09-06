@@ -168,6 +168,7 @@ export let CommonStyles = EStyleSheet.create({
     borderTopRightRadius: 10,
   },
   sectionTextStyle: {
+    paddingLeft: 10,
     textAlignVertical: 'center',
     color: 'white', //$textcolor',
     fontSize: '1.0rem',
@@ -207,6 +208,7 @@ export let CommonStyles = EStyleSheet.create({
     marginTop: -5,
     bottom: 0,
     right: 0,*/
+    marginHorizontal: -10
   },
   markerStyle: {
     alignItems: 'center',
@@ -301,13 +303,13 @@ export let CommonStyles = EStyleSheet.create({
   bottomSheetItemContainerStyle: {
     backgroundColor: '$bg',
     alignSelf: 'center',
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '$sectioncolor'
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: bdovored,
     alignSelf: 'center',
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: '$sectioncolor'
   },
   bottomSheetItemTextStyle: {

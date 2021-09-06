@@ -58,7 +58,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
       <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
 
         <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-          <Text style={[CommonStyles.defaultText,]}>Images uniquement en Wifi</Text>
+          <Text style={CommonStyles.defaultText}>Images uniquement en Wifi</Text>
           <View style={{flex:1}}></View>
           <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
             style={{ marginTop: -5}}
@@ -70,7 +70,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
           flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
           borderTopWidth: 1.0,
           borderTopColor: CommonStyles.separatorStyle.borderBottomColor}}>
-          <Text style={[CommonStyles.defaultText,]}>Informations de débogage</Text>
+          <Text style={CommonStyles.defaultText}>Informations de débogage</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={verbose} onValueChange={onSwitchVerbose}
             style={{ marginTop: -5 }}
