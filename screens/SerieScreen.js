@@ -281,7 +281,7 @@ function SerieScreen({ route, navigation }) {
           {errortext}
         </Text>
       ) : null}
-      {loading ? LoadingIndicator() : (
+      {loading ? <LoadingIndicator/> : (
         <SectionList
           style={{ flex: 1, marginTop: 10, marginHorizontal: 1 }}
           ref={sectionListRef}

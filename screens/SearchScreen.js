@@ -213,7 +213,7 @@ function SearchScreen({ navigation }) {
               {errortext}
             </Text>
           ) : null}
-          {loading ? LoadingIndicator() : (
+          {loading ? <LoadingIndicator style={{ height: '100%' }} /> : (
             <FlatList
               maxToRenderPerBatch={6}
               windowSize={10}

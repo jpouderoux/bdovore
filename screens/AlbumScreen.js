@@ -62,8 +62,6 @@ function AlbumScreen({ route, navigation }) {
   const [showUserComment, setShowUserComment] = useState(false);
   const [showMoreInfos, setShowMoreInfos] = useState(false);
 
-
-  console.log(album);
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
@@ -193,6 +191,12 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
+  const getTomeNumber = () => {
+    const serie = CollectionManager.getSerieInCollection(album.ID_SERIE);
+    const nbTomes = (serie && serie.NB_TOME) ? serie.NB_TOME : 0;
+    return <Text style={CommonStyles.defaultText}>Tome : {album.NUM_TOME}{nbTomes ? ' / ' + nbTomes : ''}</Text>
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{ margin: 0 }}>
@@ -209,7 +213,7 @@ function AlbumScreen({ route, navigation }) {
             <View style={{ marginTop: 10 }}>
               <RatingStars note={album.MOYENNE_NOTE_TOME} />
             </View> : null}
-          {loading ? LoadingIndicator() : null}
+
           {filteredComments().length > 0 || CollectionManager.isAlbumInCollection(album) && global.isConnected ?
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10 }}>
               {filteredComments().length > 0 ?
@@ -229,9 +233,10 @@ function AlbumScreen({ route, navigation }) {
           <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
         </CollapsableSection>
 
-        <CollapsableSection sectionName='Infos Albums'>
+        <CollapsableSection sectionName='Infos Album'>
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
+          {album.NUM_TOME > 0 && getTomeNumber()}
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
               {
@@ -264,7 +269,6 @@ function AlbumScreen({ route, navigation }) {
           {Helpers.getDateParutionAlbum(album) != '' ?
             <Text style={CommonStyles.defaultText}>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
             : null}
-
           {album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
           {album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
           {album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
@@ -277,7 +281,7 @@ function AlbumScreen({ route, navigation }) {
 
         {album.HISTOIRE_TOME ?
           <CollapsableSection sectionName='Histoire'>
-            <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
+            <Text style={[CommonStyles.defaultText, { textAlign: 'justify' }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           </CollapsableSection>
           : null}
 

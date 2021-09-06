@@ -30,10 +30,10 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 
-export function LoadingIndicator() {
+export function LoadingIndicator({ style }) {
 
   return (
-    <View style={{ height: '100%', justifyContent: 'center' }}>
+    <View style={[{ justifyContent: 'center' }, style ? style : null]}>
       <ActivityIndicator size="large" color="red" />
     </View>
   );

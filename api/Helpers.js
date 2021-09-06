@@ -223,9 +223,11 @@ export function removeHTMLTags(text) {
     text = text.replace(/&lt;/g, '<');
     text = text.replace(/&gt;/g, '>');
     text = text.replace(/&.*?;/gi, ' '); // catch any other "&...;" special chars
-    text = text.replace(/\n[\n]+/, '\n'); // remove multiple returns occurences
-    text = text.replace(/[\r\n]+$/, ''); // remove trailing carriage returns
-    text = text.replace(/^[\r\n]+/, ''); // remove trailing carriage returns
+    text = text.replace(/[ \r\n]+$/, ''); // remove trailing carriage returns
+    text = text.replace(/^[\s]*/, ''); // remove leading carriage returns
+    text = text.replace(/\n /, '\n');
+    text = text.replace(/\n\s\n*/g, '\n');// remove multiple returns occurences
+    text = text.replace(/so[uo]rce:/, 'Source :'); // remove trailing carriage returns
   }
   return text;
 }

@@ -48,7 +48,7 @@ export function CollapsableSection({ props, sectionName, isCollapsed = false, st
     <View style={[{ marginTop: 10, marginHorizontal: 1 }, style]}>
       <TouchableOpacity onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); setCollapsed(isCollapsed => !isCollapsed); }}>
         <View style={[CommonStyles.sectionAlbumStyle, { flexDirection: 'row', alignItems: 'center', }]}>
-          <Text style={[ CommonStyles.sectionTextStyle]}>{sectionName}</Text>
+          <Text style={[CommonStyles.sectionTextStyle]}>{sectionName}</Text>
           <Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
             <MaterialCommunityIcons name={collasped ? 'menu-down' : 'menu-up'} size={16} color={CommonStyles.markerIconStyle} />
           </Text>
