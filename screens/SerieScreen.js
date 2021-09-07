@@ -293,37 +293,32 @@ function SerieScreen({ route, navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10 }}>
-        <View style={{ flexDirection: 'row', marginHorizontal: 10 }} >
-          <Text style={[{ flex: 1, width: '33%', alignSelf: 'flex-start', marginTop: 0 }, CommonStyles.defaultText]}>
-            {getCounterText()}
-            {'\n\n'}
-            {serie.LIB_FLG_FINI_SERIE}
-          </Text>
+
+      </View>
+      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 2 }}>
+        <View style={{ flexDirection: 'row', marginHorizontal: -19 }} >
           <TouchableOpacity onPress={onShowSerieImage}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
           </TouchableOpacity>
-          <View style={{ width: '33%', alignItems: 'flex-end', }}>
-            {nbOfUserAlbums > 0 ? <Text style={[{ flex: 1, marginTop: 0, textAlign: 'right' }, CommonStyles.defaultText]}>
-              {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text> :
-              <Text style={[{ flex: 1, marginTop: 20, textAlign: 'right' }, CommonStyles.defaultText]}/>}
+          <View>
             <SerieMarkers item={serie}
-              style={[CommonStyles.markersSerieViewStyle, { marginBottom: -5 }]}
+              style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', right: 0, bottom: -10 }]}
               reduceMode={true}
               showExclude={true}
               serieAlbums={defaultSerieAlbums}
-              refreshCallback={() => { toggle(); refreshDataIfNeeded(true)} } />
+              refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }} />
+            {serie.NOTE_SERIE > 0 &&
+              <View style={{ alignItems: 'center', marginVertical: 5 }}>
+                <RatingStars note={serie.NOTE_SERIE} showRate />
+              </View>}
+            {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
+            <Text style={CommonStyles.defaultText}>{getCounterText()} - {nbOfUserAlbums > 0 ? Helpers.pluralWord(nbOfUserAlbums, 'album') + ' sur ' + Math.max(serie.NB_TOME, serie.NB_ALBUM) + ' dans la collection' : ''}</Text>
+            <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}</Text>
+            {renderAuthors()}
+            <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text>
           </View>
         </View>
-      </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }}>
-        {serie.NOTE_SERIE > 0 &&
-          <View style={{ alignItems: 'center', marginVertical: 5 }}>
-            <RatingStars note={serie.NOTE_SERIE} showRate />
-          </View>}
-        {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
-        {renderAuthors()}
-        {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
-        {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={()=>setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
+        {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
         {serie.HISTOIRE_SERIE && showSynopsis ? <Text>
           <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
           <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
