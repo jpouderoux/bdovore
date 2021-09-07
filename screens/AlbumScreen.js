@@ -36,7 +36,6 @@ import { AlbumMarkers } from '../components/AlbumMarkers';
 import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
-import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -60,11 +59,21 @@ function AlbumScreen({ route, navigation }) {
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
   const [showComments, setShowComments] = useState(false);
   const [showUserComment, setShowUserComment] = useState(false);
-  const [showMoreInfos, setShowMoreInfos] = useState(false);
+  const [isAlbumInCollection, setIsAlbumInCollection] = useState(false);
 
-  const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
+  const getAlbumName = (album) => {
+    let title = album.TITRE_TOME;
+    let tome = album.NUM_TOME;
+    if (tome > 0) {
+      title = title.replace(/(.*), Tome (\d)+/, '$1');
+      title = 'T' + album.NUM_TOME + ' - ' + title;
+    }
+    return title;
+  }
+  const tome = getAlbumName(album);
 
   useEffect(() => {
+    setIsAlbumInCollection(CollectionManager.isAlbumInCollection(album));
     getAlbumEditions();
     getAlbumIsExclude();
   }, [album]);
@@ -197,6 +206,11 @@ function AlbumScreen({ route, navigation }) {
     return <Text style={CommonStyles.defaultText}>Tome : {album.NUM_TOME}{nbTomes ? ' / ' + nbTomes : ''}</Text>
   }
 
+  const onRefresh = () => {
+    console.log("refresh");
+    setIsAlbumInCollection(CollectionManager.isAlbumInCollection(album));
+  }
+
   return (
     <View style={CommonStyles.screenStyle}>
       <ScrollView style={{ margin: 0 }}>
@@ -214,14 +228,14 @@ function AlbumScreen({ route, navigation }) {
               <RatingStars note={album.MOYENNE_NOTE_TOME} showRate />
             </View> : null}
 
-          {filteredComments().length > 0 || CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+          {filteredComments().length > 0 || isAlbumInCollection && global.isConnected ?
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10 }}>
               {filteredComments().length > 0 ?
                 <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
                   onPress={onShowComments}>
                   Lire les avis
                 </Text> : null}
-              {CollectionManager.isAlbumInCollection(album) && global.isConnected ?
+              {isAlbumInCollection && global.isConnected ?
                 <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
                   onPress={() => setShowUserComment(true)}>
                   Noter cet album
@@ -230,7 +244,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <CollapsableSection sectionName='Collection'>
-          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} />
+          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} refreshCallback={onRefresh} />
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Album'>

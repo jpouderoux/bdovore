@@ -260,6 +260,7 @@ function SerieScreen({ route, navigation }) {
           style={{ marginTop: 2, transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
       </View >);
   }
+  console.log(serie);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -274,7 +275,7 @@ function SerieScreen({ route, navigation }) {
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ width: '33%', alignItems: 'flex-end', }}>
-            <Text style={[{ flex: 1, marginTop: 20, alignSelf: 'center' }, CommonStyles.defaultText]}>
+            <Text style={[{ flex: 1, marginTop: 20, textAlign: 'right' }, CommonStyles.defaultText]}>
               {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
             </Text>
             <SerieMarkers item={serie}
@@ -286,12 +287,11 @@ function SerieScreen({ route, navigation }) {
           </View>
         </View>
       </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginTop: 2 }}>
-        {serie.NOTE_SERIE ?
+      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 2 }}>
+        {serie.NOTE_SERIE > 0 &&
           <View style={{ alignItems: 'center', marginVertical: 5 }}>
             <RatingStars note={serie.NOTE_SERIE} showRate />
-          </View> : null
-        }
+          </View>}
         {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
         <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
           {
