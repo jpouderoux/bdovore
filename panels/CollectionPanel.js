@@ -27,6 +27,7 @@
  */
 
 import React from 'react';
+import { View } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { ListItem } from 'react-native-elements';
 
@@ -52,22 +53,24 @@ function CollectionPanel({ route, navigation, isVisible, visibleSetter, collecti
     <BottomSheet
       isVisible={isVisible}
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
-        <ListItem.Content>
-          <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
-        </ListItem.Content>
-      </ListItem>
-      {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
-        <ListItem key={index + 1}
-          containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
-          onPress={() => onCollectionGenreChanged(route, navigation, mode)}>
+      <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 10, marginBottom: -10 }]}>
+        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
-            <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
-              {title[0]}
-            </ListItem.Title>
+            <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
           </ListItem.Content>
         </ListItem>
-      ))}
+        {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
+          <ListItem key={index + 1}
+            containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
+            onPress={() => onCollectionGenreChanged(route, navigation, mode)}>
+            <ListItem.Content>
+              <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
+                {title[0]}
+              </ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </View>
     </BottomSheet>
   );
 }

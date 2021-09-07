@@ -47,7 +47,6 @@ export let AlbumItemHeight = AlbumImageHeight + 1;
 /*Dimensions.addEventListener('change', () => {
   rebuildSheet();
 });*/
-
 export function rebuildSheet() {
   EStyleSheet.build({
     $theme: global.isDarkMode ? 'light' : 'dark',
@@ -57,6 +56,7 @@ export function rebuildSheet() {
     $sectioncolor: bdovored, //global.isDarkMode ? '#333' : '#ddd',
     $buttongroupcolor: global.isDarkMode ? '#333' : '#eee',
     $buttongroupselectcolor: global.isDarkMode ? '#777' : 'white',
+    $bw: global.isDarkMode ? StyleSheet.hairlineWidth * 2 : 0,
   });
 }
 
@@ -72,7 +72,9 @@ export let CommonStyles = EStyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 0,
     marginTop: 40,
-    borderRadius: 10
+    borderRadius: 10,
+    borderWidth: '$bw',
+    borderColor: 'lightgray',
   },
 
   // *************
@@ -176,6 +178,8 @@ export let CommonStyles = EStyleSheet.create({
     fontSize: '1.0rem',
     textShadowRadius: 0.5,
     textShadowOffset: { width: 0.5, height: 0.5 },
+    ...Platform.select({
+      ios: { fontWeight: '300' }, android: { fontFamily: 'sans-serif-light' }, default: {}})
   },
   sectionAlbumStyle: {
     backgroundColor: '$sectioncolor',
@@ -306,13 +310,13 @@ export let CommonStyles = EStyleSheet.create({
     backgroundColor: '$bg',
     alignSelf: 'center',
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: '$buttongroupcolor'
+    borderColor: '$buttongroupcolor',
   },
   bottomSheetSelectedItemContainerStyle: {
     backgroundColor: bdovored,
     alignSelf: 'center',
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: '$buttongroupcolor'
+    borderColor: '$buttongroupcolor',
   },
   bottomSheetItemTextStyle: {
     color: bdovored,

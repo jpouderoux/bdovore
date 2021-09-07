@@ -294,17 +294,13 @@ function AlbumScreen({ route, navigation }) {
           <AchatSponsorIcon album={album} />
         </CollapsableSection>
 
-        {album.HISTOIRE_TOME ?
+        {album.HISTOIRE_TOME &&
           <CollapsableSection sectionName='Synopsis'>
-            <Text style={[CommonStyles.defaultText, { textAlign: 'justify' }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
-          </CollapsableSection>
-          : null}
+            <Text style={[CommonStyles.defaultText, { textAlign: 'justify' }]}>
+              {Helpers.removeHTMLTags(album.HISTOIRE_TOME)}
+            </Text>
+          </CollapsableSection>}
 
-        {errortext ? (
-          <Text style={CommonStyles.errorTextStyle}>
-            {errortext}
-          </Text>
-        ) : null}
         {similAlbums.length > 0 ?
           <CollapsableSection sectionName='A voir aussi'>
             <FlatList
