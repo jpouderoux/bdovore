@@ -167,8 +167,8 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
-  const getAuteursLabel = () => {
-    const auteurs = Helpers.getAuteurs(album);
+  const getAuthorsLabel = () => {
+    const auteurs = Helpers.getAuthors(album);
     let len = auteurs.length;
     if (len == 1 && auteurs.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
@@ -252,9 +252,9 @@ function AlbumScreen({ route, navigation }) {
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           {album.NUM_TOME > 0 && getTomeNumber()}
           <View style={{ flexDirection: 'row' }}>
-            <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
+            <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
               {
-                Helpers.getAuteurs(album).map((auteur, index, array) => {
+                Helpers.getAuthors(album).map((auteur, index, array) => {
                   return (index == 0 && auteur.name == 'Collectif') ?
                     <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
                     <Text key={index} style={CommonStyles.defaultText}>

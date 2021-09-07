@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
@@ -57,6 +57,8 @@ function SerieScreen({ route, navigation }) {
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const sectionListRef = useRef();
   const [toggleElement, setToggleElement] = useState(false);
+  const [showAllAuthors, setShowAllAuthors] = useState(false);
+  const [showSynopsis, setShowSynopsis] = useState(false);
 
   const toggle = () => {
     setToggleElement(v => !v);
@@ -218,9 +220,8 @@ function SerieScreen({ route, navigation }) {
     navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
   }
 
-  const getAuteursLabel = () => {
-    const auteurs = Helpers.getAuteurs(defaultSerieAlbums);
-    let len = auteurs.length;
+  const getAuthorsLabel = () => {
+    let len = Helpers.getNumberOfAuthors(defaultSerieAlbums);
     if (len == 1 && auteurs.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
   }
@@ -249,6 +250,33 @@ function SerieScreen({ route, navigation }) {
   });
 
   const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+
+  const renderAuthors = () => {
+
+    const authors = Helpers.getAuthors(defaultSerieAlbums);
+    const nbOfAuthors = authors.length;
+    if (!showAllAuthors && nbOfAuthors > 6) {
+      return (
+      <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
+        <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
+      </Text>);
+    }
+    return (
+      <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
+        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null }
+        {Helpers.getAuthors(defaultSerieAlbums).map((auteur, index, array) => {
+          if (auteur.name == 'Collectif') {
+            return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
+          }
+          return (
+            <Text key={index * 2 + 1} style={CommonStyles.defaultText}>
+              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+              {index != (array.length - 1) ? ' / ' : ''}
+            </Text>)
+        })}
+      </Text>
+    )
+  }
 
   const ignoredSwitch = () => {
     return (
@@ -293,20 +321,13 @@ function SerieScreen({ route, navigation }) {
             <RatingStars note={serie.NOTE_SERIE} showRate />
           </View>}
         {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
-        <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
-          {
-            Helpers.getAuteurs(defaultSerieAlbums).map((auteur, index, array) => {
-              return (index == 0 && auteur.name == 'Collectif') ?
-                <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
-                <Text key={index} style={CommonStyles.defaultText}>
-                  <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
-                  {index != (array.length - 1) ? ' / ' : ''}
-                </Text>
-            })
-          }
-        </Text>
+        {renderAuthors()}
         <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text>
-        {serie.HISTOIRE_SERIE ? <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text> : null}
+        {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={()=>setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
+        {serie.HISTOIRE_SERIE && showSynopsis ? <Text>
+          <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
+          <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
+        </Text> : null}
       </CollapsableSection>
       {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>

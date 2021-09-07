@@ -236,7 +236,11 @@ export function removeHTMLTags(text) {
   return text;
 }
 
-export function getAuteurs(albums) {
+export function getNumberOfAuthors(albums) {
+  return getAuthors(albums).length;
+}
+
+export function getAuthors(albums) {
   let albs = albums;
   if (!Array.isArray(albums)) {
     albs = new Array(albums);
