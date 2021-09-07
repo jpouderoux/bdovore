@@ -221,8 +221,9 @@ function SerieScreen({ route, navigation }) {
   }
 
   const getAuthorsLabel = () => {
-    let len = Helpers.getNumberOfAuthors(defaultSerieAlbums);
-    if (len == 1 && auteurs.name == 'Collectif') len++;
+    let authors = Helpers.getAuthors(defaultSerieAlbums);
+    let len = authors.length;
+    if (len == 1 && authors.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
   }
 
