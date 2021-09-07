@@ -27,7 +27,7 @@
  */
 
 import { Dimensions, StyleSheet } from 'react-native';
-import EStyleSheet from 'react-native-extended-stylesheet';
+import EStyleSheet, { hairlineWidth } from 'react-native-extended-stylesheet';
 
 export const bdovored = '#990000';
 export const bdovorlightred = '#e90101';
@@ -111,6 +111,8 @@ export let CommonStyles = EStyleSheet.create({
   amazonIcon: {
     width: 365/4,
     height: 130/4,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: 'lightgrey'
   },
   iconStyle: {
     color: '$textcolor', // #222

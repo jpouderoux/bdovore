@@ -305,7 +305,7 @@ function SerieScreen({ route, navigation }) {
             })
           }
         </Text>
-        <Text style={CommonStyles.defaultText}>Id BDovore : {serie.ID_SERIE}</Text>
+        <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text>
         {serie.HISTOIRE_SERIE ? <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text> : null}
       </CollapsableSection>
       {errortext ? (
