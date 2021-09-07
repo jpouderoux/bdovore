@@ -236,16 +236,35 @@ export function removeHTMLTags(text) {
   return text;
 }
 
-export function getAuteurs(album) {
-  let auteursArray = [
-    { name: album.depseudo, id: album.ID_DESSIN},
-    { name: album.scpseudo, id: album.ID_SCENAR},
-    { name: album.copseudo, id: album.ID_COLOR}];
+export function getAuteurs(albums) {
+  let albs = albums;
+  if (!Array.isArray(albums)) {
+    albs = new Array(albums);
+  }
+  let dessinateurs = [];
+  let scenaristes = [];
+  let coloristes = [];
+  albs.forEach(album => {
+    dessinateurs.push({ name: album.depseudo, id: album.ID_DESSIN } );
+    scenaristes.push({ name: album.scpseudo, id: album.ID_SCENAR });
+    coloristes.push({ name: album.copseudo, id: album.ID_COLOR });
+    });
+
+  let auteursArray = dessinateurs.concat(scenaristes).concat(coloristes);
   // Remove useless entries
-  auteursArray = auteursArray.filter((item) => (item.name != null && item.name != '<n&b>' && item.name != '<indéterminé>'));
+  auteursArray = auteursArray.filter((item) => (item.name != null && !item.name.match(/<.*>/)));
   // Remove duplicated entries
   auteursArray = auteursArray.filter((item, pos, self) => self.findIndex((it) => (it.id == item.id)) == pos);
+
   return auteursArray;
+}
+
+export function noteToString(rate) {
+  if (rate <= 1.0) return 'Très mauvais';
+  if (rate <= 2.0) return 'Mauvais';
+  if (rate <= 3.0) return 'Moyen';
+  if (rate <= 4.0) return 'Très bon';
+  if (rate <= 5.0) return 'Excellent';
 }
 
 export function reverseAuteurName(name) {
@@ -282,6 +301,10 @@ export function getDateParutionAlbum(album) {
     date = date.substring(3);
   }
   return date;
+}
+
+export function dateToString(date) {
+  return convertDate(date.substring(0, 10));
 }
 
 export function showToast(isError, text1, text2 = '', duration = 1000) {

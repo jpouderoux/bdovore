@@ -211,7 +211,7 @@ function AlbumScreen({ route, navigation }) {
           <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
           {album.MOYENNE_NOTE_TOME ?
             <View style={{ marginTop: 10 }}>
-              <RatingStars note={album.MOYENNE_NOTE_TOME} />
+              <RatingStars note={album.MOYENNE_NOTE_TOME} showRate />
             </View> : null}
 
           {filteredComments().length > 0 || CollectionManager.isAlbumInCollection(album) && global.isConnected ?
@@ -269,18 +269,19 @@ function AlbumScreen({ route, navigation }) {
           {Helpers.getDateParutionAlbum(album) != '' ?
             <Text style={CommonStyles.defaultText}>Date de parution : {Helpers.getDateParutionAlbum(album)}</Text>
             : null}
-          {album.COMMENT_EDITION ? <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text> : null}
-          {album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' ? <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text> : null}
-          {album.EAN_EDITION ? <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text> : null}
-          {!album.EAN_EDITION && album.ISBN_EDITION ? <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text> : null}
+          {album.COMMENT_EDITION && <Text style={CommonStyles.defaultText}>Infos édition : {album.COMMENT_EDITION}</Text>}
+          {album.NOM_COLLECTION && album.NOM_COLLECTION != '<N/A>' && <Text style={CommonStyles.defaultText}>Collection : {album.NOM_COLLECTION}</Text>}
+          {album.EAN_EDITION && <Text style={CommonStyles.defaultText}>EAN : {album.EAN_EDITION}</Text>}
+          {!album.EAN_EDITION && album.ISBN_EDITION && <Text style={CommonStyles.defaultText}>ISBN : {album.ISBN_EDITION}</Text>}
           {(album.PRIX_BDNET && parseInt(album.PRIX_BDNET > 0)) ? <Text style={CommonStyles.defaultText}>Prix constaté : {album.PRIX_BDNET}€</Text> : null}
           <Text style={CommonStyles.defaultText}>Ids BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text>
+          {album.DATE_AJOUT && <Text style={CommonStyles.defaultText}>Date d'ajout : {Helpers.dateToString(album.DATE_AJOUT)}</Text>}
 
           <AchatSponsorIcon album={album} />
         </CollapsableSection>
 
         {album.HISTOIRE_TOME ?
-          <CollapsableSection sectionName='Histoire'>
+          <CollapsableSection sectionName='Synopsis'>
             <Text style={[CommonStyles.defaultText, { textAlign: 'justify' }]}>{Helpers.removeHTMLTags(album.HISTOIRE_TOME)}</Text>
           </CollapsableSection>
           : null}

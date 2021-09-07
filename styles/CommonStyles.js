@@ -357,7 +357,7 @@ export let CommonStyles = EStyleSheet.create({
   //*********************
   // Rating stars styles
   ratingStarColor: {
-    color: '$textcolor',
+    color: 'orange',//$textcolor',
     backgroundColor: '$bg'
   },
 

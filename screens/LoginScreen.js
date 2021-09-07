@@ -177,7 +177,7 @@ function LoginScreen({ navigation }) {
   }
 
   const onToggleSponsoredLinks = () => {
-    if (Platform.OS != 'ios') {
+    /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = !global.hideSponsoredLinks;
       AsyncStorage.setItem('hideSponsoredLinks', global.hideSponsoredLinks ? '1' : '0');
       Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');

@@ -129,7 +129,7 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
           <View style={{ margin: 0, alignItems: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
             <View style={{ marginVertical: 10 }}>
-              <RatingStars note={rate} editable={true} callback={setRate} />
+              <RatingStars note={rate} editable={true} callback={setRate} showRate/>
             </View>
             <TextInput
               multiline={true}

@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
@@ -55,7 +55,6 @@ function SerieScreen({ route, navigation }) {
   const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [serieAlbums, setSerieAlbums] = useState([]);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
-  const [showMoreInfos, setShowMoreInfos] = useState(false);
   const sectionListRef = useRef();
   const [toggleElement, setToggleElement] = useState(false);
 
@@ -215,6 +214,27 @@ function SerieScreen({ route, navigation }) {
     refreshAlbums();
   }
 
+  const onShowSerieImage = () => {
+    navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
+  }
+
+  const getAuteursLabel = () => {
+    const auteurs = Helpers.getAuteurs(defaultSerieAlbums);
+    let len = auteurs.length;
+    if (len == 1 && auteurs.name == 'Collectif') len++;
+    return Helpers.pluralize(len, 'Auteur')
+  }
+
+  const onPressAuteur = (auteur) => {
+    if (auteur != 'Collectif' && global.isConnected) {
+      APIManager.fetchAuteur(auteur.id, (result) => {
+        if (!result.error && result.items.length > 0) {
+          navigation.push('Auteur', { item: result.items[0] });
+        }
+      });
+    }
+  }
+
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
@@ -245,16 +265,16 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <View style={{ marginHorizontal: 10 }}>
         <View style={{ flexDirection: 'row', marginHorizontal: 10 }} >
-          <Text style={[{ marginTop: 0, flex: 1, width: '33%', alignSelf: 'center' }, CommonStyles.defaultText]}>
+          <Text style={[{ flex: 1, width: '33%', alignSelf: 'flex-start', marginTop: 20 }, CommonStyles.defaultText]}>
             {getCounterText()}
             {'\n\n'}
             {serie.LIB_FLG_FINI_SERIE}
           </Text>
-          <TouchableOpacity onPress={() => showMoreInfos ? navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) }) : setShowMoreInfos(true)}>
+          <TouchableOpacity onPress={onShowSerieImage}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ width: '33%', alignItems: 'flex-end', }}>
-            <Text style={[{ flex: 1, textAlignVertical: 'center', alignSelf: 'center' }, CommonStyles.defaultText]}>
+            <Text style={[{ flex: 1, marginTop: 20, alignSelf: 'center' }, CommonStyles.defaultText]}>
               {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
             </Text>
             <SerieMarkers item={serie}
@@ -268,11 +288,23 @@ function SerieScreen({ route, navigation }) {
       </View>
       <CollapsableSection sectionName='Infos Série' isCollapsed={true} style={{ marginTop: 2 }}>
         {serie.NOTE_SERIE ?
-          <View style={{ alignItems: 'center' }}>
-            <RatingStars note={serie.NOTE_SERIE} />
+          <View style={{ alignItems: 'center', marginVertical: 5 }}>
+            <RatingStars note={serie.NOTE_SERIE} showRate />
           </View> : null
         }
         {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
+        <Text style={CommonStyles.defaultText}>{getAuteursLabel()} :{' '}
+          {
+            Helpers.getAuteurs(defaultSerieAlbums).map((auteur, index, array) => {
+              return (index == 0 && auteur.name == 'Collectif') ?
+                <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
+                <Text key={index} style={CommonStyles.defaultText}>
+                  <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+                  {index != (array.length - 1) ? ' / ' : ''}
+                </Text>
+            })
+          }
+        </Text>
         <Text style={CommonStyles.defaultText}>Id BDovore : {serie.ID_SERIE}</Text>
         {serie.HISTOIRE_SERIE ? <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text> : null}
       </CollapsableSection>

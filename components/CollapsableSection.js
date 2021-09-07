@@ -40,18 +40,26 @@ if (Platform.OS === 'android') {
 
 
 
-export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, children }) {
+export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, collapsable = true, children }) {
 
   const [collasped, setCollapsed] = useState(isCollapsed);
 
+  const onCollapse = () => {
+    if (collapsable) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setCollapsed(isCollapsed => !isCollapsed);
+    }
+  }
+
   return (
     <View style={[{ marginTop: 10, marginHorizontal: 1 }, style]}>
-      <TouchableOpacity onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); setCollapsed(isCollapsed => !isCollapsed); }}>
+      <TouchableOpacity onPress={onCollapse}>
         <View style={[CommonStyles.sectionAlbumStyle, { flexDirection: 'row', alignItems: 'center', }]}>
           <Text style={[CommonStyles.sectionTextStyle]}>{sectionName}</Text>
+          {collapsable &&
           <Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
             <MaterialCommunityIcons name={collasped ? 'menu-down' : 'menu-up'} size={16} color={CommonStyles.markerIconStyle} />
-          </Text>
+          </Text>}
         </View>
       </TouchableOpacity>
       {!collasped ? <View style={{ marginVertical: 5, marginHorizontal: 10 }}>{children}</View> : null}

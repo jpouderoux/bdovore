@@ -202,7 +202,7 @@ class CCollectionManager {
     }).catch(() => { });
 
     global.hideSponsoredLinks = true;
-    if (Platform.OS != 'ios') {
+    /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = false;
       AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
         global.hideSponsoredLinks(value != '0');
@@ -537,7 +537,10 @@ class CCollectionManager {
           const alb = this.getAlbumInCollection(album);
           if (alb) {
             console.debug('album ' + album.ID_TOME + ' edition ' + album.ID_EDITION + ' removed from the collection');
-            global.db.write(() => { global.db.delete(alb); });
+            global.db.write(() => {
+              alb.DATE_AJOUT = '';
+              album.DATE_AJOUT = '';
+              global.db.delete(alb); });
           }
 
           if (CollectionManager.isAlbumInCollection(album)) {

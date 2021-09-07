@@ -3,7 +3,7 @@
 // Code by Joachim Pouderoux, 2021
 
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PropTypes from 'prop-types';
 
@@ -37,13 +37,13 @@ class Star extends React.PureComponent {
     }
     const starWidth = flattenStyle.width / STAR_COUNT || 30;
     const Star = ({ source, color = starColor }) => (
-      <Icons name={source} size={starWidth} color={color} />
+      <Icons name={source} size={starWidth} color={color} style={Styles.icon} />
     );
     return (
-      <View style={[Styles.container, style]}>
+      <View style={[Styles.container, style]}><Text>
         {Array(fullStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star'} />)}
         {Array(halfStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-half-full'} />)}
-        {Array(voidStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-outline'} />)}
+        {Array(voidStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-outline'} />)}</Text>
       </View>
     );
   }
@@ -62,6 +62,11 @@ const Styles = StyleSheet.create({
     height: 30,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  icon: {
+    textShadowColor: 'lightgrey',
+    textShadowRadius: 1.0,
+    textShadowOffset: { width: 0.5, height: 0.5 },
   }
 });
 

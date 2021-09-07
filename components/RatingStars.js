@@ -32,25 +32,34 @@ import { Rating } from 'react-native-elements';
 import Star from './Star';
 import { CommonStyles } from '../styles/CommonStyles';
 
+import * as Helpers from '../api/Helpers';
 
-export function RatingStars({ note, editable, callback, style }) {
+export function RatingStars({ note, editable, callback, style, showRate }) {
 
   // Note: in view only mode we use the simple & fast Star component
   return ((note && note > 0) ?
     <View style={[{ alignItems: 'baseline' }, style]}>
       {editable ?
-        <Rating
-          fractions={1}
-          ratingCount={5}
-          imageSize={20}
-          startingValue={note}
-          //tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
-          readonly={editable ? false : true}
-          onFinishRating={callback ? callback : (rate) => { }}
-        /> :
+        <View style={{ flexDirection: 'column' }}>
+          <View style={{ flexDirection: 'row' }}>
+            <Rating
+              fractions={1}
+              ratingCount={5}
+              imageSize={20}
+              startingValue={note}
+              //tintColor={global.isDarkMode ? DarkTheme.colors.card : DefaultTheme.colors.card}
+              readonly={editable ? false : true}
+              onFinishRating={callback ? callback : (rate) => { }}
+            />
+            {showRate && <Text style={[CommonStyles.defaultText, { marginLeft: 10, marginTop: 1 }]}>
+              {(Number.parseFloat(note)).toFixed(1)}</Text>}
+          </View>
+          {showRate && <Text style={[CommonStyles.defaultText, CommonStyles.center, { marginTop: 3 }]}>
+            {Helpers.noteToString(note)}</Text>}
+        </View> :
         <View style={{ flexDirection: 'row' }}>
           <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20, marginRight: 10 }} starColor={CommonStyles.ratingStarColor.color} />
-          <Text style={CommonStyles.defaultText}>{(Number.parseFloat(note) / 2.).toFixed(1)}</Text>
+          {showRate && <Text style={[CommonStyles.defaultText, { marginTop: 1 }]}>{(Number.parseFloat(note) / 2.).toFixed(1)}</Text>}
         </View>
       }
     </View> : null);
