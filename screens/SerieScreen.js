@@ -275,9 +275,9 @@ function SerieScreen({ route, navigation }) {
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 122 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ width: '33%', alignItems: 'flex-end', }}>
-            <Text style={[{ flex: 1, marginTop: 20, textAlign: 'right' }, CommonStyles.defaultText]}>
-              {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}
-            </Text>
+            {nbOfUserAlbums > 0 ? <Text style={[{ flex: 1, marginTop: 20, textAlign: 'right' }, CommonStyles.defaultText]}>
+              {Helpers.pluralWord(nbOfUserAlbums, 'album')} sur {Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text> :
+              <Text style={[{ flex: 1, marginTop: 20, textAlign: 'right' }, CommonStyles.defaultText]}/>}
             <SerieMarkers item={serie}
               style={CommonStyles.markersSerieViewStyle}
               reduceMode={true}
