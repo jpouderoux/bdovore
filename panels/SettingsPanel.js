@@ -38,6 +38,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
 
   const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
   const [verbose, setVerbose] = useState(global.verbose);
+  const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
 
   useEffect(() => {
   }, []);
@@ -53,6 +54,12 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     global.verbose = value;
     AsyncStorage.setItem('verbose', value ? '1' : '0').catch((error) => { });
   };
+
+  const onSwitchBDovoreIds = (value) => {
+    setShowBDovoreIds(value);
+    global.showBDovoreIds = value;
+    AsyncStorage.setItem('showBDovoreIds', value ? '1' : '0').catch((error) => { });
+  }
 
   return (
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
@@ -75,6 +82,15 @@ function SettingsPanel({ isVisible, visibleSetter }) {
           <Text style={CommonStyles.defaultText}>Informations de débogage</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={verbose} onValueChange={onSwitchVerbose}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
+        <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
+          <Text style={CommonStyles.defaultText}>Afficher les identifiants BDovore</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={showBDovoreIds} onValueChange={onSwitchBDovoreIds}
             style={{ marginTop: -5 }}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />

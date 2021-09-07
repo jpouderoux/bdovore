@@ -120,7 +120,7 @@ function AuteurScreen({ route, navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View>
-        <AuteurItem navigation={navigation} item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true} canViewFullscreenImage={true} />
+        <AuteurItem navigation={navigation} item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true} canViewFullscreenImage={true} showId={true} />
         {loading ? <SmallLoadingIndicator /> : null}
       </View>
       {errortext ? (

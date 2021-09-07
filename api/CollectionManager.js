@@ -207,6 +207,11 @@ class CCollectionManager {
       }).catch(() => { });
     }
 
+    global.showBDovoreIds = false;
+    AsyncStorage.getItem('showBDovoreIds').then((value) => {
+      global.showBDovoreIds(value != '0');
+    }).catch(() => { });
+
     global.verbose = true;
     AsyncStorage.getItem('verbose').then((value) => {
       global.verbose(value != '0');

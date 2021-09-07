@@ -39,7 +39,7 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
-export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = () => { } }) {
+export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = () => { }}) {
 
   const [showAllMarks, setShowAllMarks] = useState(false);
   const [initAlbum, setInitAlbum] = useState({});

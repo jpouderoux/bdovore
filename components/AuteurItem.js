@@ -35,7 +35,7 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
 
-export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index, canViewFullscreenImage }) {
+export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index, canViewFullscreenImage, showId = false  }) {
 
   const onPressAuteur = (navigation, item) => {
     navigation.push('Auteur', { item });
@@ -64,6 +64,7 @@ export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>
               {Helpers.pluralWord(nbAlbums, 'album')} pour {Helpers.pluralWord(nbSeries, 'série')}
             </Text> : null}
+          {showId && global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>{'\n'}ID-BDovore : {item.ID_AUTEUR}</Text> : null}
         </View>
       </View>
     </TouchableOpacity >
