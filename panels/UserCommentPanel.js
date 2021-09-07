@@ -27,15 +27,15 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import * as APIManager from '../api/APIManager';
-import * as Helpers from '../api/Helpers';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles, windowHeight } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 
 
 function MakeComment(album, comment, rate, login) {
@@ -124,12 +124,12 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
 
   return (
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: Platform.OS == 'ios' ? windowHeight*0.95  : null }]}>
-        <View style={{ marginTop: 10, marginBottom: 10,  width: '80%' }}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: Platform.OS == 'ios' ? windowHeight * 0.95 : null }]}>
+        <View style={{ marginTop: 10, marginBottom: 10, width: '80%' }}>
           <View style={{ margin: 0, alignItems: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.bold, CommonStyles.largerText, { textAlign: 'center' }]}>{tome}</Text>
             <View style={{ marginVertical: 10 }}>
-              <RatingStars note={rate} editable={true} callback={setRate} showRate/>
+              <RatingStars note={rate} editable={true} callback={setRate} showRate />
             </View>
             <TextInput
               multiline={true}

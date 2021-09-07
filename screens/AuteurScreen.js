@@ -30,13 +30,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-import * as Helpers from '../api/Helpers';
-import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 
-import { CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
+import { CommonStyles } from '../styles/CommonStyles';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 

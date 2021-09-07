@@ -31,15 +31,15 @@ import { StyleSheet, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 
 
-export function BottomSheet({ props, containerStyle, isVisible = false, visibleSetter = (visible)=>{}, modalProps = {}, children }) {
+export function BottomSheet({ props, containerStyle, isVisible = false, visibleSetter = (visible) => { }, modalProps = {}, children }) {
   return (
     <Modal
       animationType='slide'
       transparent={true}
       isVisible={isVisible}
-      onBackdropPress={() => visibleSetter(false) }
-      onRequestClose = {() => visibleSetter(false) }
-      onSwipeComplete = {() => visibleSetter(false) }
+      onBackdropPress={() => visibleSetter(false)}
+      onRequestClose={() => visibleSetter(false)}
+      onSwipeComplete={() => visibleSetter(false)}
       swipeDirection={['down']}
       useNativeDriver={false}
       propagateSwipe

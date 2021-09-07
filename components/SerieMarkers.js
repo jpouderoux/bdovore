@@ -29,15 +29,14 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { CommonStyles } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
-import { CommonStyles } from '../styles/CommonStyles';
 
 
-export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCallback = ()=>{} }) {
+export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCallback = () => { } }) {
 
   const [serie, setSerie] = useState(item);
   const [isExcluded, setIsExcluded] = useState(false);
@@ -91,7 +90,8 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
         });
         setIsExcluded(exclude == 1);
         refreshCallback();
-      }};
+      }
+    };
     if (exclude) {
       APIManager.excludeSerie(serie, callback);
       CollectionManager.setSerieExcludeFlag(serie, true);

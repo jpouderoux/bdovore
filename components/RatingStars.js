@@ -29,10 +29,11 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Rating } from 'react-native-elements';
-import Star from './Star';
-import { CommonStyles } from '../styles/CommonStyles';
 
+import { CommonStyles } from '../styles/CommonStyles';
 import * as Helpers from '../api/Helpers';
+import Star from './Star';
+
 
 export function RatingStars({ note, editable, callback, style, showRate }) {
 

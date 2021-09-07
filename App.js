@@ -35,12 +35,10 @@ import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
 import NetInfo from "@react-native-community/netinfo";
 
-import MainTab from './routes/MainTab';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
 import * as Helpers from './api/Helpers';
-
-const Realm = require('realm');
+import MainTab from './routes/MainTab';
 
 
 const App: () => Node = () => {
@@ -52,7 +50,7 @@ const App: () => Node = () => {
   global.isDarkMode = useColorScheme() === 'dark';
   rebuildSheet();
 
-  // Subscribe
+  // Subscribe to network change events
   NetInfo.addEventListener(state => {
     console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
     global.connectionType = state.type;

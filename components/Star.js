@@ -3,7 +3,7 @@
 // Code by Joachim Pouderoux, 2021
 
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PropTypes from 'prop-types';
 
@@ -40,10 +40,10 @@ class Star extends React.PureComponent {
       <Icons name={source} size={starWidth} color={color} style={Styles.icon} />
     );
     return (
-      <View style={[Styles.container, style]}><Text>
+      <View style={[Styles.container, style]}>
         {Array(fullStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star'} />)}
         {Array(halfStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-half-full'} />)}
-        {Array(voidStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-outline'} />)}</Text>
+        {Array(voidStarCount).fill().map((e, i) => <Star key={i.toString()} source={'star-outline'} />)}
       </View>
     );
   }
@@ -65,8 +65,8 @@ const Styles = StyleSheet.create({
   },
   icon: {
     textShadowColor: 'lightgrey',
-    textShadowRadius: 1.0,
-    textShadowOffset: { width: 0.5, height: 0.5 },
+    textShadowRadius: 3.0,
+    textShadowOffset: { width: 1.5, height: 0.5 },
   }
 });
 

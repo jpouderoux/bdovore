@@ -29,13 +29,14 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { AlbumMarkers } from './AlbumMarkers';
 import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
+import { CoverImage } from './CoverImage';
+import { RatingStars } from './RatingStars';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import { CoverImage } from './CoverImage';
-import { AlbumMarkers } from './AlbumMarkers';
-import { RatingStars } from './RatingStars';
 import CollectionManager from '../api/CollectionManager';
+
 
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude, refreshCallback }) {
 
@@ -53,7 +54,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.TITRE_TOME}
           </Text>
-          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{marginTop: 5}}/>
+          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n'}
             {showEditionDate && item.DTE_PARUTION ? '\nA paraître le ' + Helpers.convertDate(item.DTE_PARUTION) : ''}

@@ -32,9 +32,9 @@ import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ButtonGroup } from 'react-native-elements';
 
-import * as Helpers from '../api/Helpers';
-import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { AlbumItem } from '../components/AlbumItem';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 let collectionGenre = 0;

@@ -30,8 +30,9 @@ import React, { useEffect, useState } from 'react';
 import { Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { CommonStyles } from '../styles/CommonStyles';
 import { BottomSheet } from '../components/BottomSheet';
+import { CommonStyles } from '../styles/CommonStyles';
+
 
 function SettingsPanel({ isVisible, visibleSetter }) {
 
@@ -44,7 +45,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const onSwitchImageOnWifi = (value) => {
     setImageOnWifi(value);
     global.imageOnWifi = value;
-    AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => {});
+    AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => { });
   };
 
   const onSwitchVerbose = (value) => {
@@ -59,9 +60,9 @@ function SettingsPanel({ isVisible, visibleSetter }) {
 
         <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
           <Text style={CommonStyles.defaultText}>Images uniquement en Wifi</Text>
-          <View style={{flex:1}}></View>
+          <View style={{ flex: 1 }}></View>
           <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
-            style={{ marginTop: -5}}
+            style={{ marginTop: -5 }}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
@@ -69,7 +70,8 @@ function SettingsPanel({ isVisible, visibleSetter }) {
         <View style={{
           flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
           borderTopWidth: 1.0,
-          borderTopColor: CommonStyles.separatorStyle.borderBottomColor}}>
+          borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
           <Text style={CommonStyles.defaultText}>Informations de débogage</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={verbose} onValueChange={onSwitchVerbose}

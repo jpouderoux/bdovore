@@ -33,6 +33,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
+import { BottomSheet } from '../components/BottomSheet';
 import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
@@ -42,7 +43,6 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 import CommentsPanel from '../panels/CommentsPanel';
 import UserCommentPanel from '../panels/UserCommentPanel';
-import { BottomSheet } from '../components/BottomSheet';
 
 
 function AlbumScreen({ route, navigation }) {

@@ -33,10 +33,11 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import NetInfo from "@react-native-community/netinfo";
 
 import { CommonStyles } from '../styles/CommonStyles';
+import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 import CollectionManager from '../api/CollectionManager';
+
 
 const pkg = require('../app.json');
 

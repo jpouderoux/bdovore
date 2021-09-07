@@ -32,10 +32,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
-import * as Helpers from '../api/Helpers';
-import * as APIManager from '../api/APIManager';
-import CollectionManager from '../api/CollectionManager';
-
 import { AlbumItem } from '../components/AlbumItem';
 import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles, AlbumItemHeight } from '../styles/CommonStyles';
@@ -43,6 +39,10 @@ import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
 import { SerieMarkers } from '../components/SerieMarkers';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
+import CollectionManager from '../api/CollectionManager';
+
 
 let serieAlbumsLoaded = 0;
 

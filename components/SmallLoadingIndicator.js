@@ -31,6 +31,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { bdovored } from '../styles/CommonStyles';
 
+
 export function SmallLoadingIndicator({ style }) {
 
   return (

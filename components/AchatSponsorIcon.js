@@ -33,8 +33,8 @@ import { CommonStyles } from '../styles/CommonStyles';
 
 
 export function AchatSponsorIcon({ album, style }) {
-    return (
-      (global.hideSponsoredLinks || !global.isConnected) ? null : // Sponsored links are disabled on iOS according AppStore rules.
+  return (
+    (global.hideSponsoredLinks || !global.isConnected) ? null : // Sponsored links are disabled on iOS according AppStore rules.
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
         {album.EAN_EDITION ? <TouchableOpacity
           onPress={() => { Linking.openURL('https://www.bdfugue.com/a/?ean=' + album.EAN_EDITION + "&ref=295"); }}
@@ -42,12 +42,14 @@ export function AchatSponsorIcon({ album, style }) {
           <Image source={require('../assets/bdfugue.png')} style={CommonStyles.bdfugueIcon} />
         </TouchableOpacity> : null}
         <TouchableOpacity
-          onPress={() => { Linking.openURL(album.ISBN_EDITION ?
-            ('https://www.amazon.fr/exec/obidos/ASIN/' + album.ISBN_EDITION + "/bdovorecom-21/") :
-            encodeURI('https://www.amazon.fr/exec/obidos/external-search?tag=bdovorecom-21&mode=books-fr&keyword=' + album.TITRE_TOME)); }}
+          onPress={() => {
+            Linking.openURL(album.ISBN_EDITION ?
+              ('https://www.amazon.fr/exec/obidos/ASIN/' + album.ISBN_EDITION + "/bdovorecom-21/") :
+              encodeURI('https://www.amazon.fr/exec/obidos/external-search?tag=bdovorecom-21&mode=books-fr&keyword=' + album.TITRE_TOME));
+          }}
           title="Acheter sur Amazon" >
           <Image source={require('../assets/amazon.png')} style={CommonStyles.amazonIcon} />
         </TouchableOpacity>
-    </View>);
+      </View>);
 }
 

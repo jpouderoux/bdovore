@@ -32,13 +32,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { CommonStyles } from '../styles/CommonStyles';
 
+
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
-
-
 
 export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, collapsable = true, children }) {
 

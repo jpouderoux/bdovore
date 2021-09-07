@@ -29,17 +29,17 @@
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as APIManager from '../api/APIManager'
-import CollectionManager from '../api/CollectionManager';
 import { CommonStyles } from '../styles/CommonStyles';
+import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
+import CollectionManager from '../api/CollectionManager';
 
-export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = ()=>{} }) {
+
+export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = () => { } }) {
 
   const [showAllMarks, setShowAllMarks] = useState(false);
   const [initAlbum, setInitAlbum] = useState({});
@@ -190,7 +190,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
         album.IS_EXCLU = exclude ? 1 : 0;
         setIsExcluded(exclude);
         refreshCallback();
-      }};
+      }
+    };
     if (exclude) {
       APIManager.excludeAlbum(album, callback);
     } else {
@@ -214,7 +215,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
 
       {(!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={album.IS_EXCLU ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.IS_EXCLU ? {fontWeight: 'bold'} : null]} />
+          <MaterialCommunityIcons name='cancel' size={25} color={album.IS_EXCLU ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.IS_EXCLU ? { fontWeight: 'bold' } : null]} />
           <Text style={[CommonStyles.markerTextStyle, album.IS_EXCLU ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 

@@ -32,16 +32,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
-import CollectionManager from '../api/CollectionManager';
-import * as Helpers from '../api/Helpers'
-import { BottomSheet } from '../components/BottomSheet';
-
 import { AlbumItem } from '../components/AlbumItem';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { BottomSheet } from '../components/BottomSheet';
 import { SerieItem } from '../components/SerieItem';
+import * as Helpers from '../api/Helpers'
+import CollectionManager from '../api/CollectionManager';
 
 
 const defaultSortMode = 1;

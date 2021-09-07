@@ -182,9 +182,7 @@ class CCollectionManager {
 
   initialize() {
     console.debug('init collection manager');
-
     this.initializeSettings();
-
     this.initializeDatabase();
   }
 
@@ -216,7 +214,7 @@ class CCollectionManager {
   }
 
   resetDatabase() {
-    console.debug('/!\\ Database reset!!!!!');
+    console.debug('/!\\ Database reset /!\\');
     if (global.verbose) {
       Helpers.showToast(true, 'Réinitilisation de la base de données');
     }

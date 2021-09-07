@@ -34,12 +34,11 @@ import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
-import * as Helpers from '../api/Helpers';
-import * as APIManager from '../api/APIManager';
-
 import { AlbumItem } from '../components/AlbumItem';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { SerieItem } from '../components/SerieItem';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
