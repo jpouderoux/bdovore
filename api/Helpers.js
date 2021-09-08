@@ -254,12 +254,17 @@ export function getAuthors(albums) {
   let scenaristes = [];
   let coloristes = [];
   albs.forEach(album => {
-    dessinateurs.push({ name: album.depseudo, id: album.ID_DESSIN } );
-    scenaristes.push({ name: album.scpseudo, id: album.ID_SCENAR });
-    coloristes.push({ name: album.copseudo, id: album.ID_COLOR });
-    });
+    dessinateurs.push({ name: album.depseudo, id: album.ID_DESSIN, hits: 1 } );
+    scenaristes.push({ name: album.scpseudo, id: album.ID_SCENAR, hits: 1 });
+    coloristes.push({ name: album.copseudo, id: album.ID_COLOR, hits: 1 });
+  });
 
   let auteursArray = dessinateurs.concat(scenaristes).concat(coloristes);
+  // Sort author by number of contributions in the serie
+  auteursArray.filter((item, pos, self) => { item.hits = self.filter((it) => (it.id == item.id)).length; });
+  auteursArray = auteursArray.filter((item, pos, self) => self.findIndex((it) => (it.id == item.id)) == pos);
+  auteursArray = auteursArray.sort((a, b) => b.hits - a.hits);
+
   // Remove useless entries
   auteursArray = auteursArray.filter((item) => (item.name != null && !item.name.match(/<.*>/)));
   // Remove duplicated entries
