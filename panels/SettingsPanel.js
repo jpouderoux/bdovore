@@ -65,7 +65,8 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
 
-        <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
+        <View style={{
+           flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
           <Text style={CommonStyles.defaultText}>Images uniquement en Wifi</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
@@ -76,8 +77,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
 
         <View style={{
           flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
-          borderTopWidth: 1.0,
-          borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
         }}>
           <Text style={CommonStyles.defaultText}>Informations de débogage</Text>
           <View style={{ flex: 1 }}></View>
@@ -87,7 +87,10 @@ function SettingsPanel({ isVisible, visibleSetter }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
 
-        <View style={{ flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
           <Text style={CommonStyles.defaultText}>Afficher les identifiants BDovore</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={showBDovoreIds} onValueChange={onSwitchBDovoreIds}

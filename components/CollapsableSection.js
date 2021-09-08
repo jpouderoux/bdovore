@@ -39,20 +39,25 @@ if (Platform.OS === 'android') {
   }
 }
 
-export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, collapsable = true, children }) {
+export function CollapsableSection({ props, sectionName, isCollapsed = false, style = null, collapsable = true, children, onCollapse = (v) =>{}, noAnimation = false }) {
 
   const [collasped, setCollapsed] = useState(isCollapsed);
 
-  const onCollapse = () => {
+  const onCollapsePress = () => {
     if (collapsable) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      if (!noAnimation) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      }
       setCollapsed(isCollapsed => !isCollapsed);
+      if (onCollapse) {
+        onCollapse(isCollapsed => !isCollapsed);
+      }
     }
   }
 
   return (
     <View style={[{ marginTop: 10, marginHorizontal: 1 }, style]}>
-      <TouchableOpacity onPress={onCollapse}>
+      <TouchableOpacity onPress={onCollapsePress}>
         <View style={[CommonStyles.sectionAlbumStyle, { flexDirection: 'row', alignItems: 'center', }]}>
           <Text style={[CommonStyles.sectionTextStyle]}>{sectionName}</Text>
           {collapsable &&

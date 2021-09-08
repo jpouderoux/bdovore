@@ -772,7 +772,6 @@ class CCollectionManager {
   }
 
   getSerieInCollection(id_serie) {
-    console.log("getserieincoll" + id_serie);
     return global.db.objectForPrimaryKey('Series', parseInt(id_serie)) ?? null;
   }
 

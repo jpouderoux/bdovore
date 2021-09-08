@@ -177,6 +177,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const refreshAlbums = () => {
+    console.log('refresh albums');
     if (!showExcludedAlbums) {
       for (let i = 0; i < filteredSerieAlbums.length; i++) {
         filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
@@ -288,30 +289,34 @@ function SerieScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginHorizontal: 10 }}>
-
-      </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }}>
-        <View style={{ flexDirection: 'row', marginHorizontal: -19, marginBottom: 0 }} >
-          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: 5,}}>
+      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
+        <View style={{ flexDirection: 'row',  marginBottom: 0 }} >
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, flexDirection: 'row', }}>
+            <View style={{ flex: 1, flexGrow: 2 }}>
+              {serie.NOTE_SERIE > 0 ?
+                <View style={{ marginVertical: 5 }}>
+                  <RatingStars note={serie.NOTE_SERIE} showRate />
+                </View> : <View style={{ height: 30 }}></View>}
+              {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
+              <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}</Text>
+              {renderAuthors()}
+              {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
+            </View>
+            <View style={{ alignContent: 'flex-end' }}>
             <SerieMarkers item={serie}
-              style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', right: 30, top: -5 }]}
+                style={[CommonStyles.markersSerieViewStyle, { alignSelf: 'flex-end' }]}
               reduceMode={true}
               showExclude={true}
               serieAlbums={defaultSerieAlbums}
-              refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }} />
-            {serie.NOTE_SERIE > 0 ?
-              <View style={{ marginVertical: 5 }}>
-                <RatingStars note={serie.NOTE_SERIE} showRate />
-              </View>: <View style={{height:30}}></View>}
-            {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
-            <Text style={CommonStyles.defaultText}>{getCounterText()} - {nbOfUserAlbums > 0 ? Helpers.pluralWord(nbOfUserAlbums, 'album') + ' sur ' + Math.max(serie.NB_TOME, serie.NB_ALBUM) + ' dans la collection' : ''}</Text>
-            <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}</Text>
-            {renderAuthors()}
-            {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
+              refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }}/>
+              <Text style={[CommonStyles.defaultText, { textAlign: 'right', marginRight: 7}]}>
+                {nbOfUserAlbums + '/ ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text>
+            </View>
+          </View>
+          <View>
           </View>
         </View>
         {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
@@ -367,7 +372,7 @@ function SerieScreen({ route, navigation }) {
               </Text>*/}
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
-          extraData={[serieAlbums, filteredSerieAlbums]}
+          extraData={[serieAlbums, filteredSerieAlbums, toggleElement]}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={getItemLayout}

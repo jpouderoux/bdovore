@@ -28,7 +28,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -94,10 +94,6 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   useEffect(() => {
     refresh();
   }, [item]);
-
-  useFocusEffect(() => {
-    //refresh();
-  });
 
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {

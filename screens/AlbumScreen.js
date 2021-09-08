@@ -235,7 +235,6 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onRefresh = () => {
-    console.log("refresh");
     setIsAlbumInCollection(CollectionManager.isAlbumInCollection(album));
   }
 

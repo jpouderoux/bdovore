@@ -214,7 +214,6 @@ export let CommonStyles = EStyleSheet.create({
     marginTop: -5,
     bottom: 0,
     right: 0,*/
-    marginHorizontal: -10
   },
   markerStyle: {
     alignItems: 'center',
