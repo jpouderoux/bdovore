@@ -47,19 +47,20 @@ import UserCommentPanel from '../panels/UserCommentPanel';
 
 function AlbumScreen({ route, navigation }) {
 
+  const [album, setAlbum] = useState(route.params.item);
   const [albumEditionsData, setAlbumEditionsData] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
   const [editionIndex, setEditionIndex] = useState(0);
   const [editionsLoaded, setEditionsLoaded] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [album, setAlbum] = useState(route.params.item);
-  const [loading, setLoading] = useState(false);
-  const [showEditionsChooser, setShowEditionsChooser] = useState(false);
-  const [similAlbums, setSimilAlbums] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
-  const [showComments, setShowComments] = useState(false);
-  const [showUserComment, setShowUserComment] = useState(false);
   const [isAlbumInCollection, setIsAlbumInCollection] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showAllAuthors, setShowAllAuthors] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [showEditionsChooser, setShowEditionsChooser] = useState(false);
+  const [showUserComment, setShowUserComment] = useState(false);
+  const [similAlbums, setSimilAlbums] = useState([]);
 
   const getAlbumName = (album) => {
     let title = album.TITRE_TOME;
@@ -99,7 +100,8 @@ function AlbumScreen({ route, navigation }) {
     if (album.IS_EXCLU == undefined && global.isConnected) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
-          album.IS_EXCLU = (result.items != 0) ? 1 : 0;
+          global.db.write(() => { album.IS_EXCLU = (result.items != 0) ? 1 : 0; });
+          //console.log("fetch exclu : "+ album.IS_EXCLU);
         }
       });
     }
@@ -168,9 +170,9 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const getAuthorsLabel = () => {
-    const auteurs = Helpers.getAuthors(album);
-    let len = auteurs.length;
-    if (len == 1 && auteurs.name == 'Collectif') len++;
+    let authors = Helpers.getAuthors(album);
+    let len = authors.length;
+    if (len == 1 && authors.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
   }
 
@@ -193,6 +195,33 @@ function AlbumScreen({ route, navigation }) {
         <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
       </View>
     </TouchableOpacity>);
+
+  const renderAuthors = () => {
+
+    const authors = Helpers.getAuthors(album);
+    const nbOfAuthors = authors.length;
+    if (!showAllAuthors && nbOfAuthors > 6) {
+      return (
+        <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
+          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
+        </Text>);
+    }
+    return (
+      <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
+        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null}
+        {Helpers.getAuthors(album).map((auteur, index, array) => {
+          if (auteur.name == 'Collectif') {
+            return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
+          }
+          return (
+            <Text key={index * 2 + 1} style={CommonStyles.defaultText}>
+              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+              {index != (array.length - 1) ? ' / ' : ''}
+            </Text>)
+        })}
+      </Text>
+    )
+  }
 
   const onShowComments = () => {
     if (filteredComments().length > 0) {
@@ -251,24 +280,8 @@ function AlbumScreen({ route, navigation }) {
           <Text style={[CommonStyles.largerText, CommonStyles.defaultText, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           {album.NUM_TOME > 0 && getTomeNumber()}
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-              {
-                Helpers.getAuthors(album).map((auteur, index, array) => {
-                  return (index == 0 && auteur.name == 'Collectif') ?
-                    <Text key={index} style={CommonStyles.defaultText}>{auteur.name}</Text> :
-                    <Text key={index} style={CommonStyles.defaultText}>
-                      <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
-                      {index != (array.length - 1) ? ' / ' : ''}
-                    </Text>
-                })
-              }
-            </Text>
-            {
-              Helpers.isAlbumBW(album) ? <Text style={CommonStyles.defaultText}> - N&B</Text> : null
-            }
-          </View>
-          <Text style={CommonStyles.defaultText}>Genre : {album.NOM_GENRE}</Text>
+          {renderAuthors()}
+          <Text style={CommonStyles.defaultText}>Genre : {album.NOM_GENRE} {Helpers.isAlbumBW(album) ? ' - N&B' : ''}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={CommonStyles.defaultText}>Edition{Helpers.plural(albumEditionsData.length, 'Edition')} : </Text>
             <TouchableOpacity

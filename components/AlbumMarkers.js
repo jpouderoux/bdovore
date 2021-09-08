@@ -28,7 +28,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -58,7 +58,6 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     setInitAlbum(item);
     if (!item) { return; }
     //console.debug("REFRESH MARKERS FOR ALBUM: " + item.ID_TOME + " EDITION " + item.ID_EDITION + " SERIE " + item.ID_SERIE);
-    //console.debug(item);
     let alb = null;
     alb = CollectionManager.getAlbumInWishlist(item);
     if (alb) {
@@ -87,7 +86,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     setIsLoan(alb.FLG_PRET && alb.FLG_PRET == 'O');
     setIsNum(alb.FLG_NUM && alb.FLG_NUM == 'O');
     setIsGift(alb.FLG_CADEAU && alb.FLG_CADEAU == 'O');
-    setIsExcluded(alb.IS_EXCLU);
+    setIsExcluded(CollectionManager.isAlbumExcluded(album));
     alb = Helpers.toDict(alb);
     setAlbum(alb);
   }
@@ -96,12 +95,17 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     refresh();
   }, [item]);
 
+  useFocusEffect(() => {
+    //refresh();
+  });
+
   const onGotIt = async () => {
     if (!CollectionManager.isAlbumInCollection(album)) {
       // Add album to collection & remove it from the wishlist
       CollectionManager.addAlbumToCollection(album, (result) => {
         if (!result.error) {
           // If album was not collection and has been added
+          CollectionManager.setAlbumExcludedFlag(album, false);
           setIsOwn(true);
           setIsWanted(false);
           setShowAllMarks(reduceMode ? false : true);
@@ -112,6 +116,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     else {
       CollectionManager.removeAlbumFromCollection(album, (result) => {
         if (!result.error) {
+          CollectionManager.setAlbumExcludedFlag(album, false);
           // Album was in collection and has been removed
           setIsOwn(false);
           setIsWanted(false);
@@ -128,6 +133,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     if (wantIt) {
       CollectionManager.addAlbumToWishlist(album, (result) => {
         if (!result.error) {
+          CollectionManager.setAlbumExcludedFlag(album, false);
           setIsWanted(wantIt);
           refreshCallback();
         }
@@ -136,6 +142,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     else {
       CollectionManager.removeAlbumFromWishlist(album, (result) => {
         if (!result.error) {
+          CollectionManager.setAlbumExcludedFlag(album, false);
           setIsWanted(wantIt);
           refreshCallback();
         }
@@ -187,7 +194,11 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     const exclude = !(album.IS_EXCLU == 1);
     const callback = (result) => {
       if (!result.error) {
-        album.IS_EXCLU = exclude ? 1 : 0;
+        global.db.write(()=> {
+          initAlbum.IS_EXCLU = exclude ? 1 : 0;
+          album.IS_EXCLU = exclude ? 1 : 0;
+        });
+        CollectionManager.setAlbumExcludedFlag(album, exclude);
         setIsExcluded(exclude);
         refreshCallback();
       }
@@ -215,8 +226,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
 
       {(!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={album.IS_EXCLU ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, album.IS_EXCLU ? { fontWeight: 'bold' } : null]} />
-          <Text style={[CommonStyles.markerTextStyle, album.IS_EXCLU ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+          <MaterialCommunityIcons name='cancel' size={25} color={CollectionManager.isAlbumExcluded(album) ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, CollectionManager.isAlbumExcluded(album) ? { fontWeight: 'bold' } : null]} />
+          <Text style={[CommonStyles.markerTextStyle, CollectionManager.isAlbumExcluded(album) ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 
       {showAllMarks ?

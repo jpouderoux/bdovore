@@ -171,6 +171,8 @@ class CCollectionManager {
 
     this.release();
     this.initialize();
+
+    global.excludeAlbums = {};
   }
 
   release() {
@@ -816,6 +818,28 @@ class CCollectionManager {
   isSerieExcluded(serie) {
     let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
     return (ret.length > 0) ? (ret[0].IS_EXCLU == 1) : (serie.IS_EXCLU == 1);
+  }
+
+  setAlbumExcludedFlag(album, isExcluded) {
+    const uid = Helpers.makeAlbumUID(album);
+    global.db.write(() => {
+      if (isExcluded) {
+        global.excludeAlbums[uid] = true;
+        album.IS_EXCLU = 1;
+      }
+      else if (this.isAlbumExcluded(album)) {
+        delete global.excludeAlbums[uid];
+        album.IS_EXCLU = 0;
+      }
+    });
+  }
+
+  isAlbumExcluded(album) {
+    const uid = Helpers.makeAlbumUID(album);
+    if (album.IS_EXCLU == 1 || album.IS_EXCLU == 'O') {
+      this.setAlbumExcludedFlag(album, true);
+    }
+    return global.excludeAlbums.hasOwnProperty(uid) ? global.excludeAlbums[uid] : false;
   }
 };
 

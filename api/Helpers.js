@@ -69,6 +69,11 @@ export function isValid(item) {
   return (typeof item.isValid === 'function') ? item.isValid() : true;
 }
 
+export function isDBOject(item) {
+  if (!item) { return false };
+  return (typeof item.isValid === 'function') ? true : false;
+}
+
 String.prototype.replaceAt = function (index, replacement) {
   return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }

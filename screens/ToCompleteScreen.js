@@ -105,7 +105,7 @@ function ToCompleteScreen({ route, navigation }) {
   const applyAlbumsFilters = () => {
     const genre = CollectionManager.CollectionGenres[collectionGenre][0];
     setFilteredAlbums(albums.filter((album) =>
-      album.IS_EXCLU != 1 && (collectionGenre == 0 ? true : (album.ORIGINE == genre || (album.NOM_GENRE ? album.NOM_GENRE.startsWith(genre) : false)))));
+      !CollectionManager.isAlbumExcluded(album) && (collectionGenre == 0 ? true : (album.ORIGINE == genre || (album.NOM_GENRE ? album.NOM_GENRE.startsWith(genre) : false)))));
   }
 
   const applySeriesFilters = () => {

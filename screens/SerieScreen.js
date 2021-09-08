@@ -48,17 +48,17 @@ let serieAlbumsLoaded = 0;
 
 function SerieScreen({ route, navigation }) {
 
+  const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [errortext, setErrortext] = useState('');
   const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [loading, setLoading] = useState(false);
   const [serie, setSerie] = useState(route.params.item);
-  const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [serieAlbums, setSerieAlbums] = useState([]);
-  const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
-  const sectionListRef = useRef();
-  const [toggleElement, setToggleElement] = useState(false);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
+  const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const [showSynopsis, setShowSynopsis] = useState(false);
+  const [toggleElement, setToggleElement] = useState(false);
+  const sectionListRef = useRef();
 
   const toggle = () => {
     setToggleElement(v => !v);
@@ -158,13 +158,13 @@ function SerieScreen({ route, navigation }) {
             // Transform the result array into a dictionary for fast&easy access
             let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
             // Check all albums in all sections and set their exclude flag
-            global.db.write(() => {
+            //global.db.write(() => {
               newdata.forEach(section => {
                 section.data.forEach(album => {
-                  album.IS_EXCLU = (dict[parseInt(album.ID_TOME)] == 1) ? 1 : 0;
+                  CollectionManager.setAlbumExcludedFlag(album, dict[parseInt(album.ID_TOME)] == 1);
                 })
               })
-            });
+            //});
             for (let i = 0; i < newdata.length; i++) {
               filtereddata[i].data = newdata[i].data.filter(album => !album.IS_EXCLU);
             }
@@ -289,7 +289,6 @@ function SerieScreen({ route, navigation }) {
           style={{ marginTop: 2, transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
       </View >);
   }
-  console.log(serie);
 
   return (
     <View style={CommonStyles.screenStyle}>
