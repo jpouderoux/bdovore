@@ -28,7 +28,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CommonStyles } from '../styles/CommonStyles';
@@ -40,8 +39,6 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
 
   const [serie, setSerie] = useState(item);
   const [isExcluded, setIsExcluded] = useState(false);
-
-  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   const refresh = () => {
     setIsExcluded(CollectionManager.isSerieExcluded(serie));
@@ -102,20 +99,22 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }
 
   const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+  const isSerieComplete = CollectionManager.isSerieComplete(serie.ID_SERIE);
+  const isSerieExcluded = serie.IS_EXCLU == 1;
 
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
       {nbOfUserAlbums == 0 && serieAlbums.length > 0 ?
         <TouchableOpacity onPress={onHaveAll} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name={CollectionManager.isSerieComplete(serie) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isSerieComplete(serie) ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
-          <Text style={[CommonStyles.markerTextStyle, CollectionManager.isSerieComplete(serie) ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>
+          <MaterialCommunityIcons name={isSerieComplete ? 'check-bold' : 'check'} size={25} color={isSerieComplete ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
+          <Text style={[CommonStyles.markerTextStyle, isSerieComplete ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>
         </TouchableOpacity> : null}
 
       {nbOfUserAlbums > 0 && showExclude ?
         <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, serie.IS_EXCLU == '1' ? { fontWeight: 'bold' } : null]} />
-          <Text style={[CommonStyles.markerTextStyle, serie.IS_EXCLU == 1 ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+          <MaterialCommunityIcons name='cancel' size={25} color={isSerieExcluded ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, isSerieExcluded ? { fontWeight: 'bold' } : null]} />
+          <Text style={[CommonStyles.markerTextStyle, isSerieExcluded ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
         </TouchableOpacity> : null}
 
     </View>);

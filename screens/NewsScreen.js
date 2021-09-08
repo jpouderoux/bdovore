@@ -39,7 +39,7 @@ import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
 
 
-let newsModeMap = {
+const newsModeMap = {
   0: 'BD',
   1: 'Mangas',
   2: 'Comics'

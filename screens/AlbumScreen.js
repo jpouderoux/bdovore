@@ -100,8 +100,7 @@ function AlbumScreen({ route, navigation }) {
     if (album.IS_EXCLU == undefined && global.isConnected) {
       APIManager.fetchIsAlbumExcluded(album, (result) => {
         if (!result.error) {
-          global.db.write(() => { album.IS_EXCLU = (result.items != 0) ? 1 : 0; });
-          //console.log("fetch exclu : "+ album.IS_EXCLU);
+          CollectionManager.setAlbumExcludedFlag(album, (result.items != 0));
         }
       });
     }

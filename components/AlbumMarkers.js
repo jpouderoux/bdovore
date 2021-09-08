@@ -191,7 +191,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onExcludeIt = async () => {
-    const exclude = !(album.IS_EXCLU == 1);
+    const exclude = !CollectionManager.isAlbumExcluded(album);
     const callback = (result) => {
       if (!result.error) {
         global.db.write(()=> {

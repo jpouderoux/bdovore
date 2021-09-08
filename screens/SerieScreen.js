@@ -27,14 +27,14 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { CollapsableSection } from '../components/CollapsableSection';
-import { CommonStyles, AlbumItemHeight } from '../styles/CommonStyles';
+import { CommonStyles, AlbumItemHeight, AlbumImageWidth } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
@@ -43,8 +43,6 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
-
-let serieAlbumsLoaded = 0;
 
 function SerieScreen({ route, navigation }) {
 
@@ -69,17 +67,15 @@ function SerieScreen({ route, navigation }) {
   });
 
   const refreshDataIfNeeded = (force = false) => {
-    if (serieAlbumsLoaded != serie.ID_SERIE || force) {
+    if (force) {
       console.debug("refresh data serie " + serie.ID_SERIE);
-      serieAlbumsLoaded = serie.ID_SERIE;
       fetchData();
     }
     refreshAlbums();
   }
 
   useEffect(() => {
-    serieAlbumsLoaded = 0;
-    refreshDataIfNeeded();
+    refreshDataIfNeeded(true);
   }, [serie]);
 
   useEffect(() => {
@@ -166,7 +162,7 @@ function SerieScreen({ route, navigation }) {
               })
             //});
             for (let i = 0; i < newdata.length; i++) {
-              filtereddata[i].data = newdata[i].data.filter(album => !album.IS_EXCLU);
+              filtereddata[i].data = newdata[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
             }
             setFilteredSerieAlbums(filtereddata);
           } else {
@@ -183,7 +179,7 @@ function SerieScreen({ route, navigation }) {
   const refreshAlbums = () => {
     if (!showExcludedAlbums) {
       for (let i = 0; i < filteredSerieAlbums.length; i++) {
-        filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !album.IS_EXCLU);
+        filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
       }
     }
     CollectionManager.refreshAlbumSeries(serieAlbums);
@@ -262,7 +258,7 @@ function SerieScreen({ route, navigation }) {
         <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
       </Text>);
     }
-    return (
+    return (nbOfAuthors > 0 ?
       <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
         {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null }
         {Helpers.getAuthors(defaultSerieAlbums).map((auteur, index, array) => {
@@ -275,7 +271,7 @@ function SerieScreen({ route, navigation }) {
               {index != (array.length - 1) ? ' / ' : ''}
             </Text>)
         })}
-      </Text>
+      </Text> : null
     )
   }
 
@@ -295,27 +291,27 @@ function SerieScreen({ route, navigation }) {
       <View style={{ marginHorizontal: 10 }}>
 
       </View>
-      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 2 }}>
-        <View style={{ flexDirection: 'row', marginHorizontal: -19 }} >
-          <TouchableOpacity onPress={onShowSerieImage}>
-            <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 75 }} noResize={true} />
+      <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }}>
+        <View style={{ flexDirection: 'row', marginHorizontal: -19, marginBottom: 0 }} >
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: 5,}}>
+            <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
-          <View>
+          <View style={{ flex: 1 }}>
             <SerieMarkers item={serie}
-              style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', right: 0, bottom: -10 }]}
+              style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', right: 30, top: -5 }]}
               reduceMode={true}
               showExclude={true}
               serieAlbums={defaultSerieAlbums}
               refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }} />
-            {serie.NOTE_SERIE > 0 &&
-              <View style={{ alignItems: 'center', marginVertical: 5 }}>
+            {serie.NOTE_SERIE > 0 ?
+              <View style={{ marginVertical: 5 }}>
                 <RatingStars note={serie.NOTE_SERIE} showRate />
-              </View>}
+              </View>: <View style={{height:30}}></View>}
             {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
             <Text style={CommonStyles.defaultText}>{getCounterText()} - {nbOfUserAlbums > 0 ? Helpers.pluralWord(nbOfUserAlbums, 'album') + ' sur ' + Math.max(serie.NB_TOME, serie.NB_ALBUM) + ' dans la collection' : ''}</Text>
             <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}</Text>
             {renderAuthors()}
-            <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text>
+            {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
           </View>
         </View>
         {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
@@ -331,7 +327,7 @@ function SerieScreen({ route, navigation }) {
       ) : null}
       {loading ? <LoadingIndicator/> : (
         <SectionList
-          style={{ flex: 1, marginTop: 0, marginHorizontal: 1 }}
+          style={{ flex: 1, marginTop: 5, marginHorizontal: 1 }}
           ref={sectionListRef}
           maxToRenderPerBatch={6}
           windowSize={10}

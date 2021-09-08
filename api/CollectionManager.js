@@ -94,11 +94,10 @@ const AlbumSchema =
 };
 
 const SerieSchema = {
-  _id: 'int',
+  ID_SERIE: 'int',
   FLG_FINI_SERIE: 'string?',
   HISTOIRE_SERIE: 'string?',
   ID_GENRE: 'int?',
-  ID_SERIE: 'int',
   IMG_COUV_SERIE: 'string?',
   IS_EXCLU: 'int?',
   LIB_FLG_FINI_SERIE: 'string?',
@@ -146,8 +145,6 @@ function createEntry(schema, item) {
   }
   if (album.ID_EDITION && album.ID_TOME) {
     album['_id'] = Helpers.makeAlbumUID(item);
-  } else if (schema == SerieSchema) {
-    album['_id'] = parseInt(item.ID_SERIE);
   }
   return album;
 }
@@ -235,7 +232,7 @@ class CCollectionManager {
       Realm.open({
         schema: [
           { name: 'Albums', primaryKey: '_id', properties: AlbumSchema },
-          { name: 'Series', primaryKey: '_id', properties: SerieSchema },
+          { name: 'Series', primaryKey: 'ID_SERIE', properties: SerieSchema },
           { name: 'Wishes', primaryKey: '_id', properties: AlbumSchema }]
       }).then(realm => {
         global.db = realm;
@@ -446,7 +443,6 @@ class CCollectionManager {
       global.db.write(() => {
         serieAlbums.forEach((album) => {
           if (this.getAlbumType(album) == 0) {
-            // Add the album in local collection
             // Add the album in local collection
             album.FLG_ACHAT = 'N';
             album.DATE_AJOUT = Helpers.getNowDateString();
@@ -750,13 +746,11 @@ class CCollectionManager {
   }
 
   getAlbumInCollection(album) {
-    const ret = this.getAlbums().filtered('_id == $0', Helpers.makeAlbumUID(album));
-    return ret.length > 0 ? ret[0] : null;
+    return global.db.objectForPrimaryKey('Albums', Helpers.makeAlbumUID(album)) ?? null;
   }
 
   getAlbumInWishlist(album) {
-    const ret = this.getWishes().filtered('_id == $0', Helpers.makeAlbumUID(album));
-    return ret.length > 0 ? ret[0] : null;
+    return global.db.objectForPrimaryKey('Wishes', Helpers.makeAlbumUID(album)) ?? null;
   }
 
   getFirstAlbumEditionOfSerieInCollection(album) {
@@ -778,13 +772,13 @@ class CCollectionManager {
   }
 
   getSerieInCollection(id_serie) {
-    let ret = this.getSeries().filtered('_id == $0', parseInt(id_serie));
-    return ret.length > 0 ? ret[0] : null;
+    console.log("getserieincoll" + id_serie);
+    return global.db.objectForPrimaryKey('Series', parseInt(id_serie)) ?? null;
   }
 
-  isSerieComplete(serie) {
-    const cs = this.getSerieInCollection(serie.ID_SERIE);
-    return cs ? cs.NB_USER_ALBUM == serie.NB_ALBUM : false;
+  isSerieComplete(id_serie) {
+    const cs = this.getSerieInCollection(id_serie);
+    return cs ? cs.NB_USER_ALBUM == cs.NB_ALBUM : false;
   }
 
   selectOwnAlbum(albumsArray) {
@@ -806,18 +800,18 @@ class CCollectionManager {
   }
 
   setSerieExcludeFlag(serie, isExcluded) {
-    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
-    if (ret.length > 0) {
+    let ret = global.db.objectForPrimaryKey('Series', parseInt(serie.ID_SERIE));
+    if (ret) {
       global.db.write(() => {
-        ret[0].IS_EXCLU = isExcluded ? 1 : 0;
+        ret.IS_EXCLU = isExcluded ? 1 : 0;
         serie.IS_EXCLU = isExcluded ? 1 : 0;
       });
     }
   }
 
   isSerieExcluded(serie) {
-    let ret = this.getSeries().filtered('_id == ' + serie.ID_SERIE);
-    return (ret.length > 0) ? (ret[0].IS_EXCLU == 1) : (serie.IS_EXCLU == 1);
+    let ret = global.db.objectForPrimaryKey('Series', parseInt(serie.ID_SERIE));
+    return ret ? (ret.IS_EXCLU == 1) : (serie.IS_EXCLU == 1);
   }
 
   setAlbumExcludedFlag(album, isExcluded) {
@@ -827,7 +821,7 @@ class CCollectionManager {
         global.excludeAlbums[uid] = true;
         album.IS_EXCLU = 1;
       }
-      else if (this.isAlbumExcluded(album)) {
+      else if (global.excludeAlbums.hasOwnProperty(uid)) {
         delete global.excludeAlbums[uid];
         album.IS_EXCLU = 0;
       }
@@ -836,10 +830,7 @@ class CCollectionManager {
 
   isAlbumExcluded(album) {
     const uid = Helpers.makeAlbumUID(album);
-    if (album.IS_EXCLU == 1 || album.IS_EXCLU == 'O') {
-      this.setAlbumExcludedFlag(album, true);
-    }
-    return global.excludeAlbums.hasOwnProperty(uid) ? global.excludeAlbums[uid] : false;
+    return global.excludeAlbums[uid] ?? false;
   }
 };
 

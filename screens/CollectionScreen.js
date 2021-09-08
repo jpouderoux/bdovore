@@ -145,7 +145,7 @@ function CollectionScreen({ route, navigation }) {
         // Filter serie according there completeness status and requested filter mode
         const fMode = parseInt(serieFilterMode);
         if (fMode > 0) {
-          const isComplete = CollectionManager.isSerieComplete(item);
+          const isComplete = CollectionManager.isSerieComplete(item.ID_SERIE);
           if (fMode == 1) return isComplete;
           if (fMode == 2) return !isComplete;
         }
