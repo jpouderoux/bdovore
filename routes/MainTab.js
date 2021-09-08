@@ -51,6 +51,7 @@ import SerieScreen from '../screens/SerieScreen';
 import SettingsPanel from '../panels/SettingsPanel';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // The main tab navigator
 const Tab = createBottomTabNavigator();
@@ -74,18 +75,37 @@ const onAccountPress = (navigation) => {
   navigation.navigate('Login');
 };
 
-const shareButton = (item) => {
+const ShareIcon = () => (
+  Platform.OS == 'ios' ?
+    <Ionicons name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
+    <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />);
+
+const shareAlbumButton = (item) => {
   return (
-    <TouchableOpacity onPress={() => onSharePress(item)} style={{ margin: 8 }}>
-      {Platform.OS == 'ios' ?
-        <Ionicons name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
-        <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />}
+    <TouchableOpacity onPress={() => onShareAlbumPress(item)} style={{ margin: 8 }}>
+      <ShareIcon />
     </TouchableOpacity>
   );
 }
 
-const onSharePress = async (item) => {
+const onShareAlbumPress = async (item) => {
   const url = APIManager.bdovoreBaseURL + '/Album?id_tome=' + item.ID_TOME;
+  Share.share({
+    message: url,
+    url: url
+  });
+}
+
+const shareSerieButton = (item) => {
+  return (
+    <TouchableOpacity onPress={() => onShareSeriePress(item)} style={{ margin: 8 }}>
+      <ShareIcon />
+    </TouchableOpacity>
+  );
+}
+
+const onShareSeriePress = async (item) => {
+  const url = APIManager.bdovoreBaseURL + '/serie-bd-' + item.ID_SERIE;
   Share.share({
     message: url,
     url: url
@@ -103,6 +123,17 @@ function CollectionScreens({ route, navigation }) {
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
+  const onShareCollectionPress = () => {
+    AsyncStorage.getItem('token').then((token) => {
+      const userid = parseInt(token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+      const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
+      Share.share({
+        message: url,
+        url: url
+      });
+    }).catch(error => { });
+  }
+
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
@@ -114,6 +145,10 @@ function CollectionScreens({ route, navigation }) {
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onShareCollectionPress} style={{ margin: 8 }}>
+          <ShareIcon />
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
@@ -148,11 +183,14 @@ function CollectionScreens({ route, navigation }) {
           };
         }} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
       <CollectionStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
+          headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <CollectionStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
@@ -194,14 +232,18 @@ function WishlistScreens({ navigation }) {
           route.params = { collectionGenre: collectionGenre };
           return {
             headerRight: () => settingsButton(route, navigation),
-          };}}
+          };
+        }}
       />
       <WishlistStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
       <WishlistStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
+          headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <WishlistStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
@@ -246,11 +288,14 @@ function ToCompleteScreens({ navigation }) {
           };
         }} />
       <ToCompleteStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
       <ToCompleteStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
+          headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <ToCompleteStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
@@ -265,10 +310,13 @@ function NewsScreens({ navigation }) {
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
+          headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <NewsStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
       <NewsStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
     </NewsStack.Navigator>
@@ -280,11 +328,14 @@ function SearchScreens({ navigation }) {
     <SearchStack.Navigator screenOptions={defaultStackOptions}>
       <SearchStack.Screen name='Rechercher' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
-        options={({ route }) => ({ title: route.params.item.NOM_SERIE })} />
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
       <SearchStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
-          headerRight: () => shareButton(route.params.item)
+          headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <SearchStack.Screen name='Auteur' component={AuteurScreen}
         options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
