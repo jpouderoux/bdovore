@@ -215,6 +215,11 @@ class CCollectionManager {
     AsyncStorage.getItem('verbose').then((value) => {
       global.verbose(value != '0');
     }).catch(() => { });
+
+    global.confirmDeletion = true;
+    AsyncStorage.getItem('confirmDeletion').then((value) => {
+      global.confirmDeletion(value != '0');
+    }).catch(() => { });
   }
 
   resetDatabase() {
@@ -541,7 +546,8 @@ class CCollectionManager {
             global.db.write(() => {
               alb.DATE_AJOUT = '';
               album.DATE_AJOUT = '';
-              global.db.delete(alb); });
+              global.db.delete(alb);
+            });
           }
 
           if (CollectionManager.isAlbumInCollection(album)) {
@@ -696,7 +702,7 @@ class CCollectionManager {
         }
       });
     } catch (error) {
-    result.error = "Erreur inattendue lors de la mise à jour de l'album";
+      result.error = "Erreur inattendue lors de la mise à jour de l'album";
     }
   }
 

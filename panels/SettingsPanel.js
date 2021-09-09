@@ -39,6 +39,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
   const [verbose, setVerbose] = useState(global.verbose);
   const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
+  const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
 
   useEffect(() => {
   }, []);
@@ -59,6 +60,12 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     setShowBDovoreIds(value);
     global.showBDovoreIds = value;
     AsyncStorage.setItem('showBDovoreIds', value ? '1' : '0').catch((error) => { });
+  }
+
+  const onSwitchConfirmDeletion = (value) => {
+    setConfirmDeletion(value);
+    global.confirmDeletion = value;
+    AsyncStorage.setItem('confirmDeletion', value ? '1' : '0').catch((error) => { });
   }
 
   return (
@@ -94,6 +101,18 @@ function SettingsPanel({ isVisible, visibleSetter }) {
           <Text style={CommonStyles.defaultText}>Afficher les identifiants BDovore</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={showBDovoreIds} onValueChange={onSwitchBDovoreIds}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
+          <Text style={CommonStyles.defaultText}>Confirmer les suppressions</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={confirmDeletion} onValueChange={onSwitchConfirmDeletion}
             style={{ marginTop: -5 }}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />

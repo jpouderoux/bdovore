@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -118,8 +118,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   }, [album]);
 
   const onGotIt = async () => {
-    setProcessingBit('own', true);
     if (!CollectionManager.isAlbumInCollection(album)) {
+      setProcessingBit('own', true);
       // Add album to collection & remove it from the wishlist
       CollectionManager.addAlbumToCollection(album, (result) => {
         if (!result.error) {
@@ -132,8 +132,11 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
         }
         setProcessingBit('own', false);
       });
+      return;
     }
-    else {
+
+    const removeCb = () => {
+      setProcessingBit('own', true);
       CollectionManager.removeAlbumFromCollection(album, (result) => {
         if (!result.error) {
           CollectionManager.setAlbumExcludedFlag(album, false);
@@ -145,6 +148,24 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
         }
         setProcessingBit('own', false);
       });
+    };
+
+    if (global.confirmDeletion) {
+      Alert.alert(
+        album.TITRE_TOME,
+        "Voulez-vous vraiment retirer cet album de votre collection ?",
+        [{
+          text: "Oui",
+          onPress: () => removeCb()
+        }, {
+          text: "Annuler",
+          onPress: () => { },
+          style: "cancel"
+        }],
+        { cancelable: true });
+    }
+    else {
+      removeCb();
     }
   };
 
