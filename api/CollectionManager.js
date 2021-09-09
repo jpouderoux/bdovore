@@ -198,7 +198,7 @@ class CCollectionManager {
       global.imageOnWifi(value != '0');
     }).catch(() => { });
 
-    global.hideSponsoredLinks = true;
+    //global.hideSponsoredLinks = true;
     /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = false;
       AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
@@ -211,12 +211,12 @@ class CCollectionManager {
       global.showBDovoreIds(value != '0');
     }).catch(() => { });
 
-    global.verbose = true;
+    global.verbose = false;
     AsyncStorage.getItem('verbose').then((value) => {
       global.verbose(value != '0');
     }).catch(() => { });
 
-    global.confirmDeletion = true;
+    global.confirmDeletion = false;
     AsyncStorage.getItem('confirmDeletion').then((value) => {
       global.confirmDeletion(value != '0');
     }).catch(() => { });
