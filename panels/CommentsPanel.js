@@ -61,7 +61,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
       visibleSetter={visibleSetter}
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: windowHeight * 0.9 }]}>
-        <ScrollView style={{ flex: 1, marginBottom: 10 }}>
+        <ScrollView style={{ flex: 1, width: '100%', marginBottom: 10 }}>
           {Object.entries(comments).map((item) => renderComment(item))}
         </ScrollView>
       </View>
