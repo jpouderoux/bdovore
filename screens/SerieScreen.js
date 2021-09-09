@@ -60,11 +60,12 @@ function SerieScreen({ route, navigation }) {
 
   const toggle = () => {
     setToggleElement(v => !v);
+    refreshAlbums();
   }
 
-  useFocusEffect(() => {
-    refreshAlbums();
-  });
+  // useFocusEffect(() => {
+  //   refreshAlbums();
+  // });
 
   const refreshDataIfNeeded = (force = false) => {
     if (force) {
@@ -107,7 +108,7 @@ function SerieScreen({ route, navigation }) {
       setErrortext('');
       APIManager.fetchSerieAlbums(serie.ID_SERIE, onSerieAlbumsFetched);
     } else {
-      onSerieAlbumsFetched({items: CollectionManager.getAlbumsInSerie(serie.ID_SERIE), error: ''});
+      onSerieAlbumsFetched({ items: CollectionManager.getAlbumsInSerie(serie.ID_SERIE), error: '' });
     }
   }
 
@@ -131,7 +132,7 @@ function SerieScreen({ route, navigation }) {
 
       // Sort/split albums by type
       for (let i = 0; i < result.items.length; i++) {
-        let album = result.items[i];//Helpers.toDict(result.items[i]);
+        let album = result.items[i];
         const section = CollectionManager.getAlbumType(album);
         album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
         if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
@@ -155,11 +156,11 @@ function SerieScreen({ route, navigation }) {
             let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
             // Check all albums in all sections and set their exclude flag
             //global.db.write(() => {
-              newdata.forEach(section => {
-                section.data.forEach(album => {
-                  CollectionManager.setAlbumExcludedFlag(album, dict[parseInt(album.ID_TOME)] == 1);
-                })
+            newdata.forEach(section => {
+              section.data.forEach(album => {
+                CollectionManager.setAlbumExcludedFlag(album, dict[parseInt(album.ID_TOME)] == 1);
               })
+            })
             //});
             for (let i = 0; i < newdata.length; i++) {
               filtereddata[i].data = newdata[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
@@ -184,26 +185,10 @@ function SerieScreen({ route, navigation }) {
       }
     }
     CollectionManager.refreshAlbumSeries(serieAlbums);
+    serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
+
     CollectionManager.refreshAlbumSeries(filteredSerieAlbums);
-  }
-
-  const renderAlbum = ({ item, index }) =>
-    Helpers.isValid(item) &&
-      <AlbumItem navigation={navigation}
-        item={Helpers.toDict(item)}
-        index={index}
-        dontShowSerieScreen={true}
-        showExclude={true}
-        refreshCallback={() => toggle()}/>;
-
-  const getCounterText = () => {
-    /*const nbTomes = Math.max(serie.NB_TOME, serie.NB_ALBUM);
-    if (nbTomes > 0) {
-      return Helpers.pluralWord(nbTomes, 'tome');
-    }*/
-    return serie.NB_TOME > 0 ?
-      Helpers.pluralWord(serie.NB_TOME, 'tome') :
-      Helpers.pluralWord(serie.NB_ALBUM, 'album');
+    filteredSerieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -234,6 +219,15 @@ function SerieScreen({ route, navigation }) {
     }
   }
 
+  const renderAlbum = ({ item, index }) =>
+    Helpers.isValid(item) &&
+    <AlbumItem navigation={navigation}
+      item={Helpers.toDict(item)}
+      index={index}
+      dontShowSerieScreen={true}
+      showExclude={true}
+      refreshCallback={toggle} />;
+
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
@@ -255,13 +249,13 @@ function SerieScreen({ route, navigation }) {
     const nbOfAuthors = authors.length;
     if (!showAllAuthors && nbOfAuthors > 6) {
       return (
-      <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-        <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
-      </Text>);
+        <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
+          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
+        </Text>);
     }
     return (nbOfAuthors > 0 ?
       <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null }
+        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null}
         {Helpers.getAuthors(defaultSerieAlbums).map((auteur, index, array) => {
           if (auteur.name == 'Collectif') {
             return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
@@ -283,14 +277,14 @@ function SerieScreen({ route, navigation }) {
         <Switch value={showExcludedAlbums} onValueChange={onToggleShowExcludedAlbums}
           thumbColor={CommonStyles.switchStyle.color}
           trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }}
-          style={{ marginTop: 2, transform: [{ scaleX: .7 }, { scaleY: .7 }]  }} />
+          style={{ marginTop: 2, transform: [{ scaleX: .7 }, { scaleY: .7 }] }} />
       </View >);
   }
 
   return (
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
-        <View style={{ flexDirection: 'row',  marginBottom: 0 }} >
+        <View style={{ flexDirection: 'row', marginBottom: 0 }} >
           <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
@@ -306,31 +300,33 @@ function SerieScreen({ route, navigation }) {
               {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
             </View>
             <View style={{ alignContent: 'flex-end' }}>
-            <SerieMarkers item={serie}
-                style={[CommonStyles.markersSerieViewStyle, { alignSelf: 'flex-end' }]}
-              reduceMode={true}
-              showExclude={true}
-              serieAlbums={defaultSerieAlbums}
-              refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }}/>
-              <Text style={[CommonStyles.defaultText, { textAlign: 'right', marginRight: 7}]}>
-                {nbOfUserAlbums + '/ ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text>
+              <Text style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
+                {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text>
+              <SerieMarkers item={serie}
+                style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
+                reduceMode={true}
+                showExclude={true}
+                serieAlbums={defaultSerieAlbums}
+                refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }} />
             </View>
           </View>
           <View>
           </View>
         </View>
-        {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
-        {serie.HISTOIRE_SERIE && showSynopsis ? <Text>
-          <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
-          <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
-        </Text> : null}
+        {serie.HISTOIRE_SERIE ? <View style={{ marginTop: 4 }}>
+          {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
+          {serie.HISTOIRE_SERIE && showSynopsis ? <Text>
+            <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
+            <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
+          </Text> : null}
+        </View> : null}
       </CollapsableSection>
       {errortext != '' ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
         </Text>
       ) : null}
-      {loading ? <LoadingIndicator/> : (
+      {loading ? <LoadingIndicator /> : (
         <SectionList
           style={{ flex: 1, marginTop: 5, marginHorizontal: 1 }}
           ref={sectionListRef}
@@ -346,18 +342,6 @@ function SerieScreen({ route, navigation }) {
               <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}
               >{Helpers.pluralWord(data.length, title)}</Text>
               {/*<Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
-                {index > 0 && <MaterialCommunityIcons name='menu-up' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
-                  console.log(index + ' ... ' + (index - 1) % 4);
-                  try {
-                    sectionListRef.current.scrollToLocation({
-                      animated: false,
-                      itemIndex: -1,
-                      sectionIndex: (index - 1) % 4,
-                      viewPosition: 0
-                    });
-                  } catch (error) { }
-                }}/>}
-                {'   '}
                 <MaterialCommunityIcons name='menu-down' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
                   console.log(index + ' ... ' + (index + 1) % 4);
                   try {

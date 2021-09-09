@@ -27,18 +27,35 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager';
 import CollectionManager from '../api/CollectionManager';
 
+const pBits = {
+  'addingall': 1,
+  'excluding': 2,
+};
 
 export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCallback = () => { } }) {
 
-  const [serie, setSerie] = useState(item);
   const [isExcluded, setIsExcluded] = useState(false);
+  const [processingState, setProcessingState] = useState(0);
+  const [serie, setSerie] = useState(item);
+
+  const setProcessingBit = (flag, value) => {
+    if (value) {
+      setProcessingState(processingState => processingState | pBits[flag]);
+    } else {
+      setProcessingState(processingState => processingState & ~pBits[flag]);
+    }
+  }
+
+  const isProcessing = (flag) => {
+    return processingState & pBits[flag];
+  }
 
   const refresh = () => {
     setIsExcluded(CollectionManager.isSerieExcluded(serie));
@@ -53,11 +70,19 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }, [serieAlbums]);
 
   const addEverything = () => {
-    CollectionManager.addSerieToCollection(serie, serieAlbums, () => { refreshCallback() });
+    setProcessingBit('addingall', true);
+    CollectionManager.addSerieToCollection(serie, serieAlbums, () => {
+      refreshCallback();
+      setProcessingBit('addingall', false);
+    });
   }
 
   const addAlbums = () => {
-    CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums, () => { refreshCallback() });
+    setProcessingBit('addingall', true);
+    CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums, () => {
+      refreshCallback();
+      setProcessingBit('addingall', false);
+    });
   }
 
   const onHaveAll = () => {
@@ -80,6 +105,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
 
   const onExcludeIt = async () => {
     const exclude = !(serie.IS_EXCLU == 1);
+    setProcessingBit('excluding', true);
     const callback = (result) => {
       if (!result.error) {
         global.db.write(() => {
@@ -87,6 +113,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
         });
         setIsExcluded(exclude == 1);
         refreshCallback();
+        setProcessingBit('excluding', false);
       }
     };
     if (exclude) {
@@ -98,6 +125,11 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
     }
   }
 
+  const MarkerLoadingIndicator = () => (
+    <View style={[CommonStyles.markerIconStyle, { margin: 8 }]}>
+      <ActivityIndicator size="small" color={bdovored} />
+    </View>);
+
   const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
   const isSerieComplete = CollectionManager.isSerieComplete(serie.ID_SERIE);
   const isSerieExcluded = serie.IS_EXCLU == 1;
@@ -105,17 +137,19 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
-      {nbOfUserAlbums == 0 && serieAlbums.length > 0 ?
-        <TouchableOpacity onPress={onHaveAll} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name={isSerieComplete ? 'check-bold' : 'check'} size={25} color={isSerieComplete ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
-          <Text style={[CommonStyles.markerTextStyle, isSerieComplete ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>
-        </TouchableOpacity> : null}
+      {isProcessing('addingall') ? <MarkerLoadingIndicator /> :
+        (nbOfUserAlbums == 0 && serieAlbums.length > 0 ?
+          <TouchableOpacity onPress={onHaveAll} title="" style={CommonStyles.markerStyle}>
+            <MaterialCommunityIcons name={isSerieComplete ? 'check-bold' : 'check'} size={25} color={isSerieComplete ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
+            <Text style={[CommonStyles.markerTextStyle, isSerieComplete ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>
+          </TouchableOpacity> : null)}
 
-      {nbOfUserAlbums > 0 && showExclude ?
-        <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name='cancel' size={25} color={isSerieExcluded ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, isSerieExcluded ? { fontWeight: 'bold' } : null]} />
-          <Text style={[CommonStyles.markerTextStyle, isSerieExcluded ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
-        </TouchableOpacity> : null}
+      {isProcessing('excluding') ? <MarkerLoadingIndicator /> :
+        (nbOfUserAlbums > 0 && showExclude ?
+          <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
+            <MaterialCommunityIcons name='cancel' size={25} color={isSerieExcluded ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, isSerieExcluded ? { fontWeight: 'bold' } : null]} />
+            <Text style={[CommonStyles.markerTextStyle, isSerieExcluded ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
+          </TouchableOpacity> : null)}
 
     </View>);
 }
