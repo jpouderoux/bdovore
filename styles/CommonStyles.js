@@ -225,7 +225,7 @@ export let CommonStyles = EStyleSheet.create({
     paddingTop: 3,
     borderWidth: 0.5,
     borderColor: bdovorgray,
-    paddingLeft: 2,
+    borderRadius: 3,
     width: 32,
     height: 32,
   },
