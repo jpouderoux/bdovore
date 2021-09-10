@@ -278,15 +278,15 @@ class CCollectionManager {
     console.debug(result.items.length + ' series fetched');
 
     if (!isOffline) {
-      result.items.forEach(item => {
-        try {
-          global.db.write(() => {
+      global.db.write(() => {
+        result.items.forEach(item => {
+          try {
             global.db.create('Series', createEntry(SerieSchema, item));
-          });
-        }
-        catch (error) {
-          //console.log(error);
-        }
+          }
+          catch (error) {
+            //console.log(error);
+          }
+        });
       });
     }
 
@@ -309,14 +309,14 @@ class CCollectionManager {
 
     console.debug(result.items.length + ' albums fetched');
     if (!isOffline) {
-      result.items.forEach(item => {
-        try {
-          global.db.write(() => {
+      global.db.write(() => {
+        result.items.forEach(item => {
+          try {
             global.db.create('Albums', createEntry(AlbumSchema, item));
-          });
-        } catch (error) {
-          //console.log(error);
-        }
+          } catch (error) {
+            //console.log(error);
+          }
+        });
       });
     }
 
@@ -339,13 +339,13 @@ class CCollectionManager {
 
     console.debug(result.items.length + ' albums in wishlist fetched');
 
-    result.items.forEach(item => {
-      try {
-        global.db.write(() => {
+    global.db.write(() => {
+      result.items.forEach(item => {
+        try {
           global.db.create('Wishes', createEntry(AlbumSchema, item));
-        });
-      } catch (error) {
-      }
+        } catch (error) {
+        }
+      });
     });
 
     callback(result);
@@ -381,7 +381,6 @@ class CCollectionManager {
     APIManager.addSerieInCollection(serie.ID_SERIE, (result) => {
       try {
         if (!result.error) {
-
           global.db.write(() => {
             serieAlbums.forEach((album) => {
               // Add the album in local collection
