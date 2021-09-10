@@ -154,14 +154,12 @@ function SerieScreen({ route, navigation }) {
             let filtereddata = CreateSerieSections();
             // Transform the result array into a dictionary for fast&easy access
             let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
-            // Check all albums in all sections and set their exclude flag
-            //global.db.write(() => {
+            // Save all albums in all sections and set their exclude flag
             newdata.forEach(section => {
               section.data.forEach(album => {
                 CollectionManager.setAlbumExcludedFlag(album, dict[parseInt(album.ID_TOME)] == 1);
               })
             })
-            //});
             for (let i = 0; i < newdata.length; i++) {
               filtereddata[i].data = newdata[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
             }
@@ -179,11 +177,6 @@ function SerieScreen({ route, navigation }) {
 
   const refreshAlbums = () => {
     console.log('refresh albums');
-    if (!global.showExcludedAlbums) {
-      for (let i = 0; i < filteredSerieAlbums.length; i++) {
-        filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
-      }
-    }
     CollectionManager.refreshAlbumSeries(serieAlbums);
     serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
 
@@ -220,7 +213,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const renderAlbum = ({ item, index }) =>
-    Helpers.isValid(item) &&
+    Helpers.isValid(item) && (global.showExcludedAlbums || (!global.showExcludedAlbums && !CollectionManager.isAlbumExcluded(item))) &&
     <AlbumItem navigation={navigation}
       item={Helpers.toDict(item)}
       index={index}
