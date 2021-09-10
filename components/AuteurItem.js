@@ -35,36 +35,32 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
 
-export function AuteurItem({ navigation, item, nbAlbums, nbSeries, noPressAction, index, canViewFullscreenImage, showId = false  }) {
-
-  const onPressAuteur = (navigation, item) => {
-    navigation.push('Auteur', { item });
-  }
-
-  const fonction = [];
-
-  if (item.FLG_SCENAR) { fonction.push('Scénariste'); }
-  if (item.FLG_DESSIN) { fonction.push('Dessinateur'); }
-  if (item.FLG_COLOR) { fonction.push('Coloriste'); }
-  const fonctionString = fonction.join(', ');
+export function AuteurItem({ navigation, author, nbAlbums, nbSeries, noPressAction, index, canViewFullscreenImage, showId = false }) {
 
   return (
-    <TouchableOpacity key={index} disabled={noPressAction ? true : false} onPress={() => onPressAuteur(navigation, item)}>
+    <TouchableOpacity key={index} disabled={noPressAction ? true : false} onPress={() => navigation.push('Auteur', { author })}>
       <View style={{ flexDirection: 'row' }}>
         {canViewFullscreenImage ?
-          <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAuteurCoverURL(item) })}>
-            <CoverImage source={APIManager.getAuteurCoverURL(item)} />
+          <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAuteurCoverURL(author) })}>
+            <CoverImage source={APIManager.getAuteurCoverURL(author)} />
           </TouchableOpacity> :
-          <CoverImage source={APIManager.getAuteurCoverURL(item)} />
+          <CoverImage source={APIManager.getAuteurCoverURL(author)} />
         }
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{Helpers.reverseAuteurName(item.PSEUDO)}</Text>
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>{fonctionString}</Text>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
+            {Helpers.reverseAuteurName(author.PSEUDO)}
+          </Text>
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>
+            {Helpers.capitalize(Helpers.getAuthorJobs(author))}
+          </Text>
           {nbSeries && nbSeries > 0 ?
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { fontSize: 16, marginTop: 10 }]}>
               {Helpers.pluralWord(nbAlbums, 'album')} pour {Helpers.pluralWord(nbSeries, 'série')}
-            </Text> : null}
-          {showId && global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>{'\n'}ID-BDovore : {item.ID_AUTEUR}</Text> : null}
+            </Text> :
+            null}
+          {showId && global.showBDovoreIds ?
+            <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>{'\n'}ID-BDovore : {author.ID_AUTEUR}</Text> :
+            null}
         </View>
       </View>
     </TouchableOpacity >

@@ -161,7 +161,7 @@ function SearchScreen({ navigation }) {
       switch (parseInt(searchMode)) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
         case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
-        case 2: return (<AuteurItem navigation={navigation} item={item} index={index} />);
+        case 2: return (<AuteurItem navigation={navigation} author={item} index={index} />);
       }
     }
     return null;

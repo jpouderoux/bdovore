@@ -55,7 +55,7 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
     }
   }
 
-  const nbUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(item);
+  const nbUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE);
 
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>

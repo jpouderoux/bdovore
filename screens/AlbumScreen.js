@@ -179,7 +179,7 @@ function AlbumScreen({ route, navigation }) {
     if (auteur != 'Collectif' && global.isConnected) {
       APIManager.fetchAuteur(auteur.id, (result) => {
         if (!result.error && result.items.length > 0) {
-          navigation.push('Auteur', { item: result.items[0] });
+          navigation.push('Auteur', { author: result.items[0] });
         }
       });
     }
@@ -271,7 +271,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <CollapsableSection sectionName='Collection'>
-          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album) > 0)} refreshCallback={onRefresh} />
+          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)} refreshCallback={onRefresh} />
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Album'>

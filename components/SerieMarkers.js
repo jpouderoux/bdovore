@@ -134,7 +134,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
       <ActivityIndicator size="small" color={bdovored} />
     </View>);
 
-  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie.ID_SERIE);
   const isSerieComplete = CollectionManager.isSerieComplete(serie.ID_SERIE);
   const isSerieExcluded = serie.IS_EXCLU == 1;
 

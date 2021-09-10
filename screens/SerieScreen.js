@@ -179,7 +179,7 @@ function SerieScreen({ route, navigation }) {
 
   const refreshAlbums = () => {
     console.log('refresh albums');
-    if (!showExcludedAlbums) {
+    if (!global.showExcludedAlbums) {
       for (let i = 0; i < filteredSerieAlbums.length; i++) {
         filteredSerieAlbums[i].data = filteredSerieAlbums[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
       }
@@ -194,7 +194,7 @@ function SerieScreen({ route, navigation }) {
   const onToggleShowExcludedAlbums = () => {
     AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
     global.showExcludedAlbums = !showExcludedAlbums;
-    setShowExcludedAlbums(showExcludedAlbums => !showExcludedAlbums);
+    setShowExcludedAlbums(global.showExcludedAlbums);
     refreshAlbums();
   }
 
@@ -213,7 +213,7 @@ function SerieScreen({ route, navigation }) {
     if (auteur != 'Collectif' && global.isConnected) {
       APIManager.fetchAuteur(auteur.id, (result) => {
         if (!result.error && result.items.length > 0) {
-          navigation.push('Auteur', { item: result.items[0] });
+          navigation.push('Auteur', { author: result.items[0] });
         }
       });
     }
@@ -241,7 +241,7 @@ function SerieScreen({ route, navigation }) {
     listHeaderHeight: 0, // The height of your list header
   });
 
-  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie);
+  const nbOfUserAlbums = CollectionManager.getNbOfUserAlbumsInSerie(serie.ID_SERIE);
 
   const renderAuthors = () => {
 
@@ -284,8 +284,8 @@ function SerieScreen({ route, navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
-        <View style={{ flexDirection: 'row', marginBottom: 0 }} >
-          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, marginRight: 0 }}>
+        <View style={{ flexDirection: 'row', marginBottom: 0, width: '100%', marginLeft: 0 }} >
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -15, marginRight: 0 }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ flex: 1, flexDirection: 'row' }}>

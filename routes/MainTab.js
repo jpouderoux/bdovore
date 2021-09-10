@@ -112,6 +112,22 @@ const onShareSeriePress = async (item) => {
   });
 }
 
+const shareAuthorButton = (item) => {
+  return (
+    <TouchableOpacity onPress={() => onShareAuthorPress(item)} style={{ margin: 8 }}>
+      <ShareIcon />
+    </TouchableOpacity>
+  );
+}
+
+const onShareAuthorPress = async (item) => {
+  const url = APIManager.bdovoreBaseURL + '/auteur-bd-' + item.ID_AUTEUR;
+  Share.share({
+    message: url,
+    url: url
+  });
+}
+
 const defaultStackOptions = {
   headerTintColor: global.isDarkMode ? 'white' : bdovored,
   headerTruncatedBackTitle: ''
@@ -207,7 +223,10 @@ function CollectionScreens({ route, navigation }) {
           headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <CollectionStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
     </CollectionStack.Navigator>
   );
 }
@@ -260,7 +279,10 @@ function WishlistScreens({ navigation }) {
           headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <WishlistStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
     </WishlistStack.Navigator>
   );
 }
@@ -312,7 +334,10 @@ function ToCompleteScreens({ navigation }) {
           headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <ToCompleteStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
     </ToCompleteStack.Navigator>
   );
 }
@@ -332,7 +357,10 @@ function NewsScreens({ navigation }) {
           headerRight: () => shareSerieButton(route.params.item)
         })} />
       <NewsStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
     </NewsStack.Navigator>
   );
 }
@@ -352,7 +380,10 @@ function SearchScreens({ navigation }) {
           headerRight: () => shareAlbumButton(route.params.item)
         })} />
       <SearchStack.Screen name='Auteur' component={AuteurScreen}
-        options={({ route }) => ({ title: Helpers.reverseAuteurName(route.params.item.PSEUDO) })} />
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
       <SearchStack.Screen name='BarcodeScanner' component={BarcodeScanner}
         options={({ title: 'Scan code-barre' })} />
     </SearchStack.Navigator>

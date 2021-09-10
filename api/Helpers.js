@@ -273,20 +273,37 @@ export function getAuthors(albums) {
   return auteursArray;
 }
 
+export function getAuthorJobs(author) {
+  let jobs = [];
+  if (author.FLG_SCENAR == 1) { jobs.push('Scénariste'); }
+  if (author.FLG_DESSIN == 1) { jobs.push('Dessinateur'); }
+  if (author.FLG_COLOR == 1) { jobs.push('Coloriste'); }
+  return jobs.join(', ');
+}
+
+export function getNbAuthorJobs(author) {
+  let nbJobs = 0;
+  if (author.FLG_SCENAR == 1) { nbJobs++; }
+  if (author.FLG_DESSIN == 1) { nbJobs++; }
+  if (author.FLG_COLOR == 1)  { nbJobs++; }
+  return nbJobs;
+}
+
 export function noteToString(rate) {
-  if (rate <= 1.0) return 'Très mauvais';
-  if (rate <= 2.0) return 'Mauvais';
-  if (rate <= 3.0) return 'Moyen';
-  if (rate <= 4.0) return 'Très bon';
-  if (rate <= 5.0) return 'Excellent';
+  if (rate <= 1.0) { return 'Très mauvais'; }
+  if (rate <= 2.0) { return 'Mauvais'; }
+  if (rate <= 3.0) { return 'Moyen'; }
+  if (rate <= 4.0) { return 'Très bon'; }
+  if (rate <= 5.0) { return 'Excellent'; }
 }
 
 export function reverseAuteurName(name) {
   const names = name.split(', ');
-  if (names.length >= 2) {
-    return names[1] + ' ' + names[0];
-  }
-  return name;
+  return (names.length >= 2) ? names[1] + ' ' + names[0] : name;
+}
+
+export function capitalize(str) {
+  return str ? str[0].toUpperCase() + str.substring(1).toLowerCase() : str;
 }
 
 export function isAlbumBW(album) {

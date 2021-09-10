@@ -55,7 +55,7 @@ const AlbumSchema =
   ID_COLLECTION: 'int?',
   ID_COLOR: 'int?',
   ID_COLOR_ALT: 'int?',
-  ID_DESSIN: 'string?',
+  ID_DESSIN: 'int?',
   ID_DESSIN_ALT: 'int?',
   ID_EDITEUR: 'int?',
   ID_EDITION: 'int',
@@ -734,8 +734,13 @@ class CCollectionManager {
     return (ret.length > 0) ? ret[0] : album;
   }
 
-  getNbOfUserAlbumsInSerie(serie) {
-    const albums = this.getAlbums().filtered('ID_SERIE == $0', parseInt(serie.ID_SERIE));
+  getNbOfUserAlbumsInSerie(id_serie) {
+    const albums = this.getAlbums().filtered('ID_SERIE == $0', parseInt(id_serie));
+    return albums ? albums.length : 0;
+  }
+
+  getNbOfUserAlbumsByAuthor(id_author) {
+    const albums = this.getAlbums().filtered('ID_COLOR == $0 || ID_SCENAR == $0 || ID_DESSIN == $0', parseInt(id_author));
     return albums ? albums.length : 0;
   }
 

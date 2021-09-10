@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, Text, View } from 'react-native';
+import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import CollectionManager from '../api/CollectionManager';
@@ -35,20 +35,25 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { AuteurItem } from '../components/AuteurItem';
 import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
+import { CoverImage } from '../components/CoverImage';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
 
 function AuteurScreen({ route, navigation }) {
 
   const [auteurAlbums, setAuteurAlbums] = useState([]);
+  const [author, setAuthor] = useState(route.params.author);
   const [errortext, setErrortext] = useState('');
-  const [item, setItem] = useState(route.params.item);
   const [loading, setLoading] = useState(false);
   const [nbAlbums, setNbAlbums] = useState(-1);
   const [nbSeries, setNbSeries] = useState(-1);
+  const [toggleElement, setToggleElement] = useState(false);
+
+  const toggle = () => {
+    setToggleElement(v => !v);
+  }
 
   useEffect(() => {
     refreshDataIfNeeded();
@@ -72,7 +77,7 @@ function AuteurScreen({ route, navigation }) {
     if (global.verbose) {
       Helpers.showToast(false, 'Téléchargement de la fiche auteur...');
     }
-    APIManager.fetchAlbum(onAuteurAlbumsFetched, { id_auteur: item.ID_AUTEUR });
+    APIManager.fetchAlbum(onAuteurAlbumsFetched, { id_auteur: author.ID_AUTEUR });
   }
 
   const onAuteurAlbumsFetched = async (result) => {
@@ -113,17 +118,51 @@ function AuteurScreen({ route, navigation }) {
 
   const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={false} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={false} refreshCallback={toggle} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
+  const onPressAuthorImage = () =>
+    navigation.push('Image', { source: APIManager.getAuteurCoverURL(author) });
+
   return (
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Auteur' isCollapsed={false} style={{ marginTop: 0, marginBottom: 5 }} noAnimation={true} >
-        <AuteurItem navigation={navigation} item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true} canViewFullscreenImage={true} showId={true} />
-        {loading ? <SmallLoadingIndicator /> : null}
+        <View style={{ flexDirection: 'row', marginTop: -3, marginBottom: -8 }}>
+          <TouchableOpacity onPress={onPressAuthorImage} style={{ marginLeft: -15, marginRight: 0 }}>
+            <CoverImage source={APIManager.getAuteurCoverURL(author)} style={{ height: 125 }} noResize={false} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginTop: 2 }}>
+            <Text style={[CommonStyles.defaultText, CommonStyles.largerText, { marginBottom: 5 }]} numberOfLines={1} textBreakStrategy='balanced'>
+              {Helpers.reverseAuteurName(author.PSEUDO)}
+            </Text>
+            {author.DTE_NAIS || author.DTE_DECES ?
+              <Text style={[CommonStyles.defaultText, CommonStyles.smallerText, { marginBottom: 5}]}>
+                {author.DTE_NAIS ? Helpers.dateToString(author.DTE_NAIS) : '?'} - {author.DTE_DECES ? Helpers.dateToString(author.DTE_DECES) : '?'}
+              </Text> :
+              null}
+            <Text style={CommonStyles.defaultText}>
+              {Helpers.capitalize(Helpers.getAuthorJobs(author))}
+            </Text>
+            {nbSeries > 0 ?
+              <Text style={CommonStyles.defaultText}>
+                {'\n'}{Helpers.pluralWord(nbAlbums, 'album')} pour {Helpers.pluralWord(nbSeries, 'série')}
+              </Text> :
+              null}
+            {global.showBDovoreIds ?
+              <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>
+                ID-BDovore : {author.ID_AUTEUR}
+              </Text> :
+              null}
+          </View>
+          <View style={{ alignContent: 'flex-end' }}>
+            <Text style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
+              {CollectionManager.getNbOfUserAlbumsByAuthor(author.ID_AUTEUR)}{' / '}{nbAlbums < 0 ? '?' : nbAlbums}</Text>
+          </View>
+        </View>
       </CollapsableSection>
+      {loading ? <SmallLoadingIndicator /> : null}
       {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
