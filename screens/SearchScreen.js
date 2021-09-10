@@ -214,7 +214,7 @@ function SearchScreen({ navigation }) {
         </View>
       </View>
       {global.isConnected ?
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginHorizontal: 1 }}>
           {errortext ? (
             <Text style={CommonStyles.errorTextStyle}>
               {errortext}

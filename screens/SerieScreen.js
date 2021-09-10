@@ -285,11 +285,11 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
         <View style={{ flexDirection: 'row', marginBottom: 0 }} >
-          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, marginRight: 5 }}>
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, marginRight: 0 }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
-          <View style={{ flex: 1, flexDirection: 'row', }}>
-            <View style={{ flex: 1, flexGrow: 2 }}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 1, flexGrow: 2, }}>
               {serie.NOTE_SERIE > 0 ?
                 <View style={{ marginVertical: 5 }}>
                   <RatingStars note={serie.NOTE_SERIE} showRate />

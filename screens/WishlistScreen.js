@@ -123,7 +123,7 @@ function WishlistScreen({ route, navigation }) {
         </View>
         :
         <FlatList
-          style={{ flex: 1 }}
+          style={{ flex: 1, marginHorizontal: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
           data={filteredData}

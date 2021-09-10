@@ -234,7 +234,7 @@ function ToCompleteScreen({ route, navigation }) {
         />
       </View>
       {global.isConnected ?
-        <View>
+        <View style={{ marginHorizontal: 1 }}>
           {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
           {errortext ? (
             <View style={{ alignItems: 'center', marginBottom: 5 }}>

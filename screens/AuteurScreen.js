@@ -36,6 +36,7 @@ import * as Helpers from '../api/Helpers';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
+import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { SmallLoadingIndicator } from '../components/SmallLoadingIndicator';
 
@@ -119,10 +120,10 @@ function AuteurScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View>
+      <CollapsableSection sectionName='Infos Auteur' isCollapsed={false} style={{ marginTop: 0, marginBottom: 5 }} noAnimation={true} >
         <AuteurItem navigation={navigation} item={item} nbAlbums={nbAlbums} nbSeries={nbSeries} noPressAction={true} canViewFullscreenImage={true} showId={true} />
         {loading ? <SmallLoadingIndicator /> : null}
-      </View>
+      </CollapsableSection>
       {errortext ? (
         <Text style={CommonStyles.errorTextStyle}>
           {errortext}
