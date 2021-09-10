@@ -27,7 +27,7 @@
  */
 
 import React, { useState } from 'react';
-import { Platform, Share, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Share, TouchableOpacity, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -124,14 +124,28 @@ function CollectionScreens({ route, navigation }) {
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
   const onShareCollectionPress = () => {
-    AsyncStorage.getItem('token').then((token) => {
-      const userid = parseInt(token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
-      const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
-      Share.share({
-        message: url,
-        url: url
-      });
-    }).catch(error => { });
+    Alert.alert('Partager ma collection',
+      'Le lien partagé ne fonctionnera que si vous avez autorisé la consultion ' +
+      'par les autres utilisateurs de votre collection sur la page profil du ' +
+      'site internet.',
+      [{
+        text: "Oui",
+        onPress: () => {
+          AsyncStorage.getItem('token').then((token) => {
+            const userid = parseInt(token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+            const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
+            Share.share({
+              message: url,
+              url: url
+            });
+          }).catch(error => { });
+        }
+      }, {
+        text: "Annuler",
+        onPress: () => { },
+        style: "cancel"
+      }],
+      { cancelable: true });
   }
 
   const onCollectionGenrePress = () => {
@@ -346,12 +360,6 @@ function SearchScreens({ navigation }) {
 }
 
 function MainTab2() {
-
-  const setTabBarIonicons = (icon, params) => {
-    return (
-      <Ionicons name={icon} color={params.color} size={params.size} />
-    );
-  };
 
   const setTabBarMatComIcons = (icon, params) => {
     return (

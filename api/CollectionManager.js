@@ -187,39 +187,6 @@ class CCollectionManager {
 
   initializeSettings() {
     global.collectionManquantsUpdated = false;
-
-    global.showExcludedAlbums = true;
-    AsyncStorage.getItem('showExcludedAlbums').then((value) => {
-      global.showExcludedAlbums(value != '0');
-    }).catch(() => { });
-
-    global.imageOnWifi = false;
-    AsyncStorage.getItem('imageOnWifi').then((value) => {
-      global.imageOnWifi(value != '0');
-    }).catch(() => { });
-
-    //global.hideSponsoredLinks = true;
-    /*if (Platform.OS != 'ios')*/ {
-      global.hideSponsoredLinks = false;
-      AsyncStorage.getItem('hideSponsoredLinks').then((value) => {
-        global.hideSponsoredLinks(value != '0');
-      }).catch(() => { });
-    }
-
-    global.showBDovoreIds = false;
-    AsyncStorage.getItem('showBDovoreIds').then((value) => {
-      global.showBDovoreIds(value != '0');
-    }).catch(() => { });
-
-    global.verbose = false;
-    AsyncStorage.getItem('verbose').then((value) => {
-      global.verbose(value != '0');
-    }).catch(() => { });
-
-    global.confirmDeletion = false;
-    AsyncStorage.getItem('confirmDeletion').then((value) => {
-      global.confirmDeletion(value != '0');
-    }).catch(() => { });
   }
 
   resetDatabase() {

@@ -33,12 +33,11 @@ import { useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
-import NetInfo from "@react-native-community/netinfo";
 
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
-import * as Helpers from './api/Helpers';
 import MainTab from './routes/MainTab';
+import SettingsManager from './api/SettingsManager';
 
 
 const App: () => Node = () => {
@@ -50,23 +49,6 @@ const App: () => Node = () => {
   global.isDarkMode = useColorScheme() === 'dark';
   rebuildSheet();
 
-  // Subscribe to network change events
-  NetInfo.addEventListener(state => {
-    console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
-    global.connectionType = state.type;
-    if (!global.forceOffline && global.isConnected != state.isConnected) {
-      global.isConnected = state.isConnected;
-      Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
-    }
-  });
-
-  /* TODO - Support dynamic theme change.
-  Appearance.addChangeListener(({ colorScheme }) => {
-    //global.isDarkMode = colorScheme === 'dark'; // We
-    rebuildSheet();
-    //console.debug("Appearance changed: " + colorScheme);
-  });*/
-
   return (
     <NavigationContainer theme={global.isDarkMode ? DarkTheme : DefaultTheme}>
       <MainTab />
@@ -74,6 +56,5 @@ const App: () => Node = () => {
     </NavigationContainer>
   );
 };
-
 
 export default App;

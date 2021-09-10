@@ -219,6 +219,7 @@ export async function fetchJSON(request, context, callback, params = {},
     })
     .catch((error) => {
       if (retry > 0 && global.isConnected) {
+        console.debug(error);
         if (global.verbose) {
           showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
         }

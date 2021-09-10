@@ -40,6 +40,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const [verbose, setVerbose] = useState(global.verbose);
   const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
   const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
+  const [showConnectionMessages, setShowConnectionMessages] = useState(global.showConnectionMessages);
 
   useEffect(() => {
   }, []);
@@ -66,6 +67,12 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     setConfirmDeletion(value);
     global.confirmDeletion = value;
     AsyncStorage.setItem('confirmDeletion', value ? '1' : '0').catch((error) => { });
+  }
+
+  const onSwitchConnectionMessages = (value) => {
+    setShowConnectionMessages(value);
+    global.showConnectionMessages = value;
+    AsyncStorage.setItem('showConnectionMessages', value ? '1' : '0').catch((error) => { });
   }
 
   return (
@@ -118,7 +125,19 @@ function SettingsPanel({ isVisible, visibleSetter }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
 
-        <View style={{ height: 20 }}></View>
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
+          <Text style={CommonStyles.defaultText}>Afficher les messages de connexion</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={showConnectionMessages} onValueChange={onSwitchConnectionMessages}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
+        <View style={{ height: 20, }}></View>
         <Text style={[CommonStyles.defaultText, CommonStyles.linkTextStyle, CommonStyles.center]}
           onPress={() => visibleSetter(false)}>Fermer</Text>
       </View>

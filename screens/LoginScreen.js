@@ -61,7 +61,7 @@ function LoginScreen({ navigation }) {
   const checkLoginForDatabase = (callback) => {
     AsyncStorage.getItem('login').then(log => {
       if (login != log) {
-        console.debug('User change - resetting the database');
+        console.debug('User changed - resetting the database');
         CollectionManager.resetDatabase();
         callback();
       }
