@@ -33,6 +33,7 @@ import { ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { format } from 'react-string-format';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -62,11 +63,17 @@ const filterModes = {
   3: 'Numériques',
 }
 
-const filterModesSearch = {
-  0: 'Rechercher dans tous mes albums...',
-  1: 'Rechercher dans mes albums non lus...',
-  2: 'Rechercher dans mes albums prêtés...',
-  3: 'Rechercher dans mes albums numériques...',
+const filterModesAlbumsSearch = {
+  0: 'Rechercher dans mes{0}...',
+  1: 'Rechercher dans mes{0} non lus...',
+  2: 'Rechercher dans mes{0} prêtés...',
+  3: 'Rechercher dans mes{0} numériques...',
+}
+
+const filterModesSeriesSearch = {
+  0: 'Rechercher dans mes{0}...',
+  1: 'Rechercher dans mes{0} complètes...',
+  2: 'Rechercher dans mes{0} incomplètes...',
 }
 
 let loadTime = 0;
@@ -296,9 +303,9 @@ function CollectionScreen({ route, navigation }) {
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
           <SearchBar
-            placeholder={(collectionType == 1 && filterMode != 0) ?
-              filterModesSearch[filterMode] :
-              'Rechercher dans mes ' + CollectionManager.CollectionTypes[collectionType] + 's' + CollectionManager.CollectionGenres[collectionGenre][2] + '...'}
+            placeholder={(collectionType == 0) ?
+              format(filterModesSeriesSearch[serieFilterMode], CollectionManager.CollectionGenres[collectionGenre][3]) :
+              format(filterModesAlbumsSearch[filterMode], CollectionManager.CollectionGenres[collectionGenre][2])}
             onChangeText={onSearchChanged}
             value={keywords}
             platform='ios'

@@ -157,10 +157,10 @@ class CCollectionManager {
   };
 
   CollectionGenres = {
-    0: ['Tout', '', ''],
-    1: ['BD', ' BD', ' BD'],
-    2: ['Mangas', ' manga', ' mangas'],
-    3: ['Comics', ' comic', ' comics'],
+    0: ['Tout', '', ' albums', ' séries'],
+    1: ['BD', ' BD', ' BD', ' séries BD'],
+    2: ['Mangas', ' manga', ' mangas', ' séries mangas'],
+    3: ['Comics', ' comic', ' comics', ' séries'],
   };
 
   constructor() {
