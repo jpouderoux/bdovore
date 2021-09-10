@@ -119,7 +119,7 @@ function CollectionScreen({ route, navigation }) {
 
   useEffect(() => {
     navigation.setOptions({
-      title: ('Ma collection' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
+      title: collectionGenre == 0  ? 'Ma collection' : 'Mes ' + CollectionManager.CollectionGenres[collectionGenre][0],
     });
     applyFilters();
   }, [collectionGenre]);
