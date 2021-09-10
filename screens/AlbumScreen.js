@@ -249,7 +249,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <View style={{ margin: 0, alignItems: 'center' }}>
-          <Text h4 style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
+          <Text style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
           {album.MOYENNE_NOTE_TOME ?
             <View style={{ marginTop: 10 }}>
               <RatingStars note={album.MOYENNE_NOTE_TOME} showRate />

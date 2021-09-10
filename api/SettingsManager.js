@@ -35,7 +35,6 @@ let connectionStatus = {};
 class CSettingsManager {
 
   constructor() {
-    global.connectionType = {};
     this.initialize();
   }
 
@@ -45,13 +44,6 @@ class CSettingsManager {
 
     // Subscribe to network change events
     NetInfo.addEventListener(this.connectionCallback);
-
-    /* TODO - Support dynamic theme change.
-    Appearance.addChangeListener(({ colorScheme }) => {
-      //global.isDarkMode = colorScheme === 'dark'; // We
-      rebuildSheet();
-      //console.debug("Appearance changed: " + colorScheme);
-    });*/
 
     global.showExcludedAlbums = true;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -95,8 +87,7 @@ class CSettingsManager {
   connectionCallback(state) {
     console.log(state);
     console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
-    global.connectionType[state.type] = state.isConnected;
-    global.isConnected = Object.values(global.connectionType).reduce((prev, curr) => prev || curr, false);
+    global.connectionType = state.type;
     console.debug('Global connection state: ' + global.isConnected);
     if (!global.forceOffline && global.isConnected != state.isConnected) {
       global.isConnected = state.isConnected;
@@ -106,6 +97,9 @@ class CSettingsManager {
     }
   }
 
+  isWifiConnected() {
+    return !global.forceOffline && global.connectionType == 'wifi' && global.isConnected;
+  }
 };
 
 const SettingsManager = new CSettingsManager();

@@ -27,13 +27,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Platform, Text, View } from 'react-native';
 import { Image } from 'react-native-elements';
+import SettingsManager from '../api/SettingsManager';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { bdovored, CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 
 
 export function CoverImage({ source, style, noResize, largeMode }) {
+
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
 
@@ -51,13 +54,19 @@ export function CoverImage({ source, style, noResize, largeMode }) {
     }
   });
 
-  const nodownload = !global.isConnected || (global.imageOnWifi && global.connectionType != 'wifi');
+  const nodownload = !global.isConnected || (global.imageOnWifi && !SettingsManager.isWifiConnected());
 
-  return (
+  return (nodownload && Platform.OS == 'android' ?
+    <View style={{ width, height, backgroundColor: 'lightgrey' }}>
+      <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
+        <MaterialIcons name={'image-not-supported'} size={20} />{'\n'}
+        Image{'\n'}non disponible{'\n'}hors WiFi
+      </Text>
+    </View > :
     <Image
       source={{
         uri: source,
-        cache: nodownload ? 'only-if-cached' : 'default',
+        cache: nodownload && Platform.OS == 'ios' ? 'only-if-cached' : 'default',
       }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
       PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}

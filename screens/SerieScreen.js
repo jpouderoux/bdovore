@@ -285,7 +285,7 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
         <View style={{ flexDirection: 'row', marginBottom: 0 }} >
-          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, }}>
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -19, marginRight: 5 }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ flex: 1, flexDirection: 'row', }}>

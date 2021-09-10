@@ -37,7 +37,6 @@ import Toast from 'react-native-toast-message';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
 import MainTab from './routes/MainTab';
-import SettingsManager from './api/SettingsManager';
 
 
 const App: () => Node = () => {
@@ -48,6 +47,13 @@ const App: () => Node = () => {
 
   global.isDarkMode = useColorScheme() === 'dark';
   rebuildSheet();
+
+  /* TODO - Support dynamic theme change.
+  Appearance.addChangeListener(({ colorScheme }) => {
+    //global.isDarkMode = colorScheme === 'dark'; // We
+    rebuildSheet();
+    //console.debug("Appearance changed: " + colorScheme);
+  });*/
 
   return (
     <NavigationContainer theme={global.isDarkMode ? DarkTheme : DefaultTheme}>

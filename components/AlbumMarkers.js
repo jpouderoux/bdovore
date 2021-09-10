@@ -118,6 +118,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   }, [album]);
 
   const onGotIt = async () => {
+    if (!global.isConnected) { return; }
+
     if (!CollectionManager.isAlbumInCollection(album)) {
       setProcessingBit('own', true);
       // Add album to collection & remove it from the wishlist
@@ -170,6 +172,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onWantIt = async () => {
+    if (!global.isConnected) { return; }
+
     // Switch the want it flag
     const wantIt = !(album.FLG_ACHAT == 'O');
     setProcessingBit('wish', true);
@@ -196,6 +200,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onReadIt = async () => {
+    if (!global.isConnected) { return; }
+
     const readIt = !(album.FLG_LU == 'O');
     setProcessingBit('read', true);
     CollectionManager.setAlbumReadFlag(album, readIt, (result) => {
@@ -208,6 +214,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onLendIt = async () => {
+    if (!global.isConnected) { return; }
+
     const lendIt = !(album.FLG_PRET == 'O');
     setProcessingBit('loan', true);
     CollectionManager.setAlbumLendFlag(album, lendIt, (result) => {
@@ -220,6 +228,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onNumEd = async () => {
+    if (!global.isConnected) { return; }
+
     const numEd = !(album.FLG_NUM == 'O');
     setProcessingBit('num', true);
     CollectionManager.setAlbumNumEdFlag(album, numEd, (result) => {
@@ -232,6 +242,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onGift = async () => {
+    if (!global.isConnected) { return; }
+
     const gift = !(album.FLG_CADEAU == 'O');
     setProcessingBit('gift', true);
     CollectionManager.setAlbumGiftFlag(album, gift, (result) => {
@@ -244,6 +256,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onExcludeIt = async () => {
+    if (!global.isConnected) { return; }
+
     const exclude = !CollectionManager.isAlbumExcluded(album);
     setProcessingBit('excluded', true);
     const callback = (result) => {

@@ -158,6 +158,9 @@ export let CommonStyles = EStyleSheet.create({
   smallerText: {
     fontSize: '0.7rem'
   },
+  evenSmallerText: {
+    fontSize: '0.5rem'
+  },
   errorTextStyle: {
     color: 'red',
     textAlign: 'center',

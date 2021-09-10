@@ -86,6 +86,8 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }
 
   const onHaveAll = () => {
+    if (!global.isConnected) { return; }
+
     Alert.alert(
       serie.NOM_SERIE,
       "Que souhaitez-vous ajouter à votre collection ?",
@@ -104,6 +106,8 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }
 
   const onExcludeIt = async () => {
+    if (!global.isConnected) { return; }
+
     const exclude = !(serie.IS_EXCLU == 1);
     setProcessingBit('excluding', true);
     const callback = (result) => {
