@@ -34,7 +34,7 @@ import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 
 import { AlbumItem } from '../components/AlbumItem';
 import { CollapsableSection } from '../components/CollapsableSection';
-import { CommonStyles, AlbumItemHeight, AlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles, AlbumItemHeight } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { RatingStars } from '../components/RatingStars';
@@ -63,9 +63,10 @@ function SerieScreen({ route, navigation }) {
     refreshAlbums();
   }
 
-  // useFocusEffect(() => {
-  //   refreshAlbums();
-  // });
+  useFocusEffect(useCallback(() => {
+     refreshAlbums();
+     toggle();
+  }, []));
 
   const refreshDataIfNeeded = (force = false) => {
     if (force) {
@@ -176,12 +177,11 @@ function SerieScreen({ route, navigation }) {
   }
 
   const refreshAlbums = () => {
-    console.log('refresh albums');
     CollectionManager.refreshAlbumSeries(serieAlbums);
-    serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
+    //serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
 
     CollectionManager.refreshAlbumSeries(filteredSerieAlbums);
-    filteredSerieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
+    //filteredSerieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -349,7 +349,7 @@ function SerieScreen({ route, navigation }) {
               </Text>*/}
               {index == 0 && nbOfUserAlbums > 0 ? ignoredSwitch() : null}
             </View>)}
-          extraData={[serieAlbums, filteredSerieAlbums, toggleElement]}
+          extraData={toggleElement}
           stickySectionHeadersEnabled={true}
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={getItemLayout}

@@ -189,7 +189,7 @@ function AuteurScreen({ route, navigation }) {
           <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]} numberOfLines={1} textBreakStrategy='balanced'>{title}</Text>)}
         stickySectionHeadersEnabled={true}
         ItemSeparatorComponent={Helpers.renderSeparator}
-        extraData={toggle}
+        extraData={toggleElement}
       />
     </View>
   );
