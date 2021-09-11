@@ -30,11 +30,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
 import { CommonStyles } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
 import * as APIManager from '../api/APIManager';
@@ -192,7 +192,7 @@ function SearchScreen({ navigation }) {
             onPress={onBarcodeSearch}
             title="Search"
             style={{ marginLeft: 8, marginVertical: 0 }}>
-            <MaterialCommunityIcons
+            <Icon
               name='barcode-scan'
               size={36}
               color={CommonStyles.iconStyle.color} />
@@ -236,7 +236,7 @@ function SearchScreen({ navigation }) {
           <Text style={CommonStyles.defaultText}>Recherche indisponible en mode non-connecté.{'\n'}</Text>
           <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
           <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={onSearch}>
-            <MaterialCommunityIcons name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+            <Icon name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}></View>
         </View>}

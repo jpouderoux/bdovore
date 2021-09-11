@@ -48,7 +48,6 @@ function SerieScreen({ route, navigation }) {
 
   const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [errortext, setErrortext] = useState('');
-  const [filteredSerieAlbums, setFilteredSerieAlbums] = useState([]);
   const [loading, setLoading] = useState(false);
   const [serie, setSerie] = useState(route.params.item);
   const [serieAlbums, setSerieAlbums] = useState([]);
@@ -72,17 +71,14 @@ function SerieScreen({ route, navigation }) {
     if (force) {
       console.debug("refresh data serie " + serie.ID_SERIE);
       fetchData();
+    } else {
+      refreshAlbums();
     }
-    refreshAlbums();
   }
 
   useEffect(() => {
     refreshDataIfNeeded(true);
   }, [serie]);
-
-  useEffect(() => {
-    refreshAlbums();
-  }, [defaultSerieAlbums, toggle]);
 
   useEffect(() => {
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -137,7 +133,7 @@ function SerieScreen({ route, navigation }) {
         const section = CollectionManager.getAlbumType(album);
         album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
         if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
-          newdata[section].data.push(album);
+          newdata[section].data.push(Helpers.toDict(album));
         }
       }
 
@@ -152,7 +148,6 @@ function SerieScreen({ route, navigation }) {
         // Now fetch the exclude status of the albums of the serie
         APIManager.fetchExcludeStatusOfSerieAlbums(serie.ID_SERIE, (result) => {
           if (!result.error) {
-            let filtereddata = CreateSerieSections();
             // Transform the result array into a dictionary for fast&easy access
             let dict = result.items.reduce((a, x) => ({ ...a, [parseInt(x)]: 1 }), {});
             // Save all albums in all sections and set their exclude flag
@@ -161,12 +156,6 @@ function SerieScreen({ route, navigation }) {
                 CollectionManager.setAlbumExcludedFlag(album, dict[parseInt(album.ID_TOME)] == 1);
               })
             })
-            for (let i = 0; i < newdata.length; i++) {
-              filtereddata[i].data = newdata[i].data.filter(album => !CollectionManager.isAlbumExcluded(album));
-            }
-            setFilteredSerieAlbums(filtereddata);
-          } else {
-            setFilteredSerieAlbums(newdata);
           }
         });
       }
@@ -179,9 +168,6 @@ function SerieScreen({ route, navigation }) {
   const refreshAlbums = () => {
     CollectionManager.refreshAlbumSeries(serieAlbums);
     //serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
-
-    CollectionManager.refreshAlbumSeries(filteredSerieAlbums);
-    //filteredSerieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -281,7 +267,7 @@ function SerieScreen({ route, navigation }) {
           <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -15, marginRight: 0 }}>
             <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
+          <View style={{ flex: 1, flexDirection: 'row', marginRight: 4 }}>
             <View style={{ flex: 1, flexGrow: 2, }}>
               {serie.NOTE_SERIE > 0 ?
                 <View style={{ marginVertical: 5 }}>
@@ -292,7 +278,7 @@ function SerieScreen({ route, navigation }) {
               {renderAuthors()}
               {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
             </View>
-            <View style={{ alignContent: 'flex-end' }}>
+            <View style={{ alignContent: 'flex-end', flex: 0 }}>
               <Text style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
                 {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text>
               <SerieMarkers item={serie}
@@ -300,7 +286,7 @@ function SerieScreen({ route, navigation }) {
                 reduceMode={true}
                 showExclude={true}
                 serieAlbums={defaultSerieAlbums}
-                refreshCallback={() => { toggle(); refreshDataIfNeeded(true) }} />
+                refreshCallback={() => { toggle(); refreshAlbums();}} />
             </View>
           </View>
           <View>
@@ -325,9 +311,7 @@ function SerieScreen({ route, navigation }) {
           ref={sectionListRef}
           maxToRenderPerBatch={6}
           windowSize={10}
-          sections={(showExcludedAlbums || nbOfUserAlbums == 0 ?
-            serieAlbums.filter(s => s.data.length > 0) :
-            filteredSerieAlbums.filter(s => s.data.length > 0)).map((section, index) => ({ ...section, index }))}
+          sections={serieAlbums.filter(s => s.data.length > 0).map((section, index) => ({ ...section, index }))}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           renderSectionHeader={({ section: { title, data, index } }) => (
@@ -335,7 +319,7 @@ function SerieScreen({ route, navigation }) {
               <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}
               >{Helpers.pluralWord(data.length, title)}</Text>
               {/*<Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
-                <MaterialCommunityIcons name='menu-down' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
+                <Icon name='menu-down' size={16} color={CommonStyles.markerIconStyle} onPress={() => {
                   console.log(index + ' ... ' + (index + 1) % 4);
                   try {
                     sectionListRef.current.scrollToLocation({

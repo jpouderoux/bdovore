@@ -29,11 +29,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ButtonGroup } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
@@ -116,7 +116,7 @@ function WishlistScreen({ route, navigation }) {
           <Text style={CommonStyles.defaultText}>Ajoutez les albums que vous souhaitez</Text>
           <Text style={CommonStyles.defaultText}>acquérir via les boutons</Text>
           <View style={{ flexDirection: 'column' }}>
-            <MaterialCommunityIcons name='heart-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
+            <Icon name='heart-outline' size={25} color={CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
             <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>Je veux</Text>
           </View>
           <View style={{ flex: 1 }}></View>

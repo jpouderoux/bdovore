@@ -28,15 +28,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
-
+import { Icon } from '../components/Icon';
 
 const pBits = {
   'own': 1,
@@ -280,61 +277,51 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   }
 
   const MarkerLoadingIndicator = () => (
-    <View style={[CommonStyles.markerIconStyle, { margin: 8 }]}>
-      <ActivityIndicator size="small" color={bdovored} />
+    <View style={[CommonStyles.markerStyle]}>
+      <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle}/>
+      <Text style={CommonStyles.markerTextStyle}>{' '}</Text>
     </View>);
+
+  const Marker = ({ name, iconEnabled, iconDisabled, iconStyle, text, onPressCb, isCheckedCb = () => { }, enabledColor = CommonStyles.markIconEnabled,
+    iconCollection = 'MaterialCommunityIcons' }) => {
+    return (
+      isProcessing(name) ? <MarkerLoadingIndicator /> :
+        <TouchableOpacity onPress={onPressCb} title={text} style={CommonStyles.markerStyle}>
+          <Icon collection={iconCollection} name={isCheckedCb() ? iconEnabled : iconDisabled} size={25}
+            color={isCheckedCb() ? enabledColor.color : CommonStyles.markIconDisabled.color}
+            style={[CommonStyles.markerIconStyle, isCheckedCb() ? iconStyle : null]} />
+          <Text style={[CommonStyles.markerTextStyle, isCheckedCb() ?
+            enabledColor : CommonStyles.markIconDisabled]}>{text}</Text>
+        </TouchableOpacity>);
+  }
 
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
-      {isProcessing('own') ? <MarkerLoadingIndicator /> :
-        <TouchableOpacity onPress={onGotIt} title="" style={CommonStyles.markerStyle}>
-          <MaterialCommunityIcons name={CollectionManager.isAlbumInCollection(album) ? 'check-bold' : 'check'} size={25} color={CollectionManager.isAlbumInCollection(album) ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-          <Text style={[CommonStyles.markerTextStyle, CollectionManager.isAlbumInCollection(album) ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai</Text>
-        </TouchableOpacity>
-      }
+      <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
+        isCheckedCb={() => CollectionManager.isAlbumInCollection(album)} />
 
-      {isProcessing('wish') ? <MarkerLoadingIndicator /> :
-        (!CollectionManager.isAlbumInCollection(album) ?
-          <TouchableOpacity onPress={onWantIt} title="" style={CommonStyles.markerStyle}>
-            <MaterialCommunityIcons name={(album.FLG_ACHAT == 'O') ? 'heart' : 'heart-outline'} size={25} color={(album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-            <Text style={[CommonStyles.markerTextStyle, (album.FLG_ACHAT == 'O') ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Je veux</Text>
-          </TouchableOpacity> : null)}
+      {!CollectionManager.isAlbumInCollection(album) ?
+      <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
+        isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-      {isProcessing('excluded') ? <MarkerLoadingIndicator /> :
-        ((!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
-          <TouchableOpacity onPress={onExcludeIt} title="" style={CommonStyles.markerStyle}>
-            <MaterialCommunityIcons name='cancel' size={25} color={CollectionManager.isAlbumExcluded(album) ? CommonStyles.markWishIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, CollectionManager.isAlbumExcluded(album) ? { fontWeight: 'bold' } : null]} />
-            <Text style={[CommonStyles.markerTextStyle, CollectionManager.isAlbumExcluded(album) ? CommonStyles.markWishIconEnabled : CommonStyles.markIconDisabled]}>Ignorer</Text>
-          </TouchableOpacity> : null)}
+      {(!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
+        <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
+          isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-      {isProcessing('read') ? <MarkerLoadingIndicator /> :
-        (showAllMarks ?
-          <TouchableOpacity onPress={onReadIt} title="" style={CommonStyles.markerStyle}>
-            <MaterialCommunityIcons name={(album.FLG_LU == 'O') ? 'book' : 'book-outline'} size={25} color={(album.FLG_LU == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-            <Text style={[CommonStyles.markerTextStyle, (album.FLG_LU == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Lu</Text>
-          </TouchableOpacity> : null)}
+      {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
+        <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
+          isCheckedCb={() => album.FLG_LU == 'O'} />
 
-      {isProcessing('loan') ? <MarkerLoadingIndicator /> :
-        (showAllMarks ?
-          <TouchableOpacity onPress={onLendIt} title="" style={CommonStyles.markerStyle}>
-            <Ionicons name={(album.FLG_PRET == 'O') ? 'ios-person-add' : 'ios-person-add-outline'} size={25} color={(album.FLG_PRET == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-            <Text style={[CommonStyles.markerTextStyle, (album.FLG_PRET == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Prêt</Text>
-          </TouchableOpacity> : null)}
+        <Marker name='loan' iconEnabled='ios-person-add' iconDisabled='ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
+          isCheckedCb={() => album.FLG_PRET == 'O'} iconCollection='Ionicons' />
 
-      {isProcessing('num') ? <MarkerLoadingIndicator /> :
-        (showAllMarks ?
-          <TouchableOpacity onPress={onNumEd} title="" style={CommonStyles.markerStyle}>
-            <MaterialIcons name={(album.FLG_NUM == 'O') ? 'devices' : 'devices'} size={25} color={(album.FLG_NUM == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-            <Text style={[CommonStyles.markerTextStyle, (album.FLG_NUM == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Ed. Num.</Text>
-          </TouchableOpacity> : null)}
+        <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
+          isCheckedCb={() => album.FLG_NUM == 'O'} />
 
-      {isProcessing('gift') ? <MarkerLoadingIndicator /> :
-        (showAllMarks ?
-          <TouchableOpacity onPress={onGift} title="" style={CommonStyles.markerStyle}>
-            <MaterialCommunityIcons name={(album.FLG_CADEAU == 'O') ? 'gift' : 'gift-outline'} size={25} color={(album.FLG_CADEAU == 'O') ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={CommonStyles.markerIconStyle} />
-            <Text style={[CommonStyles.markerTextStyle, (album.FLG_CADEAU == 'O') ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>Cadeau</Text>
-          </TouchableOpacity> : null)}
+        <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
+          isCheckedCb={() => album.FLG_CADEAU == 'O'} />
+      </View> : null}
 
     </View>);
 }

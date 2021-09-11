@@ -409,26 +409,41 @@ class CCollectionManager {
   }
 
   addSerieAlbumsToCollection(serie, serieAlbums, callback) {
-    try {
+
+    const cb = () => {
       let nbalbums = 0;
-      global.db.write(() => {
-        serieAlbums.forEach((album) => {
-          if (this.getAlbumType(album) == 0) {
-            // Add the album in local collection
-            album.FLG_ACHAT = 'N';
-            album.DATE_AJOUT = Helpers.getNowDateString();
-            global.db.create('Albums', createEntry(AlbumSchema, album));
-            //console.log('Add album ' + album.TITRE_TOME);
-            nbalbums++;
-          }
-        });
-      });
+      for (let i = 0; i < serieAlbums.length; i++) {
+        const album = serieAlbums[i];
+        if (this.getAlbumType(album) == 0) {
+          nbalbums++;
+          this.addAlbumToCollection(album, callback);
+        }
+      }
       console.debug('série ' + serie.ID_SERIE + ' (' + nbalbums + ' albums seulement) added to collection');
-      callback({ error: '' });
-    } catch (error) {
-      console.debug("Erreur inattendue lors de l'ajout de la série");
-      callback({ error: "Erreur inattendue lors de l'ajout de la série" });
+    };
+
+    let colSerie = this.getSerieInCollection(serie.ID_SERIE);
+    if (!colSerie) {
+      console.debug('serie ' + serie.ID_SERIE + ' not found in collection, let\'s add it');
+      APIManager.fetchSerie(serie.ID_SERIE, (result) => {
+        if (result.error == '') {
+          const serie = result.items[0];
+          try {
+            global.db.write(() => {
+              serie.NB_USER_ALBUM = 0;
+              global.db.create('Series', createEntry(SerieSchema, serie));
+              console.debug('serie ' + serie.ID_SERIE + ' added to collection');
+            });
+            cb();
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      });
+      return;
     }
+
+    cb();
   }
 
   addAlbumToCollection(album, callback = null) {
@@ -459,6 +474,8 @@ class CCollectionManager {
             console.error("/!\\ Album added but not found in collection!");
           }
 
+          global.collectionManquantsUpdated = false;
+
           // Increment the serie's counter
           let serie = this.getSerieInCollection(album.ID_SERIE);
           if (!serie) {
@@ -466,19 +483,24 @@ class CCollectionManager {
             APIManager.fetchSerie(album.ID_SERIE, (result) => {
               if (result.error == '') {
                 const serie = result.items[0];
-                global.db.write(() => {
-                  serie.NB_USER_ALBUM = 1;
-                  global.db.create('Series', createEntry(SerieSchema, serie));
-                  console.debug('serie ' + album.ID_SERIE + ' added to collection');
-                });
+                try {
+                  global.db.write(() => {
+                    serie.NB_USER_ALBUM = 1;
+                    global.db.create('Series', createEntry(SerieSchema, serie));
+                    console.debug('serie ' + album.ID_SERIE + ' added to collection');
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+              } else {
+                Helpers.showToast(result.error, result.error ?
+                  'Erreur de connexion au serveur.' :
+                  'Album ajouté à la collection.');
               }
             });
           } else {
             global.db.write(() => { serie.NB_USER_ALBUM++; });
           }
-
-          //this.saveAlbums();
-          global.collectionManquantsUpdated = false;
         }
       } catch (error) {
         result.error = "Erreur inattendue lors de l'ajout de l'album";

@@ -29,7 +29,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { ListItem } from 'react-native-elements';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
@@ -37,6 +36,7 @@ import { BottomSheet } from '../components/BottomSheet';
 import { CollapsableSection } from '../components/CollapsableSection';
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
+import { Icon } from '../components/Icon';
 import { RatingStars } from '../components/RatingStars';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -287,7 +287,7 @@ function AlbumScreen({ route, navigation }) {
               title="Editions">
               {albumEditionsData.length > 1 ?
                 <Text style={CommonStyles.albumEditionButtonStyle}>
-                  {' '}{album.NOM_EDITION} <MaterialCommunityIcons name={showEditionsChooser ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />{' '}
+                  {' '}{album.NOM_EDITION} <Icon name={showEditionsChooser ? 'menu-up' : 'menu-down'} size={16} color={CommonStyles.markerIconStyle} />{' '}
                 </Text> : <Text style={CommonStyles.defaultText}>{album.NOM_EDITION}</Text>}
             </TouchableOpacity>
           </View>

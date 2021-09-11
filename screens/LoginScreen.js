@@ -102,12 +102,13 @@ function LoginScreen({ navigation }) {
     setErrortext(data.error);
 
     if (data.error == '') {
-      //CollectionManager.initialize();
       AsyncStorage.multiSet([
         ['token', data.token],
+        ['timestamp', data.timestamp],
         ['login', pseudo],
         ['passwd', passwd],
         ['collecFetched', 'false']], () => { }).then(() => {
+          global.timestamp = data.timestamp;
           navigation.goBack();
         }).catch((error) => console.debug(error));
     }

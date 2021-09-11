@@ -90,9 +90,9 @@ export function reloginBDovore(navigation, callback = null) {
 
   if (global.isConnected) {
     AsyncStorage.multiGet(['login', 'passwd'])
-      .then((response) => {
-        const pseudo = response[0][1];
-        const passwd = response[1][1];
+      .then((values) => {
+        const pseudo = values[0][1];
+        const passwd = values[1][1];
         loginBDovore(pseudo, passwd, (response) => {
           if (response.error) {
             if (navigation) {
@@ -101,9 +101,15 @@ export function reloginBDovore(navigation, callback = null) {
           } else {
             AsyncStorage.setItem('token', response.token);
             console.debug("New token " + response.token + " fetched!");
-            if (callback) {
-              callback();
-            }
+
+            AsyncStorage.multiSet([
+              ['token', response.token],
+              ['timestamp', response.timestamp]], () => { }).then(() => {
+                global.timestamp = response.timestamp;
+                if (callback) {
+                  callback();
+                };
+              }).catch((error) => console.debug(error));
           }
         });
       })
@@ -116,8 +122,8 @@ export function reloginBDovore(navigation, callback = null) {
 }
 
 export function loginBDovore(pseudo, passwd, callback) {
-  const formatResult = (connected, token, error = '') => {
-    return { connected, token, error };
+  const formatResult = (connected, token, timestamp, error = '') => {
+    return { connected, token, error, timestamp };
   }
 
   console.debug("Login...");
@@ -142,7 +148,8 @@ export function loginBDovore(pseudo, passwd, callback) {
     .then((responseJson) => {
       if (responseJson.Error === '') {
         console.debug("New token: " + responseJson.Token);
-        callback(formatResult(true, responseJson.Token));
+        console.log(responseJson);
+        callback(formatResult(true, responseJson.Token, responseJson.Timestamp ?? null));
       } else {
         callback(formatResult(false, responseJson.Token, responseJson.Error));
       }
@@ -190,8 +197,8 @@ export async function fetchJSON(request, context, callback, params = {},
   }
 
   fetchZIP(url)
-    .then((response) => response.json())
-    .then((json) => {
+    .then(response => response.json())
+    .then(json => {
       let data = datamode ? json.data : json;
 
       // Get total number of items and compute number of pages to fetch
@@ -204,8 +211,8 @@ export async function fetchJSON(request, context, callback, params = {},
         const url = baseUrl + '&page=' + page + '&length=' + pageLength;
         //console.debug("Fetching page " + i + '/' + nbPages);
         fetchZIP(url)
-          .then((response) => response.json())
-          .then((json) => {
+          .then(response => response.json())
+          .then(json => {
             data.push(...json.data);
             callback(formatResult(data, '', page === nbPages ? true : false, nbItems));
           });
@@ -333,8 +340,8 @@ export async function fetchSimilAlbums(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });
 
   fetchZIP(url)
-    .then((response) => response.json())
-    .then((json) => {
+    .then(response => response.json())
+    .then(json => {
       callback({ error: '', items: json, nbItems: Object.keys(json).length, });
     })
     .catch((error) => {
@@ -347,8 +354,8 @@ export async function fetchAlbumComments(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', { id_tome: id_tome, });
 
   fetchZIP(url)
-    .then((response) => response.json())
-    .then((json) => {
+    .then(response => response.json())
+    .then(json => {
       callback({ error: '', items: json, nbItems: Object.keys(json).length, });
     })
     .catch((error) => {
@@ -368,10 +375,10 @@ export async function sendAlbumComment(id_tome, callback, note = 0, comment = ''
     });
 
   fetchZIP(url)
-    .then((response) => {
+    .then(response => {
       callback({ error: (response.status != '200') });
     })
-    .catch((error) => {
+    .catch(error => {
       console.debug('==> error : ' + error.toString())
       callback({ error: error.toString() });
     });
@@ -416,11 +423,20 @@ export async function fetchAuteurByTerm(term, callback, params = {}) {
 export async function updateCollection(func, callback, params = {}) {
 
   let token = await checkForToken();
-  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/' + func + '?API_TOKEN=' + encodeURI(token), params);
+  const url = concatParamsToURL(bdovoreBaseURL + '/macollection/' + func + '?API_TOKEN=' + encodeURI(token) + '&api_version=2', params);
 
   fetchZIP(url)
-    .then((response) => {
-      callback({ error: (response.status != '200') });
+    //.then((response) => {
+    .then(response => response.json())
+    .then(responseJson => {
+      if (responseJson.error == '') {
+        console.log(responseJson);
+        global.timestamp = responseJson.timestamp;
+        AsyncStorage.setItem('timestamp', responseJson.timestamp);
+        callback({ error: '' });
+      } else {
+        callback({ error: responseJson.error });
+      }
     })
     .catch((error) => {
       console.debug('==> error : ' + error.toString())

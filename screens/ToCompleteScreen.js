@@ -32,10 +32,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 import { SerieItem } from '../components/SerieItem';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -277,7 +277,7 @@ function ToCompleteScreen({ route, navigation }) {
           <Text style={CommonStyles.defaultText}>Informations indisponibles en mode non-connecté.{'\n'}</Text>
           <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
           <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={fetchData}>
-            <MaterialCommunityIcons name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+            <Icon name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}></View>
         </View>}

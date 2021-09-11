@@ -30,8 +30,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { Icon } from '../components/Icon';
 
 function BarcodeScanner({ route, navigation }) {
 

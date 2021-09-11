@@ -30,9 +30,9 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, Text, View } from 'react-native';
 import { Image } from 'react-native-elements';
 import SettingsManager from '../api/SettingsManager';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { bdovored, CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 
 
 export function CoverImage({ source, style, noResize, largeMode }) {
@@ -59,7 +59,7 @@ export function CoverImage({ source, style, noResize, largeMode }) {
   return (nodownload && Platform.OS == 'android' ?
     <View style={{ width, height, backgroundColor: 'lightgrey' }}>
       <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
-        <MaterialIcons name={'image-not-supported'} size={20} />{'\n'}
+        <Icon collection='MaterialIcons' name={'image-not-supported'} size={20} />{'\n'}
         Image{'\n'}non disponible{'\n'}hors WiFi
       </Text>
     </View > :

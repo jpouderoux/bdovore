@@ -28,9 +28,9 @@
 
 import React, { useState } from 'react';
 import { LayoutAnimation, Text, TouchableOpacity, UIManager, View } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CommonStyles } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 
 
 if (Platform.OS === 'android') {
@@ -62,7 +62,7 @@ export function CollapsableSection({ props, sectionName, isCollapsed = false, st
           <Text style={[CommonStyles.sectionTextStyle]}>{sectionName}</Text>
           {collapsable &&
           <Text style={[{ position: 'absolute', right: 10 }, CommonStyles.sectionTextStyle]}>
-            <MaterialCommunityIcons name={collasped ? 'menu-down' : 'menu-up'} size={16} color={CommonStyles.markerIconStyle} />
+            <Icon name={collasped ? 'menu-down' : 'menu-up'} size={16} color={CommonStyles.markerIconStyle} />
           </Text>}
         </View>
       </TouchableOpacity>

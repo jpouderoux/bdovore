@@ -45,6 +45,12 @@ class CSettingsManager {
     // Subscribe to network change events
     NetInfo.addEventListener(this.connectionCallback);
 
+    global.timestamp = '';
+    AsyncStorage.getItem('timestamp').then((value) => {
+      global.timestamp(value);
+    }).catch(() => { });
+
+
     global.showExcludedAlbums = true;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
       global.showExcludedAlbums(value != '0');

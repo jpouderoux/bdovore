@@ -31,11 +31,8 @@ import { Alert, Platform, Share, TouchableOpacity, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import { bdovored, CommonStyles } from '../styles/CommonStyles';
+import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import AlbumScreen from '../screens/AlbumScreen';
@@ -66,7 +63,7 @@ const SearchStack = createStackNavigator();
 const accountButton = (navigation) => {
   return (
     <TouchableOpacity onPress={() => onAccountPress(navigation)} style={{ margin: 8 }}>
-      <MaterialCommunityIcons name='account-circle-outline' size={25} color={CommonStyles.iconStyle.color} />
+      <Icon name='account-circle-outline' size={25} color={CommonStyles.iconStyle.color} />
     </TouchableOpacity>
   );
 }
@@ -77,8 +74,8 @@ const onAccountPress = (navigation) => {
 
 const ShareIcon = () => (
   Platform.OS == 'ios' ?
-    <Ionicons name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
-    <MaterialCommunityIcons name='share-variant' size={25} color={CommonStyles.iconStyle.color} />);
+    <Icon collection='Ionicons' name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
+    <Icon name='share-variant' size={25} color={CommonStyles.iconStyle.color} />);
 
 const shareAlbumButton = (item) => {
   return (
@@ -180,11 +177,11 @@ function CollectionScreens({ route, navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onSettingsPress} style={{ margin: 8 }}>
-          <MaterialCommunityIcons name='dots-vertical' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon name='dots-vertical' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -244,7 +241,7 @@ function WishlistScreens({ navigation }) {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -300,7 +297,7 @@ function ToCompleteScreens({ navigation }) {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Ionicons name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -394,13 +391,13 @@ function MainTab2() {
 
   const setTabBarMatComIcons = (icon, params) => {
     return (
-      <MaterialCommunityIcons name={icon} color={params.color} size={params.size} />
+      <Icon name={icon} color={params.color} size={params.size} />
     );
   };
 
   const setTabBarMatIcons = (icon, params) => {
     return (
-      <MaterialIcons name={icon} color={params.color} size={params.size} />
+      <Icon collection='MaterialIcons' name={icon} color={params.color} size={params.size} />
     );
   };
 
