@@ -46,7 +46,6 @@ import CollectionManager from '../api/CollectionManager';
 
 function SerieScreen({ route, navigation }) {
 
-  const [defaultSerieAlbums, setDefaultSerieAlbums] = useState([]);
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [serie, setSerie] = useState(route.params.item);
@@ -58,12 +57,11 @@ function SerieScreen({ route, navigation }) {
   const sectionListRef = useRef();
 
   const toggle = () => {
-    setToggleElement(v => !v);
     refreshAlbums();
+    setToggleElement(v => !v);
   }
 
   useFocusEffect(useCallback(() => {
-     refreshAlbums();
      toggle();
   }, []));
 
@@ -72,7 +70,7 @@ function SerieScreen({ route, navigation }) {
       console.debug("refresh data serie " + serie.ID_SERIE);
       fetchData();
     } else {
-      refreshAlbums();
+      toggle();
     }
   }
 
@@ -89,14 +87,13 @@ function SerieScreen({ route, navigation }) {
   useEffect(() => {
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      refreshDataIfNeeded();
+      toggle();
     });
     return willFocusSubscription;
   }, []);
 
   const fetchData = () => {
     setSerieAlbums([]);
-    setDefaultSerieAlbums([]);
     if (global.verbose) {
       Helpers.showToast(false, 'Téléchargement de la série...');
     }
@@ -114,8 +111,6 @@ function SerieScreen({ route, navigation }) {
     console.debug("serie albums fetched");
 
     if (!result.error) {
-
-      setDefaultSerieAlbums(result.items);
 
       const CreateSerieSections = () => {
         return [
@@ -166,8 +161,9 @@ function SerieScreen({ route, navigation }) {
   }
 
   const refreshAlbums = () => {
-    CollectionManager.refreshAlbumSeries(serieAlbums);
-    //serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));
+    console.log("refresh");
+    /*CollectionManager.refreshAlbumSeries(serieAlbums);
+    serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));*/
   }
 
   const onToggleShowExcludedAlbums = () => {
@@ -181,8 +177,12 @@ function SerieScreen({ route, navigation }) {
     navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
   }
 
+  const getAlbums = () => {
+    return serieAlbums.map(serie => serie.data).flat();
+  }
+
   const getAuthorsLabel = () => {
-    let authors = Helpers.getAuthors(defaultSerieAlbums);
+    let authors = Helpers.getAuthors(getAlbums());
     let len = authors.length;
     if (len == 1 && authors.name == 'Collectif') len++;
     return Helpers.pluralize(len, 'Auteur')
@@ -201,7 +201,7 @@ function SerieScreen({ route, navigation }) {
   const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) && (global.showExcludedAlbums || (!global.showExcludedAlbums && !CollectionManager.isAlbumExcluded(item))) &&
     <AlbumItem navigation={navigation}
-      item={Helpers.toDict(item)}
+      item={Helpers.toDict(CollectionManager.getFirstAlbumEditionOfSerieInCollection(item))}
       index={index}
       dontShowSerieScreen={true}
       showExclude={true}
@@ -224,7 +224,7 @@ function SerieScreen({ route, navigation }) {
 
   const renderAuthors = () => {
 
-    const authors = Helpers.getAuthors(defaultSerieAlbums);
+    const authors = Helpers.getAuthors(getAlbums());
     const nbOfAuthors = authors.length;
     if (!showAllAuthors && nbOfAuthors > 6) {
       return (
@@ -235,7 +235,7 @@ function SerieScreen({ route, navigation }) {
     return (nbOfAuthors > 0 ?
       <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
         {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null}
-        {Helpers.getAuthors(defaultSerieAlbums).map((auteur, index, array) => {
+        {authors.map((auteur, index, array) => {
           if (auteur.name == 'Collectif') {
             return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
           }
@@ -285,8 +285,8 @@ function SerieScreen({ route, navigation }) {
                 style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
                 reduceMode={true}
                 showExclude={true}
-                serieAlbums={defaultSerieAlbums}
-                refreshCallback={() => { toggle(); refreshAlbums();}} />
+                serieAlbums={getAlbums()}
+                refreshCallback={toggle} />
             </View>
           </View>
           <View>
