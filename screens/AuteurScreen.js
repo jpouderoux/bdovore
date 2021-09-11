@@ -49,10 +49,12 @@ function AuteurScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [nbAlbums, setNbAlbums] = useState(-1);
   const [nbSeries, setNbSeries] = useState(-1);
+  const [nbUserAlbums, setNbUserAlbums] = useState(0);
   const [toggleElement, setToggleElement] = useState(false);
 
   const toggle = () => {
     setToggleElement(v => !v);
+    refreshData();
   }
 
   useEffect(() => {
@@ -60,8 +62,8 @@ function AuteurScreen({ route, navigation }) {
   }, []);
 
   useFocusEffect(useCallback(() => {
-    CollectionManager.refreshAlbumSeries(auteurAlbums);
-  }, [auteurAlbums]));
+    refreshData();
+  }, []));
 
   const refreshDataIfNeeded = async () => {
     console.debug("refresh author data");
@@ -108,12 +110,18 @@ function AuteurScreen({ route, navigation }) {
     });
 
     CollectionManager.refreshAlbumSeries(albumsArray);
+    setNbUserAlbums(CollectionManager.getNbOfUserAlbumsByAuthor(author.ID_AUTEUR));
 
     setAuteurAlbums(albumsArray);
     setNbSeries(albumsArray.length);
     setNbAlbums(result.totalItems);
     setErrortext(result.error);
     setLoading(false);
+  }
+
+  const refreshData = () => {
+    CollectionManager.refreshAlbumSeries(auteurAlbums);
+    setNbUserAlbums(CollectionManager.getNbOfUserAlbumsByAuthor(author.ID_AUTEUR));
   }
 
   const renderAlbum = ({ item, index }) =>
@@ -126,6 +134,8 @@ function AuteurScreen({ route, navigation }) {
   const onPressAuthorImage = () =>
     navigation.push('Image', { source: APIManager.getAuteurCoverURL(author) });
 
+  const name = author.PRENOM && author.NOM ? (author.PRENOM + ' ' + author.NOM) : '';
+
   return (
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Auteur' isCollapsed={false} style={{ marginTop: 0, marginBottom: 5 }} noAnimation={true} >
@@ -135,7 +145,7 @@ function AuteurScreen({ route, navigation }) {
           </TouchableOpacity>
           <View style={{flex: 1, marginTop: 2 }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.largerText, { marginBottom: 5 }]} numberOfLines={1} textBreakStrategy='balanced'>
-              {Helpers.reverseAuteurName(author.PSEUDO)}
+              {Helpers.reverseAuteurName(author.PSEUDO)}{(name != Helpers.reverseAuteurName(author.PSEUDO) && name != '') ? ' (' + name + ')' : null}
             </Text>
             {author.DTE_NAIS || author.DTE_DECES ?
               <Text style={[CommonStyles.defaultText, CommonStyles.smallerText, { marginBottom: 5}]}>
@@ -158,7 +168,7 @@ function AuteurScreen({ route, navigation }) {
           </View>
           <View style={{ alignContent: 'flex-end' }}>
             <Text style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
-              {CollectionManager.getNbOfUserAlbumsByAuthor(author.ID_AUTEUR)}{' / '}{nbAlbums < 0 ? '?' : nbAlbums}</Text>
+              {nbUserAlbums}{' / '}{nbAlbums < 0 ? '?' : nbAlbums}</Text>
           </View>
         </View>
       </CollapsableSection>
@@ -179,6 +189,7 @@ function AuteurScreen({ route, navigation }) {
           <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]} numberOfLines={1} textBreakStrategy='balanced'>{title}</Text>)}
         stickySectionHeadersEnabled={true}
         ItemSeparatorComponent={Helpers.renderSeparator}
+        extraData={toggle}
       />
     </View>
   );
