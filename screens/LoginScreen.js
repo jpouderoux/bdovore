@@ -59,15 +59,13 @@ function LoginScreen({ navigation }) {
   }, []);
 
   const checkLoginForDatabase = (callback) => {
-    AsyncStorage.getItem('login').then(log => {
-      if (login != log) {
+    AsyncStorage.getItem('login').then(login => {
+      if (pseudo != login) {
         console.debug('User changed - resetting the database');
         CollectionManager.resetDatabase();
-        callback();
       }
-    }).catch((error) => {
-        callback();
-     });
+    }).catch(()=>{});
+    callback();
   }
 
   const onLoginPress = () => {
@@ -77,7 +75,6 @@ function LoginScreen({ navigation }) {
     NetInfo.fetch().then(state => {
       global.isConnected = state.isConnected;
       if (global.isConnected) {
-        CollectionManager.resetDatabase();
         APIManager.loginBDovore(pseudo, passwd, onConnected);
       } else {
         Helpers.showToast(false, "Utilisation en mode off-line.", "Connexion Internet désactivée.")
@@ -102,15 +99,15 @@ function LoginScreen({ navigation }) {
     setErrortext(data.error);
 
     if (data.error == '') {
-      AsyncStorage.multiSet([
-        ['token', data.token],
-        ['timestamp', data.timestamp],
-        ['login', pseudo],
-        ['passwd', passwd],
-        ['collecFetched', 'false']], () => { }).then(() => {
-          global.timestamp = data.timestamp;
-          navigation.goBack();
-        }).catch((error) => console.debug(error));
+      checkLoginForDatabase(() => {
+        AsyncStorage.multiSet([
+          ['token', data.token],
+          ['login', pseudo],
+          ['passwd', passwd],
+          ['collecFetched', 'false']], () => { }).then(() => {
+            navigation.goBack();
+          }).catch((error) => console.debug(error));
+      });
     }
     else {
       console.debug('error on connection: ' + data.error);

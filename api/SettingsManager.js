@@ -36,6 +36,7 @@ class CSettingsManager {
 
   constructor() {
     this.initialize();
+    console.debug("Settings Manager initilized");
   }
 
   initialize() {
@@ -45,11 +46,18 @@ class CSettingsManager {
     // Subscribe to network change events
     NetInfo.addEventListener(this.connectionCallback);
 
-    global.timestamp = '';
-    AsyncStorage.getItem('timestamp').then((value) => {
-      global.timestamp(value);
+    global.token = undefined;
+
+    global.serverTimestamp = null;
+    global.localTimestamp = null;
+    AsyncStorage.getItem('localTimestamp').then((value) => {
+      global.localTimestamp(value);
     }).catch(() => { });
 
+    global.autoSync = true;
+    AsyncStorage.getItem('autoSync').then((value) => {
+      global.autoSync(value != '0');
+    }).catch(() => { });
 
     global.showExcludedAlbums = true;
     AsyncStorage.getItem('showExcludedAlbums').then((value) => {
@@ -91,21 +99,31 @@ class CSettingsManager {
   }
 
   connectionCallback(state) {
-    console.log(state);
-    console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
+    //console.log(state);
+    //console.debug('Connection type ' + state.type + (state.isConnected ? ' enabled' : ' disabled'));
     global.connectionType = state.type;
-    console.debug('Global connection state: ' + global.isConnected);
     if (!global.forceOffline && global.isConnected != state.isConnected) {
       global.isConnected = state.isConnected;
+      console.debug('Global connection state: ' + global.isConnected);
       if (showConnectionMessages) {
         Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
       }
     }
   }
 
+  getConnectionStatus(callback = () => {}) {
+    NetInfo.fetch().then(state => {
+      this.connectionCallback(state);
+      if (callback) {
+        callback();
+      }
+    }).catch(error => { console.debug(error) });
+  }
+
   isWifiConnected() {
     return !global.forceOffline && global.connectionType == 'wifi' && global.isConnected;
   }
+
 };
 
 const SettingsManager = new CSettingsManager();

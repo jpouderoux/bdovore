@@ -36,17 +36,17 @@ import { Icon } from '../components/Icon';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
-let collectionGenre = 0;
 
 function WishlistScreen({ route, navigation }) {
 
+  const [collectionGenre, setCollectionGenre] = useState(0);
   const [collectionType, setCollectionType] = useState(0);
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
 
-  collectionGenre = route.params.collectionGenre;
-
-  Helpers.checkForToken(navigation);
+  if (route.params.collectionGenre != collectionGenre) {
+    setCollectionGenre(route.params.collectionGenre);
+  }
 
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again

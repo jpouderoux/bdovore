@@ -66,7 +66,26 @@ function ToCompleteScreen({ route, navigation }) {
 
   collectionGenre = route.params.collectionGenre;
 
-  Helpers.checkForToken(navigation);
+  const refreshDataIfNeeded = () => {
+    if (CollectionManager.isCollectionEmpty()) {
+      setNbTotalAlbums2(0);
+      setNbTotalSeries2(0);
+      albums = [];
+      series = [];
+    }
+
+    console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    if (global.autoSync && cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || !global.collectionManquantsUpdated)) {
+      APIManager.onConnected(navigation, () => {
+        console.log('refreshing from local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+        cachedToken = 'fetching';
+        fetchData();
+      });
+    }
+
+    applyAlbumsFilters();
+    applySeriesFilters();
+  }
 
   useEffect(() => {
     navigation.setOptions({
@@ -76,29 +95,6 @@ function ToCompleteScreen({ route, navigation }) {
     applyAlbumsFilters();
     applySeriesFilters();
   }, [collectionGenre]);
-
-  const refreshDataIfNeeded = () => {
-    if (CollectionManager.isCollectionEmpty()) {
-      setNbTotalAlbums2(0);
-      setNbTotalSeries2(0);
-      albums = [];
-      series = [];
-    }
-
-    AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken) {
-        console.debug("refresh tocomplete because token changed from " + cachedToken + ' to ' + token);
-        setCachedToken(token);
-        cachedToken = token;
-        fetchData();
-      } else if (!global.collectionManquantsUpdated) {
-        fetchData();
-      }
-    }).catch(() => { });
-
-    applyAlbumsFilters();
-    applySeriesFilters();
-  }
 
   const applyAlbumsFilters = () => {
     const genre = CollectionManager.CollectionGenres[collectionGenre][0];
@@ -124,6 +120,10 @@ function ToCompleteScreen({ route, navigation }) {
   const makeProgress = (result) => {
     loadingSteps -= (result.done ? 1 : 0);
     setLoading(loadingSteps > 0);
+
+    if (loadingSteps == 0) {
+      cachedToken = global.token;
+    }
 
     if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
       const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);

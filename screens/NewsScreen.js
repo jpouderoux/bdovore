@@ -74,13 +74,11 @@ function NewsScreen({ navigation }) {
   Helpers.checkForToken(navigation);
 
   useFocusEffect(() => {
-    AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken) {
-        console.debug('refresh collection data because token changed to ' + token);
-        cachedToken = token;
-        fetchData();
-      }
-    }).catch(() => { });
+    if (global.token !== cachedToken) {
+      console.debug('refresh collection data because token changed to ' + global.token);
+      cachedToken = global.token;
+      fetchData();
+    }
   });
 
   useEffect(() => {
@@ -99,14 +97,13 @@ function NewsScreen({ navigation }) {
       if (global.verbose) {
         Helpers.showToast(false, 'Téléchargement des news...');
       }
+      setLoading(true);
       fetchUserNewsData();
       fetchNewsData(newsMode);
     }
   }
 
   const fetchUserNewsData = async () => {
-    setLoading(true);
-
     setFilteredUserNewsDataArray(createUserNewsSection());
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12' })
       .then().catch((error) => console.debug(error));
@@ -117,7 +114,6 @@ function NewsScreen({ navigation }) {
   }
 
   const fetchNewsData = async (newsMode) => {
-    setLoading(true);
     setNewsDataArray(createNewsSection());
     APIManager.fetchNews(newsModeMap[newsMode], { navigation: navigation }, onNewsFetched)
       .then().catch((error) => console.debug(error));

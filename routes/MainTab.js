@@ -60,6 +60,7 @@ const ToCompleteStack = createStackNavigator();
 const NewsStack = createStackNavigator();
 const SearchStack = createStackNavigator();
 
+
 const accountButton = (navigation) => {
   return (
     <TouchableOpacity onPress={() => onAccountPress(navigation)} style={{ margin: 8 }}>
@@ -144,14 +145,12 @@ function CollectionScreens({ route, navigation }) {
       [{
         text: "Oui",
         onPress: () => {
-          AsyncStorage.getItem('token').then((token) => {
-            const userid = parseInt(token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
-            const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
-            Share.share({
-              message: url,
-              url: url
-            });
-          }).catch(error => { });
+          const userid = parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+          const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
+          Share.share({
+            message: url,
+            url: url
+          });
         }
       }, {
         text: "Annuler",

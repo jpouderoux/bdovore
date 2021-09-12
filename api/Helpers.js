@@ -101,7 +101,7 @@ export function pluralWord(nb, word) {
 
 // Move to login page if no token available
 export function checkForToken(navigation) {
-  APIManager.checkForToken(navigation).then().catch();
+  return APIManager.checkForToken(navigation);
 }
 
 export function sortByDate(data, field = 'DATE_AJOUT') {

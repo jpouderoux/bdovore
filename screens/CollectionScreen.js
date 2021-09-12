@@ -28,10 +28,8 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
-import { useIsFocused } from '@react-navigation/native';
 import { format } from 'react-string-format';
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -39,7 +37,8 @@ import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styl
 import { BottomSheet } from '../components/BottomSheet';
 import { Icon } from '../components/Icon';
 import { SerieItem } from '../components/SerieItem';
-import * as Helpers from '../api/Helpers'
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
@@ -76,43 +75,46 @@ const filterModesSeriesSearch = {
   2: 'Rechercher dans mes{0} incomplètes...',
 }
 
-let loadTime = 0;
+let cachedToken = '';
+let collectionGenre = 0;
 let loadingSteps = 0;
+let loadTime = 0;
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
-let collectionGenre = 0;
-let cachedToken = '';
 
 function CollectionScreen({ route, navigation }) {
 
+  const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState(null);
   const [filteredSeries, setFilteredSeries] = useState(null);
-  const [serieFilterMode, setSerieFilterMode] = useState(0);
   const [filterMode, setFilterMode] = useState(0);
-  const [collectionType, setCollectionType] = useState(0); // 0: Series, 1: Albums
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
+  const [progressRate, setProgressRate] = useState(0);
+  const [serieFilterMode, setSerieFilterMode] = useState(0);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
+  const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
-  const [progressRate, setProgressRate] = useState(0);
 
   collectionGenre = route.params.collectionGenre;
 
-  const isFocused = useIsFocused();
-
-  Helpers.checkForToken(navigation);
-
   function refreshDataIfNeeded() {
-    AsyncStorage.getItem('token').then((token) => {
-      if (token !== cachedToken) {
-        console.debug('refresh collection data because token changed to ' + token);
-        cachedToken = token;
-        fetchData();
+    console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    if (cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || global.localTimestamp != global.serverTimestamp)) {
+      if (global.autoSync || CollectionManager.numberOfAlbums() == 0) {
+        APIManager.onConnected(navigation, () => {
+          if (global.localTimestamp != global.serverTimestamp) {
+            console.log('refreshing from local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+            cachedToken = 'fetching';
+            fetchData();
+          } else {
+            cachedToken = global.token;
+          }
+        });
       }
-    }).catch(() => { });
+    }
   }
 
   useEffect(() => {
@@ -187,6 +189,7 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const fetchData = () => {
+    if (loading) return;
     setKeywords('');
     setSortMode(defaultSortMode);
     setLoading(true);
@@ -212,6 +215,8 @@ function CollectionScreen({ route, navigation }) {
     if (loadingSteps == 0) {
       const millis = Date.now() - loadTime;
       console.debug('Collection loaded in ' + millis / 1000 + ' seconds');
+
+      cachedToken = global.token;
     }
 
     let rate = 1;

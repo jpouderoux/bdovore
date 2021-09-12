@@ -41,6 +41,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
   const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
   const [showConnectionMessages, setShowConnectionMessages] = useState(global.showConnectionMessages);
+  const [autoSync, setAutoSync] = useState(global.autoSync);
 
   useEffect(() => {
   }, []);
@@ -50,6 +51,12 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     global.imageOnWifi = value;
     AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => { });
   };
+
+  const onSwitchAutoSync = (value) => {
+    setAutoSync(value);
+    global.autoSync = value;
+    AsyncStorage.setItem('autoSync', value ? '1' : '0').catch((error) => { });
+  }
 
   const onSwitchVerbose = (value) => {
     setVerbose(value);
@@ -84,6 +91,18 @@ function SettingsPanel({ isVisible, visibleSetter }) {
           <Text style={CommonStyles.defaultText}>Images uniquement en Wifi</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={imageOnWifi} onValueChange={onSwitchImageOnWifi}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
+          <Text style={CommonStyles.defaultText}>Synchronisation automatique</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={autoSync} onValueChange={onSwitchAutoSync}
             style={{ marginTop: -5 }}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />

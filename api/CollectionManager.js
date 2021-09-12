@@ -198,6 +198,11 @@ class CCollectionManager {
     this.initializeDatabase();
   }
 
+  saveTimestamp() {
+    global.localTimestamp = global.serverTimestamp;
+    AsyncStorage.setItem('localTimestamp', global.localTimestamp).then(()=>{}).catch(()=>{});
+  }
+
   initializeDatabase(reentry = false) {
     this.release();
     try {
@@ -288,6 +293,10 @@ class CCollectionManager {
           }
         });
       });
+
+      if (!result.error && result.done) {
+        CollectionManager.saveTimestamp();
+      }
     }
 
     callback(result);
@@ -318,6 +327,10 @@ class CCollectionManager {
           }
         });
       });
+
+      if (!result.error && result.done) {
+        CollectionManager.saveTimestamp();
+      }
     }
 
     callback(result);
@@ -346,6 +359,10 @@ class CCollectionManager {
         } catch (error) {
         }
       });
+
+      if (!result.error && result.done) {
+        CollectionManager.saveTimestamp();
+      }
     });
 
     callback(result);

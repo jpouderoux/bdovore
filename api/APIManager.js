@@ -30,6 +30,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { showToast } from '../api/Helpers';
+import CollectionManager from './CollectionManager';
+import SettingsManager from './SettingsManager';
 
 const bdovoreUserAgent = 'bdovore ' + Platform.OS + ' v0.1';
 
@@ -72,22 +74,37 @@ const fetchZIP = async (url) => {
   });
 };
 
-export async function checkForToken(navigation = null) {
-  // const navigation = useNavigation();
-  // Move to login page if no token available
-  const token = await AsyncStorage.getItem('token');
-  if (token === null && navigation) {
-    navigation.navigate('Login');
-  } else if (token === 'expired' && navigation) {
-    reloginBDovore(navigation);
-  } else {
-    return token;
-  }
-  return '';
+export function isValidToken() {
+  return global.token && global.token.match(/([0-9]+)-([0-9a-f]+)/);
 }
 
-export function reloginBDovore(navigation, callback = null) {
+export function checkForToken(navigation = null, callback = null) {
+  // const navigation = useNavigation();
+  // Move to login page if no token available
+  if (isValidToken()) {
+    console.log('valid token');
+    return callback ? callback() : global.token;
+  }
+  if (global.forceOffline) {
+    return callback ? callback() : 'offline-';
+  }
+  if (global.token == undefined) {
+    console.log('undefined token -> relogin');
+    return reloginBDovore(navigation, callback);
+  }
+  if (global.token === null && navigation) {
+    navigation.navigate('Login');
+    return;
+  } else if (global.token === 'expired' && navigation) {
+    return reloginBDovore(navigation, callback);
+  }
+  if (callback) callback();
+  return global.token;
+}
 
+export async function reloginBDovore(navigation, callback = null) {
+
+  console.log("relogin!");
   if (global.isConnected) {
     AsyncStorage.multiGet(['login', 'passwd'])
       .then((values) => {
@@ -99,25 +116,21 @@ export function reloginBDovore(navigation, callback = null) {
               navigation.navigate('Login');
             }
           } else {
-            AsyncStorage.setItem('token', response.token);
             console.debug("New token " + response.token + " fetched!");
-
-            AsyncStorage.multiSet([
-              ['token', response.token],
-              ['timestamp', response.timestamp]], () => { }).then(() => {
-                global.timestamp = response.timestamp;
-                if (callback) {
-                  callback();
-                };
-              }).catch((error) => console.debug(error));
+            if (callback) {
+              callback();
+            }
           }
         });
       })
       .catch((error) => {
+        console.log(error);
         if (navigation) {
           navigation.navigate('Login');
         }
       });
+  } else {
+    console.log('Not connected.');
   }
 }
 
@@ -148,7 +161,9 @@ export function loginBDovore(pseudo, passwd, callback) {
     .then((responseJson) => {
       if (responseJson.Error === '') {
         console.debug("New token: " + responseJson.Token);
-        console.log(responseJson);
+        global.token = responseJson.Token;
+        global.serverTimestamp = responseJson.Timestamp;
+        //console.log(responseJson);
         callback(formatResult(true, responseJson.Token, responseJson.Timestamp ?? null));
       } else {
         callback(formatResult(false, responseJson.Token, responseJson.Error));
@@ -161,6 +176,15 @@ export function loginBDovore(pseudo, passwd, callback) {
         1500);
       callback(formatResult(false, '', 'Erreur de connexion au serveur.\nVérifiez la connexion internet.'));
     });
+}
+
+export async function onConnected(navigation, successCb = () => { }, failCb = () => { }) {
+  SettingsManager.getConnectionStatus(() => {
+    if (global.isConnected) {
+      return checkForToken(navigation, successCb);
+    }
+    return failCb();
+  });
 }
 
 export async function fetchJSON(request, context, callback, params = {},
@@ -178,19 +202,18 @@ export async function fetchJSON(request, context, callback, params = {},
   }
 
   let userMode = false;
-  let token = await AsyncStorage.getItem('token');
-  if (context && context.navigation) {
-    token = await checkForToken(context.navigation);
-    if (token == '') {
+  if (!isValidToken() && context && context.navigation) {
+    checkForToken(context.navigation);
+    if (global.token == '') {
       callback(formatResult([]));
       return;
     }
   }
-  if (token != '') {
+  if (global.token != '') {
     userMode = true;
   }
 
-  const baseUrl = concatParamsToURL(userMode ? getBaseUserURL(token, request) : getBaseURL(request), params);
+  const baseUrl = concatParamsToURL(userMode ? getBaseUserURL(global.token, request) : getBaseURL(request), params);
   let url = baseUrl;
   if (multipage && datamode) {
     url += '&page=1&length=' + pageLength;
@@ -366,7 +389,7 @@ export async function fetchAlbumComments(id_tome, callback) {
 
 export async function sendAlbumComment(id_tome, callback, note = 0, comment = '') {
 
-  let token = await checkForToken();
+  let token = checkForToken();
   const url = concatParamsToURL(bdovoreBaseURL + '/albumcomment/writecomment' + '?API_TOKEN=' + encodeURI(token),
     {
       id_tome: id_tome,
@@ -422,7 +445,7 @@ export async function fetchAuteurByTerm(term, callback, params = {}) {
 
 export async function updateCollection(func, callback, params = {}) {
 
-  let token = await checkForToken();
+  let token = checkForToken();
   const url = concatParamsToURL(bdovoreBaseURL + '/macollection/' + func + '?API_TOKEN=' + encodeURI(token) + '&api_version=2', params);
 
   fetchZIP(url)
@@ -431,8 +454,8 @@ export async function updateCollection(func, callback, params = {}) {
     .then(responseJson => {
       if (responseJson.error == '') {
         console.log(responseJson);
-        global.timestamp = responseJson.timestamp;
-        AsyncStorage.setItem('timestamp', responseJson.timestamp);
+        global.serverTimestamp = responseJson.timestamp;
+        CollectionManager.saveTimestamp();
         callback({ error: '' });
       } else {
         callback({ error: responseJson.error });
