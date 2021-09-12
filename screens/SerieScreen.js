@@ -263,7 +263,7 @@ function SerieScreen({ route, navigation }) {
                   <RatingStars note={serie.NOTE_SERIE} showRate />
                 </View> : <View style={{ height: 30 }}></View>}
               {serie.NOM_GENRE ? <Text style={CommonStyles.defaultText}>Genre : {serie.NOM_GENRE} {serie.ORIGINE ? '(' + serie.ORIGINE + ')' : null}</Text> : null}
-              <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}</Text>
+              <Text style={CommonStyles.defaultText}>Statut : {serie.LIB_FLG_FINI_SERIE}{serie.LIB_FLG_FINI_SERIE != 'One Shot' ? ' - ' + serie.NB_TOME + ' tomes' : ''}</Text>
               {renderAuthors()}
               {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
             </View>
