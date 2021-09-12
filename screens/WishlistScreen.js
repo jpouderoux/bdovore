@@ -28,7 +28,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -41,15 +40,18 @@ let collectionGenre = 0;
 
 function WishlistScreen({ route, navigation }) {
 
+  const [collectionType, setCollectionType] = useState(0);
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
-  const [collectionType, setCollectionType] = useState(0);
+  const [toggleElement, setToggleElement] = useState(false);
 
   collectionGenre = route.params.collectionGenre;
 
-  const isFocused = useIsFocused();
-
   Helpers.checkForToken(navigation);
+
+  const toggle = () => {
+    setToggleElement(!toggleElement);
+  }
 
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
@@ -73,6 +75,7 @@ function WishlistScreen({ route, navigation }) {
   const refreshData = () => {
     const collec = CollectionManager.getWishes(collectionGenre);
     setFilteredData(filterByDate ? Helpers.sliceSortByDate(collec) : collec);
+    toggle();
   }
 
   const toggleFilterByDate = () => {
@@ -81,7 +84,7 @@ function WishlistScreen({ route, navigation }) {
 
   const renderItem = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} refreshCallback={toggle} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -94,7 +97,9 @@ function WishlistScreen({ route, navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredData ? filteredData.length : CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null), 'album')}</Text>
+              {Helpers.pluralWord(filteredData ?
+                filteredData.length :
+                CollectionManager.numberOfWishAlbums(collectionGenre > 0 ? CollectionManager.CollectionGenres[collectionGenre][0] : null), 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
@@ -129,6 +134,7 @@ function WishlistScreen({ route, navigation }) {
           data={filteredData}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
+          extraData={toggleElement}
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={(data, index) => ({
             length: AlbumItemHeight,

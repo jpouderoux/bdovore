@@ -53,7 +53,7 @@ function AuteurScreen({ route, navigation }) {
   const [toggleElement, setToggleElement] = useState(false);
 
   const toggle = () => {
-    setToggleElement(v => !v);
+    setToggleElement(!toggleElement);
     refreshData();
   }
 

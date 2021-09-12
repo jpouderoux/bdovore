@@ -57,8 +57,7 @@ function SerieScreen({ route, navigation }) {
   const sectionListRef = useRef();
 
   const toggle = () => {
-    refreshAlbums();
-    setToggleElement(v => !v);
+    setToggleElement(!toggleElement);
   }
 
   useFocusEffect(useCallback(() => {
@@ -79,15 +78,12 @@ function SerieScreen({ route, navigation }) {
   }, [serie]);
 
   useEffect(() => {
-    AsyncStorage.getItem('showExcludedAlbums').then((value) => {
-      setShowExcludedAlbums(value != 0);
-    }).catch(() => { });
-  }, []);
-
-  useEffect(() => {
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      toggle();
+      AsyncStorage.getItem('showExcludedAlbums').then((value) => {
+        setShowExcludedAlbums(value != 0);
+        toggle();
+      }).catch(() => { });
     });
     return willFocusSubscription;
   }, []);
@@ -126,7 +122,7 @@ function SerieScreen({ route, navigation }) {
       for (let i = 0; i < result.items.length; i++) {
         let album = result.items[i];
         const section = CollectionManager.getAlbumType(album);
-        album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
+        //album = CollectionManager.getFirstAlbumEditionOfSerieInCollection(album);
         if (newdata[section].data.findIndex((it) => (it.ID_EDITION == album.ID_EDITION)) == -1) {
           newdata[section].data.push(Helpers.toDict(album));
         }
@@ -160,17 +156,10 @@ function SerieScreen({ route, navigation }) {
     setLoading(false);
   }
 
-  const refreshAlbums = () => {
-    console.log("refresh");
-    /*CollectionManager.refreshAlbumSeries(serieAlbums);
-    serieAlbums.forEach((alb) => alb = Helpers.toDict(alb));*/
-  }
-
   const onToggleShowExcludedAlbums = () => {
     AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
     global.showExcludedAlbums = !showExcludedAlbums;
     setShowExcludedAlbums(global.showExcludedAlbums);
-    refreshAlbums();
   }
 
   const onShowSerieImage = () => {
@@ -293,8 +282,8 @@ function SerieScreen({ route, navigation }) {
           </View>
         </View>
         {serie.HISTOIRE_SERIE ? <View style={{ marginTop: 4 }}>
-          {serie.HISTOIRE_SERIE && !showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
-          {serie.HISTOIRE_SERIE && showSynopsis ? <Text>
+          {!showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
+          {showSynopsis ? <Text>
             <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
             <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
           </Text> : null}

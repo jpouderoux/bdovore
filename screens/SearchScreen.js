@@ -28,7 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -51,8 +51,11 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
+  const [toggleElement, setToggleElement] = useState(false);
 
-  const isFocused = useIsFocused();
+  const toggle = () => {
+    setToggleElement(!toggleElement);
+  }
 
   useFocusEffect(() => {
     if (searchMode == 1) {
@@ -160,7 +163,7 @@ function SearchScreen({ navigation }) {
     if (Helpers.isValid(item)) {
       switch (parseInt(searchMode)) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
-        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} refreshCallback={toggle}/>);
         case 2: return (<AuteurItem navigation={navigation} author={item} index={index} />);
       }
     }
@@ -228,7 +231,7 @@ function SearchScreen({ navigation }) {
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               ItemSeparatorComponent={Helpers.renderSeparator}
-              extraData={keywords, searchMode}
+              extraData={toggleElement}
             />)}
         </View> :
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>

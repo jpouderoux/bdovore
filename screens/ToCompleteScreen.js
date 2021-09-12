@@ -51,22 +51,20 @@ let series = [];
 
 function ToCompleteScreen({ route, navigation }) {
 
+  const [collectionType, setCollectionType] = useState(0); // 0: Albums, 1: Series
+  const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [filteredSeries, setFilteredSeries] = useState([]);
-  const [collectionType, setCollectionType] = useState(0); // 0: Albums, 1: Series
+  const [loading, setLoading] = useState(false);
   const [nbTotalAlbums2, setNbTotalAlbums2] = useState(0);
   const [nbTotalSeries2, setNbTotalSeries2] = useState(0);
+  const [progressRate, setProgressRate] = useState(0);
 
   let [nbTotalAlbums, setNbTotalAlbums] = useState(0);
   let [nbTotalSeries, setNbTotalSeries] = useState(0);
-  const [errortext, setErrortext] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [progressRate, setProgressRate] = useState(0);
   let [cachedToken, setCachedToken] = useState('');
 
   collectionGenre = route.params.collectionGenre;
-
-  const isFocused = useIsFocused();
 
   Helpers.checkForToken(navigation);
 

@@ -30,7 +30,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
@@ -67,12 +67,9 @@ function NewsScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [newsDataArray, setNewsDataArray] = useState(createNewsSection());
   const [newsMode, setNewsMode] = useState(0);
-  const [refresh, setRefresh] = useState(1);
+  const [offline, setOffline] = useState(false);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
-  const [offline, setOffline] = useState(false);
-
-  const isFocused = useIsFocused(); // Needed to make sure the component is refreshed on focus get back!
 
   Helpers.checkForToken(navigation);
 
@@ -195,7 +192,6 @@ function NewsScreen({ navigation }) {
           renderSectionHeader={({ section }) => (
             <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
-          extraData={refresh}
           refreshControl={<RefreshControl
             colors={[bdovorlightred, bdovored]}
             tintColor={bdovored}
