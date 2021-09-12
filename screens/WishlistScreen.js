@@ -43,15 +43,10 @@ function WishlistScreen({ route, navigation }) {
   const [collectionType, setCollectionType] = useState(0);
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
-  const [toggleElement, setToggleElement] = useState(false);
 
   collectionGenre = route.params.collectionGenre;
 
   Helpers.checkForToken(navigation);
-
-  const toggle = () => {
-    setToggleElement(!toggleElement);
-  }
 
   useEffect(() => {
     // Make sure data is refreshed when screen get focus again
@@ -75,7 +70,6 @@ function WishlistScreen({ route, navigation }) {
   const refreshData = () => {
     const collec = CollectionManager.getWishes(collectionGenre);
     setFilteredData(filterByDate ? Helpers.sliceSortByDate(collec) : collec);
-    toggle();
   }
 
   const toggleFilterByDate = () => {
@@ -84,7 +78,7 @@ function WishlistScreen({ route, navigation }) {
 
   const renderItem = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} refreshCallback={toggle} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -134,7 +128,6 @@ function WishlistScreen({ route, navigation }) {
           data={filteredData}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          extraData={toggleElement}
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={(data, index) => ({
             length: AlbumItemHeight,
