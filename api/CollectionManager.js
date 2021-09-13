@@ -735,6 +735,11 @@ class CCollectionManager {
     return this.getAlbumInCollection(album) != null;
   }
 
+  isAlbumTomeInCollection(album) {
+    const albums = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
+    return albums.length > 0;
+  }
+
   isAlbumInWishlist(album) {
     return this.getAlbumInWishlist(album) != null;
   }
@@ -758,6 +763,17 @@ class CCollectionManager {
   getNbOfUserAlbumsInSerie(id_serie) {
     const albums = this.getAlbums().filtered('ID_SERIE == $0', parseInt(id_serie));
     return albums ? albums.length : 0;
+  }
+
+  getNbOfTomesInCollection = (id_serie) => {
+    const albums = this.getAlbums().filtered('ID_SERIE == $0', parseInt(id_serie));
+    let albsTomes = {};
+    albums.forEach(album => {
+      if (album.NUM_TOME > 0) {
+        albsTomes[album.ID_TOME] = 1;
+      }
+    });
+    return Object.keys(albsTomes).length;
   }
 
   getNbOfUserAlbumsByAuthor(id_author) {

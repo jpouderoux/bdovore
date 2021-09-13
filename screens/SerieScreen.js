@@ -27,7 +27,8 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, SectionList, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { format } from 'react-string-format';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
@@ -170,6 +171,22 @@ function SerieScreen({ route, navigation }) {
     return serieAlbums.map(serie => serie.data).flat();
   }
 
+ const onShowNumberOfAlbums = () => {
+    if (serieAlbums[0] && serieAlbums[0].data.length > 0) {
+      const nbAlbums = Math.max(serie.NB_TOME ?? 0, serie.NB_ALBUM);
+      const nbOwnTomes = CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE);
+      console.log(serie);
+      Alert.alert(serie.NOM_SERIE,
+        format(
+          '{0} album{1} possédé{1} sur un total de {2} paru{3}.\n',
+          nbOfUserAlbums, Helpers.plural(nbOfUserAlbums), nbAlbums, Helpers.plural(nbAlbums))
+        +
+        ((serie.NB_TOME && nbOwnTomes) ? format(
+          '{0} tome{1} possédé{1} sur {2}.',
+          nbOwnTomes, Helpers.plural(nbOwnTomes), serie.NB_TOME) : ''));
+    }
+  }
+
   const getAuthorsLabel = () => {
     let authors = Helpers.getAuthors(getAlbums());
     let len = authors.length;
@@ -268,8 +285,9 @@ function SerieScreen({ route, navigation }) {
               {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
             </View>
             <View style={{ alignContent: 'flex-end', flex: 0 }}>
-              <Text style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
-                {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}</Text>
+              <Text onPress={onShowNumberOfAlbums} style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
+                {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}
+                {serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''}</Text>
               <SerieMarkers item={serie}
                 style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
                 reduceMode={true}
