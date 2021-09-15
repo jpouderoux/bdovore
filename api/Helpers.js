@@ -27,10 +27,10 @@
  */
 
 import React from 'react';
-import { StyleSheet, View  } from 'react-native';
+import { Alert, View  } from 'react-native';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import * as APIManager from '../api/APIManager';
 import { CommonStyles } from '../styles/CommonStyles';
 
 // Returns true if the screen is in portrait mode
@@ -99,9 +99,23 @@ export function pluralWord(nb, word) {
   return nb + ' ' + pluralize(nb, word);
 }
 
-// Move to login page if no token available
-export function checkForToken(navigation) {
-  return APIManager.checkForToken(navigation);
+export function setAsyncStorageBoolValue(name, value) {
+  AsyncStorage.setItem(name, value ? '1' : '0').catch((error) => { });
+}
+
+export function checkConnection() {
+  if (!global.isConnected) { return false; }
+  if (global.localTimestamp != global.serverTimestamp) {
+    Alert.alert('Collection désynchronisée',
+      "Veuillez synchroniser votre collection dans la section 'Ma collection' avant de la modifier.");
+    return false;
+  }
+  return true;
+}
+
+export function saveTimestamp() {
+  global.localTimestamp = global.serverTimestamp;
+  AsyncStorage.setItem('localTimestamp', global.localTimestamp).then(() => { }).catch(() => { });
 }
 
 export function sortByDate(data, field = 'DATE_AJOUT') {

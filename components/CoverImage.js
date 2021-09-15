@@ -60,7 +60,7 @@ export function CoverImage({ source, style, noResize, largeMode }) {
     <View style={{ width, height, backgroundColor: 'lightgrey' }}>
       <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
         <Icon collection='MaterialIcons' name={'image-not-supported'} size={20} />{'\n'}
-        Image{'\n'}non disponible{'\n'}hors WiFi
+        Image{'\n'}non disponible{'\n'}hors {!global.isConnected ? 'connexion' : 'WiFi'}
       </Text>
     </View > :
     <Image

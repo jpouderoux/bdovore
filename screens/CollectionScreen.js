@@ -79,6 +79,7 @@ let cachedToken = '';
 let collectionGenre = 0;
 let loadingSteps = 0;
 let loadTime = 0;
+let loadedItems = 0;
 let nbTotalAlbums = 0;
 let nbTotalSeries = 0;
 
@@ -100,20 +101,20 @@ function CollectionScreen({ route, navigation }) {
 
   collectionGenre = route.params.collectionGenre;
 
-  function refreshDataIfNeeded() {
+  const refreshDataIfNeeded = (force = false) => {
     console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
-    if (cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || global.localTimestamp != global.serverTimestamp)) {
-      if (global.autoSync || CollectionManager.numberOfAlbums() == 0) {
-        APIManager.onConnected(navigation, () => {
-          if (global.localTimestamp != global.serverTimestamp) {
-            console.log('refreshing from local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
-            cachedToken = 'fetching';
-            fetchData();
-          } else {
-            cachedToken = global.token;
-          }
-        });
-      }
+    if ((force || global.autoSync || CollectionManager.numberOfAlbums() == 0) &&
+      !global.forceOffline && (cachedToken != 'fetching' && (cachedToken != global.token || global.localTimestamp != global.serverTimestamp))) {
+      const savedCachedToken = cachedToken;
+      cachedToken = 'fetching';
+      APIManager.onConnected(navigation, () => {
+        if (global.localTimestamp != global.serverTimestamp) {
+          console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+          fetchData();
+        } else {
+          cachedToken = global.token;
+        }
+      }, () => { cachedToken = savedCachedToken; });
     }
   }
 
@@ -189,67 +190,65 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const fetchData = () => {
-    if (loading) return;
-    setKeywords('');
-    setSortMode(defaultSortMode);
-    setLoading(true);
-    setFilteredSeries(null);
-    setFilteredAlbums(null);
-    setProgressRate(0);
-    nbTotalSeries = 0;
-    nbTotalAlbums = 0;
-    loadingSteps = 3;
-    loadTime = Date.now();
-    if (global.verbose && global.isConnected) {
-      Helpers.showToast(false, 'Téléchargement de la collection...');
+    if (!loading && global.isConnected) {
+      setKeywords('');
+      setSortMode(defaultSortMode);
+      setLoading(true);
+      setFilteredSeries(null);
+      setFilteredAlbums(null);
+      setProgressRate(0);
+      nbTotalSeries = 0;
+      nbTotalAlbums = 0;
+      loadedItems = 0;
+      loadingSteps = 3;
+      loadTime = Date.now();
+      if (global.verbose) {
+        Helpers.showToast(false, 'Téléchargement de la collection...');
+      }
+      CollectionManager.fetchCollection(navigation, onFetchCollection);
     }
-    CollectionManager.fetchWishlist(navigation, onWishlistFetched);
-    CollectionManager.fetchSeries(navigation, onSeriesFetched);
-    CollectionManager.fetchAlbums(navigation, onAlbumsFetched);
   }
 
-  const makeProgress = (result) => {
-    loadingSteps -= (result.done ? 1 : 0);
-    setLoading(loadingSteps != 0);
+  const onFetchCollection = (result, type) => {
+    setErrortext(result.error);
+    console.log(type);
 
-    if (loadingSteps == 0) {
-      const millis = Date.now() - loadTime;
-      console.debug('Collection loaded in ' + millis / 1000 + ' seconds');
-
-      cachedToken = global.token;
+    if (result.items) {
+      loadedItems += parseFloat(result.items.length);
     }
 
     let rate = 1;
-    if (parseFloat(nbTotalAlbums) > 0 && parseFloat(nbTotalSeries) > 0) {
-      const nbTotalItems = parseFloat(nbTotalAlbums) + parseFloat(nbTotalSeries);
-      rate = parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()) / nbTotalItems;
-      //console.debug("progress rate " + rate + " nbtotal:" + nbTotalItems + " loaded: " + parseFloat(CollectionManager.numberOfSeries() + CollectionManager.numberOfAlbums()));
+    switch (type) {
+      case 0:
+        nbTotalSeries = result.totalItems ?? result.items.length;
+        rate = loadedItems / (nbTotalSeries ?? 1);
+        setProgressRate(rate);
+        applyFilters();
+        break;
+      case 1:
+        nbTotalAlbums = result.totalItems ?? result.items.length;
+        rate = loadedItems / (nbTotalAlbums ?? 1);
+        console.log("rate: " + loadedItems + '/' + result.totalItems + ' = ' + rate);
+        setProgressRate(rate);
+        applyFilters();
+        break;
+      case 2:
+        break;
     }
-    setProgressRate(rate);
-  }
 
-  const onSeriesFetched = async (result) => {
-    setErrortext(result.error);
-    nbTotalSeries = result.totalItems ?? result.items.length;
-
-    applyFilters();
-
-    makeProgress(result);
-  }
-
-  const onAlbumsFetched = async (result) => {
-    setErrortext(result.error);
-    nbTotalAlbums = result.totalItems ?? result.items.length;
-
-    applyFilters();
-
-    makeProgress(result);
-  }
-
-  const onWishlistFetched = (result) => {
-    setErrortext(result.error);
-
-    makeProgress(result);
+    if (loadedItems == result.totalItems) {
+      loadedItems = 0;
+    }
+    loadingSteps -= (result.done ? 1 : 0);
+    setLoading(loadingSteps > 0);
+    if (loadingSteps == 0) {
+      const millis = Date.now() - loadTime;
+      console.debug('Collection loaded in ' + millis / 1000 + ' seconds');
+      cachedToken = global.token;
+      if (global.verbose) {
+        Helpers.showToast(false, 'Collection téléchargée en ' + Math.round(millis / 1000.0) + ' secondes');
+      }
+    }
   }
 
   const onPressCollectionType = (selectedIndex) => {
@@ -303,6 +302,8 @@ function CollectionScreen({ route, navigation }) {
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
+        {(!global.autoSync && global.serverTimestamp != global.localTimestamp) ?
+          <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
       </View>
 
       <View style={{ flexDirection: 'row' }}>

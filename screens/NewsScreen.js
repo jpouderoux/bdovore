@@ -29,14 +29,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
+import { useFocusEffect } from '@react-navigation/core';
 
 
 const newsModeMap = {
@@ -70,16 +69,34 @@ function NewsScreen({ navigation }) {
   const [offline, setOffline] = useState(false);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
+  const [toggleElement, setToggleElement] = useState(Date.now());
 
-  Helpers.checkForToken(navigation);
+  const toggle = () => {
+    setToggleElement(Date.now());
+  }
 
-  useFocusEffect(() => {
-    if (global.token !== cachedToken) {
-      console.debug('refresh collection data because token changed to ' + global.token);
-      cachedToken = global.token;
-      fetchData();
+  const refreshDataIfNeeded = () => {
+    console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    if (cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token)) {
+      const savedCachedToken = cachedToken;
+      cachedToken = 'fetching';
+      APIManager.onConnected(navigation, () => {
+        console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+        fetchData();
+      }, () => { cachedToken = savedCachedToken; });
     }
-  });
+  }
+
+  useEffect(() => {
+    refreshDataIfNeeded();
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      console.log("focus");
+      refreshDataIfNeeded();
+      toggle();
+    });
+    return willFocusSubscription;
+  }, []);
 
   useEffect(() => {
     // Filter the user news according the current news mode
@@ -126,6 +143,7 @@ function NewsScreen({ navigation }) {
       createUserNewsSection(Helpers.stripNewsByOrigin(result.items, newsModeMap[newsMode])));
     setErrortext(result.error);
     setLoading(false);
+    cachedToken = global.token;
   }
 
   const onUserNewsToComeFetched = async (result) => {
@@ -188,6 +206,7 @@ function NewsScreen({ navigation }) {
           renderSectionHeader={({ section }) => (
             <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}>{section.title}</Text>)}
           stickySectionHeadersEnabled={true}
+          extraData={toggleElement}
           refreshControl={<RefreshControl
             colors={[bdovorlightred, bdovored]}
             tintColor={bdovored}

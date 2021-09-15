@@ -28,9 +28,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
-import { useIsFocused } from '@react-navigation/native';
 import { ButtonGroup } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
@@ -66,7 +64,7 @@ function ToCompleteScreen({ route, navigation }) {
 
   collectionGenre = route.params.collectionGenre;
 
-  const refreshDataIfNeeded = () => {
+  const refreshDataIfNeeded = (force = false) => {
     if (CollectionManager.isCollectionEmpty()) {
       setNbTotalAlbums2(0);
       setNbTotalSeries2(0);
@@ -75,12 +73,13 @@ function ToCompleteScreen({ route, navigation }) {
     }
 
     console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
-    if (global.autoSync && cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || !global.collectionManquantsUpdated)) {
+    if ((global.autoSync || force) && cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || !global.collectionManquantsUpdated)) {
+      const savedCachedToken = cachedToken;
+      cachedToken = 'fetching';
       APIManager.onConnected(navigation, () => {
-        console.log('refreshing from local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
-        cachedToken = 'fetching';
+        console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
         fetchData();
-      });
+      }, () => { cachedToken = savedCachedToken; });
     }
 
     applyAlbumsFilters();
@@ -115,7 +114,7 @@ function ToCompleteScreen({ route, navigation }) {
       refreshDataIfNeeded();
     });
     return willFocusSubscription;
-  }, [cachedToken]);
+  }, []);
 
   const makeProgress = (result) => {
     loadingSteps -= (result.done ? 1 : 0);
@@ -162,7 +161,7 @@ function ToCompleteScreen({ route, navigation }) {
     console.debug(result.items.length + ' albums fetched so far');
     setNbTotalAlbums2(result.totalItems);
     nbTotalAlbums = result.totalItems;
-    albums = result.items;
+    albums.push(...result.items);
     setErrortext(result.error);
     loadedAlbums = result.items.length;
 
@@ -185,7 +184,7 @@ function ToCompleteScreen({ route, navigation }) {
     console.debug(result.items.length + ' series to complete fetched')
     setNbTotalSeries2(result.totalItems);
     nbTotalSeries = result.totalItems;
-    series = result.items;
+    series.push(...result.items);
     setErrortext(result.error);
     loadedSeries = result.items.length;
 
@@ -230,6 +229,8 @@ function ToCompleteScreen({ route, navigation }) {
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
+        {(!global.autoSync && (!global.collectionManquantsUpdated || albums.length == 0)) ?
+          <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
       </View>
       {global.isConnected ?
         <View style={{ marginHorizontal: 1 }}>

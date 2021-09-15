@@ -139,9 +139,8 @@ function CollectionScreens({ route, navigation }) {
 
   const onShareCollectionPress = () => {
     Alert.alert('Partager ma collection',
-      'Le lien partagé ne fonctionnera que si vous avez autorisé la consultion ' +
-      'par les autres utilisateurs de votre collection sur la page profil du ' +
-      'site internet.',
+      'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
+      'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
       [{
         text: "Oui",
         onPress: () => {

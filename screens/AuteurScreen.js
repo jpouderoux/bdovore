@@ -50,24 +50,27 @@ function AuteurScreen({ route, navigation }) {
   const [nbAlbums, setNbAlbums] = useState(-1);
   const [nbSeries, setNbSeries] = useState(-1);
   const [nbUserAlbums, setNbUserAlbums] = useState(0);
-  const [toggleElement, setToggleElement] = useState(false);
+  const [toggleElement, setToggleElement] = useState(Date.now());
 
   const toggle = () => {
-    setToggleElement(!toggleElement);
+    setToggleElement(Date.now());
     refreshData();
   }
 
   useEffect(() => {
     refreshDataIfNeeded();
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      toggle();
+    });
+    return willFocusSubscription;
   }, []);
 
-  useFocusEffect(useCallback(() => {
-    refreshData();
-  }, []));
-
   const refreshDataIfNeeded = async () => {
-    console.debug("refresh author data");
-    fetchData();
+    if (nbAlbums < 0) {
+      console.debug("refresh author data");
+      fetchData();
+    }
   }
 
   const fetchData = () => {

@@ -115,7 +115,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   }, [album]);
 
   const onGotIt = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     if (!CollectionManager.isAlbumInCollection(album)) {
       setProcessingBit('own', true);
@@ -169,7 +169,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onWantIt = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     // Switch the want it flag
     const wantIt = !(album.FLG_ACHAT == 'O');
@@ -197,7 +197,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onReadIt = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     const readIt = !(album.FLG_LU == 'O');
     setProcessingBit('read', true);
@@ -211,7 +211,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onLendIt = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     const lendIt = !(album.FLG_PRET == 'O');
     setProcessingBit('loan', true);
@@ -225,7 +225,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onNumEd = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     const numEd = !(album.FLG_NUM == 'O');
     setProcessingBit('num', true);
@@ -239,7 +239,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onGift = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     const gift = !(album.FLG_CADEAU == 'O');
     setProcessingBit('gift', true);
@@ -253,7 +253,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   };
 
   const onExcludeIt = async () => {
-    if (!global.isConnected) { return; }
+    if (!Helpers.checkConnection()) { return; }
 
     const exclude = !CollectionManager.isAlbumExcluded(album);
     setProcessingBit('excluded', true);

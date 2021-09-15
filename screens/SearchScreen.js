@@ -51,17 +51,25 @@ function SearchScreen({ navigation }) {
   const [keywords, setKeywords] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
-  const [toggleElement, setToggleElement] = useState(false);
+  const [toggleElement, setToggleElement] = useState(Date.now());
 
   const toggle = () => {
-    setToggleElement(!toggleElement);
+    setToggleElement(Date.now());
   }
 
   useFocusEffect(() => {
     if (searchMode == 1) {
-      CollectionManager.selectOwnAlbum(data);
+     // CollectionManager.selectOwnAlbum(data);
     }
   });
+
+  useEffect(() => {
+    // Make sure data is refreshed when login/token changed
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      toggle();
+    });
+    return willFocusSubscription;
+  }, []);
 
   useEffect(() => {
     onSearch(keywords);
@@ -163,7 +171,7 @@ function SearchScreen({ navigation }) {
     if (Helpers.isValid(item)) {
       switch (parseInt(searchMode)) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
-        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} refreshCallback={toggle}/>);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(CollectionManager.getFirstAlbumEditionOfSerieInCollection(item))} index={index} refreshCallback={toggle}/>);
         case 2: return (<AuteurItem navigation={navigation} author={item} index={index} />);
       }
     }
@@ -177,7 +185,7 @@ function SearchScreen({ navigation }) {
           <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
               placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album ou ISBN..." : "Nom de l'auteur..."}
-              onChangeText={onSearch}
+a              onChangeText={onSearch}
               onCancel={onSearchCancel}
               onClear={onSearchCancel}
               value={keywords}

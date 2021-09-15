@@ -54,11 +54,11 @@ function SerieScreen({ route, navigation }) {
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [showExcludedAlbums, setShowExcludedAlbums] = useState(global.showExcludedAlbums);
   const [showSynopsis, setShowSynopsis] = useState(false);
-  const [toggleElement, setToggleElement] = useState(false);
+  const [toggleElement, setToggleElement] = useState(Date.now());
   const sectionListRef = useRef();
 
   const toggle = () => {
-    setToggleElement(!toggleElement);
+    setToggleElement(Date.now());
   }
 
   useFocusEffect(useCallback(() => {
@@ -287,7 +287,7 @@ function SerieScreen({ route, navigation }) {
             <View style={{ alignContent: 'flex-end', flex: 0 }}>
               <Text onPress={onShowNumberOfAlbums} style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
                 {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}
-                {serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''}</Text>
+                {/*serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''*/}</Text>
               <SerieMarkers item={serie}
                 style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
                 reduceMode={true}

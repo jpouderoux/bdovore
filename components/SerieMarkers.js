@@ -70,6 +70,8 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }, [serieAlbums]);
 
   const addEverything = () => {
+    if (!Helpers.checkConnection()) { return; }
+
     setProcessingBit('addingall', true);
     CollectionManager.addSerieToCollection(serie, serieAlbums, () => {
       refreshCallback();
@@ -78,6 +80,8 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   }
 
   const addAlbums = () => {
+    if (!Helpers.checkConnection()) { return; }
+
     setProcessingBit('addingall', true);
     CollectionManager.addSerieAlbumsToCollection(serie, serieAlbums, () => {
       refreshCallback();

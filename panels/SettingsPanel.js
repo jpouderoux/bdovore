@@ -26,60 +26,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Switch, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/core';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
+import * as Helpers from '../api/Helpers';
 
 
 function SettingsPanel({ isVisible, visibleSetter }) {
 
-  const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
-  const [verbose, setVerbose] = useState(global.verbose);
-  const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
-  const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
-  const [showConnectionMessages, setShowConnectionMessages] = useState(global.showConnectionMessages);
   const [autoSync, setAutoSync] = useState(global.autoSync);
+  const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
+  const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
+  const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
+  const [showConnectionMessages, setShowConnectionMessages] = useState(global.showConnectionMessages);
+  const [verbose, setVerbose] = useState(global.verbose);
 
-  useEffect(() => {
-  }, []);
+  useFocusEffect(() => {
+    setAutoSync(global.autoSync);
+    setConfirmDeletion(global.confirmDeletion);
+    setImageOnWifi(global.imageOnWifi);
+    setShowBDovoreIds(global.showBDovoreIds);
+    setShowConnectionMessages(global.showConnectionMessages);
+    setVerbose(global.verbose);
+  });
 
   const onSwitchImageOnWifi = (value) => {
     setImageOnWifi(value);
     global.imageOnWifi = value;
-    AsyncStorage.setItem('imageOnWifi', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('imageOnWifi', value);
   };
 
   const onSwitchAutoSync = (value) => {
     setAutoSync(value);
     global.autoSync = value;
-    AsyncStorage.setItem('autoSync', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('autoSync', value);
   }
 
   const onSwitchVerbose = (value) => {
     setVerbose(value);
     global.verbose = value;
-    AsyncStorage.setItem('verbose', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('verbose', value);
   };
 
   const onSwitchBDovoreIds = (value) => {
     setShowBDovoreIds(value);
     global.showBDovoreIds = value;
-    AsyncStorage.setItem('showBDovoreIds', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('showBDovoreIds', value);
   }
 
   const onSwitchConfirmDeletion = (value) => {
     setConfirmDeletion(value);
     global.confirmDeletion = value;
-    AsyncStorage.setItem('confirmDeletion', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('confirmDeletion', value);
   }
 
   const onSwitchConnectionMessages = (value) => {
     setShowConnectionMessages(value);
     global.showConnectionMessages = value;
-    AsyncStorage.setItem('showConnectionMessages', value ? '1' : '0').catch((error) => { });
+    Helpers.setAsyncStorageBoolValue('showConnectionMessages', value);
   }
 
   return (
