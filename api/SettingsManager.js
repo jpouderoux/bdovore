@@ -51,51 +51,50 @@ class CSettingsManager {
     global.serverTimestamp = null;
     global.localTimestamp = null;
     AsyncStorage.getItem('localTimestamp').then(value => {
-      global.localTimestamp = value;
+      if (value) global.localTimestamp = value;
     }).catch(() => { });
 
     global.autoSync = true;
     AsyncStorage.getItem('autoSync').then(value => {
-      global.autoSync = (value != '0');
-      console.log('autosync : ' + value);
+      if (value) global.autoSync = (value != '0');
     }).catch(() => { });
 
     global.showExcludedAlbums = true;
     AsyncStorage.getItem('showExcludedAlbums').then(value => {
-      global.showExcludedAlbums = (value != '0');
+      if (value) global.showExcludedAlbums = (value != '0');
     }).catch(() => { });
 
     global.imageOnWifi = false;
     AsyncStorage.getItem('imageOnWifi').then(value => {
-      global.imageOnWifi = (value != '0');
+      if (value) global.imageOnWifi = (value != '0');
     }).catch(() => { });
 
     //global.hideSponsoredLinks = true;
     /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = false;
       AsyncStorage.getItem('hideSponsoredLinks').then(value => {
-        global.hideSponsoredLinks = (value != '0');
+        if (value) global.hideSponsoredLinks = (value != '0');
       }).catch(() => { });
     }
 
     global.showBDovoreIds = false;
     AsyncStorage.getItem('showBDovoreIds').then(value => {
-      global.showBDovoreIds = (value != '0');
+      if (value) global.showBDovoreIds = (value != '0');
     }).catch(() => { });
 
     global.verbose = false;
     AsyncStorage.getItem('verbose').then(value => {
-      global.verbose = (value != '0');
+      if (value) global.verbose = (value != '0');
     }).catch(() => { });
 
     global.confirmDeletion = false;
     AsyncStorage.getItem('confirmDeletion').then(value => {
-      global.confirmDeletion = (value != '0');
+      if (value) global.confirmDeletion = (value != '0');
     }).catch(() => { });
 
-    global.showConnectionMessages = true;
+    global.showConnectionMessages = false;
     AsyncStorage.getItem('showConnectionMessages').then(value => {
-      global.showConnectionMessages = (value != '0');
+      if (value) global.showConnectionMessages = (value != '0');
     }).catch(() => { });
   }
 

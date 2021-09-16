@@ -181,7 +181,7 @@ function SearchScreen({ navigation }) {
   return (
     <View style={CommonStyles.screenStyle}>
       <View>
-        <View style={[{ flexDirection: 'row', margin: 0 }, CommonStyles.screenStyle, { flex: 0 }]}>
+        <View style={[{ flexDirection: 'row', margin: 0, marginTop: 5 }, CommonStyles.screenStyle, { flex: 0 }]}>
           <View style={{ width: '85%', flex: 0 }}>
             <SearchBar
               placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album ou ISBN..." : "Nom de l'auteur..."}

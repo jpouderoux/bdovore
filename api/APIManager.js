@@ -85,11 +85,11 @@ export function checkForToken(navigation = null, callback = null) {
   if (global.forceOffline) {
     return callback ? callback() : 'offline-';
   }
-  if (global.token == undefined) {
+  if (!global.token && !navigation) {
     console.log('undefined token -> relogin');
     return reloginBDovore(navigation, callback);
   }
-  if (global.token === null && navigation) {
+  if (!global.token && navigation) {
     return navigation.navigate('Login');
   }
   if (callback) {
@@ -128,7 +128,7 @@ export async function reloginBDovore(navigation, callback = null) {
 }
 
 export function loginBDovore(pseudo, passwd, callback) {
-  const formatResult = (connected, token, timestamp, error = '') => {
+  const formatResult = (connected, token, error = '', timestamp = '') => {
     return { connected, token, error, timestamp };
   }
 
@@ -158,7 +158,7 @@ export function loginBDovore(pseudo, passwd, callback) {
         global.token = response.Token;
         global.serverTimestamp = response.Timestamp;
         //console.log(responseJson);
-        callback(formatResult(true, response.Token, response.Timestamp ?? null));
+        callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
       } else {
         callback(formatResult(false, response.Token, response.Error));
       }

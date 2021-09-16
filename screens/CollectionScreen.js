@@ -104,7 +104,7 @@ function CollectionScreen({ route, navigation }) {
   const refreshDataIfNeeded = (force = false) => {
     console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
     if ((force || global.autoSync || CollectionManager.numberOfAlbums() == 0) &&
-      !global.forceOffline && (cachedToken != 'fetching' && (cachedToken != global.token || global.localTimestamp != global.serverTimestamp))) {
+      !global.forceOffline && cachedToken != 'fetching' && global.serverTimestamp && (cachedToken != global.token || global.localTimestamp != global.serverTimestamp)) {
       const savedCachedToken = cachedToken;
       cachedToken = 'fetching';
       APIManager.onConnected(navigation, () => {
