@@ -68,7 +68,7 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
           {(!collectionMode && item.NOTE_SERIE) ? <RatingStars note={item.NOTE_SERIE} /> : null}
           {(item.LIB_FLG_FINI_SERIE) ?
             <Text style={[CommonStyles.largerText, CommonStyles.itemText, { marginTop: 10 }]}>
-              {item.LIB_FLG_FINI_SERIE}
+              {item.LIB_FLG_FINI_SERIE}{item.LIB_FLG_FINI_SERIE != 'One Shot' ? ' - ' + item.NB_TOME + ' tomes' : ''}
             </Text> : null}
           {(nbUserAlbums > 0 && item.NB_ALBUM > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 15 }]}>
