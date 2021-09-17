@@ -67,10 +67,11 @@ class CSettingsManager {
     // Set defined parameters in global array
     globs.forEach(v => global[v[0]] = v[1]);
 
+
     // Fetched saved values for each global variable
     AsyncStorage.multiGet(globs.map(v => v[0])).then(response => {
       const setKey = (name, value) => {
-        if (value !== null || value !== undefined) {
+        if (value !== null && value !== undefined) {
           if (value === '0' || value === '1') {
             global[name] = (value != '0');  // treat value as boolean
           } else {
@@ -80,8 +81,7 @@ class CSettingsManager {
       };
       response.forEach((v) => {
         setKey(v[0], v[1]);
-        //console.log('init ' + v[0] + '=' + global[v[0]]);
-     });
+      });
     }).catch(() => { });
   }
 

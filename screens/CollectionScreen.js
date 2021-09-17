@@ -102,13 +102,15 @@ function CollectionScreen({ route, navigation }) {
   collectionGenre = route.params.collectionGenre;
 
   const refreshDataIfNeeded = (force = false) => {
-    console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    //console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    //console.log(' autoSync: ' + global.autoSync + ' collectFetched: ' + global.collectionFetched);
+    //console.log(' forceOffline: ' + global.forceOffline + ' collectFetched: ' + global.collectionFetched);
     if ((force || global.autoSync) &&
       !global.forceOffline && cachedToken != 'fetching' &&
       (cachedToken != global.token || global.localTimestamp != global.serverTimestamp || !global.collectionFetched)) {
       const savedCachedToken = cachedToken;
-      cachedToken = 'fetching';
       APIManager.onConnected(navigation, () => {
+        cachedToken = 'fetching';
         if (global.localTimestamp != global.serverTimestamp) {
           console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
           fetchData();
