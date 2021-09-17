@@ -59,6 +59,8 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   const [processingState, setProcessingState] = useState(0);
   const [showAllMarks, setShowAllMarks] = useState(false);
 
+  const isAlbumInCollection = CollectionManager.isAlbumInCollection(album);
+
   const setProcessingBit = (flag, value) => {
     if (value) {
       setProcessingState(processingState => processingState | pBits[flag]);
@@ -117,7 +119,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   const onGotIt = async () => {
     if (!Helpers.checkConnection()) { return; }
 
-    if (!CollectionManager.isAlbumInCollection(album)) {
+    if (!isAlbumInCollection) {
       setProcessingBit('own', true);
       // Add album to collection & remove it from the wishlist
       CollectionManager.addAlbumToCollection(album, (result) => {
@@ -299,13 +301,13 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
     <View style={[{ flexDirection: 'row' }, style]}>
 
       <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
-        isCheckedCb={() => CollectionManager.isAlbumInCollection(album)} />
+        isCheckedCb={() => isAlbumInCollection} />
 
-      {!CollectionManager.isAlbumInCollection(album) ?
+      {!isAlbumInCollection ?
       <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
         isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-      {(!CollectionManager.isAlbumInCollection(album) && !CollectionManager.isAlbumInWishlist(album) && showExclude) ?
+      {(showExclude && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album)) ?
         <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
           isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
