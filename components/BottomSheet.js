@@ -40,9 +40,9 @@ export function BottomSheet({ props, containerStyle, isVisible = false, visibleS
       onBackdropPress={() => visibleSetter(false)}
       onRequestClose={() => visibleSetter(false)}
       onSwipeComplete={() => visibleSetter(false)}
-      swipeDirection={['down']}
+      swipeDirection={['down', 'right']}
       useNativeDriver={false}
-      propagateSwipe
+      propagateSwipe={true}
       {...modalProps}
       style={styles.modalStyle}
     >

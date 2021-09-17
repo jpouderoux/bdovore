@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity,  View } from 'react-native';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles, windowHeight } from '../styles/CommonStyles';
@@ -62,7 +62,12 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: windowHeight * 0.9 }]}>
         <ScrollView style={{ flex: 1, width: '100%', marginBottom: 10 }}>
-          {Object.entries(comments).map((item) => renderComment(item))}
+          <TouchableOpacity activeOpacity={1}>
+            {Object.entries(comments).map((item) => renderComment(item))}
+          </TouchableOpacity>
+          <View style={{ marginVertical: 15, alignContent: 'center', alignItems: 'center' }}>
+            <Text style={[CommonStyles.linkTextStyle, CommonStyles.center]} onPress={() => visibleSetter(false)}>Fermer</Text>
+          </View>
         </ScrollView>
       </View>
     </BottomSheet>
