@@ -99,6 +99,15 @@ export function pluralWord(nb, word) {
   return nb + ' ' + pluralize(nb, word);
 }
 
+export function setAndSaveGlobal(name, value) {
+  global[name] = value;
+  if (typeof value == "boolean") {
+    AsyncStorage.setItem(name, value ? '1' : '0').catch((error) => { });
+  } else {
+    AsyncStorage.setItem(name, value).catch((error) => { });
+  }
+}
+
 export function setAsyncStorageBoolValue(name, value) {
   AsyncStorage.setItem(name, value ? '1' : '0').catch((error) => { });
 }
@@ -114,8 +123,7 @@ export function checkConnection() {
 }
 
 export function saveTimestamp() {
-  global.localTimestamp = global.serverTimestamp;
-  AsyncStorage.setItem('localTimestamp', global.localTimestamp).then(() => { }).catch(() => { });
+  setAndSaveGlobal('localTimestamp', global.serverTimestamp);
 }
 
 export function sortByDate(data, field = 'DATE_AJOUT') {

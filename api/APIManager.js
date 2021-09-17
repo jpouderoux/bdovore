@@ -85,7 +85,7 @@ export function checkForToken(navigation = null, callback = null) {
   if (global.forceOffline) {
     return callback ? callback() : 'offline-';
   }
-  if (!global.token && !navigation) {
+  if (!global.token && global.login && global.passwd) {
     console.log('undefined token -> relogin');
     return reloginBDovore(navigation, callback);
   }

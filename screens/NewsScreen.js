@@ -79,8 +79,8 @@ function NewsScreen({ navigation }) {
     console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
     if (cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token)) {
       const savedCachedToken = cachedToken;
-      cachedToken = 'fetching';
       APIManager.onConnected(navigation, () => {
+        cachedToken = 'fetching';
         console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
         fetchData();
       }, () => { cachedToken = savedCachedToken; });

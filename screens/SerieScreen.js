@@ -158,8 +158,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const onToggleShowExcludedAlbums = () => {
-    AsyncStorage.setItem('showExcludedAlbums', !showExcludedAlbums ? '1' : '0');
-    global.showExcludedAlbums = !showExcludedAlbums;
+    Helpers.setAndSaveGlobal('showExcludedAlbums', !showExcludedAlbums);
     setShowExcludedAlbums(global.showExcludedAlbums);
   }
 

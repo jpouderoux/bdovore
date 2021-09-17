@@ -52,20 +52,15 @@ function LoginScreen({ navigation }) {
   const passwdInputRef = useRef();
 
   useEffect(() => {
-    AsyncStorage.multiGet(['login', 'passwd']).then((response) => {
-      setPseudo(response[0][1]);
-      setPasswd(response[1][1]);
-    }).catch((error) => { console.debug(error) });
+    setPseudo(global.login);
+    setPasswd(global.passwd);
   }, []);
 
-  const checkLoginForDatabase = (callback) => {
-    AsyncStorage.getItem('login').then(login => {
-      if (pseudo != login) {
-        console.debug('User changed - resetting the database');
-        CollectionManager.resetDatabase();
-      }
-    }).catch(()=>{});
-    callback();
+  const resetDatabaseForNewLogin = () => {
+    if (pseudo != global.login) {
+      console.debug('User changed - resetting the database');
+      CollectionManager.resetDatabase();
+    }
   }
 
   const onLoginPress = () => {
@@ -87,11 +82,10 @@ function LoginScreen({ navigation }) {
     setLoading(true);
     global.forceOffline = true;
     global.isConnected = false;
-    checkLoginForDatabase(() => {
-      console.debug('Utilisation forcée en mode off - line.');
-      Helpers.showToast(false, 'Utilisation forcée en mode off-line.', 'Connexion au serveur désactivée.')
-      onConnected({ error: '', token: 'offline-' + Date.now() });
-    });
+    resetDatabaseForNewLogin();
+    console.debug('Utilisation forcée en mode off - line.');
+    Helpers.showToast(false, 'Utilisation forcée en mode off-line.', 'Connexion au serveur désactivée.')
+    onConnected({ error: '', token: 'offline-' + Date.now() });
   }
 
   const onConnected = (data) => {
@@ -99,15 +93,11 @@ function LoginScreen({ navigation }) {
     setErrortext(data.error);
 
     if (data.error == '') {
-      checkLoginForDatabase(() => {
-        AsyncStorage.multiSet([
-          ['token', data.token],
-          ['login', pseudo],
-          ['passwd', passwd],
-          ['collecFetched', 'false']], () => { }).then(() => {
-            navigation.goBack();
-          }).catch((error) => console.debug(error));
-      });
+      resetDatabaseForNewLogin();
+      Helpers.setAndSaveGlobal('token', data.token);
+      Helpers.setAndSaveGlobal('login', pseudo);
+      Helpers.setAndSaveGlobal('passwd', passwd);
+      navigation.goBack();
     }
     else {
       console.debug('error on connection: ' + data.error);
@@ -178,7 +168,7 @@ function LoginScreen({ navigation }) {
   const onToggleSponsoredLinks = () => {
     /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = !global.hideSponsoredLinks;
-      AsyncStorage.setItem('hideSponsoredLinks', global.hideSponsoredLinks ? '1' : '0');
+      Helpers.setAndSaveGlobal('hideSponsoredLinks', global.hideSponsoredLinks);
       Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');
     }
   }

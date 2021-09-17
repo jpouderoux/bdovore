@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
@@ -194,6 +195,8 @@ class CCollectionManager {
     }
     Realm.deleteFile({}); // TODO: Remove - Delete the database (schema+data)!
     this.initializeDatabase();
+
+    Helpers.setAndSaveGlobal('collectionFetched', false);
   }
 
   saveTimestamp() {
@@ -376,6 +379,7 @@ class CCollectionManager {
 
       if (!result.error && result.done) {
         this.saveTimestamp();
+        Helpers.setAndSaveGlobal('collectionFetched', true);
       }
     });
 

@@ -30,7 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Helpers from '../api/Helpers';
 import NetInfo from "@react-native-community/netinfo";
 
-let connectionStatus = {};
 
 class CSettingsManager {
 
@@ -47,54 +46,42 @@ class CSettingsManager {
     NetInfo.addEventListener(this.connectionCallback);
 
     global.token = undefined;
-
     global.serverTimestamp = null;
-    global.localTimestamp = null;
-    AsyncStorage.getItem('localTimestamp').then(value => {
-      if (value) global.localTimestamp = value;
-    }).catch(() => { });
 
-    global.autoSync = true;
-    AsyncStorage.getItem('autoSync').then(value => {
-      if (value) global.autoSync = (value != '0');
-    }).catch(() => { });
+    // Defined global parameters that are saved/restored
+    let globs = [
+      ['autoSync',               true],
+      ['collectionFetched',      false],
+      ['confirmDeletion',        false],
+      ['hideSponsoredLinks',     false],
+      ['imageOnWifi',            false],
+      ['localTimestamp',         null],
+      ['login',                  null],
+      ['passwd',                 null],
+      ['showBDovoreIds',         false],
+      ['showConnectionMessages', false],
+      ['showExcludedAlbums',     true],
+      ['verbose',                false],
+    ];
 
-    global.showExcludedAlbums = true;
-    AsyncStorage.getItem('showExcludedAlbums').then(value => {
-      if (value) global.showExcludedAlbums = (value != '0');
-    }).catch(() => { });
+    // Set defined parameters in global array
+    globs.forEach(v => global[v[0]] = v[1]);
 
-    global.imageOnWifi = false;
-    AsyncStorage.getItem('imageOnWifi').then(value => {
-      if (value) global.imageOnWifi = (value != '0');
-    }).catch(() => { });
-
-    //global.hideSponsoredLinks = true;
-    /*if (Platform.OS != 'ios')*/ {
-      global.hideSponsoredLinks = false;
-      AsyncStorage.getItem('hideSponsoredLinks').then(value => {
-        if (value) global.hideSponsoredLinks = (value != '0');
-      }).catch(() => { });
-    }
-
-    global.showBDovoreIds = false;
-    AsyncStorage.getItem('showBDovoreIds').then(value => {
-      if (value) global.showBDovoreIds = (value != '0');
-    }).catch(() => { });
-
-    global.verbose = false;
-    AsyncStorage.getItem('verbose').then(value => {
-      if (value) global.verbose = (value != '0');
-    }).catch(() => { });
-
-    global.confirmDeletion = false;
-    AsyncStorage.getItem('confirmDeletion').then(value => {
-      if (value) global.confirmDeletion = (value != '0');
-    }).catch(() => { });
-
-    global.showConnectionMessages = false;
-    AsyncStorage.getItem('showConnectionMessages').then(value => {
-      if (value) global.showConnectionMessages = (value != '0');
+    // Fetched saved values for each global variable
+    AsyncStorage.multiGet(globs.map(v => v[0])).then(response => {
+      const setKey = (name, value) => {
+        if (value !== null || value !== undefined) {
+          if (value === '0' || value === '1') {
+            global[name] = (value != '0');  // treat value as boolean
+          } else {
+            global[name] = value;
+          }
+        }
+      };
+      response.forEach((v) => {
+        setKey(v[0], v[1]);
+        //console.log('init ' + v[0] + '=' + global[v[0]]);
+     });
     }).catch(() => { });
   }
 
@@ -123,7 +110,6 @@ class CSettingsManager {
   isWifiConnected() {
     return !global.forceOffline && global.connectionType == 'wifi' && global.isConnected;
   }
-
 };
 
 const SettingsManager = new CSettingsManager();
