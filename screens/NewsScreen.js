@@ -123,8 +123,6 @@ function NewsScreen({ route, navigation }) {
     setFilteredUserNewsDataArray([]);
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '0' })
       .then().catch((error) => console.debug(error));
-
-   
   }
 
   const fetchNewsData = async () => {
@@ -151,7 +149,7 @@ function NewsScreen({ route, navigation }) {
     console.debug('user news to come fetched!');
     //result.items.reverse();
     setUserNewsToComeDataArray(result.items);
-    
+
     setFilteredUserNewsToComeDataArray(result.items);
     setErrortext(result.error);
     setLoading(false);
@@ -166,12 +164,11 @@ function NewsScreen({ route, navigation }) {
 
   const onPressNewsMode = (selectedIndex) => {
     setNewsMode(selectedIndex);
-    //fetchNewsData(selectedIndex);
   };
 
   const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={newsMode == 1} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={newsMode == 2} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
