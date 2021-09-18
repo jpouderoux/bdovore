@@ -205,10 +205,10 @@ function CollectionScreen({ route, navigation }) {
       loadedItems = 0;
       loadingSteps = 3;
       loadTime = Date.now();
+      CollectionManager.fetchCollection(navigation, onFetchCollection);
       if (global.verbose) {
         Helpers.showToast(false, 'Téléchargement de la collection...');
       }
-      CollectionManager.fetchCollection(navigation, onFetchCollection);
     }
   }
 

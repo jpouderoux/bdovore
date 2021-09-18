@@ -199,6 +199,12 @@ class CCollectionManager {
     Helpers.setAndSaveGlobal('collectionFetched', false);
   }
 
+  clearDatabase() {
+    global.db.write(() => {
+      global.db.deleteAll();
+    });
+  }
+
   saveTimestamp() {
     Helpers.saveTimestamp();
   }
@@ -268,6 +274,9 @@ class CCollectionManager {
 
   // Fetch all the collection in a row
   fetchCollection(navigation, callback) {
+
+    this.clearDatabase();
+
     this.fetchSeries(navigation, (result) => {
       if (callback) callback(result, 0);
       if (result.done) {
