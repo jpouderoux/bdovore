@@ -321,7 +321,7 @@ export async function fetchNews(origine, context, callback, params = {}) {
   fetchJSON('Actu', context, callback, {
     ...{
       origine,
-      mode: 2,
+      mode: 1,
       page: 1,
       length: 100
     }, ...params

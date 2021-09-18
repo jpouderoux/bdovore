@@ -74,8 +74,8 @@ function NewsScreen({ route, navigation }) {
     setFilteredUserNewsDataArray(
       Helpers.stripNewsByOrigin(userNewsDataArray.slice(), newsModeMap[collectionGenre]));
 
-    setFilteredUserNewsToComeDataArray(
-      Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[collectionGenre]));
+    //setFilteredUserNewsToComeDataArray(
+     // Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[collectionGenre]));
 
     // Fetch the tendency news for current collection genre
     fetchNewsData();
@@ -121,17 +121,19 @@ function NewsScreen({ route, navigation }) {
 
   const fetchUserNewsData = async () => {
     setFilteredUserNewsDataArray([]);
-    APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12' })
+    APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '0' })
       .then().catch((error) => console.debug(error));
 
-    setFilteredUserNewsToComeDataArray([]);
-    APIManager.fetchUserNews({ navigation: navigation }, onUserNewsToComeFetched, { nb_mois: '-1' })
-      .then().catch((error) => console.debug(error));
+   
   }
 
   const fetchNewsData = async () => {
     setNewsDataArray([]);
     APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onNewsFetched)
+      .then().catch((error) => console.debug(error));
+
+    setFilteredUserNewsToComeDataArray([]);
+    APIManager.fetchNews(newsModeMap[collectionGenre],{ navigation: navigation }, onUserNewsToComeFetched, { mode : 2, nb_mois: '-2' })
       .then().catch((error) => console.debug(error));
   }
 
@@ -147,10 +149,10 @@ function NewsScreen({ route, navigation }) {
 
   const onUserNewsToComeFetched = async (result) => {
     console.debug('user news to come fetched!');
-    result.items.reverse();
+    //result.items.reverse();
     setUserNewsToComeDataArray(result.items);
-    setFilteredUserNewsToComeDataArray(
-      Helpers.stripNewsByOrigin(result.items, newsModeMap[collectionGenre]));
+    
+    setFilteredUserNewsToComeDataArray(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
@@ -182,8 +184,8 @@ function NewsScreen({ route, navigation }) {
           selectedIndex={newsMode}
           buttons={[
             { element: () => <Text style={CommonStyles.defaultText}>Mon actualité</Text> },
-            { element: () => <Text style={CommonStyles.defaultText}>A paraître</Text> },
-            { element: () => <Text style={CommonStyles.defaultText}>Tendance</Text> }]}
+            { element: () => <Text style={CommonStyles.defaultText}>Tendances</Text> },
+            { element: () => <Text style={CommonStyles.defaultText}>A paraître</Text> }]}
           containerStyle={[CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
@@ -201,7 +203,7 @@ function NewsScreen({ route, navigation }) {
           maxToRenderPerBatch={6}
           windowSize={10}
           ItemSeparatorComponent={Helpers.renderSeparator}
-          data={newsMode == 0 ? filteredUserNewsDataArray : newsMode == 1 ? filteredUserNewsToComeDataArray : newsDataArray}
+          data={newsMode == 0 ? filteredUserNewsDataArray : newsMode == 1 ? newsDataArray  : filteredUserNewsToComeDataArray}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
           extraData={toggleElement}
