@@ -133,7 +133,7 @@ function NewsScreen({ route, navigation }) {
       .then().catch((error) => console.debug(error));
 
     setFilteredUserNewsToComeDataArray([]);
-    APIManager.fetchNews(newsModeMap[collectionGenre],{ navigation: navigation }, onUserNewsToComeFetched, { mode : 2, nb_mois: '-2' })
+    APIManager.fetchNews(newsModeMap[collectionGenre],{ navigation: navigation }, onUserNewsToComeFetched, { mode : 2, period: '-2' })
       .then().catch((error) => console.debug(error));
   }
 
