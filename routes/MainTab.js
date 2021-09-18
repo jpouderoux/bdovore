@@ -48,7 +48,7 @@ import SerieScreen from '../screens/SerieScreen';
 import SettingsPanel from '../panels/SettingsPanel';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 // The main tab navigator
 const Tab = createBottomTabNavigator();
@@ -338,9 +338,40 @@ function ToCompleteScreens({ navigation }) {
 }
 
 function NewsScreens({ navigation }) {
+  const [collectionGenre, setCollectionGenre] = useState(1);
+  const [showCollectionChooser, setShowCollectionChooser] = useState(false);
+
+  const onCollectionGenrePress = () => {
+    setShowCollectionChooser(!showCollectionChooser);
+  }
+
+  const settingsButton = (route, navigation) => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
+          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+
+        <CollectionPanel route={route}
+          navigation={navigation}
+          isVisible={showCollectionChooser}
+          visibleSetter={setShowCollectionChooser}
+          collectionGenre={collectionGenre}
+          setCollectionGenre={setCollectionGenre}
+          noAllEntry={true} />
+      </View>
+    );
+  }
+
   return (
     <NewsStack.Navigator screenOptions={defaultStackOptions}>
-      <NewsStack.Screen name='Actualité' component={NewsScreen} />
+      <NewsStack.Screen name='Actualité' component={NewsScreen}
+        options={({ route }) => {
+          route.params = { collectionGenre: collectionGenre };
+          return {
+            headerRight: () => settingsButton(route, navigation),
+          };
+        }} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,

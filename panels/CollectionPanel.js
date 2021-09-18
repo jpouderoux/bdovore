@@ -36,7 +36,7 @@ import { CommonStyles } from '../styles/CommonStyles';
 import CollectionManager from '../api/CollectionManager';
 
 
-function CollectionPanel({ route, navigation, isVisible, visibleSetter, collectionGenre, setCollectionGenre }) {
+function CollectionPanel({ route, navigation, isVisible, visibleSetter, collectionGenre, setCollectionGenre, noAllEntry = false }) {
 
   const onCollectionGenreChanged = (route, navigation, mode) => {
     setCollectionGenre(mode);
@@ -59,7 +59,7 @@ function CollectionPanel({ route, navigation, isVisible, visibleSetter, collecti
             <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
           </ListItem.Content>
         </ListItem>
-        {Object.entries(CollectionManager.CollectionGenres).map(([mode, title], index) => (
+        {Object.entries(CollectionManager.CollectionGenres).slice(noAllEntry ? 1 : 0).map(([mode, title], index) => (
           <ListItem key={index + 1}
             containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
             onPress={() => onCollectionGenreChanged(route, navigation, mode)}>

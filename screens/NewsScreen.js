@@ -27,49 +27,59 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
-import { useFocusEffect } from '@react-navigation/core';
-
+import CollectionManager from '../api/CollectionManager';
 
 const newsModeMap = {
-  0: 'BD',
-  1: 'Mangas',
-  2: 'Comics'
+  0: '',
+  1: 'BD',
+  2: 'Mangas',
+  3: 'Comics'
 };
 
-function createUserNewsSection(data = []) {
-  return { title: 'Mon actualité', idx: 0, data };
-}
-
-function createUserNewsToComeSection(data = []) {
-  return { title: 'A paraître', idx: 1, data };
-}
-
-function createNewsSection(data = []) {
-  return { title: 'Albums tendances', idx: 2, data };
-}
 
 let cachedToken = '';
 
-function NewsScreen({ navigation }) {
+function NewsScreen({ route, navigation }) {
 
+  const [collectionGenre, setCollectionGenre] = useState(1);
   const [errortext, setErrortext] = useState('');
-  const [filteredUserNewsDataArray, setFilteredUserNewsDataArray] = useState(createUserNewsSection());
-  const [filteredUserNewsToComeDataArray, setFilteredUserNewsToComeDataArray] = useState(createUserNewsToComeSection());
+  const [filteredUserNewsDataArray, setFilteredUserNewsDataArray] = useState([]);
+  const [filteredUserNewsToComeDataArray, setFilteredUserNewsToComeDataArray] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [newsDataArray, setNewsDataArray] = useState(createNewsSection());
+  const [newsDataArray, setNewsDataArray] = useState([]);
   const [newsMode, setNewsMode] = useState(0);
   const [offline, setOffline] = useState(false);
   const [userNewsDataArray, setUserNewsDataArray] = useState([]);
   const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
   const [toggleElement, setToggleElement] = useState(Date.now());
+
+  if (route.params.collectionGenre != collectionGenre) {
+    setCollectionGenre(route.params.collectionGenre);
+  }
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: ('Actualité' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
+    });
+
+    // Filter the news according the current collection genre
+    setFilteredUserNewsDataArray(
+      Helpers.stripNewsByOrigin(userNewsDataArray.slice(), newsModeMap[collectionGenre]));
+
+    setFilteredUserNewsToComeDataArray(
+      Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[collectionGenre]));
+
+    // Fetch the tendency news for current collection genre
+    fetchNewsData();
+  }, [collectionGenre]);
 
   const toggle = () => {
     setToggleElement(Date.now());
@@ -91,22 +101,11 @@ function NewsScreen({ navigation }) {
     refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
-      console.log("focus");
       refreshDataIfNeeded();
       toggle();
     });
     return willFocusSubscription;
   }, []);
-
-  useEffect(() => {
-    // Filter the user news according the current news mode
-    setFilteredUserNewsDataArray(
-      createUserNewsSection(Helpers.stripNewsByOrigin(userNewsDataArray.slice(), newsModeMap[newsMode])));
-
-    // Filter the user news to come according the current news mode
-    setFilteredUserNewsToComeDataArray(
-      createUserNewsToComeSection(Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[newsMode])));
-  }, [newsMode]);
 
   const fetchData = () => {
     setOffline(!global.isConnected);
@@ -116,23 +115,23 @@ function NewsScreen({ navigation }) {
       }
       setLoading(true);
       fetchUserNewsData();
-      fetchNewsData(newsMode);
+      fetchNewsData();
     }
   }
 
   const fetchUserNewsData = async () => {
-    setFilteredUserNewsDataArray(createUserNewsSection());
+    setFilteredUserNewsDataArray([]);
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '12' })
       .then().catch((error) => console.debug(error));
 
-    setFilteredUserNewsToComeDataArray(createUserNewsToComeSection());
+    setFilteredUserNewsToComeDataArray([]);
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsToComeFetched, { nb_mois: '-1' })
       .then().catch((error) => console.debug(error));
   }
 
-  const fetchNewsData = async (newsMode) => {
-    setNewsDataArray(createNewsSection());
-    APIManager.fetchNews(newsModeMap[newsMode], { navigation: navigation }, onNewsFetched)
+  const fetchNewsData = async () => {
+    setNewsDataArray([]);
+    APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onNewsFetched)
       .then().catch((error) => console.debug(error));
   }
 
@@ -140,7 +139,7 @@ function NewsScreen({ navigation }) {
     console.debug('user news fetched!');
     setUserNewsDataArray(result.items);
     setFilteredUserNewsDataArray(
-      createUserNewsSection(Helpers.stripNewsByOrigin(result.items, newsModeMap[newsMode])));
+      Helpers.stripNewsByOrigin(result.items, newsModeMap[collectionGenre]));
     setErrortext(result.error);
     setLoading(false);
     cachedToken = global.token;
@@ -148,28 +147,29 @@ function NewsScreen({ navigation }) {
 
   const onUserNewsToComeFetched = async (result) => {
     console.debug('user news to come fetched!');
+    result.items.reverse();
     setUserNewsToComeDataArray(result.items);
     setFilteredUserNewsToComeDataArray(
-      createUserNewsToComeSection(Helpers.stripNewsByOrigin(result.items, newsModeMap[newsMode])));
+      Helpers.stripNewsByOrigin(result.items, newsModeMap[collectionGenre]));
     setErrortext(result.error);
     setLoading(false);
   }
 
   const onNewsFetched = async (result) => {
     console.debug('news fetched!');
-    setNewsDataArray(createNewsSection(result.items));
+    setNewsDataArray(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
 
   const onPressNewsMode = (selectedIndex) => {
     setNewsMode(selectedIndex);
-    fetchNewsData(selectedIndex);
+    //fetchNewsData(selectedIndex);
   };
 
-  const renderAlbum = ({ item, section, index }) =>
+  const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={section.idx == 1} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={newsMode == 1} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -181,9 +181,9 @@ function NewsScreen({ navigation }) {
           onPress={onPressNewsMode}
           selectedIndex={newsMode}
           buttons={[
-            { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[0]}</Text> },
-            { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[1]}</Text> },
-            { element: () => <Text style={CommonStyles.defaultText}>{newsModeMap[2]}</Text> }]}
+            { element: () => <Text style={CommonStyles.defaultText}>Mon actualité</Text> },
+            { element: () => <Text style={CommonStyles.defaultText}>A paraître</Text> },
+            { element: () => <Text style={CommonStyles.defaultText}>Tendance</Text> }]}
           containerStyle={[CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
@@ -196,24 +196,26 @@ function NewsScreen({ navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {!offline ? <SectionList
+        {!offline ? <FlatList
+          initialNumToRender={6}
           maxToRenderPerBatch={6}
           windowSize={10}
           ItemSeparatorComponent={Helpers.renderSeparator}
-          sections={[filteredUserNewsDataArray, filteredUserNewsToComeDataArray, newsDataArray].filter(s => s.data.length > 0)}
+          data={newsMode == 0 ? filteredUserNewsDataArray : newsMode == 1 ? filteredUserNewsToComeDataArray : newsDataArray}
           keyExtractor={keyExtractor}
           renderItem={renderAlbum}
-          renderSectionHeader={({ section }) => (
-            <Text style={[CommonStyles.sectionStyle, CommonStyles.sectionTextStyle]}>{section.title}</Text>)}
-          stickySectionHeadersEnabled={true}
           extraData={toggleElement}
           refreshControl={<RefreshControl
             colors={[bdovorlightred, bdovored]}
             tintColor={bdovored}
             refreshing={loading}
             onRefresh={fetchData} />}
-        /> :
-          <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          getItemLayout={(data, index) => ({
+            length: AlbumItemHeight,
+            offset: AlbumItemHeight * index,
+            index
+          })} />
+          : <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
             <View style={{ flex: 1 }}></View>
             <Text style={CommonStyles.defaultText}>Pas d'actualité en mode non-connecté.{'\n'}</Text>
             <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
