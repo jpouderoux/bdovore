@@ -80,8 +80,7 @@ let collectionGenre = 0;
 let loadingSteps = 0;
 let loadTime = 0;
 let loadedItems = 0;
-let nbTotalAlbums = 0;
-let nbTotalSeries = 0;
+let searchKeywords = ''; // for unclear reasons, keywords state is cleared at some point during loading so we copy it here and rely on this one
 
 function CollectionScreen({ route, navigation }) {
 
@@ -143,11 +142,11 @@ function CollectionScreen({ route, navigation }) {
 
   const filterCollection = (collection, mode) => {
 
-    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(keywords);
+    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(searchKeywords);
 
     return collection.filter((item) => {
       // Search for keywords if provided
-      if (keywords != '') {
+      if (searchKeywords != '') {
         // search text in lowercase title without taking accents
         let title = mode == 0 ? item.NOM_SERIE : item.TITRE_TOME;
         if (title && !Helpers.lowerCaseNoAccentuatedChars(title).includes(lowerSearchText)) {
@@ -176,15 +175,14 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const applyFilters = () => {
-
-    if (keywords == '' && collectionGenre == 0 && filterMode == 0) {
+    if (searchKeywords == '' && collectionGenre == 0 && filterMode == 0) {
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(CollectionManager.getAlbums()) : null);
     } else {
       const filteredAlbums = filterCollection(CollectionManager.getAlbums(collectionGenre), 1);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
     }
 
-    if (keywords == '' && collectionGenre == 0 && serieFilterMode == 0) {
+    if (searchKeywords == '' && collectionGenre == 0 && serieFilterMode == 0) {
       setFilteredSeries(null);
     }
     else {
@@ -195,13 +193,12 @@ function CollectionScreen({ route, navigation }) {
   const fetchData = () => {
     if (!loading && global.isConnected) {
       setKeywords('');
+      searchKeywords = '';
       setSortMode(defaultSortMode);
       setLoading(true);
       setFilteredSeries(null);
       setFilteredAlbums(null);
       setProgressRate(0);
-      nbTotalSeries = 0;
-      nbTotalAlbums = 0;
       loadedItems = 0;
       loadingSteps = 3;
       loadTime = Date.now();
@@ -223,16 +220,13 @@ function CollectionScreen({ route, navigation }) {
     let rate = 1;
     switch (type) {
       case 0:
-        nbTotalSeries = result.totalItems ?? result.items.length;
-        rate = loadedItems / (nbTotalSeries ?? 1);
-        setProgressRate(rate);
+        let nbTotalSeries = result.totalItems ?? result.items.length;
+        setProgressRate(loadedItems / (nbTotalSeries ?? 1));
         applyFilters();
         break;
       case 1:
-        nbTotalAlbums = result.totalItems ?? result.items.length;
-        rate = loadedItems / (nbTotalAlbums ?? 1);
-        console.log("rate: " + loadedItems + '/' + result.totalItems + ' = ' + rate);
-        setProgressRate(rate);
+        let nbTotalAlbums = result.totalItems ?? result.items.length;
+        setProgressRate(loadedItems / (nbTotalAlbums ?? 1));
         applyFilters();
         break;
       case 2:
@@ -272,6 +266,7 @@ function CollectionScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
+    searchKeywords = searchText;
   }
 
   const renderItem = ({ item, index }) => {
