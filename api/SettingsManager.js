@@ -52,7 +52,7 @@ class CSettingsManager {
     let globs = [
       ['autoSync',               true],
       ['collectionFetched',      false],
-      ['confirmDeletion',        false],
+      ['confirmDeletion',        true],
       ['hideSponsoredLinks',     false],
       ['imageOnWifi',            false],
       ['localTimestamp',         null],
