@@ -309,10 +309,10 @@ function CollectionScreen({ route, navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredSeries ? filteredSeries.length : CollectionManager.numberOfSeries(collectionGenre), 'série')}</Text>
+              {Helpers.pluralWord(CollectionManager.numberOfSeries(collectionGenre), 'série')}</Text>
           }, {
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredAlbums ? filteredAlbums.length : CollectionManager.numberOfAlbums(collectionGenre), 'album')}</Text>
+              {Helpers.pluralWord(CollectionManager.numberOfAlbums(collectionGenre), 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
