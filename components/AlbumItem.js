@@ -32,6 +32,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { AlbumMarkers } from './AlbumMarkers';
 import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import { CoverImage } from './CoverImage';
+import { Icon } from './Icon';
 import { RatingStars } from './RatingStars';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -48,10 +49,15 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
     const albumDate = item.DATE_PARUTION_EDITION ?? item.DTE_PARUTION;
     if (albumDate) {
       const now = Helpers.getNowDateString().substring(0, 10);
-      if (albumDate > now) return '\nA paraître le ' + Helpers.convertDate(albumDate);
-      if (showEditionDate) return '\nParu le ' + Helpers.convertDate(albumDate);
+      if (albumDate > now || showEditionDate) {
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <Icon name={albumDate > now ? 'calendar-clock' : 'calendar-check'} size={20} style={[CommonStyles.itemText]} />
+            <Text style={[CommonStyles.itemText, { marginLeft: 6}]}>{Helpers.convertDate(albumDate)}</Text>
+          </View>);
+      }
     }
-    return '';
+    return null;
   }
 
   showDate();
@@ -68,8 +74,8 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           </Text>
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
-            {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n'}
-            {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : ''}
+            {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n\n'}
+            {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : null}
           </Text>
           {collectionMode ? null :
             <AlbumMarkers item={item}
