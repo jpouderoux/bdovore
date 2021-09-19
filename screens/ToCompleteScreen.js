@@ -30,6 +30,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { ButtonGroup } from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -45,6 +46,7 @@ let loadedSeries = 0;
 let collectionGenre = 0;
 let albums = [];
 let series = [];
+let searchKeywords = '';
 
 function ToCompleteScreen({ route, navigation }) {
 
@@ -52,6 +54,7 @@ function ToCompleteScreen({ route, navigation }) {
   const [errortext, setErrortext] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [filteredSeries, setFilteredSeries] = useState([]);
+  const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [progressRate, setProgressRate] = useState(0);
   const [scrollPos, setScrollPos] = useState([0, 0]);
@@ -154,28 +157,46 @@ function ToCompleteScreen({ route, navigation }) {
     APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
       .then().catch((error) => console.debug(error));
 
+  }
+
+  const onAlbumsFetched = async (result) => {
+    console.debug('albums ' + (result.done ? 'done' : 'in progress'));
+    console.debug(result.items.length + ' albums fetched so far');
+    albums.push(...result.items);
+    setErrortext(result.error);
+    loadedAlbums += result.items.length;
+
+    applyAlbumsFilters();
+
+    setProgressRate(parseFloat(loadedAlbums) / parseFloat(result.totalItems ?? 1));
+
+    if (result.done) {
+      setLoading(false);
+      cachedToken = global.token;
     }
-
-    const onAlbumsFetched = async (result) => {
-      console.debug('albums ' + (result.done ? 'done' : 'in progress'));
-      console.debug(result.items.length + ' albums fetched so far');
-      albums.push(...result.items);
-      setErrortext(result.error);
-      loadedAlbums += result.items.length;
-
-      applyAlbumsFilters();
-
-      setProgressRate(parseFloat(loadedAlbums) / parseFloat(result.totalItems ?? 1));
-
-      if (result.done) {
-        setLoading(false);
-        cachedToken = global.token;
-      }
   }
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
     flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
+  }
+
+  const onSearchChanged = (searchText) => {
+    setKeywords(searchText);
+    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
+  }
+
+  const scrollToTop = (offset = 40) => {
+    if (flatList && flatList.current) {
+      flatList.current.scrollToOffset({ offset, animated: false });
+    }
+  }
+
+  const onScrollEvent = (event) => {
+    if (event && event.nativeEvent && event.nativeEvent.contentOffset) {
+      const curPos = event.nativeEvent.contentOffset.y;
+      setScrollPos(pos => { pos.splice(collectionType, 1, curPos); return pos; });
+    }
   }
 
   const renderItem = ({ item, index }) => {
@@ -186,10 +207,6 @@ function ToCompleteScreen({ route, navigation }) {
       }
     }
     return null;
-  }
-
-  const onScrollEvent = (event) => {
-    setScrollPos(pos => { pos.splice(collectionType, 1, event.nativeEvent.contentOffset.y); return pos; });
   }
 
   const keyExtractor = useCallback((item, index) =>
@@ -241,13 +258,15 @@ function ToCompleteScreen({ route, navigation }) {
               initialNumToRender={6}
               maxToRenderPerBatch={6}
               windowSize={10}
-              data={(collectionType == 0 ? filteredSeries : filteredAlbums)}
+              data={collectionType == 0 ?
+                Helpers.filterSeriesWithSearchKeywords(filteredSeries, searchKeywords) :
+                Helpers.filterAlbumsWithSearchKeywords(filteredAlbums, searchKeywords)}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               ItemSeparatorComponent={Helpers.renderSeparator}
               getItemLayout={(data, index) => ({
                 length: AlbumItemHeight,
-                offset: AlbumItemHeight * index,
+                offset: 40 + AlbumItemHeight * index,
                 index
               })}
               refreshControl={<RefreshControl
@@ -256,6 +275,21 @@ function ToCompleteScreen({ route, navigation }) {
                 refreshing={loading}
                 onRefresh={fetchData} />}
               onScroll={onScrollEvent}
+              ListHeaderComponent={
+                <SearchBar
+                  placeholder={collectionType == 0 ? 'Rechercher dans les séries incomplètes...' : 'Rechercher dans les albums manquants...' }
+                  onChangeText={onSearchChanged}
+                  onCancel={() => { onSearchChanged(''); scrollToTop(); }}
+                  onClear={() => { onSearchChanged(''); scrollToTop(); }}
+                  value={keywords}
+                  platform='ios'
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+                  containerStyle={[CommonStyles.screenStyle, { marginVertical: -8 }]}
+                  inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
+                  cancelButtonTitle='Annuler' />
+              }
             />}
         </View> :
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>

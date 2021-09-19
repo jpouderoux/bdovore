@@ -147,7 +147,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
     <View style={[{ flexDirection: 'row' }, style]}>
 
       {isProcessing('addingall') ? <MarkerLoadingIndicator /> :
-        (nbOfUserAlbums == 0 && serieAlbums.length > 0 ?
+        (nbOfUserAlbums == 0 && serieAlbums && serieAlbums.length > 0 ?
           <TouchableOpacity onPress={onHaveAll} title="" style={CommonStyles.markerStyle}>
             <Icon name={isSerieComplete ? 'check-bold' : 'check'} size={25} color={isSerieComplete ? CommonStyles.markIconEnabled.color : CommonStyles.markIconDisabled.color} style={[CommonStyles.markerIconStyle, { width: 30 }]} />
             <Text style={[CommonStyles.markerTextStyle, isSerieComplete ? CommonStyles.markIconEnabled : CommonStyles.markIconDisabled]}>J'ai tout !</Text>

@@ -92,7 +92,7 @@ function CollectionScreen({ route, navigation }) {
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [progressRate, setProgressRate] = useState(0);
-  const [scrollPos, setScrollPos] = useState([0, 0]);
+  const [scrollPos, setScrollPos] = useState([40, 40]);
   const [serieFilterMode, setSerieFilterMode] = useState(0);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
@@ -136,6 +136,8 @@ function CollectionScreen({ route, navigation }) {
       title: collectionGenre == 0  ? 'Ma collection' : 'Mes ' + CollectionManager.CollectionGenres[collectionGenre][0],
     });
     applyFilters();
+    setScrollPos([40, 40]);
+    scrollToTop();
   }, [collectionGenre]);
 
   useEffect(() => {
@@ -270,7 +272,13 @@ function CollectionScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    searchKeywords = searchText;
+    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
+  }
+
+  const scrollToTop = (offset = 40) => {
+    if (flatList && flatList.current) {
+      flatList.current.scrollToOffset({ offset, animated: false });
+    }
   }
 
   const renderItem = ({ item, index }) => {
@@ -287,7 +295,10 @@ function CollectionScreen({ route, navigation }) {
     Helpers.isValid(item) ? (collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item)) : index);
 
   const onScrollEvent = (event) => {
-    setScrollPos(pos => { pos.splice(collectionType, 1, event.nativeEvent.contentOffset.y); return pos; });
+    if (event && event.nativeEvent && event.nativeEvent.contentOffset) {
+      const curPos = event.nativeEvent.contentOffset.y;
+      setScrollPos(pos => { pos.splice(collectionType, 1, curPos); return pos; });
+    }
   }
 
   return (
@@ -311,42 +322,6 @@ function CollectionScreen({ route, navigation }) {
         {(!global.autoSync && global.serverTimestamp != global.localTimestamp) ?
           <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
       </View>
-
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
-          <SearchBar
-            placeholder={(collectionType == 0) ?
-              format(filterModesSeriesSearch[serieFilterMode], CollectionManager.CollectionGenres[collectionGenre][3]) :
-              format(filterModesAlbumsSearch[filterMode], CollectionManager.CollectionGenres[collectionGenre][2])}
-            onChangeText={onSearchChanged}
-            value={keywords}
-            platform='ios'
-            autoCapitalize='none'
-            autoCorrect={false}
-            inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
-            containerStyle={[CommonStyles.screenStyle]}
-            inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
-            cancelButtonTitle='Annuler'
-          />
-        </View>
-        {collectionType == 0 ?
-          <View style={{ flexDirection: 'row', flex: 0, margin: 5, marginLeft: 0 }}>
-            <TouchableOpacity onPress={onSerieFilterModePress} style={{ flex: 0, marginRight: 5 }}>
-              <Icon name={serieFilterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={serieFilterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
-            </TouchableOpacity>
-          </View>
-          :
-          <View style={{ flexDirection: 'row', flex: 0, margin: 5, marginLeft: 0 }}>
-            <TouchableOpacity onPress={onSortModePress} style={{ flex: 0 }}>
-              <Icon name={sortMode == defaultSortMode ? 'sort-variant' : 'sort-variant-remove'} size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, marginRight: 5 }}>
-              <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
-            </TouchableOpacity>
-          </View>
-        }
-      </View>
-
       {loading ?
         <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> :
         null}
@@ -359,7 +334,7 @@ function CollectionScreen({ route, navigation }) {
           <View style={{ flex: 1 }}></View>
         </View>
         :
-        <View style={{ flex: 1, marginTop: 2 }}>
+        <View style={{ flex: 1, marginTop: 0 }}>
           {errortext ? (
             <Text style={CommonStyles.errorTextStyle}>
               {errortext}
@@ -376,7 +351,7 @@ function CollectionScreen({ route, navigation }) {
             ItemSeparatorComponent={Helpers.renderSeparator}
             getItemLayout={(data, index) => ({
               length: AlbumItemHeight,
-              offset: AlbumItemHeight * index,
+              offset: 40 + AlbumItemHeight * index,
               index
             })}
             refreshControl={<RefreshControl
@@ -385,6 +360,40 @@ function CollectionScreen({ route, navigation }) {
               refreshing={loading}
               onRefresh={fetchData} />}
             onScroll={onScrollEvent}
+            ListHeaderComponent={
+              <View style={{ flexDirection: 'row', marginTop: 0, height: 40 }}>
+                <SearchBar
+                  placeholder={(collectionType == 0) ?
+                    format(filterModesSeriesSearch[serieFilterMode], CollectionManager.CollectionGenres[collectionGenre][3]) :
+                    format(filterModesAlbumsSearch[filterMode], CollectionManager.CollectionGenres[collectionGenre][2])}
+                  onChangeText={onSearchChanged}
+                  value={keywords}
+                  platform='ios'
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+                  containerStyle={[CommonStyles.screenStyle]}
+                  inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
+                  cancelButtonTitle='Annuler'
+                />
+                {collectionType == 0 ?
+                  <View style={{ flexDirection: 'row', flex: 0, marginTop: 5, marginLeft: 0, marginRight: 5 }}>
+                    <TouchableOpacity onPress={onSerieFilterModePress} style={{ flex: 0, marginRight: 5 }}>
+                      <Icon name={serieFilterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={serieFilterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+                    </TouchableOpacity>
+                  </View>
+                  :
+                  <View style={{ flexDirection: 'row', flex: 0, marginTop: 5, marginLeft: 0, marginRight: 5 }}>
+                    <TouchableOpacity onPress={onSortModePress} style={{ flex: 0 }}>
+                      <Icon name={sortMode == defaultSortMode ? 'sort-variant' : 'sort-variant-remove'} size={25} color={sortMode == defaultSortMode ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onFilterModePress} style={{ flex: 0, marginHorizontal: 5 }}>
+                      <Icon name={filterMode == 0 ? 'filter-outline' : 'filter-remove'} size={25} color={filterMode == 0 ? CommonStyles.iconStyle.color : CommonStyles.iconEnabledStyle.color} />
+                    </TouchableOpacity>
+                  </View>
+                }
+              </View>
+            }
           />}
         </View>}
 

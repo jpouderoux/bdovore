@@ -69,12 +69,12 @@ function WishlistScreen({ route, navigation }) {
       title: ('Mes envies' + (collectionGenre > 0 ? (' - ' + CollectionManager.CollectionGenres[collectionGenre][0]) : '')),
     });
     refreshData();
+    scrollToTop();
   }, [collectionGenre]);
 
   const refreshData = () => {
     const collec = CollectionManager.getWishes(collectionGenre);
     setFilteredData(filterByDate ? Helpers.sliceSortByDate(collec) : collec);
-    scrollToTop();
   }
 
   const toggleFilterByDate = () => {

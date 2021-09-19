@@ -197,11 +197,12 @@ function NewsScreen({ route, navigation }) {
     }
   }
 
-  const onScrollEvent = (event) => {
+  const onScrollEvent = useCallback((event) => {
     if (event && event.nativeEvent && event.nativeEvent.contentOffset) {
-      setScrollPos(pos => { pos.splice(newsMode, 1, event.nativeEvent.contentOffset.y); return pos; });
+      const curPos = event.nativeEvent.contentOffset.y;
+      setScrollPos(pos => { pos.splice(newsMode, 1, curPos); return pos; });
     }
-  }
+  });
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
@@ -232,9 +233,11 @@ function NewsScreen({ route, navigation }) {
         />
         {newsMode == 0 || newsMode == 2 ?
           <View style={{ flexDirection: 'row' }}>
-            <Text onPress={toggleAscendingSort} style={[CommonStyles.defaultText, { marginLeft: 0, marginRight: 8, marginTop: 8 }]}>
-              <Icon name={ascendingSort ? 'sort-numeric-ascending' : 'sort-numeric-descending'} size={25} />
-            </Text>
+            <TouchableOpacity onPress={toggleAscendingSort}>
+              <Text style={[CommonStyles.defaultText, { marginLeft: 0, marginRight: 8, marginTop: 8 }]}>
+                <Icon name={ascendingSort ? 'sort-numeric-ascending' : 'sort-numeric-descending'} size={25} />
+              </Text>
+            </TouchableOpacity>
           </View> : null}
       </View>
       <View style={{ flex: 1, marginHorizontal: 1 }}>
