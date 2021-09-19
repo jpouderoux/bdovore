@@ -135,6 +135,17 @@ export function sortByDate(data, field = 'DATE_AJOUT') {
   return data;
 }
 
+export function filterAlbumsWithSearchKeywords(albums, keywords = '') {
+  return keywords != '' ? albums.filter(album =>
+    lowerCaseNoAccentuatedChars(album.TITRE_TOME).includes(keywords) ||
+    lowerCaseNoAccentuatedChars(album.NOM_SERIE).includes(keywords)) : albums;
+}
+
+export function filterSeriesWithSearchKeywords(series, keywords = '') {
+  return keywords != '' ? series.filter(serie =>
+    lowerCaseNoAccentuatedChars(serie.NOM_SERIE).includes(keywords)) : series;
+}
+
 export function getNowDateString() {
   return new Date(Date.now()).toISOString().replaceAt(10, ' ');
 }

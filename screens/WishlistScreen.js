@@ -81,8 +81,10 @@ function WishlistScreen({ route, navigation }) {
     setFilterByDate(previousState => !previousState);
   }
 
-  const scrollToTop = () => {
-    flatList.current.scrollToOffset({ offset: 40, animated: false });
+  const scrollToTop = (offset = 40) => {
+    if (flatList && flatList.current) {
+      flatList.current.scrollToOffset({ offset, animated: false });
+    }
   }
 
   const onSearchChanged = (searchText) => {
@@ -90,16 +92,9 @@ function WishlistScreen({ route, navigation }) {
     searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
   }
 
-  const renderItem = ({ item, index }) => {
-    if (!Helpers.isValid(item)) return null;
-    let show = true;
-    if (searchKeywords != '') {
-      show = Helpers.lowerCaseNoAccentuatedChars(item.TITRE_TOME).includes(searchKeywords) ||
-        Helpers.lowerCaseNoAccentuatedChars(item.NOM_SERIE).includes(searchKeywords);
-    }
-    return show ?
-      <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} /> : null;
-  }
+  const renderItem = ({ item, index }) =>
+    Helpers.isValid(item) &&
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -147,7 +142,7 @@ function WishlistScreen({ route, navigation }) {
           style={{ flex: 1, marginHorizontal: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={filteredData}
+          data={Helpers.filterAlbumsWithSearchKeywords(filteredData, searchKeywords)}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}
