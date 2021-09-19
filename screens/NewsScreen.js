@@ -196,9 +196,11 @@ function NewsScreen({ route, navigation }) {
   }
 
   const onScrollEvent = (event) => {
-    if (event && event.nativeEvent && event.nativeEvent.contentOffset) {
-      setScrollPos(pos => { pos.splice(newsMode, 1, event.nativeEvent.contentOffset.y); return pos; });
-    }
+   if (! event.nativeEvent.contentOffset == null  ) {
+      if (event && event.nativeEvent && event.nativeEvent.contentOffset ) {
+        setScrollPos(pos => { pos.splice(newsMode, 1, event.nativeEvent.contentOffset.y); return pos; });
+      }
+    } 
   }
 
   const onSearchChanged = (searchText) => {
