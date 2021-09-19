@@ -26,9 +26,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -36,6 +37,7 @@ import { Icon } from '../components/Icon';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
+let searchKeywords = '';
 
 function WishlistScreen({ route, navigation }) {
 
@@ -43,6 +45,8 @@ function WishlistScreen({ route, navigation }) {
   const [collectionType, setCollectionType] = useState(0);
   const [filterByDate, setFilterByDate] = useState(true);
   const [filteredData, setFilteredData] = useState(null);
+  const [keywords, setKeywords] = useState('');
+  const flatList = useRef();
 
   if (route.params.collectionGenre != collectionGenre) {
     setCollectionGenre(route.params.collectionGenre);
@@ -70,15 +74,32 @@ function WishlistScreen({ route, navigation }) {
   const refreshData = () => {
     const collec = CollectionManager.getWishes(collectionGenre);
     setFilteredData(filterByDate ? Helpers.sliceSortByDate(collec) : collec);
+    scrollToTop();
   }
 
   const toggleFilterByDate = () => {
     setFilterByDate(previousState => !previousState);
   }
 
-  const renderItem = ({ item, index }) =>
-    Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
+  const scrollToTop = () => {
+    flatList.current.scrollToOffset({ offset: 40, animated: false });
+  }
+
+  const onSearchChanged = (searchText) => {
+    setKeywords(searchText);
+    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
+  }
+
+  const renderItem = ({ item, index }) => {
+    if (!Helpers.isValid(item)) return null;
+    let show = true;
+    if (searchKeywords != '') {
+      show = Helpers.lowerCaseNoAccentuatedChars(item.TITRE_TOME).includes(searchKeywords) ||
+        Helpers.lowerCaseNoAccentuatedChars(item.NOM_SERIE).includes(searchKeywords);
+    }
+    return show ?
+      <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} /> : null;
+  }
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
@@ -122,6 +143,7 @@ function WishlistScreen({ route, navigation }) {
         </View>
         :
         <FlatList
+          ref={flatList}
           style={{ flex: 1, marginHorizontal: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
@@ -131,9 +153,24 @@ function WishlistScreen({ route, navigation }) {
           ItemSeparatorComponent={Helpers.renderSeparator}
           getItemLayout={(data, index) => ({
             length: AlbumItemHeight,
-            offset: AlbumItemHeight * index,
+            offset: 40 + AlbumItemHeight * index,
             index
           })}
+          ListHeaderComponent={
+            <SearchBar
+              placeholder='Rechercher dans les albums...'
+              onChangeText={onSearchChanged}
+              onCancel={() => { onSearchChanged(''); scrollToTop(); }}
+              onClear={() => { onSearchChanged(''); scrollToTop(); }}
+              value={keywords}
+              platform='ios'
+              autoCapitalize='none'
+              autoCorrect={false}
+              inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+              containerStyle={[CommonStyles.screenStyle, { marginVertical: -8 }]}
+              inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
+              cancelButtonTitle='Annuler' />
+          }
         />
       }
     </View>

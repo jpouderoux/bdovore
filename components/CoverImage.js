@@ -69,7 +69,7 @@ export function CoverImage({ source, style, noResize, largeMode }) {
         cache: nodownload && Platform.OS == 'ios' ? 'only-if-cached' : 'default',
       }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
-      PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
+      //PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
     />
   );
 }
