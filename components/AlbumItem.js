@@ -48,7 +48,8 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
     const albumDate = item.DATE_PARUTION_EDITION ?? item.DTE_PARUTION;
     if (albumDate) {
       const now = Helpers.getNowDateString().substring(0, 10);
-      return ((albumDate > now) ? '\nA paraître le ' : '\nParu le ') + Helpers.convertDate(albumDate);
+      if (albumDate > now) return '\nA paraître le ' + Helpers.convertDate(albumDate);
+      if (showEditionDate) return '\nParu le ' + Helpers.convertDate(albumDate);
     }
     return '';
   }
@@ -68,7 +69,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n'}
-            {showEditionDate && (item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : ''}
+            {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : ''}
           </Text>
           {collectionMode ? null :
             <AlbumMarkers item={item}
