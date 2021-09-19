@@ -60,7 +60,6 @@ function NewsScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [trendAlbums, setTrendAlbums] = useState([]);
   const [newsMode, setNewsMode] = useState(0);
-  const [offline, setOffline] = useState(false);
   const [scrollPos, setScrollPos] = useState([40, 40, 40]);
   const [toggleElement, setToggleElement] = useState(Date.now());
   const [userNewsAlbums, setUserNewsAlbums] = useState([]);
@@ -117,7 +116,6 @@ function NewsScreen({ route, navigation }) {
   }, []);
 
   const fetchUserNewsData = async () => {
-    setOffline(!global.isConnected);
     if (global.isConnected) {
       if (global.verbose) {
         Helpers.showToast(false, 'Téléchargement des news...');
@@ -132,7 +130,6 @@ function NewsScreen({ route, navigation }) {
   }
 
   const fetchNewsData = async () => {
-    setOffline(!global.isConnected);
     if (global.isConnected) {
       setTrendAlbums([]);
       APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onTrendFetched)
@@ -246,7 +243,7 @@ function NewsScreen({ route, navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {!offline ?
+        {global.isConnected ?
           <FlatList
             ref={flatList}
             initialNumToRender={6}
@@ -288,7 +285,7 @@ function NewsScreen({ route, navigation }) {
             <View style={{ flex: 1 }}></View>
             <Text style={CommonStyles.defaultText}>Pas d'actualité en mode non-connecté.{'\n'}</Text>
             <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
-            <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={fetchData}>
+            <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={refreshDataIfNeeded}>
               <Icon name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
             </TouchableOpacity>
             <View style={{ flex: 1 }}></View>
