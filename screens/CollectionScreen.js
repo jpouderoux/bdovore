@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup, ListItem, SearchBar } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
@@ -92,11 +92,13 @@ function CollectionScreen({ route, navigation }) {
   const [keywords, setKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [progressRate, setProgressRate] = useState(0);
+  const [scrollPos, setScrollPos] = useState([0, 0]);
   const [serieFilterMode, setSerieFilterMode] = useState(0);
   const [showFilterChooser, setShowFilterChooser] = useState(false);
   const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
+  const flatList = useRef();
 
   collectionGenre = route.params.collectionGenre;
 
@@ -199,6 +201,7 @@ function CollectionScreen({ route, navigation }) {
       setFilteredSeries(null);
       setFilteredAlbums(null);
       setProgressRate(0);
+      setScrollPos([0, 0]);
       loadedItems = 0;
       loadingSteps = 3;
       loadTime = Date.now();
@@ -250,6 +253,7 @@ function CollectionScreen({ route, navigation }) {
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
+    flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
   }
 
   const onSerieFilterModePress = () => {
@@ -271,7 +275,7 @@ function CollectionScreen({ route, navigation }) {
 
   const renderItem = ({ item, index }) => {
     if (Helpers.isValid(item)) {
-      switch (parseInt(collectionType)) {
+      switch (collectionType) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
         case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
       }
@@ -281,6 +285,10 @@ function CollectionScreen({ route, navigation }) {
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? (collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item)) : index);
+
+  const onScrollEvent = (event) => {
+    setScrollPos(pos => { pos.splice(collectionType, 1, event.nativeEvent.contentOffset.y); return pos; });
+  }
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -358,6 +366,7 @@ function CollectionScreen({ route, navigation }) {
             </Text>
           ) : null}
           {<FlatList
+            ref={flatList}
             initialNumToRender={6}
             maxToRenderPerBatch={6}
             windowSize={10}
@@ -375,6 +384,7 @@ function CollectionScreen({ route, navigation }) {
               tintColor={bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
+            onScroll={onScrollEvent}
           />}
         </View>}
 

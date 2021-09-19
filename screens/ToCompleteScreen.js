@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { ButtonGroup } from 'react-native-elements';
@@ -54,6 +54,8 @@ function ToCompleteScreen({ route, navigation }) {
   const [filteredSeries, setFilteredSeries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [progressRate, setProgressRate] = useState(0);
+  const [scrollPos, setScrollPos] = useState([0, 0]);
+  const flatList = useRef();
 
   let [cachedToken, setCachedToken] = useState('');
 
@@ -118,6 +120,7 @@ function ToCompleteScreen({ route, navigation }) {
       setLoading(true);
       setProgressRate(0);
       setErrortext('');
+      setScrollPos([ 0, 0 ]);
       fetchSeries();
     }
   }
@@ -172,6 +175,7 @@ function ToCompleteScreen({ route, navigation }) {
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
+    flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
   }
 
   const renderItem = ({ item, index }) => {
@@ -182,6 +186,10 @@ function ToCompleteScreen({ route, navigation }) {
       }
     }
     return null;
+  }
+
+  const onScrollEvent = (event) => {
+    setScrollPos(pos => { pos.splice(collectionType, 1, event.nativeEvent.contentOffset.y); return pos; });
   }
 
   const keyExtractor = useCallback((item, index) =>
@@ -229,6 +237,7 @@ function ToCompleteScreen({ route, navigation }) {
             </View>
             :
             <FlatList
+              ref={flatList}
               initialNumToRender={6}
               maxToRenderPerBatch={6}
               windowSize={10}
@@ -246,6 +255,7 @@ function ToCompleteScreen({ route, navigation }) {
                 tintColor={bdovored}
                 refreshing={loading}
                 onRefresh={fetchData} />}
+              onScroll={onScrollEvent}
             />}
         </View> :
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>

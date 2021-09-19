@@ -26,9 +26,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
+import { Switch } from 'react-native-elements/dist/switch/switch';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
@@ -49,17 +50,20 @@ let cachedToken = '';
 
 function NewsScreen({ route, navigation }) {
 
+  const [ascendingSort, setAscendingSort] = useState(true);
   const [collectionGenre, setCollectionGenre] = useState(1);
   const [errortext, setErrortext] = useState('');
-  const [filteredUserNewsDataArray, setFilteredUserNewsDataArray] = useState([]);
-  const [filteredUserNewsToComeDataArray, setFilteredUserNewsToComeDataArray] = useState([]);
+  const [filteredUserNewsAlbums, setFilteredUserNewsAlbums] = useState([]);
+  const [filteredForthcomingAlbums, setFilteredForthcomingAlbums] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [newsDataArray, setNewsDataArray] = useState([]);
+  const [trendAlbums, setTrendAlbums] = useState([]);
   const [newsMode, setNewsMode] = useState(0);
   const [offline, setOffline] = useState(false);
-  const [userNewsDataArray, setUserNewsDataArray] = useState([]);
-  const [userNewsToComeDataArray, setUserNewsToComeDataArray] = useState([]);
+  const [scrollPos, setScrollPos] = useState([0, 0, 0]);
   const [toggleElement, setToggleElement] = useState(Date.now());
+  const [userNewsAlbums, setUserNewsAlbums] = useState([]);
+  const [forthcomingAlbums, setForthcomingAlbums] = useState([]);
+  const flatList = useRef();
 
   if (route.params.collectionGenre != collectionGenre) {
     setCollectionGenre(route.params.collectionGenre);
@@ -71,11 +75,13 @@ function NewsScreen({ route, navigation }) {
     });
 
     // Filter the news according the current collection genre
-    setFilteredUserNewsDataArray(
-      Helpers.stripNewsByOrigin(userNewsDataArray.slice(), newsModeMap[collectionGenre]));
-
-    //setFilteredUserNewsToComeDataArray(
-     // Helpers.stripNewsByOrigin(userNewsToComeDataArray.slice(), newsModeMap[collectionGenre]));
+    setFilteredUserNewsAlbums(
+      Helpers.stripNewsByOrigin(userNewsAlbums.slice(), newsModeMap[collectionGenre]));
+    if (ascendingSort) {
+      filteredUserNewsAlbums.reverse();
+    }
+    //setFilteredForthcomingAlbums(
+    // Helpers.stripNewsByOrigin(forthcomingAlbums.slice(), newsModeMap[collectionGenre]));
 
     // Fetch the tendency news for current collection genre
     fetchNewsData();
@@ -116,66 +122,84 @@ function NewsScreen({ route, navigation }) {
       setLoading(true);
       fetchUserNewsData();
       fetchNewsData();
+      setScrollPos([0, 0, 0]);
     }
   }
 
   const fetchUserNewsData = async () => {
-    setFilteredUserNewsDataArray([]);
+    setFilteredUserNewsAlbums([]);
     APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '0' })
       .then().catch((error) => console.debug(error));
   }
 
   const fetchNewsData = async () => {
-    setNewsDataArray([]);
+    setTrendAlbums([]);
     APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onNewsFetched)
       .then().catch((error) => console.debug(error));
 
-    setFilteredUserNewsToComeDataArray([]);
-    APIManager.fetchNews(newsModeMap[collectionGenre],{ navigation: navigation }, onUserNewsToComeFetched, { mode : 2, period: '-2' })
+    setFilteredForthcomingAlbums([]);
+    APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onForthcomingAlbumsFetched, { mode: 2, period: '-2' })
       .then().catch((error) => console.debug(error));
   }
 
   const onUserNewsFetched = async (result) => {
     console.debug('user news fetched!');
-    setUserNewsDataArray(result.items);
-    setFilteredUserNewsDataArray(
+    setUserNewsAlbums(result.items);
+    setFilteredUserNewsAlbums(
       Helpers.stripNewsByOrigin(result.items, newsModeMap[collectionGenre]));
+    if (ascendingSort) {
+      filteredUserNewsAlbums.reverse();
+    }
     setErrortext(result.error);
     setLoading(false);
     cachedToken = global.token;
   }
 
-  const onUserNewsToComeFetched = async (result) => {
+  const onForthcomingAlbumsFetched = async (result) => {
     console.debug('user news to come fetched!');
-    //result.items.reverse();
-    setUserNewsToComeDataArray(result.items);
-
-    setFilteredUserNewsToComeDataArray(result.items);
+    setForthcomingAlbums(result.items);
+    if (ascendingSort) {
+      result.items.reverse();
+    }
+    setFilteredForthcomingAlbums(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
 
   const onNewsFetched = async (result) => {
     console.debug('news fetched!');
-    setNewsDataArray(result.items);
+    setTrendAlbums(result.items);
     setErrortext(result.error);
     setLoading(false);
   }
 
+  const toggleAscendingSort = () => {
+    const sort = !ascendingSort;
+    setAscendingSort(sort);
+    filteredUserNewsAlbums.reverse();
+    filteredForthcomingAlbums.reverse();
+    flatList.current.scrollToOffset({ offset: 0, animated: false });
+  }
+
   const onPressNewsMode = (selectedIndex) => {
     setNewsMode(selectedIndex);
+    flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
   };
+
+  const onScrollEvent = (event) => {
+    setScrollPos(pos => { pos.splice(newsMode, 1, event.nativeEvent.contentOffset.y); return pos; });
+  }
 
   const renderAlbum = ({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={newsMode == 2} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={true} />;
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <View style={{ marginBottom: 0 }}>
+      <View style={{ flexDirection: 'row', marginBottom: 0 }}>
         <ButtonGroup
           onPress={onPressNewsMode}
           selectedIndex={newsMode}
@@ -183,11 +207,17 @@ function NewsScreen({ route, navigation }) {
             { element: () => <Text style={CommonStyles.defaultText}>Mon actualité</Text> },
             { element: () => <Text style={CommonStyles.defaultText}>Tendances</Text> },
             { element: () => <Text style={CommonStyles.defaultText}>A paraître</Text> }]}
-          containerStyle={[CommonStyles.buttonGroupContainerStyle]}
+          containerStyle={[{ flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
           selectedButtonStyle={CommonStyles.buttonGroupSelectedButtonStyle}
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
+        {newsMode == 0 || newsMode == 2 ?
+        <View style={{ flexDirection: 'row' }}>
+          <Text onPress={toggleAscendingSort} style={[CommonStyles.defaultText, { marginLeft: 0, marginRight: 8, marginTop: 8 }]}>
+            <Icon name={ascendingSort ? 'sort-numeric-ascending' : 'sort-numeric-descending'} size={25} />
+          </Text>
+        </View> : null}
       </View>
       <View style={{ flex: 1, marginHorizontal: 1 }}>
         {errortext ? (
@@ -195,25 +225,28 @@ function NewsScreen({ route, navigation }) {
             {errortext}
           </Text>
         ) : null}
-        {!offline ? <FlatList
-          initialNumToRender={6}
-          maxToRenderPerBatch={6}
-          windowSize={10}
-          ItemSeparatorComponent={Helpers.renderSeparator}
-          data={newsMode == 0 ? filteredUserNewsDataArray : newsMode == 1 ? newsDataArray  : filteredUserNewsToComeDataArray}
-          keyExtractor={keyExtractor}
-          renderItem={renderAlbum}
-          extraData={toggleElement}
-          refreshControl={<RefreshControl
-            colors={[bdovorlightred, bdovored]}
-            tintColor={bdovored}
-            refreshing={loading}
-            onRefresh={fetchData} />}
-          getItemLayout={(data, index) => ({
-            length: AlbumItemHeight,
-            offset: AlbumItemHeight * index,
-            index
-          })} />
+        {!offline ?
+          <FlatList
+            ref={flatList}
+            initialNumToRender={6}
+            maxToRenderPerBatch={6}
+            windowSize={10}
+            ItemSeparatorComponent={Helpers.renderSeparator}
+            data={newsMode == 0 ? filteredUserNewsAlbums : newsMode == 1 ? trendAlbums : filteredForthcomingAlbums}
+            keyExtractor={keyExtractor}
+            renderItem={renderAlbum}
+            extraData={toggleElement}
+            refreshControl={<RefreshControl
+              colors={[bdovorlightred, bdovored]}
+              tintColor={bdovored}
+              refreshing={loading}
+              onRefresh={fetchData} />}
+            getItemLayout={(data, index) => ({
+              length: AlbumItemHeight,
+              offset: AlbumItemHeight * index,
+              index
+            })}
+            onScroll={onScrollEvent} />
           : <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
             <View style={{ flex: 1 }}></View>
             <Text style={CommonStyles.defaultText}>Pas d'actualité en mode non-connecté.{'\n'}</Text>

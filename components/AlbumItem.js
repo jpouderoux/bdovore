@@ -38,11 +38,22 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
-export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate, showExclude, refreshCallback }) {
+export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate = false, showExclude, refreshCallback }) {
 
   const onPressAlbum = () => {
     navigation.push('Album', { item: Helpers.toDict(item), dontShowSerieScreen });
   }
+
+  const showDate = () => {
+    const albumDate = item.DATE_PARUTION_EDITION ?? item.DTE_PARUTION;
+    if (albumDate) {
+      const now = Helpers.getNowDateString().substring(0, 10);
+      return ((albumDate > now) ? '\nA paraître le ' : '\nParu le ') + Helpers.convertDate(albumDate);
+    }
+    return '';
+  }
+
+  showDate();
 
   return (
     <TouchableOpacity key={index} onPress={onPressAlbum}>
@@ -57,7 +68,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
             {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n'}
-            {showEditionDate && item.DATE_PARUTION_EDITION ? '\nA paraître le ' + Helpers.convertDate(item.DATE_PARUTION_EDITION) : ''}
+            {showEditionDate && (item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : ''}
           </Text>
           {collectionMode ? null :
             <AlbumMarkers item={item}
