@@ -131,11 +131,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.bdovore"
+        applicationId "com.PaulOlivier.bdovore"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 200
+        versionName "2.0"
         missingDimensionStrategy 'react-native-camera', 'mlkit'
     }
     splits {
@@ -154,10 +154,12 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('bdovore.keystore')
-            storePassword 'Moebius'
-            keyAlias 'bdovore'
-            keyPassword 'Moebius'
+            if (project.hasProperty('BDOVORE_UPLOAD_STORE_FILE')) {
+                storeFile file(BDOVORE_UPLOAD_STORE_FILE)
+                storePassword BDOVORE_UPLOAD_STORE_PASSWORD
+                keyAlias BDOVORE_UPLOAD_KEY_ALIAS
+                keyPassword BDOVORE_UPLOAD_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
