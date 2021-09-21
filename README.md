@@ -1,12 +1,14 @@
 # BDovore client for mobile devices
 
+![BDovore](assets/logo_v2.png)
+
 Coded by Joachim Pouderoux, 2021
 
 License: BSD-3-Clause License
 
-Hosted on [github](https://github.com/jpouderoux/bdovore).
+Open-source code hosted on [github](https://github.com/jpouderoux/bdovore).
 
-[BdOvore](https://www.bdovore.com) is a free comics management service.
+[BDovore](https://www.bdovore.com) is a free comics management service.
 
 This project aims to provide a free and opensource mobile application for both Android and iOS platforms using a unique technology (React Native) and code base.
 
