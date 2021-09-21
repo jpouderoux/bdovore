@@ -320,7 +320,9 @@ function CollectionScreen({ route, navigation }) {
           innerBorderStyle={CommonStyles.buttonGroupInnerBorderStyle}
         />
         {(!global.autoSync && global.serverTimestamp != global.localTimestamp) ?
-          <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
+          <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}>
+            <Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} />
+          </TouchableOpacity> : null}
       </View>
       {loading ?
         <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> :

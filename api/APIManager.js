@@ -47,9 +47,9 @@ function getBaseUserURL(token, dataMode) {
 
 function concatParamsToURL(url, params) {
   for (const key in params) {
-    url += '&' + key + '=' + params[key];
+    url += '&' + key + '=' + encodeURIComponent(params[key]);
   }
-  return encodeURI(url);
+  return url;
 }
 
 const GETHeaders = new Headers({
@@ -148,7 +148,7 @@ export function loginBDovore(pseudo, passwd, callback) {
       'User-Agent': bdovoreUserAgent,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: encodeURI('user_login=' + pseudo + '&user_password=' + passwd)
+    body: 'user_login=' + encodeURIComponent(pseudo) + '&user_password=' + encodeURIComponent(passwd)
   })
     .then(resp => resp.json())
     .then(response => {

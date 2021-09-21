@@ -61,23 +61,30 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-          <CoverImage source={APIManager.getSerieCoverURL(item)} style={{ /*height: item.nb_album ? 122 : 122 */ }} />
+          <CoverImage source={APIManager.getSerieCoverURL(item)} />
         </View>
         <View style={[CommonStyles.itemTextContent]} >
-          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>{item.NOM_SERIE}</Text>
+          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
+            {item.NOM_SERIE}
+          </Text>
+
           {(!collectionMode && item.NOTE_SERIE) ? <RatingStars note={item.NOTE_SERIE} /> : null}
+
           {(item.LIB_FLG_FINI_SERIE) ?
             <Text style={[CommonStyles.largerText, CommonStyles.itemText, { marginTop: 10 }]}>
               {item.LIB_FLG_FINI_SERIE}{item.NB_TOME && item.LIB_FLG_FINI_SERIE != 'One Shot' ? ' - ' + item.NB_TOME + ' tomes' : ''}
             </Text> : null}
+
           {(nbUserAlbums > 0 && item.NB_ALBUM > 0) ? (
             <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 15 }]}>
               {Helpers.pluralWord(nbUserAlbums, 'album')} sur {item.NB_ALBUM} dans la base {'\n'}
             </Text>) : null}
+
           {(item.nb_album) ?
             <Text style={[CommonStyles.largerText, CommonStyles.itemText, { marginTop: 10 }]}>
               {Helpers.pluralWord(item.nb_album, 'album') + ' ' + Helpers.pluralize(item.nb_album, 'manquant')}
             </Text> : null}
+
           {showExclude ?
             <SerieMarkers item={item} style={CommonStyles.markersViewStyle} reduceMode={true} showExclude={showExclude} />
             : null}
