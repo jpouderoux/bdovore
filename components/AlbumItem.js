@@ -60,8 +60,6 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
     return null;
   }
 
-  showDate();
-
   return (
     <TouchableOpacity key={index} onPress={onPressAlbum}>
       <View style={{ flexDirection: 'row', }}>

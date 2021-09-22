@@ -80,7 +80,6 @@ let collectionGenre = 0;
 let loadingSteps = 0;
 let loadTime = 0;
 let loadedItems = 0;
-let searchKeywords = ''; // for unclear reasons, keywords state is cleared at some point during loading so we copy it here and rely on this one
 
 function CollectionScreen({ route, navigation }) {
 
@@ -99,6 +98,8 @@ function CollectionScreen({ route, navigation }) {
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
   const flatList = useRef();
+  const stateRefKeywords = useRef();
+  stateRefKeywords.current = keywords;
 
   collectionGenre = route.params.collectionGenre;
 
@@ -146,11 +147,11 @@ function CollectionScreen({ route, navigation }) {
 
   const filterCollection = (collection, mode) => {
 
-    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(searchKeywords);
+    const lowerSearchText = Helpers.lowerCaseNoAccentuatedChars(stateRefKeywords.current);
 
     return collection.filter((item) => {
       // Search for keywords if provided
-      if (searchKeywords != '') {
+      if (lowerSearchText != '') {
         // search text in lowercase title without taking accents
         if ((mode == 1 ? !Helpers.lowerCaseNoAccentuatedChars(item.TITRE_TOME).includes(lowerSearchText) : true)
           && !Helpers.lowerCaseNoAccentuatedChars(item.NOM_SERIE).includes(lowerSearchText)) {
@@ -179,14 +180,14 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const applyFilters = () => {
-    if (searchKeywords == '' && collectionGenre == 0 && filterMode == 0) {
+    if (stateRefKeywords.current == '' && collectionGenre == 0 && filterMode == 0) {
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(CollectionManager.getAlbums()) : null);
     } else {
       const filteredAlbums = filterCollection(CollectionManager.getAlbums(collectionGenre), 1);
       setFilteredAlbums(sortMode == 1 ? Helpers.sliceSortByDate(filteredAlbums) : filteredAlbums);
     }
 
-    if (searchKeywords == '' && collectionGenre == 0 && serieFilterMode == 0) {
+    if (stateRefKeywords.current == '' && collectionGenre == 0 && serieFilterMode == 0) {
       setFilteredSeries(null);
     }
     else {
@@ -197,7 +198,6 @@ function CollectionScreen({ route, navigation }) {
   const fetchData = () => {
     if (!loading && global.isConnected) {
       setKeywords('');
-      searchKeywords = '';
       setSortMode(defaultSortMode);
       setLoading(true);
       setFilteredSeries(null);
@@ -222,7 +222,6 @@ function CollectionScreen({ route, navigation }) {
       loadedItems += parseFloat(result.items.length);
     }
 
-    let rate = 1;
     switch (type) {
       case 0:
         let nbTotalSeries = result.totalItems ?? result.items.length;
@@ -272,7 +271,6 @@ function CollectionScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
   }
 
   const scrollToTop = (offset = 40) => {

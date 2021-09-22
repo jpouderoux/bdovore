@@ -28,7 +28,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import NetInfo from "@react-native-community/netinfo";
 

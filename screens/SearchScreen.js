@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
@@ -42,8 +42,6 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 
-let lastKeywords = '';
-
 function SearchScreen({ navigation }) {
 
   const [data, setData] = useState([]);
@@ -52,6 +50,11 @@ function SearchScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState(0);
   const [toggleElement, setToggleElement] = useState(Date.now());
+
+  const stateRefKeywords = useRef();
+  stateRefKeywords.current = keywords;
+  const stateRefSearchMode = useRef();
+  stateRefSearchMode.current = searchMode;
 
   const toggle = () => {
     setToggleElement(Date.now());
@@ -75,13 +78,13 @@ function SearchScreen({ navigation }) {
     onSearch(keywords);
   }, [searchMode]);
 
-  const onSearchFetched = async (searchedText, result) => {
+  const onSearchFetched = (searchedText, mode, result) => {
     // As many requests are sent to the server while typing the keywords,
     // it may happen that answers are not received in order. So we make
     // sure to only take into account the result of the request for
     // the last provided keywords.
-    if (searchedText == lastKeywords) {
-      if (!result.error && searchMode == 1) {
+    if (searchedText == stateRefKeywords.current && mode == stateRefSearchMode.current) {
+      if (!result.error && stateRefSearchMode.current == 1) {
         CollectionManager.selectOwnAlbum(result.items);
       }
       setData(result.items);
@@ -91,17 +94,19 @@ function SearchScreen({ navigation }) {
   }
 
   const onSearch = (searchText) => {
+
     if (!global.isConnected) { return; }
+
     setKeywords(searchText);
-    lastKeywords = searchText;
     if (searchText == '') {
       setData([]);
       return;
     }
 
-    const callback = (result) => onSearchFetched(searchText, result);
+    const mode = parseInt(searchMode);
+    const callback = (result) => onSearchFetched(searchText, mode, result);
     setLoading(true);
-    switch (parseInt(searchMode)) {
+    switch (mode) {
       case 0:
         APIManager.fetchSerieByTerm(searchText, callback);
         break;

@@ -37,7 +37,6 @@ import { Icon } from '../components/Icon';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
-let searchKeywords = '';
 
 function WishlistScreen({ route, navigation }) {
 
@@ -89,7 +88,6 @@ function WishlistScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
   }
 
   const renderItem = ({ item, index }) =>
@@ -142,7 +140,7 @@ function WishlistScreen({ route, navigation }) {
           style={{ flex: 1, marginHorizontal: 1 }}
           maxToRenderPerBatch={6}
           windowSize={10}
-          data={Helpers.filterAlbumsWithSearchKeywords(filteredData, searchKeywords)}
+          data={Helpers.filterAlbumsWithSearchKeywords(filteredData, keywords)}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={Helpers.renderSeparator}

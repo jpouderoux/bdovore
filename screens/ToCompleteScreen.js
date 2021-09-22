@@ -46,7 +46,6 @@ let loadedSeries = 0;
 let collectionGenre = 0;
 let albums = [];
 let series = [];
-let searchKeywords = '';
 
 function ToCompleteScreen({ route, navigation }) {
 
@@ -183,7 +182,6 @@ function ToCompleteScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
   }
 
   const scrollToTop = (offset = 40) => {
@@ -211,7 +209,7 @@ function ToCompleteScreen({ route, navigation }) {
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ?
-      (item.IMG_COUV_SERIE ? item.ID_SERIE + 1000000 : Helpers.makeAlbumUID(item)) : index);
+      (collectionType == 0 ? item.ID_SERIE : Helpers.makeAlbumUID(item)) : index);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -259,8 +257,8 @@ function ToCompleteScreen({ route, navigation }) {
               maxToRenderPerBatch={6}
               windowSize={10}
               data={collectionType == 0 ?
-                Helpers.filterSeriesWithSearchKeywords(filteredSeries, searchKeywords) :
-                Helpers.filterAlbumsWithSearchKeywords(filteredAlbums, searchKeywords)}
+                Helpers.filterSeriesWithSearchKeywords(filteredSeries, keywords) :
+                Helpers.filterAlbumsWithSearchKeywords(filteredAlbums, keywords)}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               ItemSeparatorComponent={Helpers.renderSeparator}

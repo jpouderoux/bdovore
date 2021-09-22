@@ -47,7 +47,6 @@ const newsModeMap = {
 
 
 let cachedToken = '';
-let searchKeywords = '';
 
 function NewsScreen({ route, navigation }) {
 
@@ -203,7 +202,6 @@ function NewsScreen({ route, navigation }) {
 
   const onSearchChanged = (searchText) => {
     setKeywords(searchText);
-    searchKeywords = Helpers.lowerCaseNoAccentuatedChars(searchText);
   }
 
   const renderAlbum = ({ item, index }) =>
@@ -250,7 +248,7 @@ function NewsScreen({ route, navigation }) {
             maxToRenderPerBatch={6}
             windowSize={10}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            data={Helpers.filterAlbumsWithSearchKeywords(newsMode == 0 ? filteredUserNewsAlbums : newsMode == 1 ? trendAlbums : filteredForthcomingAlbums, searchKeywords)}
+            data={Helpers.filterAlbumsWithSearchKeywords(newsMode == 0 ? filteredUserNewsAlbums : newsMode == 1 ? trendAlbums : filteredForthcomingAlbums, keywords)}
             keyExtractor={keyExtractor}
             renderItem={renderAlbum}
             extraData={toggleElement}

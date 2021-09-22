@@ -136,14 +136,18 @@ export function sortByDate(data, field = 'DATE_AJOUT') {
 }
 
 export function filterAlbumsWithSearchKeywords(albums, keywords = '') {
-  return keywords != '' ? albums.filter(album =>
-    lowerCaseNoAccentuatedChars(album.TITRE_TOME).includes(keywords) ||
-    lowerCaseNoAccentuatedChars(album.NOM_SERIE).includes(keywords)) : albums;
+  if (keywords == '') return albums;
+  const kw = lowerCaseNoAccentuatedChars(keywords);
+  return albums.filter(album =>
+    lowerCaseNoAccentuatedChars(album.TITRE_TOME).includes(kw) ||
+    lowerCaseNoAccentuatedChars(album.NOM_SERIE).includes(kw));
 }
 
 export function filterSeriesWithSearchKeywords(series, keywords = '') {
-  return keywords != '' ? series.filter(serie =>
-    lowerCaseNoAccentuatedChars(serie.NOM_SERIE).includes(keywords)) : series;
+  if (keywords == '') return series;
+  const kw = lowerCaseNoAccentuatedChars(keywords);
+  return series.filter(serie =>
+    lowerCaseNoAccentuatedChars(serie.NOM_SERIE).includes(kw));
 }
 
 export function getNowDateString() {
@@ -184,7 +188,7 @@ export function stripNewsByOrigin(data, origine) {
 
 export function makeAlbumUID(album) {
   // 009633-062007: ID_TOME*1000000 + ID_EDITION
-  return album ? parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION) : 0;
+  return album ? (album._id ?? parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION)) : 0;
 }
 
 export function createDictFromArray(array, dict, hashFun) {
