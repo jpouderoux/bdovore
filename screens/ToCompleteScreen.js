@@ -239,7 +239,7 @@ function ToCompleteScreen({ route, navigation }) {
           <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
       </View>
       {global.isConnected ?
-        <View style={{ marginHorizontal: 1 }}>
+        <View style={{ marginLeft: 1 }}>
           {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
           {errortext ? (
             <View style={{ alignItems: 'center', marginBottom: 5 }}>

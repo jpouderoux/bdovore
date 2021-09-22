@@ -40,6 +40,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const [autoSync, setAutoSync] = useState(global.autoSync);
   const [confirmDeletion, setConfirmDeletion] = useState(global.confirmDeletion);
   const [imageOnWifi, setImageOnWifi] = useState(global.imageOnWifi);
+  const [retractableButtons, setRetractableButtons] = useState(global.retractableButtons);
   const [showBDovoreIds, setShowBDovoreIds] = useState(global.showBDovoreIds);
   const [showConnectionMessages, setShowConnectionMessages] = useState(global.showConnectionMessages);
   const [verbose, setVerbose] = useState(global.verbose);
@@ -48,6 +49,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     setAutoSync(global.autoSync);
     setConfirmDeletion(global.confirmDeletion);
     setImageOnWifi(global.imageOnWifi);
+    setRetractableButtons(global.retractableButtons);
     setShowBDovoreIds(global.showBDovoreIds);
     setShowConnectionMessages(global.showConnectionMessages);
     setVerbose(global.verbose);
@@ -61,6 +63,11 @@ function SettingsPanel({ isVisible, visibleSetter }) {
   const onSwitchAutoSync = (value) => {
     setAutoSync(value);
     Helpers.setAndSaveGlobal('autoSync', value);
+  }
+
+  const onSwitchRetractableButtons = (value) => {
+    setRetractableButtons(value);
+    Helpers.setAndSaveGlobal('retractableButtons', value);
   }
 
   const onSwitchVerbose = (value) => {
@@ -106,6 +113,18 @@ function SettingsPanel({ isVisible, visibleSetter }) {
           <Text style={CommonStyles.defaultText}>Synchronisation automatique</Text>
           <View style={{ flex: 1 }}></View>
           <Switch value={autoSync} onValueChange={onSwitchAutoSync}
+            style={{ marginTop: -5 }}
+            thumbColor={CommonStyles.switchStyle.color}
+            trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
+        </View>
+
+        <View style={{
+          flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between',
+          borderTopWidth: 1.0, borderTopColor: CommonStyles.separatorStyle.borderBottomColor
+        }}>
+          <Text style={CommonStyles.defaultText}>Boutons albums retractables</Text>
+          <View style={{ flex: 1 }}></View>
+          <Switch value={retractableButtons} onValueChange={onSwitchRetractableButtons}
             style={{ marginTop: -5 }}
             thumbColor={CommonStyles.switchStyle.color}
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />

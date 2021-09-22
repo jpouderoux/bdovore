@@ -61,28 +61,26 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
   }
 
   return (
-    <TouchableOpacity key={index} onPress={onPressAlbum}>
-      <View style={{ flexDirection: 'row', }}>
-        <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-          <CoverImage source={APIManager.getAlbumCoverURL(item)} />
-        </View>
-        <View style={CommonStyles.itemTextContent}>
-          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
-            {item.TITRE_TOME}
-          </Text>
-          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
-          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
-            {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n\n'}
-            {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : null}
-          </Text>
-          {collectionMode ? null :
-            <AlbumMarkers item={item}
-              style={CommonStyles.markersViewStyle}
-              reduceMode={true}
-              showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false}
-              refreshCallback={refreshCallback} />
-          }
-        </View>
+    <TouchableOpacity key={index} onPress={onPressAlbum} style={{ flexDirection: 'row' }}>
+      <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
+        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+      </View>
+      <View style={[CommonStyles.itemTextContent, { marginRight: 0 }]}>
+        <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
+          {item.TITRE_TOME}
+        </Text>
+        <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
+        <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
+          {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n\n'}
+          {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : null}
+        </Text>
+        {collectionMode ? null :
+          <AlbumMarkers item={item}
+            style={CommonStyles.markersViewStyle}
+            reduceMode={true}
+            showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false}
+            refreshCallback={refreshCallback} />
+        }
       </View>
     </TouchableOpacity>
   );

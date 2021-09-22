@@ -241,7 +241,7 @@ function NewsScreen({ route, navigation }) {
             </TouchableOpacity>
           </View> : null}
       </View>
-      <View style={{ flex: 1, marginHorizontal: 1 }}>
+      <View style={{ flex: 1, marginLeft: 1 }}>
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}

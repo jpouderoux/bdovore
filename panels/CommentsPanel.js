@@ -70,7 +70,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
             {Object.entries(comments).map((item) => renderComment(item))}
           </TouchableOpacity>
         </ScrollView>
-          <View style={{ marginVertical: 15, alignContent: 'center', alignItems: 'center' }}>
+          <View style={{ marginTop: 15, marginBottom: 20, alignContent: 'center', alignItems: 'center' }}>
             <Text style={[CommonStyles.linkTextStyle, CommonStyles.center]} onPress={() => visibleSetter(false)}>Fermer</Text>
           </View>
       </View>

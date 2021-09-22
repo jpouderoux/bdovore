@@ -58,6 +58,7 @@ class CSettingsManager {
       ['localTimestamp',         null],
       ['login',                  null],
       ['passwd',                 null],
+      ['retractableButtons',     false],
       ['showBDovoreIds',         false],
       ['showConnectionMessages', false],
       ['showExcludedAlbums',     true],

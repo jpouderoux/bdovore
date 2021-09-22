@@ -144,7 +144,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
   const isSerieExcluded = serie.IS_EXCLU == 1;
 
   return (
-    <View style={[{ flexDirection: 'row' }, style]}>
+    <View style={[{ flexDirection: 'row' }, style, { marginRight: 3 }]}>
 
       {isProcessing('addingall') ? <MarkerLoadingIndicator /> :
         (nbOfUserAlbums == 0 && serieAlbums && serieAlbums.length > 0 ?

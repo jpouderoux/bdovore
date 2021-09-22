@@ -282,8 +282,8 @@ function SerieScreen({ route, navigation }) {
               {renderAuthors()}
               {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore : {serie.ID_SERIE}</Text> : null}
             </View>
-            <View style={{ alignContent: 'flex-end', flex: 0 }}>
-              <Text onPress={onShowNumberOfAlbums} style={[CommonStyles.defaultText, { textAlign: 'right', top: 5, marginRight: 7 }]}>
+            <View style={{ alignContent: 'flex-end', flex: 0, marginRight: -8 }}>
+              <Text onPress={onShowNumberOfAlbums} style={[CommonStyles.defaultText, { textAlign: 'right', top: 5 }]}>
                 {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}
                 {/*serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''*/}</Text>
               <SerieMarkers item={serie}
