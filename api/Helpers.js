@@ -190,9 +190,14 @@ export function stripNewsByOrigin(data, origine) {
   return data.filter(item => (item.ORIGINE == origine));
 }
 
+export function getAlbumUID(album) {
+  // 009633-062007: ID_TOME*1000000 + ID_EDITION
+  return album ? (parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION)) : 0;
+}
+
 export function makeAlbumUID(album) {
   // 009633-062007: ID_TOME*1000000 + ID_EDITION
-  return album ? (album._id ?? parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION)) : 0;
+  return album ? (parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION)) : 0;
 }
 
 export function createDictFromArray(array, dict, hashFun) {
@@ -204,7 +209,7 @@ export function createDictFromArray(array, dict, hashFun) {
 }
 
 export function createAlbumDict(array, dict) {
-  return createDictFromArray(array, dict, (item) => makeAlbumUID(item));
+  return createDictFromArray(array, dict, (item) => getAlbumUID(item));
 }
 
 export function createSeriesDict(array, dict) {
@@ -212,7 +217,7 @@ export function createSeriesDict(array, dict) {
 }
 
 export function getAlbumIdxInArray(album, dict) {
-  return dict ? dict[makeAlbumUID(album)] : null;
+  return dict ? dict[getAlbumUID(album)] : null;
 }
 
 export function getSerieIdxInArray(id_serie, dict) {
@@ -221,7 +226,7 @@ export function getSerieIdxInArray(id_serie, dict) {
 
 export function addAlbumToArrayAndDict(album, array, dict) {
   const idx = array.push(album) - 1;
-  dict[makeAlbumUID(album)] = idx;
+  dict[getAlbumUID(album)] = idx;
   return idx;
 }
 
@@ -234,7 +239,7 @@ export function addSerieToArrayAndDict(serie, array, dict) {
 export function removeAlbumFromArrayAndDict(album, array, dict) {
   const idx = getAlbumIdxInArray(album, dict);
   if (idx >= 0) {
-    const uid = makeAlbumUID(album);
+    const uid = getAlbumUID(album);
     delete dict[uid];
     array = array.splice(idx, 1);
     // Refresh dictionary according the new array order once the entry has been removed

@@ -91,7 +91,7 @@ class CSettingsManager {
     if (!global.forceOffline) {
       global.connectionType = state.type;
       global.isConnected = state.isConnected != null ? state.isConnected : state.isInternetReachable;
-      console.debug('Global connection state: ' + global.isConnected);
+      //console.debug('Global connection state: ' + global.isConnected);
       if (showConnectionMessages) {
         Helpers.showToast(false, 'Connexion ' + state.type + (state.isConnected ? ' activée' : ' désactivée'));
       }

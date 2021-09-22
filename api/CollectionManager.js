@@ -793,11 +793,11 @@ class CCollectionManager {
   }
 
   getAlbumInCollection(album) {
-    return global.db.objectForPrimaryKey('Albums', Helpers.makeAlbumUID(album)) ?? null;
+    return global.db.objectForPrimaryKey('Albums', Helpers.getAlbumUID(album)) ?? null;
   }
 
   getAlbumInWishlist(album) {
-    return global.db.objectForPrimaryKey('Wishes', Helpers.makeAlbumUID(album)) ?? null;
+    return global.db.objectForPrimaryKey('Wishes', Helpers.getAlbumUID(album)) ?? null;
   }
 
   getFirstAlbumEditionOfSerieInCollection(album) {
@@ -877,7 +877,7 @@ class CCollectionManager {
   }
 
   setAlbumExcludedFlag(album, isExcluded) {
-    const uid = Helpers.makeAlbumUID(album);
+    const uid = Helpers.getAlbumUID(album);
     global.db.write(() => {
       if (isExcluded) {
         global.excludeAlbums[uid] = true;
@@ -891,7 +891,7 @@ class CCollectionManager {
   }
 
   isAlbumExcluded(album) {
-    const uid = Helpers.makeAlbumUID(album);
+    const uid = Helpers.getAlbumUID(album);
     return global.excludeAlbums[uid] ?? false;
   }
 };

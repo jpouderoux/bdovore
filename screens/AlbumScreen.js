@@ -186,7 +186,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.makeAlbumUID(item));
+    Helpers.getAlbumUID(item), []);
 
   const renderSimil = useCallback(({ item, index }) => (
     <TouchableOpacity key={index} onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
@@ -194,7 +194,7 @@ function AlbumScreen({ route, navigation }) {
         <CoverImage source={APIManager.getAlbumCoverURL(item)} />
         <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
       </View>
-    </TouchableOpacity>));
+    </TouchableOpacity>), []);
 
   const renderAuthors = () => {
 

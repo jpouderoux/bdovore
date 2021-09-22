@@ -86,7 +86,7 @@ export function checkForToken(navigation = null, callback = null) {
     return callback ? callback() : 'offline-';
   }
   if (!global.token && global.login && global.passwd) {
-    console.log('undefined token -> relogin');
+    console.debug('undefined token -> relogin');
     return reloginBDovore(navigation, callback);
   }
   if (!global.token && navigation) {
@@ -100,7 +100,7 @@ export function checkForToken(navigation = null, callback = null) {
 
 export async function reloginBDovore(navigation, callback = null) {
 
-  console.log("relogin!");
+  console.debug("relogin!");
   if (global.isConnected) {
     AsyncStorage.multiGet(['login', 'passwd'])
       .then((values) => {
@@ -117,13 +117,13 @@ export async function reloginBDovore(navigation, callback = null) {
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.debug(error);
         if (navigation) {
           navigation.navigate('Login');
         }
       });
   } else {
-    console.log('Not connected.');
+    console.debug('Not connected.');
   }
 }
 

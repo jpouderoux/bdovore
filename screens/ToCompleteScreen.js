@@ -69,12 +69,12 @@ function ToCompleteScreen({ route, navigation }) {
       series = [];
     }
 
-    console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+    //console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
     if ((global.autoSync || force) && cachedToken != 'fetching' && !global.forceOffline && (cachedToken != global.token || !global.collectionManquantsUpdated)) {
       const savedCachedToken = cachedToken;
       cachedToken = 'fetching';
       APIManager.onConnected(navigation, () => {
-        console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+        //console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
         fetchData();
       }, () => { cachedToken = savedCachedToken; });
     }
@@ -205,11 +205,17 @@ function ToCompleteScreen({ route, navigation }) {
       }
     }
     return null;
-  });
+  }, [collectionType]);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ?
-      (collectionType == 0 ? item.ID_SERIE : Helpers.makeAlbumUID(item)) : index);
+      (collectionType == 0 ? item.ID_SERIE : Helpers.getAlbumUID(item)) : index, [collectionType]);
+
+  const getItemLayout = useCallback((data, index) => ({
+    length: AlbumItemHeight,
+    offset: 40 + AlbumItemHeight * index,
+    index
+  }), []);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -254,7 +260,7 @@ function ToCompleteScreen({ route, navigation }) {
             <FlatList
               ref={flatList}
               initialNumToRender={6}
-              maxToRenderPerBatch={6}
+              maxToRenderPerBatch={10}
               windowSize={10}
               data={collectionType == 0 ?
                 Helpers.filterSeriesWithSearchKeywords(filteredSeries, keywords) :
@@ -262,11 +268,7 @@ function ToCompleteScreen({ route, navigation }) {
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               ItemSeparatorComponent={Helpers.renderSeparator}
-              getItemLayout={(data, index) => ({
-                length: AlbumItemHeight,
-                offset: 40 + AlbumItemHeight * index,
-                index
-              })}
+              getItemLayout={getItemLayout}
               refreshControl={<RefreshControl
                 colors={[bdovorlightred, bdovored]}
                 tintColor={bdovored}

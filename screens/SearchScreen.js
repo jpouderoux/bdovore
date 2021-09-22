@@ -33,7 +33,7 @@ import { ButtonGroup, SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
 import { AuteurItem } from '../components/AuteurItem';
-import { CommonStyles } from '../styles/CommonStyles';
+import { AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { SerieItem } from '../components/SerieItem';
@@ -165,12 +165,12 @@ function SearchScreen({ navigation }) {
     if (Helpers.isValid(item)) {
       switch (parseInt(searchMode)) {
         case 0: return parseInt(item.ID_SERIE);
-        case 1: return Helpers.makeAlbumUID(item);
+        case 1: return Helpers.getAlbumUID(item);
         case 2: return parseInt(item.ID_AUTEUR);
       }
     }
     return index;
-  });
+  }, [searchMode]);
 
   const renderItem = useCallback(({ item, index }) => {
     if (Helpers.isValid(item)) {
@@ -181,7 +181,13 @@ function SearchScreen({ navigation }) {
       }
     }
     return null;
-  });
+  }, [searchMode]);
+
+  const getItemLayout = useCallback((data, index) => ({
+    length: AlbumItemHeight,
+    offset: AlbumItemHeight * index,
+    index
+  }), []);
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -190,7 +196,7 @@ function SearchScreen({ navigation }) {
           <View style={{ flex: 1 }}>
             <SearchBar
               placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album ou ISBN..." : "Nom de l'auteur..."}
-a              onChangeText={onSearch}
+              onChangeText={onSearch}
               onCancel={onSearchCancel}
               onClear={onSearchCancel}
               value={keywords}
@@ -238,11 +244,12 @@ a              onChangeText={onSearch}
           ) : null}
           {loading ? <LoadingIndicator style={{ height: '100%' }} /> : (
             <FlatList
-              maxToRenderPerBatch={6}
+              maxToRenderPerBatch={10}
               windowSize={10}
               data={data}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
+              getItemLayout={getItemLayout}
               ItemSeparatorComponent={Helpers.renderSeparator}
               extraData={toggleElement}
             />)}

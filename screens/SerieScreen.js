@@ -174,7 +174,6 @@ function SerieScreen({ route, navigation }) {
     if (serieAlbums[0] && serieAlbums[0].data.length > 0) {
       const nbAlbums = Math.max(serie.NB_TOME ?? 0, serie.NB_ALBUM);
       const nbOwnTomes = CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE);
-      console.log(serie);
       Alert.alert(serie.NOM_SERIE,
         format(
           '{0} album{1} possédé{1} sur un total de {2} paru{3}.\n',
@@ -210,10 +209,10 @@ function SerieScreen({ route, navigation }) {
       index={index}
       dontShowSerieScreen={true}
       showExclude={true}
-      refreshCallback={toggle} />);
+      refreshCallback={toggle} />, []);
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
+    Helpers.isValid(item) ? Helpers.getAlbumUID(item) : index, []);
 
   const getItemLayout = sectionListGetItemLayout({
     // The height of the row with rowData at the given sectionIndex and rowIndex
@@ -315,7 +314,7 @@ function SerieScreen({ route, navigation }) {
         <SectionList
           style={{ flex: 1, marginTop: 5, marginHorizontal: 1 }}
           ref={sectionListRef}
-          maxToRenderPerBatch={6}
+          maxToRenderPerBatch={10}
           windowSize={10}
           sections={serieAlbums.filter(s => s.data.length > 0).map((section, index) => ({ ...section, index }))}
           keyExtractor={keyExtractor}

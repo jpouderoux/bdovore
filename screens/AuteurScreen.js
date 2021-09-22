@@ -132,7 +132,7 @@ function AuteurScreen({ route, navigation }) {
     <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={false} refreshCallback={toggle} />);
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);
+    Helpers.isValid(item) ? Helpers.getAlbumUID(item) : index);
 
   const onPressAuthorImage = () =>
     navigation.push('Image', { source: APIManager.getAuteurCoverURL(author) });
@@ -183,7 +183,7 @@ function AuteurScreen({ route, navigation }) {
       ) : null}
       <SectionList
         style={{ flex: 1, marginHorizontal: 1 }}
-        maxToRenderPerBatch={6}
+        maxToRenderPerBatch={10}
         windowSize={10}
         sections={auteurAlbums}
         keyExtractor={keyExtractor}

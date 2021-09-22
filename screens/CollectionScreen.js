@@ -114,7 +114,7 @@ function CollectionScreen({ route, navigation }) {
       APIManager.onConnected(navigation, () => {
         cachedToken = 'fetching';
         if (global.localTimestamp != global.serverTimestamp) {
-          console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
+          //console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
           fetchData();
         } else {
           cachedToken = global.token;
@@ -216,7 +216,6 @@ function CollectionScreen({ route, navigation }) {
 
   const onFetchCollection = (result, type) => {
     setErrortext(result.error);
-    console.log(type);
 
     if (result.items) {
       loadedItems += parseFloat(result.items.length);
@@ -287,10 +286,17 @@ function CollectionScreen({ route, navigation }) {
       }
     }
     return null;
-  });
+  }, [collectionType]);
 
   const keyExtractor = useCallback((item, index) =>
-    Helpers.isValid(item) ? (collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item)) : index);
+    Helpers.isValid(item) ? (collectionType == 0 ? parseInt(item.ID_SERIE) : Helpers.makeAlbumUID(item)) : index,
+    [collectionType]);
+
+  const getItemLayout = useCallback((data, index) => ({
+    length: AlbumItemHeight,
+    offset: 40 + AlbumItemHeight * index,
+    index
+  }), []);
 
   const onScrollEvent = (event) => {
     if (event && event.nativeEvent && event.nativeEvent.contentOffset) {
@@ -343,17 +349,13 @@ function CollectionScreen({ route, navigation }) {
           {<FlatList
             ref={flatList}
             initialNumToRender={6}
-            maxToRenderPerBatch={6}
+            maxToRenderPerBatch={10}
             windowSize={10}
             data={(collectionType == 0 ? (filteredSeries ? filteredSeries : CollectionManager.getSeries()) : (filteredAlbums ? filteredAlbums : CollectionManager.getAlbums()))}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={Helpers.renderSeparator}
-            getItemLayout={(data, index) => ({
-              length: AlbumItemHeight,
-              offset: 40 + AlbumItemHeight * index,
-              index
-            })}
+            getItemLayout={getItemLayout}
             refreshControl={<RefreshControl
               colors={[bdovorlightred, bdovored]}
               tintColor={bdovored}
