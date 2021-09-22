@@ -27,13 +27,33 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
+import { LayoutAnimation, ActivityIndicator, Alert, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
 import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 import { Icon } from '../components/Icon';
+
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
+const CustomLayoutSpring = {
+  duration: 300,
+  create: {
+    type: LayoutAnimation.Types.spring,
+    property: LayoutAnimation.Properties.scaleXY,
+    springDamping: 0.9,
+  },
+  update: {
+    type: LayoutAnimation.Types.spring,
+    springDamping: 0.9,
+  },
+};
 
 const pBits = {
   'own': 1,
@@ -45,7 +65,7 @@ const pBits = {
   'excluded': 64
 };
 
-export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCallback = () => { } }) {
+export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refreshCallback = () => { } }) {
 
   const [album, setAlbum] = useState(item);
   const [initAlbum, setInitAlbum] = useState({});
@@ -58,6 +78,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
   const [isWanted, setIsWanted] = useState(false);
   const [processingState, setProcessingState] = useState(0);
   const [showAllMarks, setShowAllMarks] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const isAlbumInCollection = CollectionManager.isAlbumInCollection(album);
 
@@ -280,7 +301,7 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
 
   const MarkerLoadingIndicator = () => (
     <View style={[CommonStyles.markerStyle]}>
-      <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle}/>
+      <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle} />
       <Text style={CommonStyles.markerTextStyle}>{' '}</Text>
     </View>);
 
@@ -297,33 +318,52 @@ export function AlbumMarkers({ item, style, reduceMode, showExclude, refreshCall
         </TouchableOpacity>);
   }
 
+  const expandMarkers = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowMore(!showMore);
+  }
+
   return (
     <View style={[{ flexDirection: 'row' }, style]}>
 
-      <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
-        isCheckedCb={() => isAlbumInCollection} />
+      {isAlbumInCollection || showMore || !reduceMode ?
+        <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
+          isCheckedCb={() => isAlbumInCollection} /> : null}
 
-      {!isAlbumInCollection ?
-      <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
-        isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
+      {album.FLG_ACHAT == 'O' || (!isAlbumInCollection && (showMore || !reduceMode)) ?
+        <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
+          isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-      {(showExclude && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album)) ?
-        <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
-          isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
+      {showMore || !reduceMode ?
+        <View style={{ flexDirection: 'row' }}>
 
-      {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
-        <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
-          isCheckedCb={() => album.FLG_LU == 'O'} />
+          {(showExclude && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album)) ?
+            <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
+              isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-        <Marker name='loan' iconEnabled='ios-person-add' iconDisabled='ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
-          isCheckedCb={() => album.FLG_PRET == 'O'} iconCollection='Ionicons' />
+          {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
+            <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
+              isCheckedCb={() => album.FLG_LU == 'O'} />
 
-        <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
-          isCheckedCb={() => album.FLG_NUM == 'O'} />
+            <Marker name='loan' iconEnabled='ios-person-add' iconDisabled='ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
+              isCheckedCb={() => album.FLG_PRET == 'O'} iconCollection='Ionicons' />
 
-        <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
-          isCheckedCb={() => album.FLG_CADEAU == 'O'} />
-      </View> : null}
+            <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
+              isCheckedCb={() => album.FLG_NUM == 'O'} />
+
+            <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
+              isCheckedCb={() => album.FLG_CADEAU == 'O'} />
+          </View> : null}
+        </View> : null}
+
+      {reduceMode ?
+        <TouchableOpacity onPress={expandMarkers} title='...' style={[CommonStyles.markerStyle, {
+        marginRight: -15, marginLeft: -10, width: 30 }]}>
+        <Icon collection='MaterialIcons' name='more-vert' size={25}
+          color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
+          style={[CommonStyles.markerIconStyle, { borderWidth: 0 }]} />
+        <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>{' '}</Text>
+      </TouchableOpacity> : null}
 
     </View>);
 }
