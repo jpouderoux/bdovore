@@ -127,9 +127,9 @@ function AuteurScreen({ route, navigation }) {
     setNbUserAlbums(CollectionManager.getNbOfUserAlbumsByAuthor(author.ID_AUTEUR));
   }
 
-  const renderAlbum = ({ item, index }) =>
+  const renderAlbum = useCallback(({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={false} refreshCallback={toggle} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} dontShowSerieScreen={false} refreshCallback={toggle} />);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);

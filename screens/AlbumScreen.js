@@ -185,15 +185,16 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
-  const keyExtractor = useCallback((item, index) => Helpers.makeAlbumUID(item));
+  const keyExtractor = useCallback((item, index) =>
+    Helpers.makeAlbumUID(item));
 
-  const renderSimil = ({ item, index }) => (
+  const renderSimil = useCallback(({ item, index }) => (
     <TouchableOpacity key={index} onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
       <View style={{ flexDirection: 'column', width: 110 }}>
         <CoverImage source={APIManager.getAlbumCoverURL(item)} />
         <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
       </View>
-    </TouchableOpacity>);
+    </TouchableOpacity>));
 
   const renderAuthors = () => {
 

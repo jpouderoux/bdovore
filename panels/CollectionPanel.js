@@ -34,6 +34,7 @@ import { ListItem } from 'react-native-elements';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
 import CollectionManager from '../api/CollectionManager';
+import * as Helpers from '../api/Helpers';
 
 
 function CollectionPanel({ route, navigation, isVisible, visibleSetter, collectionGenre, setCollectionGenre, noAllEntry = false }) {
@@ -54,6 +55,9 @@ function CollectionPanel({ route, navigation, isVisible, visibleSetter, collecti
       isVisible={isVisible}
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 10, marginBottom: -10 }]}>
+
+        {Helpers.renderAnchor()}
+
         <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
           <ListItem.Content>
             <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>

@@ -197,7 +197,7 @@ function ToCompleteScreen({ route, navigation }) {
     }
   }
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = useCallback(({ item, index }) => {
     if (Helpers.isValid(item)) {
       switch (collectionType) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} showExclude={true} />);
@@ -205,7 +205,7 @@ function ToCompleteScreen({ route, navigation }) {
       }
     }
     return null;
-  }
+  });
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ?

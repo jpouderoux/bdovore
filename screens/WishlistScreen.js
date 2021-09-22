@@ -90,9 +90,9 @@ function WishlistScreen({ route, navigation }) {
     setKeywords(searchText);
   }
 
-  const renderItem = ({ item, index }) =>
+  const renderItem = useCallback(({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);

@@ -172,7 +172,7 @@ function SearchScreen({ navigation }) {
     return index;
   });
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = useCallback(({ item, index }) => {
     if (Helpers.isValid(item)) {
       switch (parseInt(searchMode)) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} />);
@@ -181,13 +181,13 @@ function SearchScreen({ navigation }) {
       }
     }
     return null;
-  }
+  });
 
   return (
     <View style={CommonStyles.screenStyle}>
       <View>
         <View style={[{ flexDirection: 'row', margin: 0, marginTop: 5 }, CommonStyles.screenStyle, { flex: 0 }]}>
-          <View style={{ width: '85%', flex: 0 }}>
+          <View style={{ flex: 1 }}>
             <SearchBar
               placeholder={parseInt(searchMode) == 0 ? 'Nom de la série...' : parseInt(searchMode) == 1 ? "Nom de l'album ou ISBN..." : "Nom de l'auteur..."}
 a              onChangeText={onSearch}
@@ -207,7 +207,7 @@ a              onChangeText={onSearch}
           <TouchableOpacity
             onPress={onBarcodeSearch}
             title="Search"
-            style={{ marginLeft: 8, marginVertical: 0 }}>
+            style={{ marginLeft: 5, marginRight: 8, marginVertical: 0 }}>
             <Icon
               name='barcode-scan'
               size={36}

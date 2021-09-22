@@ -328,6 +328,15 @@ export let CommonStyles = EStyleSheet.create({
     color: '$bg',
     alignSelf: 'center',
   },
+  bottomSheetNotchStyle: {
+    backgroundColor: 'lightgrey',
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 5,
+    borderRadius: 5,
+    height: 5,
+    marginVertical: 5,
+    width: '20%',
+  },
 
   //***************
   // Search styles

@@ -203,14 +203,14 @@ function SerieScreen({ route, navigation }) {
     }
   }
 
-  const renderAlbum = ({ item, index }) =>
+  const renderAlbum = useCallback(({ item, index }) =>
     Helpers.isValid(item) && (global.showExcludedAlbums || (!global.showExcludedAlbums && !CollectionManager.isAlbumExcluded(item))) &&
     <AlbumItem navigation={navigation}
       item={Helpers.toDict(CollectionManager.getFirstAlbumEditionOfSerieInCollection(item))}
       index={index}
       dontShowSerieScreen={true}
       showExclude={true}
-      refreshCallback={toggle} />;
+      refreshCallback={toggle} />);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);

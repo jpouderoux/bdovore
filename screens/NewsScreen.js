@@ -204,9 +204,9 @@ function NewsScreen({ route, navigation }) {
     setKeywords(searchText);
   }
 
-  const renderAlbum = ({ item, index }) =>
+  const renderAlbum = useCallback(({ item, index }) =>
     Helpers.isValid(item) &&
-    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={true} />;
+    <AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} showEditionDate={true} />);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? Helpers.makeAlbumUID(item) : index);

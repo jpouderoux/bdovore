@@ -86,6 +86,10 @@ export function renderSeparator() {
   return <View style={CommonStyles.separatorStyle} />
 }
 
+export function renderAnchor() {
+  return <View style={CommonStyles.bottomSheetNotchStyle} />;
+}
+
 export function plural(nb) {
   return nb > 1 ? 's' : '';
 }

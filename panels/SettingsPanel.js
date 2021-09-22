@@ -87,6 +87,8 @@ function SettingsPanel({ isVisible, visibleSetter }) {
     <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
       <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
 
+        {Helpers.renderAnchor()}
+
         <View style={{
            flexDirection: 'row', flex: 1, width: '80%', paddingVertical: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
           <Text style={CommonStyles.defaultText}>Images uniquement en Wifi</Text>

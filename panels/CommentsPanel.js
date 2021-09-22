@@ -32,6 +32,7 @@ import { ScrollView, Text, TouchableOpacity,  View } from 'react-native';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles, windowHeight } from '../styles/CommonStyles';
 import { RatingStars } from '../components/RatingStars';
+import * as Helpers from '../api/Helpers';
 
 
 function CommentsPanel({ comments, isVisible, visibleSetter }) {
@@ -41,7 +42,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
       item[1].NOTE > 0 ?
         <View key={item[0]} style={{
           marginHorizontal: 10,
-          marginTop: parseInt(item[0]) == 0 ? 10 : 0,
+          marginTop: 0,
           paddingBottom: 10,
           paddingTop: 10,
           borderTopWidth: parseInt(item[0]) == 0 ? 0 : 1.0,
@@ -60,15 +61,18 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
       isVisible={isVisible}
       visibleSetter={visibleSetter}
       containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, height: windowHeight * 0.9 }]}>
-        <ScrollView style={{ flex: 1, width: '100%', marginBottom: 10 }}>
+      <View style={[CommonStyles.modalViewStyle, { marginBottom: -10, paddingTop: 10, height: windowHeight * 0.9 }]}>
+
+        {Helpers.renderAnchor()}
+
+        <ScrollView style={{ flex: 1, width: '100%', marginTop: 10, marginBottom: 0 }}>
           <TouchableOpacity activeOpacity={1}>
             {Object.entries(comments).map((item) => renderComment(item))}
           </TouchableOpacity>
+        </ScrollView>
           <View style={{ marginVertical: 15, alignContent: 'center', alignItems: 'center' }}>
             <Text style={[CommonStyles.linkTextStyle, CommonStyles.center]} onPress={() => visibleSetter(false)}>Fermer</Text>
           </View>
-        </ScrollView>
       </View>
     </BottomSheet>
   );

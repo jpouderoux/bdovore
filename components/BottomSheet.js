@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import Modal from 'react-native-modal';
 
 
@@ -46,7 +46,10 @@ export function BottomSheet({ props, containerStyle, isVisible = false, visibleS
       {...modalProps}
       style={styles.modalStyle}
     >
-      <ScrollView style={styles.scrollViewStyle}>{children}</ScrollView>
+
+      <ScrollView style={styles.scrollViewStyle}>
+        {children}
+      </ScrollView>
     </Modal>);
 };
 
