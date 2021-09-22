@@ -32,6 +32,7 @@ import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-na
 import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
 const pBits = {
