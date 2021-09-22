@@ -27,18 +27,39 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { Image } from 'react-native-elements';
 import SettingsManager from '../api/SettingsManager';
 
-import { bdovored, CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
+import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
 
 
-export function CoverImage({ source, style, noResize, largeMode }) {
+export function CoverImage({ item, category, style, noResize, largeMode }) {
 
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
+  const [source, setSource] = useState(null);
+  const [censor, setCensor] = useState(false);
+
+  useEffect(() => {
+    switch (parseInt(category)) {
+      case 0:
+        setCensor(Helpers.isCensorable(item.NOM_GENRE));
+        setSource(APIManager.getSerieCoverURL(item));
+        break;
+      case 2:
+        setSource(APIManager.getAuteurCoverURL(item));
+        break;
+      case 1:
+      default:
+        setCensor(Helpers.isCensorable(item.NOM_GENRE));
+        setSource(APIManager.getAlbumCoverURL(item));
+        break;
+    }
+  }, []);
 
   useEffect(() => {
     if (largeMode) {
@@ -63,6 +84,13 @@ export function CoverImage({ source, style, noResize, largeMode }) {
         Image{'\n'}non disponible{'\n'}hors {!global.isConnected ? 'connexion' : 'WiFi'}
       </Text>
     </View > :
+    (censor ?
+    <View style={{ width, height, backgroundColor: 'lightgrey' }}>
+      <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
+        <Icon name={'content-cut'} size={20} />{'\n'}
+        Image{'\n'}censurée{'\n'}par Google
+      </Text>
+    </View > :
     <Image
       source={{
         uri: source,
@@ -71,5 +99,5 @@ export function CoverImage({ source, style, noResize, largeMode }) {
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
       //PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
     />
-  );
+  ));
 }

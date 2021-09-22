@@ -62,6 +62,7 @@ class CSettingsManager {
       ['showBDovoreIds',         false],
       ['showConnectionMessages', false],
       ['showExcludedAlbums',     true],
+      ['uncensored',             false],
       ['verbose',                false],
     ];
 

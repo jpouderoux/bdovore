@@ -42,9 +42,9 @@ export function AuteurItem({ navigation, author, nbAlbums, nbSeries, noPressActi
       <View style={{ flexDirection: 'row' }}>
         {canViewFullscreenImage ?
           <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAuteurCoverURL(author) })}>
-            <CoverImage source={APIManager.getAuteurCoverURL(author)} />
+            <CoverImage item={author} category={2} />
           </TouchableOpacity> :
-          <CoverImage source={APIManager.getAuteurCoverURL(author)} />
+          <CoverImage item={author} category={2} />
         }
         <View style={[CommonStyles.itemTextContent, { marginTop: 15 }]}>
           <Text style={[CommonStyles.itemTextWidth, CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>

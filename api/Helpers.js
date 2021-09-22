@@ -200,6 +200,17 @@ export function makeAlbumUID(album) {
   return album ? (parseInt(album.ID_TOME) * 1000000 + parseInt(album.ID_EDITION)) : 0;
 }
 
+const censoredWords = [
+  'Hentai',
+  'Yaoi',
+  'Ecchi',
+  'Erotique'
+];
+
+export function isCensorable(genre) {
+  return (!global.uncensored && genre) ? censoredWords.some((element) => genre.includes(element)) : false;
+};
+
 export function createDictFromArray(array, dict, hashFun) {
   for (let i = 0; i < array.length; i++) {
     const idx = hashFun(array[i]);

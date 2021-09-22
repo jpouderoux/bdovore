@@ -60,10 +60,10 @@ export function SerieItem({ navigation, item, index, collectionMode, showExclude
   return (
     <TouchableOpacity key={index} onPress={() => onPressSerie(navigation, item)}>
       <View style={{ flexDirection: 'row' }}>
-        <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-          <CoverImage source={APIManager.getSerieCoverURL(item)} />
+        <View style={{ width: AlbumImageWidth, alignItems: 'center'}}>
+          <CoverImage item={item} category={0} />
         </View>
-        <View style={[CommonStyles.itemTextContent]} >
+        <View style={CommonStyles.itemTextContent} >
           <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
             {item.NOM_SERIE}
           </Text>

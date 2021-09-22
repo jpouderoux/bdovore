@@ -163,7 +163,9 @@ function SerieScreen({ route, navigation }) {
   }
 
   const onShowSerieImage = () => {
-    navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
+    if (!Helpers.isCensorable(serie.NOM_GENRE)) {
+      navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
+    }
   }
 
   const getAlbums = () => {
@@ -268,8 +270,8 @@ function SerieScreen({ route, navigation }) {
     <View style={CommonStyles.screenStyle}>
       <CollapsableSection sectionName='Infos Série' isCollapsed={false} style={{ marginTop: 0 }} onCollapse={toggle} noAnimation={true} >
         <View style={{ flexDirection: 'row', marginBottom: 0, width: '100%', marginLeft: 0 }} >
-          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -15, marginRight: 0 }}>
-            <CoverImage source={APIManager.getSerieCoverURL(serie)} style={{ height: 125 }} noResize={false} />
+          <TouchableOpacity onPress={onShowSerieImage} style={{ marginLeft: -15, marginRight: 5 }}>
+            <CoverImage item={serie} category={0} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
           <View style={{ flex: 1, flexDirection: 'row', marginRight: 4 }}>
             <View style={{ flex: 1, flexGrow: 2, }}>

@@ -34,7 +34,6 @@ import { CommonStyles, AlbumImageWidth } from '../styles/CommonStyles';
 import { CoverImage } from './CoverImage';
 import { Icon } from './Icon';
 import { RatingStars } from './RatingStars';
-import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
@@ -63,7 +62,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
   return (
     <TouchableOpacity key={index} onPress={onPressAlbum} style={{ flexDirection: 'row' }}>
       <View style={{ width: AlbumImageWidth, alignItems: 'center' }}>
-        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+        <CoverImage item={item} category={1} />
       </View>
       <View style={[CommonStyles.itemTextContent, { marginRight: 0 }]}>
         <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>

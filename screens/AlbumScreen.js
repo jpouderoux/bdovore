@@ -191,7 +191,7 @@ function AlbumScreen({ route, navigation }) {
   const renderSimil = useCallback(({ item, index }) => (
     <TouchableOpacity key={index} onPress={() => onSimilPress(item)} title={item.TITRE_TOME}>
       <View style={{ flexDirection: 'column', width: 110 }}>
-        <CoverImage source={APIManager.getAlbumCoverURL(item)} />
+        <CoverImage item={item} category={1} />
         <Text numberOfLines={1} textBreakStrategy='balanced' style={{ width: 110, fontSize: 12, paddingLeft: 4, paddingRight: 4 }}>{item.TITRE_TOME}</Text>
       </View>
     </TouchableOpacity>), []);
@@ -223,6 +223,12 @@ function AlbumScreen({ route, navigation }) {
     )
   }
 
+  const onShowAlbumImage = () => {
+    if (!Helpers.isCensorable(album.NOM_GENRE)) {
+      navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
+    }
+  }
+
   const onShowComments = () => {
     if (filteredComments().length > 0) {
       setShowComments(true);
@@ -244,8 +250,8 @@ function AlbumScreen({ route, navigation }) {
       <ScrollView style={{ margin: 0 }}>
 
         <View style={{ margin: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) })}>
-            <CoverImage source={APIManager.getAlbumCoverURL(album)} style={CommonStyles.fullAlbumImageStyle} />
+          <TouchableOpacity onPress={onShowAlbumImage}>
+            <CoverImage item={album} category={1} style={CommonStyles.fullAlbumImageStyle} />
           </TouchableOpacity>
         </View>
 

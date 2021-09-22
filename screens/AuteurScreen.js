@@ -150,7 +150,7 @@ function AuteurScreen({ route, navigation }) {
       <CollapsableSection sectionName='Infos Auteur' isCollapsed={false} style={{ marginTop: 0, marginBottom: 5 }} noAnimation={true} >
         <View style={{ flexDirection: 'row', marginTop: -3, marginBottom: -8 }}>
           <TouchableOpacity onPress={onPressAuthorImage} style={{ marginLeft: -15, marginRight: 0 }}>
-            <CoverImage source={APIManager.getAuteurCoverURL(author)} style={{ height: 125 }} noResize={false} />
+            <CoverImage item={author} category={2} style={{ height: 125 }} noResize={false} />
           </TouchableOpacity>
           <View style={{flex: 1, marginTop: 2 }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.largerText, { marginBottom: 5 }]} numberOfLines={1} textBreakStrategy='balanced'>
