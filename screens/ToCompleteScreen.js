@@ -177,7 +177,10 @@ function ToCompleteScreen({ route, navigation }) {
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
-    flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
+    if (scrollPos[parseInt(selectedIndex)]) {
+      flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
+    }
+    
   }
 
   const onSearchChanged = (searchText) => {
