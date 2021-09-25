@@ -122,7 +122,7 @@ function ToCompleteScreen({ route, navigation }) {
       setLoading(true);
       setProgressRate(0);
       setErrortext('');
-      setScrollPos([ 0, 0 ]);
+      setScrollPos([0, 0]);
       fetchSeries();
     }
   }
@@ -180,7 +180,7 @@ function ToCompleteScreen({ route, navigation }) {
     if (scrollPos[parseInt(selectedIndex)]) {
       flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
     }
-    
+
   }
 
   const onSearchChanged = (searchText) => {
@@ -228,10 +228,10 @@ function ToCompleteScreen({ route, navigation }) {
           selectedIndex={collectionType}
           buttons={[{
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredSeries.length, 'série')}</Text>
+              {Helpers.pluralWord(global.isConnected ? filteredSeries.length : 0, 'série')}</Text>
           }, {
             element: () => <Text style={CommonStyles.defaultText}>
-              {Helpers.pluralWord(filteredAlbums.length, 'album')}</Text>
+              {Helpers.pluralWord(global.isConnected ? filteredAlbums.length : 0, 'album')}</Text>
           }]}
           containerStyle={[{ marginLeft: 8, flex: 1 }, CommonStyles.buttonGroupContainerStyle]}
           buttonStyle={CommonStyles.buttonGroupButtonStyle}
@@ -241,60 +241,61 @@ function ToCompleteScreen({ route, navigation }) {
         {(!global.autoSync && (!global.collectionManquantsUpdated || albums.length == 0)) ?
           <TouchableOpacity onPress={() => refreshDataIfNeeded(true)}><Icon name='refresh' size={25} style={{ marginTop: 6, marginRight: 10 }} /></TouchableOpacity> : null}
       </View>
+      <View style={{ marginLeft: 1 }}>
+        {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
+        {errortext ? (
+          <View style={{ alignItems: 'center', marginBottom: 5 }}>
+            <Text style={CommonStyles.errorTextStyle}>
+              {errortext}
+            </Text>
+          </View>
+        ) : null}
+      </View>
       {global.isConnected ?
-        <View style={{ marginLeft: 1 }}>
-          {loading ? <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> : null}
-          {errortext ? (
-            <View style={{ alignItems: 'center', marginBottom: 5 }}>
-              <Text style={CommonStyles.errorTextStyle}>
-                {errortext}
-              </Text>
-            </View>
-          ) : null}
-          {!loading && CollectionManager.isCollectionEmpty() ?
-            <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
-              <View style={{ flex: 1 }}></View>
-              <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
-              <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
-              <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
-              <View style={{ flex: 1 }}></View>
-            </View>
-            :
-            <FlatList
-              ref={flatList}
-              initialNumToRender={6}
-              maxToRenderPerBatch={10}
-              windowSize={10}
-              data={collectionType == 0 ?
-                Helpers.filterSeriesWithSearchKeywords(filteredSeries, keywords) :
-                Helpers.filterAlbumsWithSearchKeywords(filteredAlbums, keywords)}
-              keyExtractor={keyExtractor}
-              renderItem={renderItem}
-              ItemSeparatorComponent={Helpers.renderSeparator}
-              getItemLayout={getItemLayout}
-              refreshControl={<RefreshControl
-                colors={[bdovorlightred, bdovored]}
-                tintColor={bdovored}
-                refreshing={loading}
-                onRefresh={fetchData} />}
-              onScroll={onScrollEvent}
-              ListHeaderComponent={
-                <SearchBar
-                  placeholder={collectionType == 0 ? 'Rechercher dans les séries incomplètes...' : 'Rechercher dans les albums manquants...' }
-                  onChangeText={onSearchChanged}
-                  onCancel={() => { onSearchChanged(''); scrollToTop(); }}
-                  onClear={() => { onSearchChanged(''); scrollToTop(); }}
-                  value={keywords}
-                  platform='ios'
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
-                  containerStyle={[CommonStyles.screenStyle, { marginVertical: -8 }]}
-                  inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
-                  cancelButtonTitle='Annuler' />
-              }
-            />}
-        </View> :
+        (!loading && CollectionManager.isCollectionEmpty() ?
+          <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+            <View style={{ flex: 1 }}></View>
+            <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
+            <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
+            <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+            <View style={{ flex: 1 }}></View>
+          </View>
+          :
+          <FlatList
+            ref={flatList}
+            initialNumToRender={6}
+            maxToRenderPerBatch={10}
+            windowSize={10}
+            data={collectionType == 0 ?
+              Helpers.filterSeriesWithSearchKeywords(filteredSeries, keywords) :
+              Helpers.filterAlbumsWithSearchKeywords(filteredAlbums, keywords)}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            ItemSeparatorComponent={Helpers.renderSeparator}
+            getItemLayout={getItemLayout}
+            refreshControl={<RefreshControl
+              colors={[bdovorlightred, bdovored]}
+              tintColor={bdovored}
+              refreshing={loading}
+              onRefresh={fetchData} />}
+            onScroll={onScrollEvent}
+            ListHeaderComponent={
+              <SearchBar
+                placeholder={collectionType == 0 ? 'Rechercher dans les séries incomplètes...' : 'Rechercher dans les albums manquants...'}
+                onChangeText={onSearchChanged}
+                onCancel={() => { onSearchChanged(''); scrollToTop(); }}
+                onClear={() => { onSearchChanged(''); scrollToTop(); }}
+                value={keywords}
+                platform='ios'
+                autoCapitalize='none'
+                autoCorrect={false}
+                inputContainerStyle={[{ height: 30 }, CommonStyles.searchContainerStyle]}
+                containerStyle={[CommonStyles.screenStyle, { marginVertical: -8 }]}
+                inputStyle={[CommonStyles.defaultText, { fontSize: 12 }]}
+                cancelButtonTitle='Annuler' />
+            }
+          />)
+        :
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
           <Text style={CommonStyles.defaultText}>Informations indisponibles en mode non-connecté.{'\n'}</Text>
@@ -304,8 +305,7 @@ function ToCompleteScreen({ route, navigation }) {
           </TouchableOpacity>
           <View style={{ flex: 1 }}></View>
         </View>}
-    </View>
-  );
+    </View>);
 }
 
 export default ToCompleteScreen;
