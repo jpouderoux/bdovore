@@ -169,8 +169,8 @@ function LoginScreen({ navigation }) {
       global.hideSponsoredLinks = !global.hideSponsoredLinks;
       Helpers.setAndSaveGlobal('hideSponsoredLinks', global.hideSponsoredLinks);
 
-      global.uncensored = !global.uncensored;
-      Helpers.setAndSaveGlobal('uncensored', global.uncensored);
+      global.explicitContent = !global.explicitContent;
+      Helpers.setAndSaveGlobal('explicitContent', global.explicitContent);
 
       Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');
     }

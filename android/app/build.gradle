@@ -134,8 +134,8 @@ android {
         applicationId "com.PaulOlivier.bdovore"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 204
-        versionName "2.0.3"
+        versionCode 205
+        versionName "2.0.5"
         missingDimensionStrategy 'react-native-camera', 'mlkit'
     }
     splits {

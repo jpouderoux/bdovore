@@ -138,25 +138,32 @@ function CollectionScreens({ route, navigation }) {
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
   const onShareCollectionPress = () => {
-    Alert.alert('Partager ma collection',
-      'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
-      'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
-      [{
-        text: "Oui",
-        onPress: () => {
-          const userid = parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
-          const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
-          Share.share({
-            message: url,
-            url: url
-          });
-        }
-      }, {
-        text: "Annuler",
-        onPress: () => { },
-        style: "cancel"
-      }],
-      { cancelable: true });
+
+    const shareCollection = () => {
+      const userid = parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+      const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
+      Share.share({
+        message: url,
+        url: url
+      });
+    }
+
+    if (global.openCollection) {
+      shareCollection();
+    } else {
+      Alert.alert('Partager ma collection',
+        'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
+        'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
+        [{
+          text: "Oui",
+          onPress: () => shareCollection()
+        }, {
+          text: "Annuler",
+          onPress: () => { },
+          style: "cancel"
+        }],
+        { cancelable: true });
+    }
   }
 
   const onCollectionGenrePress = () => {

@@ -31,6 +31,25 @@ import * as Helpers from '../api/Helpers';
 import NetInfo from "@react-native-community/netinfo";
 
 
+// Defined global parameters that are saved/restored
+let globs = [
+  ['autoSync',               true],
+  ['collectionFetched',      false],
+  ['confirmDeletion',        true],
+  ['explicitContent',        false],
+  ['hideSponsoredLinks',     false],
+  ['imageOnWifi',            false],
+  ['localTimestamp',         null],
+  ['login',                  null],
+  ['openCollection',         false],
+  ['passwd',                 null],
+  ['retractableButtons',     false],
+  ['showBDovoreIds',         false],
+  ['showConnectionMessages', false],
+  ['showExcludedAlbums',     true],
+  ['verbose',                false],
+];
+
 class CSettingsManager {
 
   constructor() {
@@ -48,27 +67,8 @@ class CSettingsManager {
     global.token = undefined;
     global.serverTimestamp = null;
 
-    // Defined global parameters that are saved/restored
-    let globs = [
-      ['autoSync',               true],
-      ['collectionFetched',      false],
-      ['confirmDeletion',        true],
-      ['hideSponsoredLinks',     false],
-      ['imageOnWifi',            false],
-      ['localTimestamp',         null],
-      ['login',                  null],
-      ['passwd',                 null],
-      ['retractableButtons',     false],
-      ['showBDovoreIds',         false],
-      ['showConnectionMessages', false],
-      ['showExcludedAlbums',     true],
-      ['uncensored',             false],
-      ['verbose',                false],
-    ];
-
     // Set defined parameters in global array
     globs.forEach(v => global[v[0]] = v[1]);
-
 
     // Fetched saved values for each global variable
     AsyncStorage.multiGet(globs.map(v => v[0])).then(response => {

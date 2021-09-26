@@ -339,8 +339,8 @@ export let CommonStyles = EStyleSheet.create({
     borderBottomWidth: 5,
     borderRadius: 5,
     height: 5,
-    marginVertical: 5,
-    width: '20%',
+    marginVertical: 8,
+    width: '10%',
   },
 
   //***************

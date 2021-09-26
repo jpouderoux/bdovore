@@ -98,32 +98,52 @@ export function checkForToken(navigation = null, callback = null) {
   return global.token;
 }
 
+export function fetchUserPrefs(navigation = null, callback = null) {
+  try {
+    fetchJSON('Userpref', null, (result) => {
+      if (result.error == '') {
+        Helpers.setAndSaveGlobal('openCollection', result.items.OpenCollec);
+        Helpers.setAndSaveGlobal('explicitContent', result.items.ExplicitContent);
+        if (callback) {
+          callback(result);
+        }
+      }
+    }, false, false);
+  } catch (error) {
+    console.debug(error);
+  }
+}
+
 export async function reloginBDovore(navigation, callback = null) {
 
   console.debug("relogin!");
-  if (global.isConnected) {
-    AsyncStorage.multiGet(['login', 'passwd'])
-      .then((values) => {
-        const pseudo = values[0][1];
-        const passwd = values[1][1];
-        loginBDovore(pseudo, passwd, (response) => {
-          if (response.error) {
-            if (navigation) {
-              navigation.navigate('Login');
+  try {
+    if (global.isConnected) {
+      AsyncStorage.multiGet(['login', 'passwd'])
+        .then((values) => {
+          const pseudo = values[0][1];
+          const passwd = values[1][1];
+          loginBDovore(pseudo, passwd, (response) => {
+            if (response.error) {
+              if (navigation) {
+                navigation.navigate('Login');
+              }
+            } else if (callback) {
+              callback();
             }
-          } else if (callback) {
-            callback();
+          });
+        })
+        .catch((error) => {
+          console.debug(error);
+          if (navigation) {
+            navigation.navigate('Login');
           }
         });
-      })
-      .catch((error) => {
-        console.debug(error);
-        if (navigation) {
-          navigation.navigate('Login');
-        }
-      });
-  } else {
-    console.debug('Not connected.');
+    } else {
+      console.debug('Not connected.');
+    }
+  } catch (error) {
+    console.debug(error);
   }
 }
 
@@ -157,6 +177,7 @@ export function loginBDovore(pseudo, passwd, callback) {
         console.debug("  server timestamp: " + response.Timestamp);
         global.token = response.Token;
         global.serverTimestamp = response.Timestamp;
+        fetchUserPrefs();
         //console.log(responseJson);
         callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
       } else {

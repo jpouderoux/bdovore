@@ -208,7 +208,7 @@ const censoredWords = [
 ];
 
 export function isCensorable(genre) {
-  return (!global.uncensored && genre) ? censoredWords.some((element) => genre.includes(element)) : false;
+  return (!global.explicitContent && genre) ? censoredWords.some((element) => genre.includes(element)) : false;
 };
 
 export function createDictFromArray(array, dict, hashFun) {
