@@ -77,7 +77,7 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
           <AlbumMarkers item={item}
             style={CommonStyles.markersViewStyle}
             reduceMode={true}
-            showExclude={showExclude && CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false}
+            showExclude={showExclude /*&& CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false*/}
             refreshCallback={refreshCallback} />
         }
       </View>

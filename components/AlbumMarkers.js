@@ -335,13 +335,12 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
         <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
           isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
+      {(showExclude && (!global.retractableButtons || (global.retractableButtons && (showMore || (!showMore && CollectionManager.isAlbumExcluded(album)))) && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album))) ?
+        <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
+          isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
+
       {(global.retractableButtons && showMore) || !reduceMode ?
         <View style={{ flexDirection: 'row' }}>
-
-          {(showExclude && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album)) ?
-            <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
-              isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
-
           {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
             <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
               isCheckedCb={() => album.FLG_LU == 'O'} />

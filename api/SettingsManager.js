@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Dimensions, PixelRatio, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Helpers from '../api/Helpers';
 import NetInfo from "@react-native-community/netinfo";
@@ -70,6 +71,8 @@ class CSettingsManager {
     // Set defined parameters in global array
     globs.forEach(v => global[v[0]] = v[1]);
 
+    global['retractableButtons'] = this.isTablet() ? false : true;
+
     // Fetched saved values for each global variable
     AsyncStorage.multiGet(globs.map(v => v[0])).then(response => {
       const setKey = (name, value) => {
@@ -112,6 +115,23 @@ class CSettingsManager {
   isWifiConnected() {
     return !global.forceOffline && global.connectionType == 'wifi' && global.isConnected;
   }
+
+  // Returns true if device is detected as a tablet (empirical guess for Android!)
+  isTablet() {
+    if (Platform.os == 'ios') {
+      return Platform.isPad;
+    }
+
+    const { height, width } = Dimensions.get('window');
+    let pixelDensity = PixelRatio.get();
+    const adjustedWidth = width * pixelDensity;
+    const adjustedHeight = height * pixelDensity;
+    if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
+      return true;
+    }
+    return pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920);
+  }
+
 };
 
 const SettingsManager = new CSettingsManager();

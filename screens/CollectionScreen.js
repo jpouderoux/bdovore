@@ -124,7 +124,7 @@ function CollectionScreen({ route, navigation }) {
   }
 
   useEffect(() => {
-    refreshDataIfNeeded();
+    //refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
       refreshDataIfNeeded();

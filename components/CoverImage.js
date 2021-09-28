@@ -88,7 +88,7 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
     <View style={{ width, height, backgroundColor: 'lightgrey' }}>
       <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
         <Icon name={'content-cut'} size={20} />{'\n'}
-        Image{'\n'}censurée{'\n'}par Google
+        Image{'\n'}censurée{'\n'}par{Platform.OS == 'android' ? ' Google' : ' Apple'}
       </Text>
     </View > :
     <Image
