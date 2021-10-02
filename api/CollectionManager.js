@@ -203,6 +203,8 @@ class CCollectionManager {
     global.db.write(() => {
       global.db.deleteAll();
     });
+
+    Helpers.setAndSaveGlobal('collectionFetched', false);
   }
 
   saveTimestamp() {

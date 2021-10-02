@@ -122,14 +122,21 @@ class CSettingsManager {
       return Platform.isPad;
     }
 
-    const { height, width } = Dimensions.get('window');
-    let pixelDensity = PixelRatio.get();
+    // Roughly evaluate the diagonal dimension (in inches)
+    const { height, width } = Dimensions.get('screen');
+    // Note that returned screen dimensions in pixels are divided by dpi
+    const widthLen = width / 160;
+    const heightLen = height / 160;
+    const diagLen = Math.sqrt(widthLen * widthLen + heightLen * heightLen);
+    // We consider a tablet larger than 7inch
+    return (diagLen >= 7);
+    /*const pixelDensity = PixelRatio.get();
     const adjustedWidth = width * pixelDensity;
     const adjustedHeight = height * pixelDensity;
     if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
       return true;
     }
-    return pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920);
+    return pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920);*/
   }
 
 };
