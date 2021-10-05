@@ -35,7 +35,7 @@ import * as Helpers from '../api/Helpers';
 import Star from './Star';
 
 
-export function RatingStars({ note, nbNotes, editable, callback, style, showRate }) {
+export function RatingStars({ note, nbNotes, editable, callback, style, showRate, starColor = CommonStyles.ratingStarColor.color }) {
 
   // Note: in view only mode we use the simple & fast Star component
   return ((note && note > 0) ?
@@ -59,7 +59,7 @@ export function RatingStars({ note, nbNotes, editable, callback, style, showRate
             {Helpers.noteToString(note)} {nbNotes > 0 ? ' (' + nbNotes + ' notes)' : null}</Text>}
         </View> :
         <View style={{ flexDirection: 'row' }}>
-          <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20, marginRight: 10 }} starColor={CommonStyles.ratingStarColor.color} />
+          <Star score={parseInt(note)} totalScore={10} style={{ width: 100, height: 20, marginRight: 10 }} starColor={starColor} />
           {showRate && <Text style={[CommonStyles.defaultText, { marginTop: 1 }]}>{(Number.parseFloat(note) / 2.).toFixed(1)}</Text>}
           {showRate && nbNotes > 0 ? <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { marginLeft: 5, marginTop: 1 }]}>{Helpers.pluralWord(nbNotes, 'note')}</Text> : null}
         </View>

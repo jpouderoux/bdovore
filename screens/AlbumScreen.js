@@ -27,14 +27,14 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { ListItem } from 'react-native-elements';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
 import { BottomSheet } from '../components/BottomSheet';
 import { CollapsableSection } from '../components/CollapsableSection';
-import { CommonStyles, bdovored } from '../styles/CommonStyles';
+import { CommonStyles, bdovored, bdovorlightred } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { Icon } from '../components/Icon';
 import { RatingStars } from '../components/RatingStars';
@@ -43,7 +43,6 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 import CommentsPanel from '../panels/CommentsPanel';
 import UserCommentPanel from '../panels/UserCommentPanel';
-import { TextInput } from 'react-native-gesture-handler';
 
 
 const sBits = {
@@ -109,7 +108,7 @@ function AlbumScreen({ route, navigation }) {
       }
       CollectionManager.fetchAlbumEditions(album, onAlbumEditionsFetched);
       APIManager.fetchSimilAlbums(album.ID_TOME, onSimilFetched);
-      APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched);
+      APIManager.fetchAlbumComments(album.ID_TOME, onCommentsFetched, 1);
     }
     if (!global.isConnected) {
       onAlbumEditionsFetched({ items: CollectionManager.getAlbumEditionsInCollection(album.ID_TOME, album.ID_SERIE), error: '' });
@@ -148,11 +147,10 @@ function AlbumScreen({ route, navigation }) {
 
   const filteredComments = () => {
     // strip empty comments
-    return comments.filter((comment) => comment.NOTE != null && comment.COMMENT != '');
+    return comments.filter((comment) => comment.NOTE != null && comment.COMMENT);
   }
 
   const onCommentsFetched = (result) => {
-    console.log(result.items);
     setComments(result.items);
     setErrortext(result.error);
     setLoading(false);
@@ -229,7 +227,6 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onSaveComment = () => {
-    console.log('saving comment...')
     const colAlb = CollectionManager.getAlbumInCollection(album) ?? album;
     if (comment != colAlb.comment) {
       if (!Helpers.checkConnection()) { return; }
@@ -243,7 +240,6 @@ function AlbumScreen({ route, navigation }) {
   const getUserRating = () => {
     let rate = -1;
     comments.forEach(entry => {
-      //console.log(entry);
       if (entry.username == global.login) {
         rate = entry.NOTE;
       }
@@ -343,8 +339,12 @@ function AlbumScreen({ route, navigation }) {
           {album.MOYENNE_NOTE_TOME ?
             <View style={{ marginTop: 10 }}>
               <RatingStars note={album.MOYENNE_NOTE_TOME} nbNotes={album.NB_NOTE_TOME} showRate />
-              {getUserRating() != null ? <View style={{ flexDirection: 'row' }}><RatingStars note={getUserRating()} showRate />
-              <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { marginLeft: 5 }]}>Ma note</Text></View> : null}
+              {getUserRating() != null ?
+                <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                  <RatingStars note={getUserRating()} showRate starColor={bdovored}/>
+                  <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { marginLeft: 5 }]}>Ma note</Text>
+                </View>
+                : null}
             </View> : null}
 
           {filteredComments().length > 0 || isAlbumInCollection && global.isConnected ?
@@ -531,7 +531,7 @@ function AlbumScreen({ route, navigation }) {
 
       {/* Comments */}
       <CommentsPanel
-        comments={comments}
+        comments={filteredComments()}
         isVisible={showComments}
         visibleSetter={setShowComments} />
 

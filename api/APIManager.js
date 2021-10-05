@@ -406,8 +406,8 @@ export async function fetchSimilAlbums(id_tome, callback) {
     });
 }
 
-export async function fetchAlbumComments(id_tome, callback) {
-  const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', id_tome ? { id_tome, } : null);
+export async function fetchAlbumComments(id_tome, callback, all = 0) {
+  const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?all=' + all, id_tome ? { id_tome, } : null);
 
   fetchZIP(url)
     .then(response => response.json())
