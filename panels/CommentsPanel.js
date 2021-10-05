@@ -49,7 +49,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
           borderTopColor: CommonStyles.separatorStyle.borderBottomColor
         }}>
           <View style={{ flexDirection: 'row' }}>
-            <RatingStars note={item[1].NOTE} style={{ marginLeft: -2 }}/>
+            <RatingStars note={item[1].NOTE} style={{ marginLeft: -2 }} showRate/>
             <Text style={CommonStyles.commentsTextStyle}>{item[1].username}</Text>
           </View>
           <Text style={CommonStyles.defaultText}>{item[1].COMMENT}</Text>

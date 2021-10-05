@@ -302,6 +302,14 @@ export let CommonStyles = EStyleSheet.create({
     marginTop: 10,
     textAlignVertical: 'top',
     width: '100%',
+    borderRadius: 5,
+  },
+  attributeTextInputStyle: {
+    color: 'black',
+    backgroundColor: 'lightgrey',
+    textAlignVertical: 'top',
+    width: '100%',
+    borderRadius: 5,
   },
 
   //**********************
@@ -397,6 +405,11 @@ export let CommonStyles = EStyleSheet.create({
   separatorStyle: {
     borderBottomColor: '$buttongroupcolor',
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
+
+  verticalSeparatorStyle: {
+    borderRightColor: '$buttongroupcolor',
+    borderRightWidth: StyleSheet.hairlineWidth * 2,
   },
 
 });

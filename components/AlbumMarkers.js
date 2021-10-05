@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { LayoutAnimation, ActivityIndicator, Alert, Text, TouchableOpacity, TouchableWithoutFeedback, UIManager, View } from 'react-native';
+import { LayoutAnimation, ActivityIndicator, Alert, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
 import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
@@ -62,13 +62,15 @@ const pBits = {
   'loan': 8,
   'num': 16,
   'gift': 32,
-  'excluded': 64
+  'dedicace': 64,
+  'excluded': 128,
 };
 
 export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refreshCallback = () => { } }) {
 
   const [album, setAlbum] = useState(item);
   const [initAlbum, setInitAlbum] = useState({});
+  const [isDedicace, setIsDedicace] = useState(false);
   const [isExcluded, setIsExcluded] = useState(false);
   const [isGift, setIsGift] = useState(false);
   const [isLoan, setIsLoan] = useState(false);
@@ -135,6 +137,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
     setIsLoan(album.FLG_PRET && album.FLG_PRET == 'O');
     setIsNum(album.FLG_NUM && album.FLG_NUM == 'O');
     setIsGift(album.FLG_CADEAU && album.FLG_CADEAU == 'O');
+    setIsDedicace(album.FLG_DEDICACE && album.FLG_DEDICACE == 'O');
     setIsExcluded(CollectionManager.isAlbumExcluded(album));
   }, [album]);
 
@@ -276,6 +279,20 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
     });
   };
 
+  const onDedicace = async () => {
+    if (!Helpers.checkConnection()) { return; }
+
+    const dedicace = !(album.FLG_DEDICACE == 'O');
+    setProcessingBit('dedicace', true);
+    CollectionManager.setAlbumDedicaceFlag(album, dedicace, (result) => {
+      if (!result.error) {
+        setIsDedicace(dedicace);
+        refreshCallback();
+      }
+      setProcessingBit('dedicace', false);
+    });
+  };
+
   const onExcludeIt = async () => {
     if (!Helpers.checkConnection()) { return; }
 
@@ -353,6 +370,9 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
 
             <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
               isCheckedCb={() => album.FLG_CADEAU == 'O'} />
+
+            <Marker name='dedicace' iconEnabled='signature' iconDisabled='signature' text='Dédicace' onPressCb={onDedicace} iconCollection='FontAwesome5'
+              isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
           </View> : null}
         </View> : null}
       {global.retractableButtons && reduceMode ?

@@ -47,7 +47,9 @@ function getBaseUserURL(token, dataMode) {
 
 function concatParamsToURL(url, params) {
   for (const key in params) {
-    url += '&' + key + '=' + encodeURIComponent(params[key]);
+    if (key) {
+      url += '&' + key + '=' + encodeURIComponent(params[key]);
+    }
   }
   return url;
 }
@@ -93,7 +95,11 @@ export function checkForToken(navigation = null, callback = null) {
     return navigation.navigate('Login');
   }
   if (callback) {
-    callback();
+    try {
+      callback();
+    } catch (error) {
+      console.debug(error);
+    }
   }
   return global.token;
 }
@@ -172,16 +178,20 @@ export function loginBDovore(pseudo, passwd, callback) {
   })
     .then(resp => resp.json())
     .then(response => {
-      if (response.Error === '') {
-        console.debug("New token: " + response.Token);
-        console.debug("  server timestamp: " + response.Timestamp);
-        global.token = response.Token;
-        global.serverTimestamp = response.Timestamp;
-        fetchUserPrefs();
-        //console.log(responseJson);
-        callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
-      } else {
-        callback(formatResult(false, response.Token, response.Error));
+      try {
+        if (response.Error === '') {
+          console.debug("New token: " + response.Token);
+          console.debug("  server timestamp: " + response.Timestamp);
+          global.token = response.Token;
+          global.serverTimestamp = response.Timestamp;
+          fetchUserPrefs();
+          //console.log(responseJson);
+          callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
+        } else {
+          callback(formatResult(false, response.Token, response.Error));
+        }
+      } catch (error) {
+        console.debug(error);
       }
     })
     .catch((error) => {
@@ -238,8 +248,11 @@ export async function fetchJSON(request, context, callback, params = {},
         // Get total number of items and compute number of pages to fetch
         let nbItems = (multipage && datamode) ? parseInt(json[multipageTotalField]) : null;
         let nbPages = (multipage && datamode) ? Math.ceil(nbItems / pageLength) : 1;
-
-        callback(formatResult(data, '', nbPages <= 1, nbItems));
+        try {
+          callback(formatResult(data, '', nbPages <= 1, nbItems));
+        } catch (error) {
+          console.debug(error);
+        }
 
         const loadPage = (page) => {
           const url = baseUrl + '&page=' + page + '&length=' + pageLength;
@@ -248,7 +261,11 @@ export async function fetchJSON(request, context, callback, params = {},
             .then(response => response.json())
             .then(json => {
               data = json.data; //.push(...json.data);
-              callback(formatResult(data, '', page === nbPages ? true : false, nbItems));
+              try {
+                callback(formatResult(data, '', page === nbPages ? true : false, nbItems));
+              } catch (error) {
+                console.debug(error);
+              }
             });
         }
         // Perform all pages request at once. It is far far faster than
@@ -270,7 +287,11 @@ export async function fetchJSON(request, context, callback, params = {},
           });
         } else {
           console.error("Error: " + error);
-          callback(formatResult([], error.toString()));
+          try {
+            callback(formatResult([], error.toString()));
+          } catch (error) {
+            console.debug(error);
+          }
         }
       });
   });
@@ -386,7 +407,7 @@ export async function fetchSimilAlbums(id_tome, callback) {
 }
 
 export async function fetchAlbumComments(id_tome, callback) {
-  const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', { id_tome: id_tome, });
+  const url = concatParamsToURL(bdovoreBaseURL + '/Albumcomment?', id_tome ? { id_tome, } : null);
 
   fetchZIP(url)
     .then(response => response.json())

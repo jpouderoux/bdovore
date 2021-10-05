@@ -86,6 +86,10 @@ export function renderSeparator() {
   return <View style={CommonStyles.separatorStyle} />
 }
 
+export function renderVerticalSeparator() {
+  return <View style={CommonStyles.verticalSeparatorStyle} />
+}
+
 export function renderAnchor() {
   return <View style={CommonStyles.bottomSheetNotchStyle} />;
 }
@@ -374,6 +378,20 @@ export function makeSection(title = '', data = []) {
 export function convertDate(date) {
   //return new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // not supported on react
   return date.split('-').reverse().join('/');
+}
+
+export function getAlbumName(album) {
+  let title = album.TITRE_TOME;
+  let tome = album.NUM_TOME;
+  if (tome > 0) {
+    title = title.replace(/(.*), Tome (\d)+/, '$1');
+    title = 'T' + album.NUM_TOME + ' - ' + title;
+  }
+  return title;
+}
+
+export function getAlbumCopyright(album) {
+  return album.NOM_EDITEUR + ' / ' + reverseAuteurName(album.depseudo);
 }
 
 export function getDateParutionAlbum(album) {

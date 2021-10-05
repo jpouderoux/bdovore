@@ -27,6 +27,8 @@
  */
 
 import React from 'react';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -35,6 +37,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 export function Icon({ collection = 'MaterialCommunityIcons', name, size, color, style }) {
 
   switch (collection) {
+    case 'FontAwesome':
+      return <FontAwesome name={name} size={size} color={color} style={style} />;
+    case 'FontAwesome5':
+      return <FontAwesome5 name={name} size={size} color={color} style={style} />;
     case 'MaterialCommunityIcons':
       return <MaterialCommunityIcons name={name} size={size} color={color} style={style} />;
     case 'Ionicons':

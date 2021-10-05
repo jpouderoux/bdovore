@@ -40,6 +40,7 @@ import AuteurScreen from '../screens/AuteurScreen';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import CollectionPanel from '../panels/CollectionPanel';
 import CollectionScreen from '../screens/CollectionScreen';
+import CommentsScreen from '../screens/CommentsScreen';
 import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NewsScreen from '../screens/NewsScreen';
@@ -348,6 +349,10 @@ function NewsScreens({ navigation }) {
   const [collectionGenre, setCollectionGenre] = useState(1);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
 
+  const onCommentsPress = () => {
+    navigation.navigate('Comments');
+  }
+
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
@@ -355,6 +360,10 @@ function NewsScreens({ navigation }) {
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onCommentsPress} style={{ margin: 8 }}>
+          <Icon collection='FontAwesome' name='comments-o' size={25} color={CommonStyles.iconStyle.color} />
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
@@ -379,6 +388,10 @@ function NewsScreens({ navigation }) {
             headerRight: () => settingsButton(route, navigation),
           };
         }} />
+      <NewsStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({
+          title: 'Dernières critiques',
+        })} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,

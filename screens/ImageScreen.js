@@ -27,7 +27,8 @@
  */
 
 import React from 'react';
-import { ActivityIndicator, Dimensions, Image, TouchableWithoutFeedback, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { CommonStyles } from '../styles/CommonStyles';
 
 
 function ImageScreen({ route, navigation }) {
@@ -39,6 +40,9 @@ function ImageScreen({ route, navigation }) {
           style={[{ resizeMode: 'contain', width: Dimensions.get('window').width, height: Dimensions.get('window').height }]}
           PlaceholderContent={<ActivityIndicator size='small' color='white' />} />
       </TouchableWithoutFeedback>
+        {route.params.copyright ?
+          <Text style={[CommonStyles.smallerText, { color: 'gray', position: 'absolute', bottom: 4, left: 4 }]}>© {route.params.copyright}</Text> :
+          null}
     </View>
   );
 }

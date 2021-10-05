@@ -38,7 +38,7 @@ import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
 
-function MakeComment(album, comment, rate, login) {
+function MakeComment(album, comment, rate) {
   return {
     "COMMENT": comment,
     "DTE_POST": Helpers.getNowDateString(),
@@ -50,7 +50,7 @@ function MakeComment(album, comment, rate, login) {
     "NUM_TOME": album.NUM_TOME,
     "TITRE_TOME": album.TITRE_TOME ?? '',
     "user_id": "???",
-    "username": login
+    "username": global.login
   }
 }
 
@@ -60,24 +60,20 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
   const [errortext, setErrortext] = useState('');
   const [loading, setLoading] = useState(false);
   const [rate, setRate] = useState(5);
-  const [login, setLogin] = useState('');
 
   const tome = ((album.NUM_TOME > 0) ? 'T' + album.NUM_TOME + ' - ' : '') + album.TITRE_TOME;
 
   useEffect(() => {
-    AsyncStorage.getItem('login').then(login => {
-      setLogin(login);
-      let comment = '';
-      let rate = 5;
-      comments.forEach(entry => {
-        if (entry.username == login) {
-          comment = entry.COMMENT;
-          rate = entry.NOTE;
-        }
-      });
-      setComment(comment);
-      setRate(rate / 2.);
+    let comment = '';
+    let rate = 5;
+    comments.forEach(entry => {
+      if (entry.username == global.login) {
+        comment = entry.COMMENT;
+        rate = entry.NOTE;
+      }
     });
+    setComment(comment);
+    setRate(rate / 2.);
   }, [isVisible]);
 
   const onSaveComment = () => {
@@ -91,13 +87,13 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
     setLoading(false);
     if (!result.error) {
       // Add the updated or new comment into the local/temporary copy of album comments
-      const existingComment = comments.find((item) => item.username == login);
+      const existingComment = comments.find((item) => item.username == global.login);
       if (existingComment) {
         existingComment.COMMENT = comment;
         existingComment.NOTE = rate * 2.;
         existingComment.DTE_POST = Helpers.getNowDateString();
       } else {
-        comments.unshift(MakeComment(album, comment, rate * 2., login));
+        comments.unshift(MakeComment(album, comment, rate * 2.));
       }
       visibleSetter(false);
     }
@@ -114,7 +110,7 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
     setLoading(false);
     if (!result.error) {
       // Add the updated or new comment into the local/temporary copy of album comments
-      const existingComment = comments.find((item) => item.username == login);
+      const existingComment = comments.find((item) => item.username == global.login);
       if (existingComment) {
         comments.splice(existingComment, 1);
       }

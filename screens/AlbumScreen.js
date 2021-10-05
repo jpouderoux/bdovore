@@ -27,14 +27,14 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { ListItem } from 'react-native-elements';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
 import { BottomSheet } from '../components/BottomSheet';
 import { CollapsableSection } from '../components/CollapsableSection';
-import { CommonStyles } from '../styles/CommonStyles';
+import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { Icon } from '../components/Icon';
 import { RatingStars } from '../components/RatingStars';
@@ -43,12 +43,22 @@ import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 import CommentsPanel from '../panels/CommentsPanel';
 import UserCommentPanel from '../panels/UserCommentPanel';
+import { TextInput } from 'react-native-gesture-handler';
 
+
+const sBits = {
+  'borrower': 1,
+  'borrowerEmail': 2,
+  'comment' : 4,
+};
 
 function AlbumScreen({ route, navigation }) {
 
   const [album, setAlbum] = useState(route.params.item);
   const [albumEditionsData, setAlbumEditionsData] = useState([]);
+  const [borrower, setBorrower] = useState('');
+  const [borrowerEmail, setBorrowerEmail] = useState('');
+  const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   const [dontShowSerieScreen, setDontShowSerieScreen] = useState(route.params.dontShowSerieScreen);
   const [editionIndex, setEditionIndex] = useState(0);
@@ -57,26 +67,36 @@ function AlbumScreen({ route, navigation }) {
   const [isAlbumInCollection, setIsAlbumInCollection] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
+  const [showComment, setShowComment] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showEditionsChooser, setShowEditionsChooser] = useState(false);
   const [showUserComment, setShowUserComment] = useState(false);
   const [similAlbums, setSimilAlbums] = useState([]);
+  const [showMore, setShowMore] = useState(false);
+  const [isBorrowed, setIsBorrowed] = useState(false);
+  const [showBorrowerInfos, setShowBorrowerInfos] = useState(false);
+  const [savingBits, setSavingBits] = useState(0);
 
-  const getAlbumName = (album) => {
-    let title = album.TITRE_TOME;
-    let tome = album.NUM_TOME;
-    if (tome > 0) {
-      title = title.replace(/(.*), Tome (\d)+/, '$1');
-      title = 'T' + album.NUM_TOME + ' - ' + title;
+  const tome = Helpers.getAlbumName(album);
+
+  const setSavingBit = (flag, value) => {
+    if (value) {
+      setSavingBits(savingBits => savingBits | sBits[flag]);
+    } else {
+      setSavingBits(savingBits => savingBits & ~sBits[flag]);
     }
-    return title;
   }
-  const tome = getAlbumName(album);
+
+  const isSavingBit = (flag) => {
+    return savingBits & sBits[flag];
+  }
 
   useEffect(() => {
     setIsAlbumInCollection(CollectionManager.isAlbumInCollection(album));
     getAlbumEditions();
     getAlbumIsExclude();
+
+    onRefresh();
   }, [album]);
 
   const getAlbumEditions = () => {
@@ -132,6 +152,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onCommentsFetched = (result) => {
+    console.log(result.items);
     setComments(result.items);
     setErrortext(result.error);
     setLoading(false);
@@ -185,6 +206,54 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
+  const onSaveBorrower = () => {
+    const colAlb = CollectionManager.getAlbumInCollection(album) ?? album;
+    if (borrower != colAlb.NOM_PRET) {
+      if (!Helpers.checkConnection()) { return; }
+      setSavingBit('borrower', true);
+      CollectionManager.setAlbumBorrower(album, borrower, (result) => {
+        setSavingBit('borrower', false);
+      });
+    }
+  }
+
+  const onSaveBorrowerEmail = () => {
+    const colAlb = CollectionManager.getAlbumInCollection(album) ?? album;
+    if (borrowerEmail != colAlb.EMAIL_PRET) {
+      if (!Helpers.checkConnection()) { return; }
+      setSavingBit('borrowerEmail', true);
+      CollectionManager.setAlbumBorrowerEmail(album, borrowerEmail, (result) => {
+        setSavingBit('borrowerEmail', false);
+      });
+    }
+  }
+
+  const onSaveComment = () => {
+    console.log('saving comment...')
+    const colAlb = CollectionManager.getAlbumInCollection(album) ?? album;
+    if (comment != colAlb.comment) {
+      if (!Helpers.checkConnection()) { return; }
+      setSavingBit('comment', true);
+      CollectionManager.setAlbumComment(album, comment, (result) => {
+        setSavingBit('comment', false);
+      });
+    }
+  }
+
+  const getUserRating = () => {
+    let rate = -1;
+    comments.forEach(entry => {
+      //console.log(entry);
+      if (entry.username == global.login) {
+        rate = entry.NOTE;
+      }
+    });
+    return rate > 0 ? rate : null;
+  }
+
+  const BitLoadingIndicator = () => (
+    <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle} />);
+
   const keyExtractor = useCallback((item, index) =>
     Helpers.getAlbumUID(item), []);
 
@@ -225,7 +294,7 @@ function AlbumScreen({ route, navigation }) {
 
   const onShowAlbumImage = () => {
     if (!Helpers.isCensorable(album.NOM_GENRE)) {
-      navigation.push('Image', { source: APIManager.getAlbumCoverURL(album) });
+      navigation.push('Image', { source: APIManager.getAlbumCoverURL(album), copyright: Helpers.getAlbumCopyright(album) });
     }
   }
 
@@ -242,7 +311,21 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onRefresh = () => {
-    setIsAlbumInCollection(CollectionManager.isAlbumInCollection(album));
+    const isInCollec = CollectionManager.isAlbumInCollection(album);
+    setIsAlbumInCollection(isInCollec);
+
+    if (!isInCollec) {
+      setShowMore(false);
+      setShowBorrowerInfos(false);
+      setShowComment(false);
+    } else {
+      // Refresh album parameters when album flags are changed in the markers component
+      const colAlb = CollectionManager.getAlbumInCollection(album) ?? album;
+      setIsBorrowed(colAlb.FLG_PRET == 'O');
+      setBorrower(colAlb.NOM_PRET);
+      setBorrowerEmail(colAlb.EMAIL_PRET);
+      setComment(colAlb.comment);
+    }
   }
 
   return (
@@ -259,7 +342,9 @@ function AlbumScreen({ route, navigation }) {
           <Text style={[CommonStyles.bold, CommonStyles.defaultText, { fontWeight: 'bold', textAlign: 'center' }]}>{tome}</Text>
           {album.MOYENNE_NOTE_TOME ?
             <View style={{ marginTop: 10 }}>
-              <RatingStars note={album.MOYENNE_NOTE_TOME} showRate />
+              <RatingStars note={album.MOYENNE_NOTE_TOME} nbNotes={album.NB_NOTE_TOME} showRate />
+              {getUserRating() != null ? <View style={{ flexDirection: 'row' }}><RatingStars note={getUserRating()} showRate />
+              <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { marginLeft: 5 }]}>Ma note</Text></View> : null}
             </View> : null}
 
           {filteredComments().length > 0 || isAlbumInCollection && global.isConnected ?
@@ -278,7 +363,92 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <CollapsableSection sectionName='Collection'>
-          <AlbumMarkers style={{ alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)} refreshCallback={onRefresh} />
+          <View flexDirection='row' style={{ justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
+            <View style={{ flex: 1 }}></View>
+            <AlbumMarkers style={{ flex: 0, alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)} refreshCallback={onRefresh} />
+            <View style={{ flex: 1 }}></View>
+            {CollectionManager.isAlbumInCollection(album) ?
+              <TouchableOpacity onLongPress={() => { }} onPress={() => {
+                if (showMore) {
+                  setShowBorrowerInfos(false);
+                  setShowComment(false);
+                }
+                setShowMore(!showMore);
+              }} title='...'
+                style={[CommonStyles.markerStyle, { paddingLeft: 0, width: 25, right: -5, position: 'absolute' }]} >
+                <Text>
+                  <Icon collection='MaterialIcons' name='more-vert' size={25}
+                    color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
+                    style={[CommonStyles.markerIconStyle, {
+                      paddingTop: 3, borderWidth: 0, width: 25
+                    }]} />
+                </Text>
+              </TouchableOpacity>
+              : null}
+          </View>
+          {showMore ? <View style={{ marginTop: 5}}/> : null}
+          {showMore && (isBorrowed && (borrower || borrowerEmail || showBorrowerInfos))?
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+              <Text style={[CommonStyles.defaultText, {  }]}>Emprunteur :</Text>
+              {isSavingBit('borrower') ?
+                <BitLoadingIndicator /> :
+                <TextInput multiline={false}
+                  placeholder="Nom"
+                  numberOfLines={1}
+                  editable
+                  autoComplete='name'
+                  textContentType='none'
+                  autoCapitalize='sentences'
+                  style={[CommonStyles.attributeTextInputStyle, { flex: 1, marginLeft: 5, padding: 2, textAlignVertical: 'center', height: 20 }]}
+                  onChangeText={(name) => { setBorrower(name);  setShowBorrowerInfos(true); }}
+                  //onEndEditing={onSaveBorrower}
+                  onSubmitEditing={onSaveBorrower}
+                  value={borrower}
+                  autoFocus={false} />}
+              {isSavingBit('borrowerEmail') ?
+                <BitLoadingIndicator /> :
+                <TextInput multiline={false}
+                  placeholder="Email / Tel"
+                  numberOfLines={1}
+                  editable
+                  autoComplete='email'
+                  keyboardType='email-address'
+                  textContentType='emailAddress'
+                  autoCapitalize='none'
+                  style={[CommonStyles.attributeTextInputStyle, { flex: 1, marginLeft: 5, padding: 2, textAlignVertical: 'center', height: 20 }]}
+                  onChangeText={(email) => { setBorrowerEmail(email); setShowBorrowerInfos(true); }}
+                  //onEndEditing={onSaveBorrowerEmail}
+                  onSubmitEditing={onSaveBorrowerEmail}
+                  value={borrowerEmail}
+                autoFocus={false} />}
+            </View> : null }
+          {showMore && (isBorrowed && (!borrower && !borrowerEmail && !showBorrowerInfos)) ?
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10 }]}
+              onPress={() => setShowBorrowerInfos(true)}>Ajouter les infos emprunteur</Text>
+            : null}
+          {showMore && (comment || showComment) ?
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+              <Text style={[CommonStyles.defaultText, { }]}>Mémo : </Text>
+              {isSavingBit('comment') ?
+                <BitLoadingIndicator /> :
+                <TextInput multiline={true}
+                  placeholder='Entrez vos remarques ici'
+                  editable
+                  textContentType='none'
+                  autoCapitalize='sentences'
+                  style={[CommonStyles.attributeTextInputStyle, { flex: 1, marginLeft: 5, padding: 2, textAlignVertical: 'top', minHeight: 20}]}
+                  onChangeText={(comment) => { setComment(comment ?? ''); setShowComment(true); }}
+                  onEndEditing={onSaveComment}
+                  returnKeyType='done'
+                  //onSubmitEditing={onSaveComment}
+                  value={comment}
+                  autoFocus={false} />}
+            </View>
+            : null}
+          {showMore && (!comment && !showComment) ?
+            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10 }]}
+              onPress={()=> setShowComment(true)}>Ajouter un mémo privé</Text>
+            : null}
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Album'>
