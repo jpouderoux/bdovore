@@ -80,13 +80,18 @@ export function isValidToken() {
 }
 
 export function checkForToken(navigation = null, callback = null) {
-  // Move to login page if no token available
-  if (isValidToken()) {
-    return callback ? callback() : global.token;
+  try {
+    // Move to login page if no token available
+    if (isValidToken()) {
+      return callback ? callback() : global.token;
+    }
+    if (global.forceOffline) {
+      return callback ? callback() : 'offline-';
+    }
+  } catch (error) {
+    console.log(error);
   }
-  if (global.forceOffline) {
-    return callback ? callback() : 'offline-';
-  }
+
   if (!global.token && global.login && global.passwd) {
     console.debug('undefined token -> relogin');
     return reloginBDovore(navigation, callback);
@@ -266,6 +271,9 @@ export async function fetchJSON(request, context, callback, params = {},
               } catch (error) {
                 console.debug(error);
               }
+            })
+            .catch((error) => {
+              console.debug(error);
             });
         }
         // Perform all pages request at once. It is far far faster than

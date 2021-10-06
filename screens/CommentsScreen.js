@@ -31,13 +31,15 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native'
 
 import { CommonStyles, bdovorgray, windowWidth } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
+import { Icon } from '../components/Icon';
 import { RatingStars } from '../components/RatingStars';
+import { ScrollView } from 'react-native-gesture-handler';
+import CollectionManager from '../api/CollectionManager';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
-import CollectionManager from '../api/CollectionManager';
-import { ScrollView } from 'react-native-gesture-handler';
-import { ScreenWidth } from 'react-native-elements/dist/helpers';
 
+
+let timeout = null;
 
 function CommentsScreen({ route, navigation }) {
 
@@ -50,7 +52,10 @@ function CommentsScreen({ route, navigation }) {
     const willFocusSubscription = navigation.addListener('focus', () => {
       fetchData();
     });
-    return willFocusSubscription;
+    return () => {
+      willFocusSubscription();
+      if (timeout) clearTimeout(timeout);
+    };
   }, []);
 
   const fetchData = () => {
@@ -61,6 +66,11 @@ function CommentsScreen({ route, navigation }) {
       setLoading(true);
       setErrortext('');
       fetchComments();
+    } else if (!timeout && comments.length == 0) {
+      if (verbose) {
+        Helpers.showToast(false, 'Will try to fetch comments again in 2sec.');
+      }
+      timeout = setTimeout(fetchData, 2000);
     }
   }
 
@@ -71,7 +81,7 @@ function CommentsScreen({ route, navigation }) {
   }
 
   const onCommentsFetched = async (result) => {
-    console.debug(result.items.length + ' series to complete fetched')
+    console.debug(result.items.length + ' comments fetched')
     setComments(result.items);
     setErrortext(result.error);
   }
@@ -126,14 +136,14 @@ function CommentsScreen({ route, navigation }) {
       <View style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }}>
         <TouchableOpacity style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }} onPress={() => onAlbumPress(item)} title={item.TITRE_TOME}>
           <CoverImage item={item} category={1} style={CommonStyles.fullAlbumImageStyle} />
-          <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.defaultTextStyle, CommonStyles.bold, { marginTop: 10}]}>{Helpers.getAlbumName(item)}</Text>
+          <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.defaultTextStyle, CommonStyles.bold, { marginTop: 10 }]}>{Helpers.getAlbumName(item)}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }} onPress={() => onSeriePress(item)} title={item.TITRE_TOME}>
           {item.TITRE_TOME != item.NOM_SERIE ?
             <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.linkTextStyle, { marginTop: 5 }]}>{item.NOM_SERIE}</Text> :
             null}
         </TouchableOpacity>
-          <RatingStars note={item.NOTE} style={{ marginLeft: -2, marginVertical: 5 }} showRate />
+        <RatingStars note={item.NOTE} style={{ marginLeft: -2, marginVertical: 5 }} showRate />
         <Text style={[CommonStyles.defaultTextStyle, { color: bdovorgray, marginVertical: 5 }]}>{item.username} {getCommentDate(item)}</Text>
         <TouchableOpacity activeOpacity={1}>
           <Text style={[CommonStyles.defaultTextStyle, { width: windowWidth - 20, marginHorizontal: 10 }]}>{item.COMMENT}</Text>
@@ -146,19 +156,30 @@ function CommentsScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      <FlatList
-        horizontal
-        initialNumToRender={2}
-        maxToRenderPerBatch={4}
-        windowSize={5}
-        showsHorizontalScrollIndicator={true}
-        legacyImplementation={false}
-        data={comments}
-        renderItem={renderComment}
-        keyExtractor={keyExtractor}
-        ItemSeparatorComponent={Helpers.renderVerticalSeparator}
-        getItemLayout={getItemLayout}
-      />
+      {!loading && (!comments || comments.length == 0) ?
+        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+          <View style={{ flex: 1 }}></View>
+          <Text style={CommonStyles.defaultText}>Informations indisponibles en mode non-connecté.{'\n'}</Text>
+          <Text style={CommonStyles.defaultText}>Rafraichissez cette page une fois connecté.</Text>
+          <TouchableOpacity style={{ flexDirection: 'column', marginTop: 20 }} onPress={fetchData}>
+            <Icon name='refresh' size={50} color={CommonStyles.markIconDisabled.color} />
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}></View>
+        </View>
+        :
+        <FlatList
+          horizontal
+          initialNumToRender={2}
+          maxToRenderPerBatch={4}
+          windowSize={5}
+          showsHorizontalScrollIndicator={true}
+          legacyImplementation={false}
+          data={comments}
+          renderItem={renderComment}
+          keyExtractor={keyExtractor}
+          ItemSeparatorComponent={Helpers.renderVerticalSeparator}
+          getItemLayout={getItemLayout}
+        />}
     </View>
   );
 }

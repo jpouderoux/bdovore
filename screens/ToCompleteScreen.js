@@ -46,6 +46,7 @@ let loadedSeries = 0;
 let collectionGenre = 0;
 let albums = [];
 let series = [];
+let timeout = null;
 
 function ToCompleteScreen({ route, navigation }) {
 
@@ -105,12 +106,15 @@ function ToCompleteScreen({ route, navigation }) {
   }
 
   useEffect(() => {
-    refreshDataIfNeeded();
+    //refreshDataIfNeeded();
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
       refreshDataIfNeeded();
     });
-    return willFocusSubscription;
+    return () => {
+      willFocusSubscription();
+      if (timeout) clearTimeout(timeout);
+    };
   }, []);
 
   const fetchData = () => {
@@ -124,6 +128,11 @@ function ToCompleteScreen({ route, navigation }) {
       setErrortext('');
       setScrollPos([0, 0]);
       fetchSeries();
+    } else if (!timeout && series.length == 0 && albums.length == 0) {
+      if (verbose) {
+        Helpers.showToast(false, 'Will try to fetch tocomplete again in 2sec.');
+      }
+      timeout = setTimeout(fetchData, 2000);
     }
   }
 
@@ -155,7 +164,6 @@ function ToCompleteScreen({ route, navigation }) {
     loadedAlbums = 0;
     APIManager.fetchAlbumsManquants({ navigation: navigation }, onAlbumsFetched)
       .then().catch((error) => console.debug(error));
-
   }
 
   const onAlbumsFetched = async (result) => {
