@@ -331,12 +331,23 @@ function CollectionScreen({ route, navigation }) {
       {loading ?
         <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> :
         null}
-      {!loading && !CollectionManager.isCollectionEmpty() ?
+      {!loading && CollectionManager.isCollectionEmpty() ?
         <View style={[CommonStyles.screenStyle, { height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
           <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
-          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Ajoutez vos albums via les onglets Actualité et Recherche.{'\n'}</Text>
-          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Le mode ajout automatique du scanner de codes-barres{'\n'}vous permet de référencer rapidement votre collection.</Text>
+          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+            <Text style={[CommonStyles.defaultText, CommonStyles.center, {textAlign: 'center'}]}>
+              <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets{'\n'}</Text>
+              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Actualité')}>Actualité</Text>
+              <Text style={CommonStyles.defaultText}>{' '}et{' '}</Text>
+              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Rechercher')}>Rechercher</Text>
+              <Text style={CommonStyles.defaultText}>.{'\n'}</Text>
+            </Text>
+          </View>
+          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>
+            Le mode ajout automatique du scanner{'\n'}
+            de codes-barres vous permet de référencer{'\n'}
+            rapidement votre collection.</Text>
           <TouchableOpacity onPress={() =>
             { if (global.isConnected) { navigation.push('BarcodeScanner'); }}}
             title="Search"

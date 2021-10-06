@@ -440,15 +440,9 @@ function SearchScreens({ navigation }) {
 
 function MainTab2() {
 
-  const setTabBarMatComIcons = (icon, params) => {
+  const getIcon = (icon, params, collection = 'MaterialCommunityIcons') => {
     return (
-      <Icon name={icon} color={params.color} size={params.size} />
-    );
-  };
-
-  const setTabBarMatIcons = (icon, params) => {
-    return (
-      <Icon collection='MaterialIcons' name={icon} color={params.color} size={params.size} />
+      <Icon name={icon} color={params.color} size={params.size} collection={collection} />
     );
   };
 
@@ -464,7 +458,7 @@ function MainTab2() {
         component={CollectionScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons('home', p);
+            return getIcon('home-outline', p, 'Ionicons');
           }
         }}
       />
@@ -473,7 +467,7 @@ function MainTab2() {
         component={WishlistScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatComIcons('heart', p);
+            return getIcon('heart-outline', p);
           }
         }}
       />
@@ -482,7 +476,7 @@ function MainTab2() {
         component={ToCompleteScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatIcons('list-alt', p);
+            return getIcon('list-alt', p, 'MaterialIcons');
           }
         }}
       />
@@ -491,7 +485,7 @@ function MainTab2() {
         component={NewsScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatIcons('fiber-new', p);
+            return getIcon('megaphone-outline', p, 'Ionicons');//fiber-new', p);
           }
         }}
       />
@@ -500,7 +494,7 @@ function MainTab2() {
         component={SearchScreens}
         options={{
           tabBarIcon: (p) => {
-            return setTabBarMatIcons('search', p);
+            return getIcon('search', p, 'MaterialIcons');
           }
         }}
       />
