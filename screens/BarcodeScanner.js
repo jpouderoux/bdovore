@@ -27,26 +27,87 @@
  */
 
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
+import CollectionManager from '../api/CollectionManager';
+import { CommonStyles, bdovored } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
+import * as APIManager from '../api/APIManager';
+import * as Helpers from '../api/Helpers';
+
+let eanFound = false;
 
 function BarcodeScanner({ route, navigation }) {
-
+  const [autoAddMode, setAutoAddMode] = useState(false);
+  const [lastEan, setLastEan] = useState('');
+  const [loading, setLoading] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
-  const [eanFound, setEanFound] = useState(false);
+  const [nbAddedAlbums, setNbAddedAlbums] = useState(0);
+  const [lastAddedAlbum, setLastAddedAlbum] = useState('');
 
-  const onBarCodeRead = (e) => {
-    if (!eanFound) {
-      setEanFound(true); // needed to avoid reentry
-      navigation.goBack();
-      route.params.onGoBack(e.data);
+  const searchAndAddAlbumWithEAN = (ean) => {
+    if (lastEan != ean) {
+      setLastEan(ean);
+      setLoading(true);
+      let params = (ean.length > 10) ? { EAN: ean } : { ISBN: ean };
+      APIManager.fetchAlbum((result) => {
+        if (result.error == '' && result.items.length > 0) {
+          const album = result.items[0];
+          const albumName = Helpers.getAlbumName(album) + ' / ' + album.NOM_SERIE;
+          if (!CollectionManager.isAlbumInCollection(album)) {
+            CollectionManager.addAlbumToCollection(album);
+            Helpers.showToast(false,
+              'Nouvel album ajouté à la collection',
+              albumName);
+            setNbAddedAlbums(nbAddedAlbums => nbAddedAlbums + 1);
+            setLastAddedAlbum(albumName);
+          } else {
+            Helpers.showToast(true,
+              'Album déjà présent dans la collection',
+              albumName);
+          }
+        } else {
+          Helpers.showToast(true,
+            "Aucun album trouvé avec ce code",
+            "Essayez la recherche textuelle avec le nom de la série ou de l'album");
+        }
+        eanFound = false;
+        setLoading(false);
+      }, params);
+    } else {
+      eanFound = false;
     }
   }
 
-  const handleTorch = () => {
+  const onBarCodeRead = (e) => {
+    const ean = e.data;
+    //console.log('ean detected ' + ean + ' ' + eanFound);
+    if (!eanFound && ean) {
+      eanFound = true; // needed to avoid reentry
+      if (autoAddMode) {
+        if (global.isConnected) {
+          searchAndAddAlbumWithEAN(ean);
+        } else {
+          Helpers.showToast(true,
+            "Connexion internet désactivée",
+            "Rechercher de l'album impossible");
+          eanFound = false;
+        }
+      } else {
+        navigation.goBack();
+        route.params.onGoBack(ean);
+        eanFound = false;
+      }
+    }
+  }
+
+  const onTorchPress = () => {
     setTorchOn(!torchOn);
+  }
+
+  const onAutoAddModePress = () => {
+    setAutoAddMode(global.isConnected ? !autoAddMode : false);
   }
 
   return (
@@ -63,23 +124,33 @@ function BarcodeScanner({ route, navigation }) {
           buttonPositive: 'Ok',
           buttonNegative: 'Annuler',
         }}>
+        {autoAddMode &&
+          <View style={{ width: '100%', backgroundColor: 'lightgrey', flexDirection: 'row', padding: 5, alignItems: 'center' }}>
+            {loading && <ActivityIndicator size="small" color={bdovored} style={[CommonStyles.markerIconStyle, { borderWidth: 0 }]} />}
+            {nbAddedAlbums == 0 ?
+            <Text style={{ flex: 1, fontSize: 14, textAlign: 'center' }}>
+              Mode ajout automatique activé.{'\n'}
+              Tous les albums détectés seront ajoutés à votre collection.
+            </Text> :
+            <Text style={{ flex: 1, fontSize: 15, textAlign: 'center' }}>
+              {Helpers.pluralWord(nbAddedAlbums, 'album') + ' ' + Helpers.pluralize(nbAddedAlbums, 'ajouté')}.{'\n'}
+              Dernier ajout : {lastAddedAlbum}
+            </Text>}
+          </View>}
         <View style={{ width: '100%', backgroundColor: 'white', flexDirection: 'row', padding: 5 }}>
-        <Icon
-          name='barcode'
-          size={45}
-          color='black' />
-        <Text style={{
-          backgroundColor: 'white',
-          fontSize: 14,
-          margin: 5,
-          paddingLeft: 10,
-        }}>
-          Placez le code-barre à scanner dans la fenêtre.{'\n'}La recherche commence automatiquement.{'  '}
-        </Text>
+          <Icon name='barcode' size={45} color='black' />
+          <Text style={{ backgroundColor: 'white', fontSize: 14, margin: 5, paddingLeft: 10, }}>
+            Placez le code-barre à scanner dans la fenêtre.{'\n'}La recherche commence automatiquement.{'  '}
+          </Text>
         </View>
       </RNCamera>
-      <View style={styles.bottomOverlay}>
-        <TouchableOpacity onPress={handleTorch}>
+      <View style={{ position: "absolute", left: 0, }}>
+        <TouchableOpacity onPress={onAutoAddModePress}>
+          <Icon name={'library-add'} collection={'MaterialIcons'} size={30} color={autoAddMode ? 'green' : 'black'} style={styles.cameraIcon} />
+        </TouchableOpacity>
+      </View>
+      <View style={{ position: "absolute", right: 0, }}>
+        <TouchableOpacity onPress={onTorchPress}>
           <Icon name={torchOn ? 'flashlight' : 'flashlight-off'} size={30} color={torchOn ? 'orange' : 'black'} style={styles.cameraIcon} />
         </TouchableOpacity>
       </View>
