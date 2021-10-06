@@ -76,8 +76,8 @@ const onAccountPress = (navigation) => {
 
 const ShareIcon = () => (
   Platform.OS == 'ios' ?
-    <Icon collection='Ionicons' name='ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
-    <Icon name='share-variant' size={25} color={CommonStyles.iconStyle.color} />);
+    <Icon name='ios-share-outline' collection='Ionicons' size={25} color={CommonStyles.iconStyle.color} /> :
+    <Icon name='share-social-outline' collection='Ionicons' size={25} color={CommonStyles.iconStyle.color} />);
 
 const shareAlbumButton = (item) => {
   return (
@@ -183,7 +183,7 @@ function CollectionScreens({ route, navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onSettingsPress} style={{ margin: 8 }}>
@@ -249,7 +249,7 @@ function WishlistScreens({ navigation }) {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -305,7 +305,7 @@ function ToCompleteScreens({ navigation }) {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -367,7 +367,7 @@ function NewsScreens({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-sharp' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -467,7 +467,7 @@ function MainTab2() {
         component={WishlistScreens}
         options={{
           tabBarIcon: (p) => {
-            return getIcon('heart-outline', p);
+            return getIcon('heart-outline', p, 'Ionicons');
           }
         }}
       />
@@ -476,7 +476,7 @@ function MainTab2() {
         component={ToCompleteScreens}
         options={{
           tabBarIcon: (p) => {
-            return getIcon('list-alt', p, 'MaterialIcons');
+            return getIcon('puzzle', p, 'SimpleLineIcons');
           }
         }}
       />
