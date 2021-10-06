@@ -230,6 +230,8 @@ function CollectionScreens({ route, navigation }) {
           title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
           headerRight: () => shareAuthorButton(route.params.author)
         })} />
+      <CollectionStack.Screen name='BarcodeScanner' component={BarcodeScanner}
+        options={({ title: 'Scan code-barre' })} />
     </CollectionStack.Navigator>
   );
 }

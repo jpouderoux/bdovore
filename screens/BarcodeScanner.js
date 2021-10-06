@@ -54,7 +54,8 @@ function BarcodeScanner({ route, navigation }) {
       APIManager.fetchAlbum((result) => {
         if (result.error == '' && result.items.length > 0) {
           const album = result.items[0];
-          const albumName = Helpers.getAlbumName(album) + ' / ' + album.NOM_SERIE;
+          let albumName = Helpers.getAlbumName(album);
+          albumName += (albumName != album.NOM_SERIE ? ' / ' + album.NOM_SERIE : '');
           if (!CollectionManager.isAlbumInCollection(album)) {
             CollectionManager.addAlbumToCollection(album);
             Helpers.showToast(false,
@@ -95,10 +96,21 @@ function BarcodeScanner({ route, navigation }) {
           eanFound = false;
         }
       } else {
-        navigation.goBack();
-        route.params.onGoBack(ean);
-        eanFound = false;
+        let params = (ean.length > 10) ? { EAN: ean } : { ISBN: ean };
+        APIManager.fetchAlbum((result) => {
+          if (result.error == '' && result.items.length > 0) {
+            navigation.goBack();
+            navigation.push('Album', { item: result.items[0] })
+            eanFound = false;
+          } else {
+            Alert.alert(
+              "Aucun album trouvé",
+              "Aucun album trouvé avec ce code. Essayez la recherche textuelle avec le nom de la série ou de l'album.");
+          }
+        }, params);
       }
+      /*route.params.onGoBack(ean);
+      }*/
     }
   }
 

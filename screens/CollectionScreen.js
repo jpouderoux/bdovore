@@ -331,12 +331,21 @@ function CollectionScreen({ route, navigation }) {
       {loading ?
         <Progress.Bar animated={false} progress={progressRate} width={null} color={CommonStyles.progressBarStyle.color} style={CommonStyles.progressBarStyle} /> :
         null}
-      {!loading && CollectionManager.isCollectionEmpty() ?
-        <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
+      {!loading && !CollectionManager.isCollectionEmpty() ?
+        <View style={[CommonStyles.screenStyle, { height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
-          <Text style={CommonStyles.defaultText}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
-          <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets Actualité, Recherche</Text>
-          <Text style={CommonStyles.defaultText}>ou le scanner de codes-barres.</Text>
+          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Aucun album{CollectionManager.CollectionGenres[collectionGenre][1]} dans la collection.{'\n'}</Text>
+          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Ajoutez vos albums via les onglets Actualité et Recherche.{'\n'}</Text>
+          <Text style={[CommonStyles.defaultText, CommonStyles.center]}>Le mode ajout automatique du scanner de codes-barres{'\n'}vous permet de référencer rapidement votre collection.</Text>
+          <TouchableOpacity onPress={() =>
+            { if (global.isConnected) { navigation.push('BarcodeScanner'); }}}
+            title="Search"
+            style={{ marginLeft: 5, marginRight: 8, marginVertical: 0, alignSelf:'center' }}>
+            <Icon
+              name='barcode-scan'
+              size={42}
+              color={CommonStyles.iconStyle.color} />
+          </TouchableOpacity>
           <View style={{ flex: 1 }}></View>
         </View>
         :
