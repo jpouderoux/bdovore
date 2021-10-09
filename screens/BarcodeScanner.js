@@ -137,7 +137,7 @@ function BarcodeScanner({ route, navigation }) {
           buttonNegative: 'Annuler',
         }}>
         <View style={{ position: 'absolute', top: 0, width: '100%', backgroundColor: 'white', flexDirection: 'row', padding: 5 }}>
-          <Icon name='barcode' collection='FontAwesome5' size={45} color='black' style={{ marginLeft: 5 }} />
+          <Icon name='FontAwesome5/barcode' size={45} color='black' style={{ marginLeft: 5 }} />
           <Text style={{ width: '80%', alignSelf: 'center', textAlign: 'center', backgroundColor: 'white', fontSize: 14, margin: 5, paddingLeft: 10, }}>
             {!autoAddMode ? "Visez le code-barre de l'album.\nLa recherche est automatique." : (
               (loading ?
@@ -156,12 +156,12 @@ function BarcodeScanner({ route, navigation }) {
       </RNCamera>
       <View style={{ position: "absolute", right: 0, bottom: 5 }}>
         <TouchableOpacity onPress={onAutoAddModePress}>
-          <Icon name={'playlist-add'} collection={'MaterialIcons'} size={30} color={autoAddMode ? bdovored : 'black'} style={styles.cameraIcon} />
+          <Icon name={'MaterialIcons/playlist-add'}  size={30} color={autoAddMode ? bdovored : 'black'} style={styles.cameraIcon} />
         </TouchableOpacity>
       </View>
       <View style={{ position: "absolute", right: 0, bottom: 65 }}>
         <TouchableOpacity onPress={onTorchPress}>
-          <Icon name={torchOn ? 'flashlight' : 'flashlight-outline'} collection='Ionicons' size={30} color={torchOn ? 'orange' : 'black'} style={styles.cameraIcon} />
+          <Icon name={torchOn ? 'Ionicons/flashlight' : 'Ionicons/flashlight-outline'} size={30} color={torchOn ? 'orange' : 'black'} style={styles.cameraIcon} />
         </TouchableOpacity>
       </View>
     </View>
