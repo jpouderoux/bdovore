@@ -340,12 +340,11 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
       <Text style={CommonStyles.markerTextStyle}>{' '}</Text>
     </View>);
 
-  const Marker = ({ name, iconEnabled, iconDisabled, iconStyle, text, onPressCb, isCheckedCb = () => { }, enabledColor = CommonStyles.markIconEnabled,
-    iconCollection = 'MaterialCommunityIcons' }) => {
+  const Marker = ({ name, iconEnabled, iconDisabled, iconStyle, text, onPressCb, isCheckedCb = () => { }, enabledColor = CommonStyles.markIconEnabled }) => {
     return (
       isProcessing(name) ? <MarkerLoadingIndicator /> :
         <TouchableOpacity onPress={onPressCb} title={text} style={CommonStyles.markerStyle}>
-          <Icon collection={iconCollection} name={isCheckedCb() ? iconEnabled : iconDisabled} size={25}
+          <Icon name={isCheckedCb() ? iconEnabled : iconDisabled} size={25}
             color={isCheckedCb() ? enabledColor.color : CommonStyles.markIconDisabled.color}
             style={[CommonStyles.markerIconStyle, isCheckedCb() ? iconStyle : null]} />
           <Text style={[CommonStyles.markerTextStyle, isCheckedCb() ?
@@ -379,8 +378,8 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
             <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
               isCheckedCb={() => album.FLG_LU == 'O'} />
 
-            <Marker name='loan' iconEnabled='ios-person-add' iconDisabled='ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
-              isCheckedCb={() => album.FLG_PRET == 'O'} iconCollection='Ionicons' />
+            <Marker name='loan' iconEnabled='Ionicons/ios-person-add' iconDisabled='Ionicons/ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
+              isCheckedCb={() => album.FLG_PRET == 'O'} />
 
             <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
               isCheckedCb={() => album.FLG_NUM == 'O'} />
@@ -388,7 +387,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
             <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
               isCheckedCb={() => album.FLG_CADEAU == 'O'} />
 
-            <Marker name='dedicace' iconEnabled='signature' iconDisabled='signature' text='Dédicace' onPressCb={onDedicace} iconCollection='FontAwesome5'
+            <Marker name='dedicace' iconEnabled='FontAwesome5/signature' iconDisabled='FontAwesome5/signature' text='Dédicace' onPressCb={onDedicace}
               isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
 
             <Marker name='head' iconEnabled='diamond' iconDisabled='diamond' text='E.O.' onPressCb={onHeadPrint} iconCollection='FontAwesome'
@@ -398,7 +397,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
       {global.retractableButtons && reduceMode ?
         <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
           style={[CommonStyles.markerStyle, { paddingLeft: 0, width: 25 }]} >
-          <Icon collection='MaterialIcons' name='more-vert' size={25}
+          <Icon name='MaterialIcons/more-vert' size={25}
             color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
             style={[CommonStyles.markerIconStyle, {
               paddingTop: 3, borderWidth: 0, width: 25

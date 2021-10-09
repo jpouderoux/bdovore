@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { ActivityIndicator, FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { ListItem } from 'react-native-elements';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
@@ -298,6 +298,22 @@ function AlbumScreen({ route, navigation }) {
     }
   }
 
+  const onSubmitChanges = () => {
+    if (global.isConnected) {
+      const url = APIManager.bdovoreBaseURL + '/Proposition?id_edition=' + album.ID_EDITION;
+      APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
+      Linking.openURL(url);
+    }
+  }
+
+  const onSubmitNewEdition = () => {
+    if (global.isConnected) {
+      const url = APIManager.bdovoreBaseURL + '/Proposition?type=EDITION&id_tome=' + album.ID_TOME;
+      APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
+      Linking.openURL(url);
+    }
+  }
+
   const getTomeNumber = () => {
     const serie = CollectionManager.getSerieInCollection(album.ID_SERIE);
     const nbTomes = (serie && serie.NB_TOME) ? serie.NB_TOME : 0;
@@ -375,7 +391,7 @@ function AlbumScreen({ route, navigation }) {
               }} title='...'
                 style={[CommonStyles.markerStyle, { paddingLeft: 0, width: 25, right: -5, position: 'absolute' }]} >
                 <Text>
-                  <Icon collection='MaterialIcons' name='more-vert' size={25}
+                  <Icon name='MaterialIcons/more-vert' size={25}
                     color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
                     style={[CommonStyles.markerIconStyle, {
                       paddingTop: 3, borderWidth: 0, width: 25
@@ -476,6 +492,12 @@ function AlbumScreen({ route, navigation }) {
           {album.EAN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>EAN : {album.EAN_EDITION}</Text>}
           {!album.EAN_EDITION && album.ISBN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ISBN : {album.ISBN_EDITION}</Text>}
           {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
+          <TouchableOpacity onPress={onSubmitChanges} style={{position: 'absolute', top:0, right:0}}>
+            <Icon name='comment-edit-outline' size={25} color={CommonStyles.markIconDisabled.color} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onSubmitNewEdition} style={{ position: 'absolute', top: 0, right: 30 }}>
+            <Icon name='comment-plus-outline' size={25} color={CommonStyles.markIconDisabled.color} />
+          </TouchableOpacity>
 
           <AchatSponsorIcon album={album} />
         </CollapsableSection>

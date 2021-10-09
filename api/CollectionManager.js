@@ -882,8 +882,15 @@ class CCollectionManager {
     if (album.ID_EDITION) {
       return global.db.objectForPrimaryKey('Albums', Helpers.getAlbumUID(album)) ?? null;
     }
-    let ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
-    return (ret.length > 0) ? ret[0] : null;
+    let ret;
+    if (album.ID_SERIE) {
+      ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
+      if (ret.length > 0) {
+        return ret[0];
+      }
+    }
+    ret = this.getAlbums().filtered('ID_TOME == $0 && TITRE_TOME == $1', parseInt(album.ID_TOME), album.TITRE_TOME);
+    return ret.length > 0 ? ret[0] : 0;
   }
 
   getAlbumInWishlist(album) {

@@ -121,6 +121,10 @@ export function setAsyncStorageBoolValue(name, value) {
   AsyncStorage.setItem(name, value ? '1' : '0').catch((error) => { });
 }
 
+export function getLoggedUserid() {
+  return parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+}
+
 export function checkConnection() {
   if (!global.isConnected) { return false; }
   if (global.localTimestamp != global.serverTimestamp) {
