@@ -37,15 +37,15 @@ const bdovoreUserAgent = 'bdovore ' + Platform.OS + ' v0.1';
 export const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
 
-function getBaseURL(dataMode) {
+export function getBaseURL(dataMode) {
   return bdovoreBaseUserURL + 'data=' + dataMode;
 }
 
-function getBaseUserURL(token, dataMode) {
+export function getBaseUserURL(token, dataMode) {
   return getBaseURL(dataMode) + '&API_TOKEN=' + encodeURI(token);
 }
 
-function concatParamsToURL(url, params) {
+export function concatParamsToURL(url, params) {
   for (const key in params) {
     if (key) {
       url += '&' + key + '=' + encodeURIComponent(params[key]);
@@ -399,6 +399,22 @@ export async function fetchWishlist(context, callback, params = {}) {
     }, ...params
   });
 };
+
+export async function fetchMyCollection(context, callback) {
+
+  const url = bdovoreBaseURL + '/Macollection';
+
+  fetchZIP(url)
+    .then(response => response.json())
+    .then(json => {
+      //console.log(json);
+      callback({ error: '', items: json });
+    })
+    .catch((error) => {
+      console.debug('==> error : ' + error.toString())
+      callback({ error: error.toString(), items: {}});
+    });
+}
 
 export async function fetchSimilAlbums(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });
