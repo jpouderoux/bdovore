@@ -81,9 +81,7 @@ function WishlistScreen({ route, navigation }) {
   }
 
   const scrollToTop = (offset = 40) => {
-    if (flatList && flatList.current) {
-      flatList.current.scrollToOffset({ offset, animated: false });
-    }
+    Helpers.safeScrollToOffset(flatList, { offset, animated: false });
   }
 
   const onSearchChanged = (searchText) => {

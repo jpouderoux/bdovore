@@ -95,7 +95,6 @@ function AlbumScreen({ route, navigation }) {
     getAlbumEditions();
     getAlbumIsExclude();
 
-    console.log(album);
     onRefresh();
   }, [album]);
 

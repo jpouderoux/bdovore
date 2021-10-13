@@ -33,6 +33,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CommonStyles } from '../styles/CommonStyles';
 
+
 // Returns true if the screen is in portrait mode
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -422,4 +423,10 @@ export function showToast(isError, text1, text2 = '', duration = 1000) {
     text1,
     text2,
   });
+}
+
+export function safeScrollToOffset(flatList, options) {
+  if (flatList && flatList.current && flatList.current.scrollToOffset) {
+    flatList.current.scrollToOffset(options);
+  }
 }

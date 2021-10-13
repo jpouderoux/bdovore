@@ -97,11 +97,16 @@ function CollectionScreen({ route, navigation }) {
   const [showSerieFilterChooser, setShowSerieFilterChooser] = useState(false);
   const [showSortChooser, setShowSortChooser] = useState(false);
   const [sortMode, setSortMode] = useState(defaultSortMode);  // 0: Default, 1: Sort by date
+  const [toggleElement, setToggleElement] = useState(Date.now());
   const flatList = useRef();
   const stateRefKeywords = useRef();
   stateRefKeywords.current = keywords;
 
   collectionGenre = route.params.collectionGenre;
+
+  const toggle = () => {
+    setToggleElement(Date.now());
+  }
 
   const refreshDataIfNeeded = (force = false) => {
     //console.log('refreshing ????? local ' + cachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
@@ -128,6 +133,7 @@ function CollectionScreen({ route, navigation }) {
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
       refreshDataIfNeeded();
+      toggle();
     });
     return willFocusSubscription;
   }, []);
@@ -253,7 +259,7 @@ function CollectionScreen({ route, navigation }) {
 
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
-    flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
+    Helpers.safeScrollToOffset(flatList, { offset: scrollPos[parseInt(selectedIndex)], animated: false });
   }
 
   const onSerieFilterModePress = () => {
@@ -273,9 +279,7 @@ function CollectionScreen({ route, navigation }) {
   }
 
   const scrollToTop = (offset = 40) => {
-    if (flatList && flatList.current) {
-      flatList.current.scrollToOffset({ offset, animated: false });
-    }
+    Helpers.safeScrollToOffset(flatList, { offset, animated: false });
   }
 
   const renderItem = useCallback(({ item, index }) => {
@@ -374,6 +378,7 @@ function CollectionScreen({ route, navigation }) {
             data={(collectionType == 0 ? (filteredSeries ? filteredSeries : CollectionManager.getSeries()) : (filteredAlbums ? filteredAlbums : CollectionManager.getAlbums()))}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
+            extraData={toggleElement}
             ItemSeparatorComponent={Helpers.renderSeparator}
             getItemLayout={getItemLayout}
             refreshControl={<RefreshControl

@@ -185,7 +185,7 @@ function LoginScreen({ navigation }) {
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text>
         <TextInput
           style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
-          placeholder='Login'
+          placeholder='Entrez votre login'
           autoCapitalize='none'
           returnKeyType='next'
           blurOnSubmit={false}
@@ -201,7 +201,7 @@ function LoginScreen({ navigation }) {
         <TextInput
           style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
           ref={passwdInputRef}
-          placeholder='Mot de passe'
+          placeholder='Entrez votre mot de passe'
           secureTextEntry={true}
           value={passwd}
           autoCapitalize='none'

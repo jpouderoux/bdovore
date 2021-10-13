@@ -186,9 +186,8 @@ function ToCompleteScreen({ route, navigation }) {
   const onPressCollectionType = (selectedIndex) => {
     setCollectionType(parseInt(selectedIndex));
     if (scrollPos[parseInt(selectedIndex)]) {
-      flatList.current.scrollToOffset({ offset: scrollPos[parseInt(selectedIndex)], animated: false });
+      Helpers.safeScrollToOffset(flatList, { offset: scrollPos[parseInt(selectedIndex)], animated: false });
     }
-
   }
 
   const onSearchChanged = (searchText) => {
@@ -196,9 +195,7 @@ function ToCompleteScreen({ route, navigation }) {
   }
 
   const scrollToTop = (offset = 40) => {
-    if (flatList && flatList.current) {
-      flatList.current.scrollToOffset({ offset, animated: false });
-    }
+    Helpers.safeScrollToOffset(flatList, { offset, animated: false });
   }
 
   const onScrollEvent = (event) => {
