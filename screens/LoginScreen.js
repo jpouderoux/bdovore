@@ -195,6 +195,7 @@ function LoginScreen({ navigation }) {
           onChangeText={(pseudo) => setPseudo(pseudo)}
           onSubmitEditing={() => { passwdInputRef.current.focus(); }}
           blurOnSubmit={false}
+          testID='login'
         />
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text>
         <TextInput
@@ -210,6 +211,7 @@ function LoginScreen({ navigation }) {
           onChangeText={(passwd) => setPasswd(passwd)}
           onSubmitEditing={onLoginPress}
           blurOnSubmit={false}
+          testID='password'
         />
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
@@ -240,7 +242,7 @@ function LoginScreen({ navigation }) {
             flexDirection: 'column', width: null, alignItems: 'center', marginVertical: 20, opacity: fadeAnim, marginLeft: 35, marginRight: 35, borderRadius: 30
           }]}>
             <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
-            <Text style={[CommonStyles.defaultText]}>Version {pkg.version} - Septembre 2021</Text>
+            <Text style={[CommonStyles.defaultText]}>Version {pkg.version} - Octobre 2021</Text>
             <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
           </Animated.View> : null
         }

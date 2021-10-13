@@ -91,6 +91,10 @@ function SearchScreen({ navigation }) {
       setErrortext(result.error);
       setLoading(false);
     }
+
+    if (stateRefKeywords.current == '') {
+      setLoading(false);
+    }
   }
 
   const onSearch = (searchText) => {
@@ -99,6 +103,7 @@ function SearchScreen({ navigation }) {
 
     setKeywords(searchText);
     if (searchText == '') {
+      setLoading(false);
       setData([]);
       return;
     }

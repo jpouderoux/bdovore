@@ -34,7 +34,6 @@ import SettingsManager from '../api/SettingsManager';
 import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
-import * as Helpers from '../api/Helpers';
 
 
 export function CoverImage({ item, category, style, noResize, largeMode }) {
@@ -42,12 +41,10 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
   const [source, setSource] = useState(null);
-  const [censor, setCensor] = useState(false);
 
   useEffect(() => {
     switch (parseInt(category)) {
       case 0:
-        setCensor(Helpers.isCensorable(item.NOM_GENRE));
         setSource(APIManager.getSerieCoverURL(item));
         break;
       case 2:
@@ -55,7 +52,6 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         break;
       case 1:
       default:
-        setCensor(Helpers.isCensorable(item.NOM_GENRE));
         setSource(APIManager.getAlbumCoverURL(item));
         break;
     }
@@ -84,13 +80,6 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         Image{'\n'}non disponible{'\n'}hors {!global.isConnected ? 'connexion' : 'WiFi'}
       </Text>
     </View > :
-    (censor ?
-    <View style={{ width, height, backgroundColor: 'lightgrey' }}>
-      <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
-        <Icon name={'content-cut'} size={20} />{'\n'}
-        Image{'\n'}censurée{'\n'}par{Platform.OS == 'android' ? ' Google' : ' Apple'}
-      </Text>
-    </View > :
     <Image
       source={{
         uri: source,
@@ -99,5 +88,5 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
       //PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
     />
-  ));
+  );
 }

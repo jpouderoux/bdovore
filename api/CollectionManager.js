@@ -129,7 +129,7 @@ function createEntry(schema, item) {
         } else if (keytype.startsWith('float')) {
           album[key] = parseFloat(value);
         } else if (keytype.startsWith('string')) {
-          album[key] = value;
+          album[key] = value != 'null' ? value : null;
         } else {
           //console.debug('Unknown type (' + keytype + ') for key ' + key);
         }
@@ -700,25 +700,29 @@ class CCollectionManager {
     }
     try {
       global.db.write(() => {
+        album.comment = '';
+        album.cote = '';
+        album.EMAIL_PRET = '';
         album.FLG_ACHAT = 'N';
-        album.FLG_LU = 'N';
-        album.FLG_PRET = 'N';
-        album.FLG_NUM = 'N';
         album.FLG_CADEAU = 'N';
         album.FLG_DEDICACE = 'N';
-        album.comment = '';
+        album.FLG_LU = 'N';
+        album.FLG_NUM = 'N';
+        album.FLG_PRET = 'N';
+        album.FLG_TETE = 'N';
         album.NOM_PRET = '';
-        album.EMAIL_PRET = '';
 
+        colAlb.comment = '';
+        colAlb.cote = '';
+        colAlb.EMAIL_PRET = '';
         colAlb.FLG_ACHAT = 'N';
-        colAlb.FLG_LU = 'N';
-        colAlb.FLG_PRET = 'N';
-        colAlb.FLG_NUM = 'N';
         colAlb.FLG_CADEAU = 'N';
         colAlb.FLG_DEDICACE = 'N';
-        colAlb.comment = '';
+        colAlb.FLG_LU = 'N';
+        colAlb.FLG_NUM = 'N';
+        colAlb.FLG_PRET = 'N';
+        colAlb.FLG_TETE = 'N';
         colAlb.NOM_PRET = '';
-        colAlb.EMAIL_PRET = '';
       });
     } catch (error) {
       result.error = "Erreur inattendue lors de la mise à jour de l'album";
@@ -790,6 +794,10 @@ class CCollectionManager {
     this.setAlbumFlag(album, 'FLG_DEDICACE', flag, callback);
   };
 
+  setAlbumHeadPrintFlag(album, flag, callback = null) {
+    this.setAlbumFlag(album, 'FLG_TETE', flag, callback);
+  };
+
   setAlbumAttribute(album, attribute, value, callback = null) {
     const colAlb = this.getAlbumInCollection(album) ?? album;
     if (!colAlb) {
@@ -844,12 +852,14 @@ class CCollectionManager {
     }, {
       'id_edition': album.ID_EDITION,
       'flg_achat': 'N',
-      'flg_lu': album.FLG_LU ? album.FLG_LU : 'N',
       'flg_cadeau': album.FLG_CADEAU ? album.FLG_CADEAU : 'N',
-      'flg_pret': album.FLG_PRET ? album.FLG_PRET : 'N',
-      'flg_num': album.FLG_NUM ? album.FLG_NUM : 'N',
       'flg_dedicace': album.FLG_DEDICACE ? album.FLG_DEDICACE : 'N',
+      'flg_lu': album.FLG_LU ? album.FLG_LU : 'N',
+      'flg_num': album.FLG_NUM ? album.FLG_NUM : 'N',
+      'flg_pret': album.FLG_PRET ? album.FLG_PRET : 'N',
+      'flg_tete': album.FLG_TETE ? album.FLG_TETE : 'N',
       'comment': album.comment,
+      'cote': album.cote,
       'NOM_PRET': album.NOM_PRET,
       'EMAIL_PRET': album.EMAIL_PRET,
     });

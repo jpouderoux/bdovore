@@ -163,9 +163,7 @@ function SerieScreen({ route, navigation }) {
   }
 
   const onShowSerieImage = () => {
-    if (!Helpers.isCensorable(serie.NOM_GENRE)) {
-      navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
-    }
+    navigation.push('Image', { source: APIManager.getSerieCoverURL(serie) });
   }
 
   const getAlbums = () => {

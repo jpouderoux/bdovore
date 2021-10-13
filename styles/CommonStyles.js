@@ -226,7 +226,7 @@ export let CommonStyles = EStyleSheet.create({
   markerStyle: {
     alignItems: 'center',
     alignContent: 'center',
-    paddingLeft: 16,
+    paddingLeft: 13,
     paddingRight: 0,
     paddingVertical: 8,
     zIndex: 2,

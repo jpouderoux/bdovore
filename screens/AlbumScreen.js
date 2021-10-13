@@ -95,6 +95,7 @@ function AlbumScreen({ route, navigation }) {
     getAlbumEditions();
     getAlbumIsExclude();
 
+    console.log(album);
     onRefresh();
   }, [album]);
 
@@ -289,9 +290,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onShowAlbumImage = () => {
-    if (!Helpers.isCensorable(album.NOM_GENRE)) {
-      navigation.push('Image', { source: APIManager.getAlbumCoverURL(album), copyright: Helpers.getAlbumCopyright(album) });
-    }
+    navigation.push('Image', { source: APIManager.getAlbumCoverURL(album), copyright: Helpers.getAlbumCopyright(album) });
   }
 
   const onShowComments = () => {

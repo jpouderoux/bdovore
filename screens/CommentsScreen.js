@@ -37,6 +37,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import CollectionManager from '../api/CollectionManager';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 
 
 let timeout = null;
@@ -83,6 +84,7 @@ function CommentsScreen({ route, navigation }) {
   const onCommentsFetched = async (result) => {
     console.debug(result.items.length + ' comments fetched')
     setComments(result.items);
+    setLoading(false);
     setErrortext(result.error);
   }
 
@@ -156,7 +158,7 @@ function CommentsScreen({ route, navigation }) {
 
   return (
     <View style={CommonStyles.screenStyle}>
-      {!loading && (!comments || comments.length == 0) ?
+      {!global.isConnected ?
         <View style={[CommonStyles.screenStyle, { alignItems: 'center', height: '50%', flexDirection: 'column' }]}>
           <View style={{ flex: 1 }}></View>
           <Text style={CommonStyles.defaultText}>Informations indisponibles en mode non-connecté.{'\n'}</Text>
@@ -167,19 +169,21 @@ function CommentsScreen({ route, navigation }) {
           <View style={{ flex: 1 }}></View>
         </View>
         :
-        <FlatList
-          horizontal
-          initialNumToRender={2}
-          maxToRenderPerBatch={4}
-          windowSize={5}
-          showsHorizontalScrollIndicator={true}
-          legacyImplementation={false}
-          data={comments}
-          renderItem={renderComment}
-          keyExtractor={keyExtractor}
-          ItemSeparatorComponent={Helpers.renderVerticalSeparator}
-          getItemLayout={getItemLayout}
-        />}
+        (loading ?
+          <LoadingIndicator /> :
+          <FlatList
+            horizontal
+            initialNumToRender={2}
+            maxToRenderPerBatch={4}
+            windowSize={5}
+            showsHorizontalScrollIndicator={true}
+            legacyImplementation={false}
+            data={comments}
+            renderItem={renderComment}
+            keyExtractor={keyExtractor}
+            ItemSeparatorComponent={Helpers.renderVerticalSeparator}
+            getItemLayout={getItemLayout}
+          />)}
     </View>
   );
 }

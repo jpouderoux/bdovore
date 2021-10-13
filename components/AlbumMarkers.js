@@ -63,7 +63,8 @@ const pBits = {
   'num': 16,
   'gift': 32,
   'dedicace': 64,
-  'excluded': 128,
+  'head': 128,
+  'excluded': 256,
 };
 
 export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refreshCallback = () => { } }) {
@@ -73,6 +74,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
   const [isDedicace, setIsDedicace] = useState(false);
   const [isExcluded, setIsExcluded] = useState(false);
   const [isGift, setIsGift] = useState(false);
+  const [isHeadPrint, setIsHeadPrint] = useState(false);
   const [isLoan, setIsLoan] = useState(false);
   const [isNum, setIsNum] = useState(false);
   const [isOwn, setIsOwn] = useState(false);
@@ -132,13 +134,14 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
 
   useEffect(() => {
     //console.log('album ' + album.ID_TOME + 'refresh');
-    setIsWanted(album.FLG_ACHAT && album.FLG_ACHAT == 'O');
-    setIsRead(album.FLG_LU && album.FLG_LU == 'O');
-    setIsLoan(album.FLG_PRET && album.FLG_PRET == 'O');
-    setIsNum(album.FLG_NUM && album.FLG_NUM == 'O');
-    setIsGift(album.FLG_CADEAU && album.FLG_CADEAU == 'O');
     setIsDedicace(album.FLG_DEDICACE && album.FLG_DEDICACE == 'O');
     setIsExcluded(CollectionManager.isAlbumExcluded(album));
+    setIsGift(album.FLG_CADEAU && album.FLG_CADEAU == 'O');
+    setIsHeadPrint(album.FLG_TETE && album.FLG_TETE == 'O');
+    setIsLoan(album.FLG_PRET && album.FLG_PRET == 'O');
+    setIsNum(album.FLG_NUM && album.FLG_NUM == 'O');
+    setIsRead(album.FLG_LU && album.FLG_LU == 'O');
+    setIsWanted(album.FLG_ACHAT && album.FLG_ACHAT == 'O');
   }, [album]);
 
   const onGotIt = async () => {
@@ -293,6 +296,20 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
     });
   };
 
+  const onHeadPrint = async () => {
+    if (!Helpers.checkConnection()) { return; }
+
+    const head = !(album.FLG_TETE == 'O');
+    setProcessingBit('head', true);
+    CollectionManager.setAlbumHeadPrintFlag(album, head, (result) => {
+      if (!result.error) {
+        setIsHeadPrint(head);
+        refreshCallback();
+      }
+      setProcessingBit('head', false);
+    });
+  };
+
   const onExcludeIt = async () => {
     if (!Helpers.checkConnection()) { return; }
 
@@ -373,6 +390,9 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
 
             <Marker name='dedicace' iconEnabled='signature' iconDisabled='signature' text='Dédicace' onPressCb={onDedicace} iconCollection='FontAwesome5'
               isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
+
+            <Marker name='head' iconEnabled='diamond' iconDisabled='diamond' text='E.O.' onPressCb={onHeadPrint} iconCollection='FontAwesome'
+              isCheckedCb={() => album.FLG_TETE == 'O'} />
           </View> : null}
         </View> : null}
       {global.retractableButtons && reduceMode ?
