@@ -178,7 +178,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
 
-        <Text style={[CommonStyles.linkTextStyle, CommonStyles.center, {marginTop: 20}]} onPress={() => visibleSetter(false)}>Fermer</Text>
+        <Text style={[CommonStyles.linkText, CommonStyles.center, {marginTop: 20}]} onPress={() => visibleSetter(false)}>Fermer</Text>
       </View>
     </BottomSheet>
   );

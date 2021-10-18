@@ -130,32 +130,36 @@ export async function reloginBDovore(navigation, callback = null) {
   console.debug("relogin!");
   try {
     if (global.isConnected) {
-      AsyncStorage.multiGet(['login', 'passwd'])
-        .then((values) => {
-          const pseudo = values[0][1];
-          const passwd = values[1][1];
-          loginBDovore(pseudo, passwd, (response) => {
-            if (response.error) {
-              if (navigation) {
-                navigation.navigate('Login');
-              }
-            } else if (callback) {
-              callback();
+      if (global.login && global.passwd) {
+        loginBDovore(global.login, global.passwd, (response) => {
+          if (response.error) {
+            console.debug(response.error);
+            if (navigation) {
+              navigation.navigate('Login');
             }
-          });
-        })
-        .catch((error) => {
-          console.debug(error);
-          if (navigation) {
-            navigation.navigate('Login');
+          } else if (callback) {
+            try {
+              callback();
+            } catch (error) {
+              console.debug(error);
+            }
+            return true;
           }
         });
+      }
+      else {
+        //console.debug(error);
+        if (navigation) {
+          navigation.navigate('Login');
+        }
+      }
     } else {
       console.debug('Not connected.');
     }
   } catch (error) {
     console.debug(error);
   }
+  return false;
 }
 
 export function loginBDovore(pseudo, passwd, callback) {
@@ -289,9 +293,11 @@ export async function fetchJSON(request, context, callback, params = {},
           if (global.verbose) {
             Helpers.showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
           }
+          new Promise(r => setTimeout(r, 1000 + (5 - retry) * 100)).then(() => { // sleep a bit
           console.debug("Retry " + (5 - retry + 1) + ' / 5');
-          reloginBDovore(context ? context.navigation : null, () => {
-            fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
+            reloginBDovore(context ? context.navigation : null, () => {
+              fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
+            });
           });
         } else {
           console.error("Error: " + error);

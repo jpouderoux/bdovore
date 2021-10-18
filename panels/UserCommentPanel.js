@@ -144,9 +144,9 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
             />
 
             <View style={{ flexDirection: 'row', marginVertical: 15 }}>
-              <Text style={CommonStyles.linkTextStyle} onPress={onDeleteComment}>Supprimer</Text>
+              <Text style={CommonStyles.linkText} onPress={onDeleteComment}>Supprimer</Text>
               <View style={{ width: '30%' }}></View>
-              <Text style={CommonStyles.linkTextStyle} onPress={onSaveComment}>Enregistrer</Text>
+              <Text style={CommonStyles.linkText} onPress={onSaveComment}>Enregistrer</Text>
             </View>
 
           </View>

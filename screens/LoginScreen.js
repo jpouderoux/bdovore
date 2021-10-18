@@ -203,10 +203,10 @@ function LoginScreen({ navigation }) {
               title='Login'>
               <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
             </TouchableOpacity>
-            <Text onPress={onOfflinePress} style={[CommonStyles.linkTextStyle, { textAlign: 'center', marginBottom: 10 }]}>Mode offline</Text>
+            <Text onPress={onOfflinePress} style={[CommonStyles.linkText, { textAlign: 'center', marginBottom: 10 }]}>Mode offline</Text>
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
+            <Text style={[CommonStyles.linkText, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
           </View>
         }
         <View style={{height: 20}}></View>
