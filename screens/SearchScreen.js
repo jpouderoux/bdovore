@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonGroup, SearchBar } from 'react-native-elements';
 

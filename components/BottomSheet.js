@@ -27,7 +27,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 
 

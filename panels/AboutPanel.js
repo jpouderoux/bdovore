@@ -43,7 +43,7 @@ function AboutPanel({ isVisible, visibleSetter }) {
     /*if (Platform.OS != 'ios')*/ {
       global.hideSponsoredLinks = !global.hideSponsoredLinks;
       Helpers.setAndSaveGlobal('hideSponsoredLinks', global.hideSponsoredLinks);
-      Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!');
+      Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!', '', 1000, 'top');
     }
   }
 
@@ -54,18 +54,18 @@ function AboutPanel({ isVisible, visibleSetter }) {
         {Helpers.renderAnchor()}
 
         <View style={{ marginTop: 20, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
-          <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width: 320 }} />
+          <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width: 320, borderRadius: 5 }} />
         </View>
 
         <View style={[CommonStyles.commentsTextInputStyle, {
           flexDirection: 'column', width: '90%', alignItems: 'center', marginVertical: 20,  borderRadius: 10
         }]}>
-          <Text style={[CommonStyles.defaultText, CommonStyles.bold, { marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
-          <Text style={[CommonStyles.defaultText]}>Version {pkg.version} - Septembre 2021</Text>
-          <Text style={[CommonStyles.defaultText, { marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+          <Text style={[CommonStyles.defaultText, CommonStyles.bold, { color: 'black', marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Septembre 2021</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black', marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
         </View>
 
-        <Text style={[CommonStyles.linkTextStyle, CommonStyles.center, { marginTop: 20 }]} onPress={() => visibleSetter(false)}>Fermer</Text>
+        <Text style={[CommonStyles.linkText, CommonStyles.center, { marginTop: 20 }]} onPress={() => visibleSetter(false)}>Fermer</Text>
       </View>
     </BottomSheet>
   );

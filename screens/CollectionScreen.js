@@ -342,9 +342,9 @@ function CollectionScreen({ route, navigation }) {
           <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.center, {textAlign: 'center'}]}>
               <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets{'\n'}</Text>
-              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Actualité')}>Actualité</Text>
+              <Text style={CommonStyles.linkText} onPress={() => navigation.navigate('Actualité')}>Actualité</Text>
               <Text style={CommonStyles.defaultText}>{' '}et{' '}</Text>
-              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Rechercher')}>Rechercher</Text>
+              <Text style={CommonStyles.linkText} onPress={() => navigation.navigate('Rechercher')}>Rechercher</Text>
               <Text style={CommonStyles.defaultText}>.{'\n'}</Text>
             </Text>
           </View>
@@ -382,8 +382,8 @@ function CollectionScreen({ route, navigation }) {
             ItemSeparatorComponent={Helpers.renderSeparator}
             getItemLayout={getItemLayout}
             refreshControl={<RefreshControl
-              colors={[bdovorlightred, bdovored]}
-              tintColor={bdovored}
+              colors={[bdovorlightred, global.isDarkMode ? bdovorlightred : bdovored]}
+              tintColor={global.isDarkMode ? bdovorlightred : bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
             onScroll={onScrollEvent}
