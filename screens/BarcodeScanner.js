@@ -147,12 +147,8 @@ function BarcodeScanner({ route, navigation }) {
           buttonNegative: 'Annuler',
         }}>
         <View style={{ position: 'absolute', top: 0, width: '100%', backgroundColor: 'white', flexDirection: 'row', padding: 5 }}>
-<<<<<<< HEAD
-          <Icon name='barcode' collection='FontAwesome5' size={45} color='black' style={{ marginLeft: 5 }} />
-          {loading ? <ActivityIndicator size="small" color={bdovored} style={[CommonStyles.markerIconStyle, { borderWidth: 0 }]} /> : null}
-=======
           <Icon name='FontAwesome5/barcode' size={45} color='black' style={{ marginLeft: 5 }} />
->>>>>>> c90dfd3 (ENH: Introduce the new burger menu)
+          {loading ? <ActivityIndicator size="small" color={bdovored} style={[CommonStyles.markerIconStyle, { borderWidth: 0 }]} /> : null}
           <Text style={{ width: '80%', alignSelf: 'center', textAlign: 'center', backgroundColor: 'white', fontSize: 14, margin: 5, paddingLeft: 10, }}>
             {!autoAddMode ? "Visez le code-barre de l'album.\nLa recherche est automatique." : (
               (nbAddedAlbums == 0 ?

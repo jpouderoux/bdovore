@@ -29,7 +29,7 @@
 import React, { useEffect, useState } from 'react';
 import { LayoutAnimation, ActivityIndicator, Alert, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
-import { CommonStyles, bdovored } from '../styles/CommonStyles';
+import { CommonStyles, bdovored, bdovorlightred } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
@@ -336,7 +336,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
 
   const MarkerLoadingIndicator = () => (
     <View style={[CommonStyles.markerStyle]}>
-      <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle} />
+      <ActivityIndicator size="small" color={global.isDarkMode ? bdovorlightred : bdovored} style={CommonStyles.markerIconStyle} />
       <Text style={CommonStyles.markerTextStyle}>{' '}</Text>
     </View>);
 
@@ -390,7 +390,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
             <Marker name='dedicace' iconEnabled='FontAwesome5/signature' iconDisabled='FontAwesome5/signature' text='Dédicace' onPressCb={onDedicace}
               isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
 
-            <Marker name='head' iconEnabled='diamond' iconDisabled='diamond' text='E.O.' onPressCb={onHeadPrint} iconCollection='FontAwesome'
+            <Marker name='head' iconEnabled='FontAwesome/diamond' iconDisabled='FontAwesome/diamond' text='E.O.' onPressCb={onHeadPrint}
               isCheckedCb={() => album.FLG_TETE == 'O'} />
           </View> : null}
         </View> : null}

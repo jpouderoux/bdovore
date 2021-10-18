@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Dimensions, PixelRatio, Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Helpers from '../api/Helpers';
 import NetInfo from "@react-native-community/netinfo";

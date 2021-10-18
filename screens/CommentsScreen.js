@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 import { CommonStyles, bdovorgray, windowWidth } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
@@ -138,17 +138,17 @@ function CommentsScreen({ route, navigation }) {
       <View style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }}>
         <TouchableOpacity style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }} onPress={() => onAlbumPress(item)} title={item.TITRE_TOME}>
           <CoverImage item={item} category={1} style={CommonStyles.fullAlbumImageStyle} />
-          <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.defaultTextStyle, CommonStyles.bold, { marginTop: 10 }]}>{Helpers.getAlbumName(item)}</Text>
+          <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.defaultText, CommonStyles.bold, { marginTop: 10 }]}>{Helpers.getAlbumName(item)}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center', width: '100%' }} onPress={() => onSeriePress(item)} title={item.TITRE_TOME}>
           {item.TITRE_TOME != item.NOM_SERIE ?
-            <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.linkTextStyle, { marginTop: 5 }]}>{item.NOM_SERIE}</Text> :
+            <Text numberOfLines={1} textBreakStrategy='balanced' style={[CommonStyles.linkText, { marginTop: 5 }]}>{item.NOM_SERIE}</Text> :
             null}
         </TouchableOpacity>
         <RatingStars note={item.NOTE} style={{ marginLeft: -2, marginVertical: 5 }} showRate />
-        <Text style={[CommonStyles.defaultTextStyle, { color: bdovorgray, marginVertical: 5 }]}>{item.username} {getCommentDate(item)}</Text>
+        <Text style={[CommonStyles.defaultText, { color: bdovorgray, marginVertical: 5 }]}>{item.username} {getCommentDate(item)}</Text>
         <TouchableOpacity activeOpacity={1}>
-          <Text style={[CommonStyles.defaultTextStyle, { width: windowWidth - 20, marginHorizontal: 10 }]}>{item.COMMENT}</Text>
+          <Text style={[CommonStyles.defaultText, { width: windowWidth - 20, marginHorizontal: 10 }]}>{item.COMMENT}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>), []);

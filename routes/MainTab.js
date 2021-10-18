@@ -30,10 +30,10 @@ import React, { useState } from 'react';
 import { Alert, Platform, Share, TouchableOpacity, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-import { bdovored, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -46,7 +46,7 @@ import CommentsScreen from '../screens/CommentsScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
-import MoreScreensPanel from '../panels/MoreScreensPanel';
+import BurgerMenuPanel from '../panels/BurgerMenuPanel';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
@@ -157,7 +157,12 @@ const shareAuthorButton = (item) => {
 }
 
 const defaultStackOptions = {
-  headerTintColor: global.isDarkMode ? 'white' : bdovored,
+  headerTintColor: bdovored,
+  headerTruncatedBackTitle: ''
+};
+
+const darkStackOptions = {
+  headerTintColor: bdovorlightred,
   headerTruncatedBackTitle: ''
 };
 
@@ -226,7 +231,7 @@ function CollectionScreens({ route, navigation }) {
   }
 
   return (
-    <CollectionStack.Navigator screenOptions={defaultStackOptions}>
+    <CollectionStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => {
@@ -321,7 +326,7 @@ function WishlistScreens({ navigation }) {
   }
 
   return (
-    <WishlistStack.Navigator screenOptions={defaultStackOptions}>
+    <WishlistStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <WishlistStack.Screen name='Mes envies'
         component={WishlistScreen}
         options={({ route }) => {
@@ -377,7 +382,7 @@ function ToCompleteScreens({ navigation }) {
   }
 
   return (
-    <ToCompleteStack.Navigator screenOptions={defaultStackOptions}>
+    <ToCompleteStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <ToCompleteStack.Screen name='Albums manquants'
         component={ToCompleteScreen}
         options={({ route }) => {
@@ -409,10 +414,6 @@ function NewsScreens({ navigation }) {
   const [collectionGenre, setCollectionGenre] = useState(1);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
 
-  const onCommentsPress = () => {
-    navigation.navigate('Comments');
-  }
-
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
@@ -420,9 +421,6 @@ function NewsScreens({ navigation }) {
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={onCommentsPress} style={{ margin: 8 }}>
-          <Icon name='FontAwesome/comments-o' size={25} color={CommonStyles.iconStyle.color} />
-        </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Icon name='Ionicons/library-outline' size={25} color={CommonStyles.iconStyle.color} />
@@ -440,7 +438,7 @@ function NewsScreens({ navigation }) {
   }
 
   return (
-    <NewsStack.Navigator screenOptions={defaultStackOptions}>
+    <NewsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <NewsStack.Screen name='Actualité' component={NewsScreen}
         options={({ route }) => {
           route.params = { collectionGenre: collectionGenre };
@@ -448,10 +446,6 @@ function NewsScreens({ navigation }) {
             headerRight: () => settingsButton(route, navigation),
           };
         }} />
-      <NewsStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({
-          title: 'Dernières critiques',
-        })} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
@@ -473,7 +467,7 @@ function NewsScreens({ navigation }) {
 
 function SearchScreens({ navigation }) {
   return (
-    <SearchStack.Navigator screenOptions={defaultStackOptions}>
+    <SearchStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <SearchStack.Screen name='Rechercher' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({
@@ -498,7 +492,7 @@ function SearchScreens({ navigation }) {
 
 function StatsScreens({ navigation }) {
   return (
-    <StatsStack.Navigator screenOptions={defaultStackOptions}>
+    <StatsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <StatsStack.Screen name='Stats' component={StatsScreen} />
     </StatsStack.Navigator>
   );
@@ -506,7 +500,7 @@ function StatsScreens({ navigation }) {
 
 function CommentsScreens({ navigation }) {
   return (
-    <CommentsStack.Navigator screenOptions={defaultStackOptions}>
+    <CommentsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <CommentsStack.Screen name='Comments' component={CommentsScreen}
         options={({ route }) => ({
           title: 'Dernières critiques',
@@ -531,14 +525,13 @@ function CommentsScreens({ navigation }) {
 }
 function MainTab2() {
 
-  const [showMoreScreensPanel, setShowMoreScreensPanel] = useState(false);
-  const navigation = useNavigation();
+  const [showBurgerMenuPanel, setShowBurgerMenuPanel] = useState(false);
   const route = useRoute();
   const routeName = getFocusedRouteNameFromRoute(route) ?? '';
 
 
   const isMoreItemEnabled = () => {
-    if (showMoreScreensPanel) return true;
+    if (showBurgerMenuPanel) return true;
     //console.log("route: " + routeName);
     switch (routeName) {
       case 'Critiques':
@@ -550,8 +543,8 @@ function MainTab2() {
     return false;
   }
 
-  const onShowMoreScreensPanel = () => {
-    setShowMoreScreensPanel(true);
+  const onShowBurgerMenuPanel = () => {
+    setShowBurgerMenuPanel(true);
   }
 
   const getIcon = (icon, params) => {
@@ -565,7 +558,7 @@ function MainTab2() {
       <Tab.Navigator
         initialRouteName='Ma collection'
         screenOptions={{ gestureEnabled: false }}
-        tabBarOptions={{ activeTintColor: bdovored }}
+        tabBarOptions={{ activeTintColor: global.isDarkMode ? bdovorlightred : bdovored }}
         animationEnabled={true}
       >
         <Tab.Screen
@@ -621,19 +614,24 @@ function MainTab2() {
           component={SearchScreens}
           options={{
             tabBarButton: props => <TouchableOpacity {...props}
-              onLongPress={onShowMoreScreensPanel}
-              onPress={() => { onShowMoreScreensPanel(); }}
+              onLongPress={onShowBurgerMenuPanel}
+              onPress={onShowBurgerMenuPanel}
               style={{
-                color: isMoreItemEnabled() ? bdovored : 'gray', width: 40
+                color: isMoreItemEnabled() ? (global.isDarkMode ? bdovorlightred : bdovored) : 'gray', width: 40
               }} />,
-            tabBarLabelStyle: { color: isMoreItemEnabled() ? bdovored : 'red' },
+            tabBarLabel: props => <Text style={{
+              fontSize: 10,
+              textAlign: 'center',
+              backgroundColor: 'transparent',
+              color: isMoreItemEnabled() ? (global.isDarkMode ? bdovorlightred : bdovored) : 'gray'
+            }}>Plus</Text>,
             tabBarIcon: (p) => {
-              if (isMoreItemEnabled()) p.color = bdovored;
+              if (isMoreItemEnabled()) p.color = global.isDarkMode ? bdovorlightred : bdovored;
               return getIcon('MaterialIcons/more-vert', p);
             }
           }}
         />
-        <Tab.Screen
+        {/*<Tab.Screen
           name='Stats'
           component={StatsScreens}
           options={{
@@ -643,7 +641,7 @@ function MainTab2() {
               return getIcon('chart-line', p);
             }
           }}
-        />
+        />*/}
         <Tab.Screen
           name='Critiques'
           component={CommentsScreens}
@@ -657,9 +655,9 @@ function MainTab2() {
         />
       </Tab.Navigator>
 
-      <MoreScreensPanel
-        isVisible={showMoreScreensPanel}
-        visibleSetter={setShowMoreScreensPanel} />
+      <BurgerMenuPanel
+        isVisible={showBurgerMenuPanel}
+        visibleSetter={setShowBurgerMenuPanel} />
 
     </View>
   );

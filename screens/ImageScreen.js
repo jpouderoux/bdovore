@@ -27,7 +27,8 @@
  */
 
 import React from 'react';
-import { ActivityIndicator, Dimensions, Image, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, Text, TouchableWithoutFeedback, View } from 'react-native';
+
 import { CommonStyles } from '../styles/CommonStyles';
 
 

@@ -32,7 +32,7 @@ import { ButtonGroup } from 'react-native-elements';
 import { SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles, red } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';

@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { ActivityIndicator, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Linking, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { ListItem } from 'react-native-elements';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
@@ -248,7 +248,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const BitLoadingIndicator = () => (
-    <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle} />);
+    <ActivityIndicator size="small" color={global.isDarkMode ? bdovorlightred : bdovored} style={CommonStyles.markerIconStyle} />);
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.getAlbumUID(item), []);
@@ -268,19 +268,19 @@ function AlbumScreen({ route, navigation }) {
     if (!showAllAuthors && nbOfAuthors > 6) {
       return (
         <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
+          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkText}>Collectif</Text>
         </Text>);
     }
     return (
       <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null}
+        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkText}>Collectif : </Text> : null}
         {Helpers.getAuthors(album).map((auteur, index, array) => {
           if (auteur.name == 'Collectif') {
             return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
           }
           return (
             <Text key={index * 2 + 1} style={CommonStyles.defaultText}>
-              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkText : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
               {index != (array.length - 1) ? ' / ' : ''}
             </Text>)
         })}
@@ -300,16 +300,16 @@ function AlbumScreen({ route, navigation }) {
 
   const onSubmitChanges = () => {
     if (global.isConnected) {
-      const url = APIManager.bdovoreBaseURL + '/Proposition?id_edition=' + album.ID_EDITION;
-      APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
+      let url = APIManager.bdovoreBaseURL + '/Proposition?id_edition=' + album.ID_EDITION;
+      url = APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
       Linking.openURL(url);
     }
   }
 
   const onSubmitNewEdition = () => {
     if (global.isConnected) {
-      const url = APIManager.bdovoreBaseURL + '/Proposition?type=EDITION&id_tome=' + album.ID_TOME;
-      APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
+      let url = APIManager.bdovoreBaseURL + '/Proposition?type=EDITION&id_tome=' + album.ID_TOME;
+      url = APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
       Linking.openURL(url);
     }
   }
@@ -355,7 +355,7 @@ function AlbumScreen({ route, navigation }) {
               <RatingStars note={album.MOYENNE_NOTE_TOME} nbNotes={album.NB_NOTE_TOME} showRate />
               {getUserRating() != null ?
                 <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                  <RatingStars note={getUserRating()} showRate starColor={bdovored}/>
+                  <RatingStars note={getUserRating()} showRate starColor={global.isDarkMode ? bdovorlightred : bdovored}/>
                   <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { marginLeft: 5 }]}>Ma note</Text>
                 </View>
                 : null}
@@ -364,12 +364,12 @@ function AlbumScreen({ route, navigation }) {
           {filteredComments().length > 0 || isAlbumInCollection && global.isConnected ?
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, marginTop: 10 }}>
               {filteredComments().length > 0 ?
-                <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+                <Text style={[CommonStyles.linkText, { marginHorizontal: 10 }]}
                   onPress={onShowComments}>
                   Lire les avis
                 </Text> : null}
               {isAlbumInCollection && global.isConnected ?
-                <Text style={[CommonStyles.linkTextStyle, { marginHorizontal: 10 }]}
+                <Text style={[CommonStyles.linkText, { marginHorizontal: 10 }]}
                   onPress={() => setShowUserComment(true)}>
                   Noter cet album
                 </Text> : null}
@@ -437,7 +437,7 @@ function AlbumScreen({ route, navigation }) {
                 autoFocus={false} />}
             </View> : null }
           {showMore && (isBorrowed && (!borrower && !borrowerEmail && !showBorrowerInfos)) ?
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10 }]}
+            <Text style={[CommonStyles.linkText, { marginTop: 10 }]}
               onPress={() => setShowBorrowerInfos(true)}>Ajouter les infos emprunteur</Text>
             : null}
           {showMore && (comment || showComment) ?
@@ -460,13 +460,13 @@ function AlbumScreen({ route, navigation }) {
             </View>
             : null}
           {showMore && (!comment && !showComment) ?
-            <Text style={[CommonStyles.linkTextStyle, { marginTop: 10 }]}
+            <Text style={[CommonStyles.linkText, { marginTop: 10 }]}
               onPress={()=> setShowComment(true)}>Ajouter un mémo privé</Text>
             : null}
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Album'>
-          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, dontShowSerieScreen ? null : CommonStyles.linkTextStyle]}
+          <Text style={[CommonStyles.largerText, CommonStyles.defaultText, dontShowSerieScreen ? null : CommonStyles.linkText]}
             onPress={dontShowSerieScreen ? () => { } : onShowSerieScreen}>{album.NOM_SERIE}</Text>
           {album.NUM_TOME > 0 && getTomeNumber()}
           {renderAuthors()}
@@ -492,12 +492,12 @@ function AlbumScreen({ route, navigation }) {
           {album.EAN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>EAN : {album.EAN_EDITION}</Text>}
           {!album.EAN_EDITION && album.ISBN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ISBN : {album.ISBN_EDITION}</Text>}
           {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
-          <TouchableOpacity onPress={onSubmitChanges} style={{position: 'absolute', top:0, right:0}}>
-            <Icon name='comment-edit-outline' size={25} color={CommonStyles.markIconDisabled.color} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSubmitNewEdition} style={{ position: 'absolute', top: 0, right: 30 }}>
-            <Icon name='comment-plus-outline' size={25} color={CommonStyles.markIconDisabled.color} />
-          </TouchableOpacity>
+          {true && <TouchableOpacity name='Soumettre une modification' onPress={onSubmitChanges} style={{position: 'absolute', bottom:0, right:10}}>
+            <Icon name='comment-edit-outline' size={25} color={'lightgrey'} />
+          </TouchableOpacity>}
+          {true && <TouchableOpacity name='Ajouter nouvelle édition' onPress={onSubmitNewEdition} style={{ position: 'absolute', bottom: 0, right: 50 }}>
+            <Icon name='comment-plus-outline' size={25} color={'lightgrey'} />
+          </TouchableOpacity>}
 
           <AchatSponsorIcon album={album} />
         </CollapsableSection>

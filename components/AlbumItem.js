@@ -35,7 +35,6 @@ import { CoverImage } from './CoverImage';
 import { Icon } from './Icon';
 import { RatingStars } from './RatingStars';
 import * as Helpers from '../api/Helpers';
-import CollectionManager from '../api/CollectionManager';
 
 
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate = false, showExclude, refreshCallback }) {

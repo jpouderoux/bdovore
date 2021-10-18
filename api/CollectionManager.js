@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 

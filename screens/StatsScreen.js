@@ -27,9 +27,9 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 
-import { CommonStyles, bdovorgray, windowWidth } from '../styles/CommonStyles';
+import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
 import { Icon } from '../components/Icon';
 import { RatingStars } from '../components/RatingStars';

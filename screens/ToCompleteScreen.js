@@ -279,8 +279,8 @@ function ToCompleteScreen({ route, navigation }) {
             ItemSeparatorComponent={Helpers.renderSeparator}
             getItemLayout={getItemLayout}
             refreshControl={<RefreshControl
-              colors={[bdovorlightred, bdovored]}
-              tintColor={bdovored}
+              colors={[bdovorlightred, global.isDarkMode ? bdovorlightred : bdovored]}
+              tintColor={global.isDarkMode ? bdovorlightred : bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
             onScroll={onScrollEvent}

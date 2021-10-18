@@ -46,6 +46,7 @@ const App: () => Node = () => {
   });
 
   global.isDarkMode = useColorScheme() === 'dark';
+  console.debug('Set dark mode to ' + global.isDarkMode);
   rebuildSheet();
 
   /* TODO - Support dynamic theme change.

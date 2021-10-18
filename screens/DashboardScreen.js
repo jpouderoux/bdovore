@@ -27,7 +27,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { CommonStyles } from '../styles/CommonStyles';
 import { CoverImage } from '../components/CoverImage';
