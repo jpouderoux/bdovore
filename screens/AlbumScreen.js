@@ -378,10 +378,21 @@ function AlbumScreen({ route, navigation }) {
 
         <CollapsableSection sectionName='Collection'>
           <View flexDirection='row' style={{ justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
-            <View style={{ flex: 1 }}></View>
-            <AlbumMarkers style={{ flex: 0, alignSelf: 'center', marginBottom: -10 }} item={album} reduceMode={false} showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)} refreshCallback={onRefresh} />
-            <View style={{ flex: 1 }}></View>
-            {CollectionManager.isAlbumInCollection(album) ?
+
+            <AlbumMarkers style={{ flex: 0, width: '100%', marginBottom: -10 }} item={album} reduceMode={false}
+              showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)}
+              refreshCallback={onRefresh}
+              expandCallback={(expanded) => {
+                if (CollectionManager.isAlbumInCollection(album)) {
+                  if (!expanded) {
+                    setShowBorrowerInfos(false);
+                    setShowComment(false);
+                  }
+                  setShowMore(expanded);
+                }
+            }} />
+
+            {/*CollectionManager.isAlbumInCollection(album) ?
               <TouchableOpacity onLongPress={() => { }} onPress={() => {
                 if (showMore) {
                   setShowBorrowerInfos(false);
@@ -398,7 +409,7 @@ function AlbumScreen({ route, navigation }) {
                     }]} />
                 </Text>
               </TouchableOpacity>
-              : null}
+                  : null*/}
           </View>
           {showMore ? <View style={{ marginTop: 5}}/> : null}
           {showMore && (isBorrowed && (borrower || borrowerEmail || showBorrowerInfos))?

@@ -55,9 +55,6 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         setSource(APIManager.getAlbumCoverURL(item));
         break;
     }
-  }, []);
-
-  useEffect(() => {
     if (largeMode) {
       Image.getSize(source, (srcWidth, srcHeight) => {
         if (srcWidth > srcHeight) {
@@ -69,7 +66,7 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         }
       }, (error) => { console.debug(error); });
     }
-  });
+  }, [item]);
 
   const nodownload = !global.isConnected || (global.imageOnWifi && !SettingsManager.isWifiConnected());
 
