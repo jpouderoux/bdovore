@@ -133,6 +133,7 @@ function CollectionScreen({ route, navigation }) {
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
       refreshDataIfNeeded();
+      applyFilters();
       toggle();
     });
     return willFocusSubscription;
@@ -286,7 +287,7 @@ function CollectionScreen({ route, navigation }) {
     if (Helpers.isValid(item)) {
       switch (collectionType) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
-        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} refreshCallback={toggle} />);
       }
     }
     return null;
