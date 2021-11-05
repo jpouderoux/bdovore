@@ -377,6 +377,7 @@ function AlbumScreen({ route, navigation }) {
         </View>
 
         <CollapsableSection sectionName='Collection'>
+          <View>
           <View flexDirection='row' style={{ justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
 
             <AlbumMarkers style={{ flex: 0, width: '100%', marginBottom: -10 }} item={album} reduceMode={false}
@@ -388,7 +389,7 @@ function AlbumScreen({ route, navigation }) {
                     setShowBorrowerInfos(false);
                     setShowComment(false);
                   }
-                  setShowMore(expanded);
+                  //setShowMore(expanded);
                 }
             }} />
 
@@ -412,7 +413,7 @@ function AlbumScreen({ route, navigation }) {
                   : null*/}
           </View>
           {showMore ? <View style={{ marginTop: 5}}/> : null}
-          {showMore && (isBorrowed && (borrower || borrowerEmail || showBorrowerInfos))?
+          {showMore && (isBorrowed && (borrower || borrowerEmail || showBorrowerInfos)) ?
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={[CommonStyles.defaultText, {  }]}>Emprunteur :</Text>
               {isSavingBit('borrower') ?
@@ -474,6 +475,7 @@ function AlbumScreen({ route, navigation }) {
             <Text style={[CommonStyles.linkText, { marginTop: 10 }]}
               onPress={()=> setShowComment(true)}>Ajouter un mémo privé</Text>
             : null}
+          </View>
         </CollapsableSection>
 
         <CollapsableSection sectionName='Infos Album'>

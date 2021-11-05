@@ -28,8 +28,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
-import { Image } from 'react-native-elements';
+import {  Image } from 'react-native-elements';
 import SettingsManager from '../api/SettingsManager';
+import { CacheManager, CachedImage } from '@georstat/react-native-image-cache';
 
 import { CommonStyles, AlbumImageHeight, AlbumImageWidth, FullAlbumImageHeight, FullAlbumImageWidth } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
@@ -41,6 +42,7 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
   const [width, setWidth] = useState(AlbumImageWidth);
   const [height, setHeight] = useState(AlbumImageHeight);
   const [source, setSource] = useState(null);
+  const [nodownload, setNodownload] = useState(false);
 
   useEffect(() => {
     switch (parseInt(category)) {
@@ -68,7 +70,15 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
     }
   }, [item]);
 
-  const nodownload = !global.isConnected || (global.imageOnWifi && !SettingsManager.isWifiConnected());
+
+  try {
+    const isCached = CacheManager.isImageCached(source).then(isCached => {
+      setNodownload(!isCached && (!global.isConnected || (global.imageOnWifi && !SettingsManager.isWifiConnected())));
+      console.log(source + " " + isCached);
+    }).catch(error => {});
+    //console.log(isCached);
+    //nodownload &= CacheManager.isImageCached(source);
+  } catch (error) {/* console.debug(error)*/ }
 
   return (nodownload && Platform.OS == 'android' ?
     <View style={{ width, height, backgroundColor: 'lightgrey' }}>
@@ -77,13 +87,18 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         Image{'\n'}non disponible{'\n'}hors {!global.isConnected ? 'connexion' : 'WiFi'}
       </Text>
     </View > :
-    <Image
+
+    <CachedImage
+      source={source}
+      style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
+    />
+    /*<Image
       source={{
         uri: source,
         cache: nodownload && Platform.OS == 'ios' ? 'only-if-cached' : 'default',
       }}
       style={[CommonStyles.albumImageStyle, noResize ? { resizeMode: 'cover', } : { height, width }, style]}
       //PlaceholderContent={nodownload ? null : <ActivityIndicator size='small' color={bdovored} />}
-    />
+    />*/
   );
 }

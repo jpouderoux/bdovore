@@ -28,9 +28,11 @@
 
 import 'react-native-gesture-handler';
 
-import React, { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { CacheManager } from '@georstat/react-native-image-cache';
+import { Dirs } from 'react-native-file-access';
 import { NavigationContainer } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
 import SplashScreen from "react-native-splash-screen";
 import Toast from 'react-native-toast-message';
 
@@ -38,6 +40,13 @@ import { DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { rebuildSheet } from './styles/CommonStyles';
 import MainTab from './routes/MainTab';
 
+
+CacheManager.config = {
+  baseDir: `${Dirs.CacheDir}/images_cache/`,
+  blurRadius: 0,
+  sourceAnimationDuration: 0,
+  thumbnailAnimationDuration: 0,
+};
 
 const App: () => Node = () => {
 

@@ -405,7 +405,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
           <View style={{ width: 8 }} />}
         <View style={{ flex: 1 }} />
       </View>
-      {(global.retractableButtons && showMore) && !reduceMode ?
+      {(global.retractableButtons && showMore) && (isAlbumInCollection || album.FLG_ACHAT == 'O') && !reduceMode ?
         <View style={{ flexDirection: 'row',}}>
           <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
             isCheckedCb={() => album.FLG_CADEAU == 'O'} />
