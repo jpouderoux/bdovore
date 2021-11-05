@@ -1,6 +1,9 @@
 # /!\ Contains private passwords - do not commit /!\
 android/gradle.properties
 
+# VSCode
+.vscode
+
 # OSX
 #
 .DS_Store
@@ -31,6 +34,17 @@ build/
 .gradle
 local.properties
 *.iml
+*.aab
+*.apk
+*.jks
+pepk.jar
+*.hprof
+*-back
+*.binlog
+android/app/bdovore-upload-command-line.txt
+android/app/encrypted_private_key_path
+android/bdovore-android-keystore.rar
+android/make.bat
 
 # node.js
 #
