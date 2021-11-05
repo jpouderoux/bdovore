@@ -410,14 +410,14 @@ class CCollectionManager {
   }
 
   getAlbumType(album) {
-    if (album.FLG_TYPE_TOME == 1 || album.TITRE_TOME.startsWith('Pack ')) {
+    if (album.FLG_TYPE_TOME == 1 || (album.TITRE_TOME && album.TITRE_TOME.startsWith('Pack '))) {
       return 2; // Coffret
     }
     if (album.FLG_INT_TOME == 'O') {
       return 1; // Intégrale
     }
-    if (album.TITRE_TOME.endsWith('TL') || album.TITRE_TOME.endsWith('TT')
-      || album.TITRE_TOME.includes('(TL)') || album.TITRE_TOME.includes('(TT)')) {
+    if (album.TITRE_TOME.endsWith('TL') || (album.TITRE_TOME && album.TITRE_TOME.endsWith('TT'))
+      || album.TITRE_TOME.includes('(TL)') || (album.TITRE_TOME && album.TITRE_TOME.includes('(TT)'))) {
       return 3; // Edition spéciale
     }
     return 0; // Album
