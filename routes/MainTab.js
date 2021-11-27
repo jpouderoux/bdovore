@@ -141,8 +141,7 @@ function CollectionScreens({ route, navigation }) {
   const onShareCollectionPress = () => {
 
     const shareCollection = () => {
-      const userid = parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
-      const url = APIManager.bdovoreBaseURL + '/guest?user=' + userid;
+      const url = APIManager.bdovoreBaseURL + '/guest?user=' + Helpers.getUserid();
       Share.share({
         message: url,
         url: url
@@ -245,9 +244,41 @@ function WishlistScreens({ navigation }) {
     setShowCollectionChooser(!showCollectionChooser);
   }
 
+  const onShareWishlistPress = () => {
+
+    const shareWishlist = () => {
+      const url = APIManager.bdovoreBaseURL + '/guest/wishlist?user=' + Helpers.getUserid();
+      Share.share({
+        message: url,
+        url: url
+      });
+    }
+
+    if (global.openCollection) {
+      shareWishlist();
+    } else {
+      Alert.alert('Partager ma wishlist',
+        'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
+        'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
+        [{
+          text: "Oui",
+          onPress: () => shareWishlist()
+        }, {
+          text: "Annuler",
+          onPress: () => { },
+          style: "cancel"
+        }],
+        { cancelable: true });
+    }
+  }
+
+
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onShareWishlistPress} style={{ margin: 8 }}>
+          <ShareIcon />
+        </TouchableOpacity>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
           <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
