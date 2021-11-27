@@ -38,13 +38,13 @@ import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';
 import CollectionManager from '../api/CollectionManager';
 
+
 const newsModeMap = {
   0: '',
   1: 'BD',
   2: 'Mangas',
   3: 'Comics'
 };
-
 
 let cachedToken = '';
 let timeout = [null, null];
@@ -129,7 +129,7 @@ function NewsScreen({ route, navigation }) {
       setFilteredUserNewsAlbums([]);
       setScrollPos([40, 40, 40]);
       APIManager.fetchUserNews({ navigation: navigation }, onUserNewsFetched, { nb_mois: '0' })
-        .then().catch((error) => console.debug(error));
+        .then().catch((error) => { setLoading(false); console.debug(error); });
     } else if (!timeout[0] && userNewsAlbums.length == 0) {
       if (verbose) {
         Helpers.showToast(false, 'Will try to fetch user\'s news again in 2sec.');
@@ -147,7 +147,7 @@ function NewsScreen({ route, navigation }) {
       setForthcomingAlbums([]);
       setFilteredForthcomingAlbums([]);
       APIManager.fetchNews(newsModeMap[collectionGenre], { navigation: navigation }, onForthcomingAlbumsFetched, { mode: 2, period: '-2' })
-        .then().catch((error) => console.debug(error));
+        .then().catch((error) => { setLoading(false); console.debug(error); });
     } else if (!timeout[1] && trendAlbums.length == 0) {
       if (verbose) {
         Helpers.showToast(false, 'Will try to fetch news again in 2sec.');

@@ -131,6 +131,10 @@ export function checkConnection() {
   return true;
 }
 
+export function getUserid() {
+  return parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
+}
+
 export function saveTimestamp() {
   setAndSaveGlobal('localTimestamp', global.serverTimestamp);
 }
