@@ -379,7 +379,10 @@ function AlbumScreen({ route, navigation }) {
         <CollapsableSection sectionName='Collection'>
           <View flexDirection='row' style={{ justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
 
-            <AlbumMarkers style={{ flex: 0, width: '100%', marginBottom: -10 }} item={album} reduceMode={false}
+            <AlbumMarkers style={{ flex: 0, width: '100%', marginBottom: -10 }}
+              item={album}
+              reduceMode={false}
+              retractableButtons={false}
               showExclude={(CollectionManager.getNbOfUserAlbumsInSerie(album.ID_SERIE) > 0)}
               refreshCallback={onRefresh}
               expandCallback={(expanded) => {
@@ -389,8 +392,8 @@ function AlbumScreen({ route, navigation }) {
                     setShowComment(false);
                   }
                   setShowMore(expanded);
-                }
-            }} />
+                }}
+            } />
 
             {/*CollectionManager.isAlbumInCollection(album) ?
               <TouchableOpacity onLongPress={() => { }} onPress={() => {
@@ -426,7 +429,7 @@ function AlbumScreen({ route, navigation }) {
                   autoCapitalize='sentences'
                   style={[CommonStyles.attributeTextInputStyle, { flex: 1, marginLeft: 5, padding: 2, textAlignVertical: 'center', height: 20 }]}
                   onChangeText={(name) => { setBorrower(name);  setShowBorrowerInfos(true); }}
-                  //onEndEditing={onSaveBorrower}
+                  onEndEditing={onSaveBorrower}
                   onSubmitEditing={onSaveBorrower}
                   value={borrower}
                   autoFocus={false} />}
@@ -442,7 +445,7 @@ function AlbumScreen({ route, navigation }) {
                   autoCapitalize='none'
                   style={[CommonStyles.attributeTextInputStyle, { flex: 1, marginLeft: 5, padding: 2, textAlignVertical: 'center', height: 20 }]}
                   onChangeText={(email) => { setBorrowerEmail(email); setShowBorrowerInfos(true); }}
-                  //onEndEditing={onSaveBorrowerEmail}
+                  onEndEditing={onSaveBorrowerEmail}
                   onSubmitEditing={onSaveBorrowerEmail}
                   value={borrowerEmail}
                 autoFocus={false} />}

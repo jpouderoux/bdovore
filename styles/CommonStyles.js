@@ -221,7 +221,7 @@ export let CommonStyles = EStyleSheet.create({
 
   markersViewStyle: {
     position: 'absolute',
-    bottom: -5,
+    bottom: -10,
     right: 0,
     backgroundColor: '$bg',
     zIndex: 1,
@@ -238,6 +238,13 @@ export let CommonStyles = EStyleSheet.create({
     paddingLeft: 13,
     paddingRight: 0,
     paddingVertical: 8,
+    zIndex: 2,
+  },
+  markerAlbumItemStyle: {
+    paddingRight: 0,
+    position: 'absolute',
+    bottom: 0,
+    right: 5,
     zIndex: 2,
   },
   markerIconStyle: {

@@ -27,7 +27,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { LayoutAnimation, ActivityIndicator, Alert, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { LayoutAnimation, ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
 import { CommonStyles, bdovored, bdovorlightred } from '../styles/CommonStyles';
 import * as APIManager from '../api/APIManager'
@@ -67,7 +67,7 @@ const pBits = {
   'excluded': 256,
 };
 
-export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refreshCallback = () => { }, expandCallback = (expanded) => { } }) {
+export function AlbumMarkers({ item, style, reduceMode = true, retractableButtons = true, showExclude, refreshCallback = () => { }, expandCallback = (expanded) => { } }) {
 
   const [album, setAlbum] = useState(item);
   const [initAlbum, setInitAlbum] = useState({});
@@ -361,39 +361,64 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
   }
 
   return (
-    <View style={[{ flexDirection: 'column', alignItems: 'center' },  style]}>
-      <View style={[{ flex: 0, flexDirection: 'row', width: '100%', alignSelf: 'center', alignContent: 'center', alignItems: 'center' }]}>
-        <View style={{flex:1}}/>
+    <View style={[{ flexDirection: 'column' }, style]}>
+      {(!reduceMode && isAlbumInCollection) ?
+        <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
+          style={[{ paddingVertical: 8, paddingLeft: 0, width: 25, position: 'absolute', right: retractableButtons ? 0 : null, left: !retractableButtons ? -10 : null }]} >
+          <Icon name='MaterialIcons/more-vert' size={25}
+            color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
+            style={[CommonStyles.markerIconStyle, {
+              paddingTop: 3, borderWidth: 0, width: 25
+            }]} />
+          <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>{' '}</Text>
+        </TouchableOpacity>
+        :
+        null}
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ alignSelf: 'center' }} contentContainerStyle={{}} >
+        <View style={[{ flexDirection: 'row', justifyContent: 'center' }]}>
 
-        {isAlbumInCollection || (!global.retractableButtons || (global.retractableButtons && showMore)) || !reduceMode ?
-          <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
-            isCheckedCb={() => isAlbumInCollection} /> : null}
+          {isAlbumInCollection || (!global.retractableButtons || (global.retractableButtons && showMore)) || !reduceMode ?
+            <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
+              isCheckedCb={() => isAlbumInCollection} /> : null}
 
-        {album.FLG_ACHAT == 'O' || (!isAlbumInCollection && (!global.retractableButtons || (global.retractableButtons && showMore) || !reduceMode)) ?
-          <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
-            isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
+          {album.FLG_ACHAT == 'O' || (!isAlbumInCollection && (!global.retractableButtons || (global.retractableButtons && showMore) || !reduceMode)) ?
+            <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
+              isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-        {(showExclude && (!global.retractableButtons || (global.retractableButtons && (showMore || (!showMore && CollectionManager.isAlbumExcluded(album)))) && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album))) ?
-          <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
-            isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
+          {(showExclude && (!global.retractableButtons || !retractableButtons || ((global.retractableButtons && retractableButtons) && (showMore || (!showMore && CollectionManager.isAlbumExcluded(album))))) && !isAlbumInCollection && !CollectionManager.isAlbumInWishlist(album)) ?
+            <Marker name='excluded' iconEnabled='cancel' iconDisabled='cancel' iconStyle={{ fontWeight: 'bold' }} text='Ignorer' onPressCb={onExcludeIt}
+              isCheckedCb={() => CollectionManager.isAlbumExcluded(album)} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
-        {(global.retractableButtons && showMore) || !reduceMode ?
-          <View style={{ flexDirection: 'row' }}>
-            {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
-              <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
-                isCheckedCb={() => album.FLG_LU == 'O'} />
+          {(global.retractableButtons && retractableButtons && showMore) || !reduceMode ?
+            <View style={{ flexDirection: 'row' }}>
+              {showAllMarks ? <View style={[{ flexDirection: 'row' }]}>
+                <Marker name='read' iconEnabled='book' iconDisabled='book-outline' text='Lu' onPressCb={onReadIt}
+                  isCheckedCb={() => album.FLG_LU == 'O'} />
 
-              <Marker name='loan' iconEnabled='Ionicons/ios-person-add' iconDisabled='Ionicons/ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
-                isCheckedCb={() => album.FLG_PRET == 'O'} />
+                <Marker name='loan' iconEnabled='Ionicons/ios-person-add' iconDisabled='Ionicons/ios-person-add-outline' text='Prêt' onPressCb={onLendIt}
+                  isCheckedCb={() => album.FLG_PRET == 'O'} />
 
-              <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
-                isCheckedCb={() => album.FLG_NUM == 'O'} />
+                <Marker name='num' iconEnabled='devices' iconDisabled='devices' text='Ed. Num.' onPressCb={onNumEd}
+                  isCheckedCb={() => album.FLG_NUM == 'O'} />
 
+              </View> : null}
             </View> : null}
-          </View> : null}
-        {(global.retractableButtons && reduceMode) || (!reduceMode) ?
+          {(((global.retractableButtons && showMore) || !retractableButtons) && !reduceMode && isAlbumInCollection) ?
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
+                isCheckedCb={() => album.FLG_CADEAU == 'O'} />
+
+              <Marker name='dedicace' iconEnabled='FontAwesome5/signature' iconDisabled='FontAwesome5/signature' text='Dédicace' onPressCb={onDedicace}
+                isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
+
+              <Marker name='head' iconEnabled='FontAwesome/diamond' iconDisabled='FontAwesome/diamond' text='E.O.' onPressCb={onHeadPrint}
+                isCheckedCb={() => album.FLG_TETE == 'O'} />
+            </View> :
+            null}
+        </View>
+        {(reduceMode && !isAlbumInCollection) ?
           <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
-            style={[CommonStyles.markerStyle, { paddingLeft: 0, width: 25, position: 'absolute', right:0 }]} >
+            style={[{ paddingVertical: 8, paddingLeft: 0, width: 25 }]} >
             <Icon name='MaterialIcons/more-vert' size={25}
               color={showMore ? 'lightgrey' : CommonStyles.markIconDisabled.color}
               style={[CommonStyles.markerIconStyle, {
@@ -402,20 +427,8 @@ export function AlbumMarkers({ item, style, reduceMode = true, showExclude, refr
             <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>{' '}</Text>
           </TouchableOpacity>
           :
-          <View style={{ width: 8 }} />}
-        <View style={{ flex: 1 }} />
-      </View>
-      {(global.retractableButtons && showMore) && !reduceMode ?
-        <View style={{ flexDirection: 'row',}}>
-          <Marker name='gift' iconEnabled='gift' iconDisabled='gift-outline' text='Cadeau' onPressCb={onGift}
-            isCheckedCb={() => album.FLG_CADEAU == 'O'} />
-
-          <Marker name='dedicace' iconEnabled='FontAwesome5/signature' iconDisabled='FontAwesome5/signature' text='Dédicace' onPressCb={onDedicace}
-            isCheckedCb={() => album.FLG_DEDICACE == 'O'} />
-
-          <Marker name='head' iconEnabled='FontAwesome/diamond' iconDisabled='FontAwesome/diamond' text='E.O.' onPressCb={onHeadPrint}
-            isCheckedCb={() => album.FLG_TETE == 'O'} />
-        </View> :
-        null}
+          null}
+        <View style={{ width: 2 }}></View>
+      </ScrollView>
     </View>);
 }

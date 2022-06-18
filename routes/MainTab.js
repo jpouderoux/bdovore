@@ -172,37 +172,8 @@ function CollectionScreens({ route, navigation }) {
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
-<<<<<<< HEAD
-  const onShareCollectionPress = () => {
-
-    const shareCollection = () => {
-      const url = APIManager.bdovoreBaseURL + '/guest?user=' + Helpers.getUserid();
-      Share.share({
-        message: url,
-        url: url
-      });
-    }
-
-    if (global.openCollection) {
-      shareCollection();
-    } else {
-      Alert.alert('Partager ma collection',
-        'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
-        'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
-        [{
-          text: "Oui",
-          onPress: () => shareCollection()
-        }, {
-          text: "Annuler",
-          onPress: () => { },
-          style: "cancel"
-        }],
-        { cancelable: true });
-    }
-=======
   const onDashboardScreenPress = (userid) => {
     navigation.push('Dashboard', { userid });
->>>>>>> c90dfd3 (ENH: Introduce the new burger menu)
   }
 
   const onCollectionGenrePress = () => {
