@@ -192,9 +192,10 @@ export function loginBDovore(pseudo, passwd, callback) {
           console.debug("  server timestamp: " + response.Timestamp);
           global.token = response.Token;
           global.serverTimestamp = response.Timestamp;
-          fetchUserPrefs();
+          fetchUserPrefs(null, ()=>{;
           //console.log(responseJson);
           callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
+          });
         } else {
           callback(formatResult(false, response.Token, response.Error));
         }
@@ -292,12 +293,12 @@ export async function fetchJSON(request, context, callback, params = {},
           if (global.verbose) {
             Helpers.showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
           }
-          new Promise(r => setTimeout(r, 1000 + (5 - retry) * 100)).then(() => { // sleep a bit
-          console.debug("Retry " + (5 - retry + 1) + ' / 5');
+          setTimeout(() => {
+            console.debug("Retry " + (5 - retry + 1) + ' / 5');
             reloginBDovore(context ? context.navigation : null, () => {
               fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
             });
-          });
+          }, 1000 + (5 - retry) * 100);
         } else {
           console.error("Error: " + error);
           try {
