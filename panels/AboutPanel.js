@@ -1,5 +1,5 @@
 
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ function AboutPanel({ isVisible, visibleSetter }) {
           flexDirection: 'column', width: '90%', alignItems: 'center', marginVertical: 20,  borderRadius: 10
         }]}>
           <Text style={[CommonStyles.defaultText, CommonStyles.bold, { color: 'black', marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
-          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Avril 2022</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Juin 2022</Text>
           <Text style={[CommonStyles.defaultText, { color: 'black', marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
         </View>
 

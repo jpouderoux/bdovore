@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -287,7 +287,7 @@ function SerieScreen({ route, navigation }) {
                 {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}
                 {/*serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''*/}</Text>
               <SerieMarkers item={serie}
-                style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
+                style={CommonStyles.markersSerieViewStyle}
                 reduceMode={true}
                 showExclude={true}
                 serieAlbums={getAlbums()}

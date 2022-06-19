@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -227,10 +227,10 @@ export let CommonStyles = EStyleSheet.create({
     zIndex: 1,
   },
   markersSerieViewStyle: {
-    /*position: 'absolute',
-    marginTop: -5,
-    bottom: 0,
-    right: 0,*/
+    position: 'absolute',
+    width: 55,
+    bottom: -6,
+    right: -8,
   },
   markerStyle: {
     alignItems: 'center',
