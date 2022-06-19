@@ -241,10 +241,10 @@ export let CommonStyles = EStyleSheet.create({
     zIndex: 2,
   },
   markerAlbumItemStyle: {
-    paddingRight: 0,
+    paddingRight: 5,
     position: 'absolute',
     bottom: 0,
-    right: 5,
+    right: -7,
     zIndex: 2,
   },
   markerIconStyle: {

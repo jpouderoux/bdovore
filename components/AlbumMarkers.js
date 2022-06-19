@@ -381,7 +381,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
               isCheckedCb={() => isAlbumInCollection} /> : null}
 
-          {album.FLG_ACHAT == 'O' || (!isAlbumInCollection && (!global.retractableButtons || (global.retractableButtons && showMore) || !reduceMode)) ?
+          {album.FLG_ACHAT == 'O' || (!isAlbumInCollection && (!global.retractableButtons || (global.retractableButtons) || !reduceMode)) ?
             <Marker name='wish' iconEnabled='heart' iconDisabled='heart-outline' text='Je veux' onPressCb={onWantIt}
               isCheckedCb={() => album.FLG_ACHAT == 'O'} enabledColor={CommonStyles.markWishIconEnabled} /> : null}
 
@@ -416,7 +416,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             </View> :
             null}
         </View>
-        {(reduceMode && !isAlbumInCollection) ?
+        {(reduceMode) ?
           <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
             style={[{ paddingVertical: 8, paddingLeft: 0, width: 25 }]} >
             <Icon name='MaterialIcons/more-vert' size={25}
@@ -427,7 +427,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>{' '}</Text>
           </TouchableOpacity>
           :
-          null}
+          <View style={{ width: 10 }}/>}
         <View style={{ width: 2 }}></View>
       </ScrollView>
     </View>);

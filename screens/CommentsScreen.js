@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -126,7 +126,6 @@ function CommentsScreen({ route, navigation }) {
   }
 
   const onBrowseToComment = (index) => {
-    console.log("erer");
     let offset = index * Dimensions.get('window').width;
     Helpers.safeScrollToOffset(flatList, { offset, animated: true });
   }
@@ -143,30 +142,26 @@ function CommentsScreen({ route, navigation }) {
     return 'le ' + Helpers.convertDate(date[0]) + ' à ' + date[1].substring(0, 5);
   }
 
-  console.log(comments.length)
-
-  const renderComment = useCallback(({ item, index }) => (
-    <ScrollView key={index} style={{ flex: 1, width: '80%', marginTop: 10, marginBottom: 10 }}>
+  const renderComment = useCallback(({ item, index }) => {
+    return (<ScrollView key={index} style={{ flex: 1, marginTop: 10, marginBottom: 10 }}>
       <View>
         {index > 0 ?
-          <TouchableOpacity activeOpacity={1} onPress={() => onBrowseToComment(index - 1)} style={{ position: 'absolute', top: navigationPos, left: -5 }} >
+          <TouchableOpacity activeOpacity={1} onPress={() => onBrowseToComment(index - 1)} style={{ zIndex: 2, flexDirection: 'row', position: 'absolute', top: navigationPos, left: 0 }} >
             <Icon name='MaterialIcons/chevron-left' size={25}
               color={'lightgrey'}
-              style={[CommonStyles.markerIconStyle, {
-                paddingTop: 3, borderWidth: 0, width: 25,
-              }]} />
+              style={[{ paddingVertical: 8, borderWidth: 0, width: 25 }]} />
+            <View style={{ width: 15 }} />
           </TouchableOpacity>
           : null}
         {index < (comments.length - 1) ?
-        <TouchableOpacity activeOpacity={1} onPress={() => onBrowseToComment(index + 1)} style={{ position: 'absolute', top: navigationPos, right: 0 }}>
-          <Icon name='MaterialIcons/chevron-right' size={25}
-            color={'lightgrey'}
-            style={[CommonStyles.markerIconStyle, {
-              paddingTop: 3, borderWidth: 0, width: 25
-            }]} />
-        </TouchableOpacity>
-        : null}
-        </View>
+          <TouchableOpacity activeOpacity={1} onPress={() => onBrowseToComment(index + 1)} style={{ zIndex: 2, flexDirection: 'row', position: 'absolute', top: navigationPos, right: 0 }}>
+            <View style={{ width: 15 }} />
+            <Icon name='MaterialIcons/chevron-right' size={25}
+              color={'lightgrey'}
+              style={[{ paddingVertical: 8, borderWidth: 0, width: 25 }]} />
+          </TouchableOpacity>
+          : null}
+      </View>
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <TouchableOpacity style={{ flexDirection: 'column', alignContent: 'center', alignItems: 'center' }} onPress={() => onAlbumPress(item)} title={item.TITRE_TOME}>
           <CoverImage item={item} category={1} style={CommonStyles.fullAlbumImageStyle} />
@@ -182,7 +177,8 @@ function CommentsScreen({ route, navigation }) {
           <Text style={[CommonStyles.defaultText, { width: windowWidth - 40, marginHorizontal: 20 }]}>{item.COMMENT}</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>), []);
+    </ScrollView>);
+  });
 
   const keyExtractor = useCallback((item, index) =>
     Helpers.isValid(item) ? item.DTE_POST : index);
