@@ -537,6 +537,7 @@ function CoreTab() {
           name='Ma collection'
           component={CollectionScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/home-outline', p);
             }
@@ -546,6 +547,7 @@ function CoreTab() {
           name='Wishlist'
           component={WishlistScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/heart-outline', p);
             }
@@ -555,6 +557,7 @@ function CoreTab() {
           name='A compléter'
           component={ToCompleteScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('SimpleLineIcons/puzzle', p);
             }
@@ -564,6 +567,7 @@ function CoreTab() {
           name='Actualité'
           component={NewsScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/megaphone-outline', p);//'fiber-new'
             }
@@ -573,6 +577,7 @@ function CoreTab() {
           name='Rechercher'
           component={SearchScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('MaterialIcons/search', p);
             }
@@ -618,6 +623,7 @@ function CoreTab() {
           name='Critiques'
           component={CommentsScreens}
           options={{
+            headerShown: false,
             tabBarButton: props => <TouchableWithoutFeedback {...props}
               onPress={() => { }} style={{ width: 0 }} />,
             tabBarIcon: (p) => {
