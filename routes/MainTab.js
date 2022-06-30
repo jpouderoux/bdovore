@@ -528,7 +528,7 @@ function MainTab2() {
     <View style={{ flex: 1 }}>
       <Tab.Navigator
         initialRouteName='Ma collection'
-        screenOptions={{ gestureEnabled: false }}
+        screenOptions={[{ gestureEnabled: false }, { headerShown: false }]}
         tabBarOptions={{ activeTintColor: global.isDarkMode ? bdovorlightred : bdovored }}
         animationEnabled={true}
       >
@@ -536,6 +536,7 @@ function MainTab2() {
           name='Ma collection'
           component={CollectionScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/home-outline', p);
             }
@@ -545,6 +546,7 @@ function MainTab2() {
           name='Wishlist'
           component={WishlistScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/heart-outline', p);
             }
@@ -554,6 +556,7 @@ function MainTab2() {
           name='A compléter'
           component={ToCompleteScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('SimpleLineIcons/puzzle', p);
             }
@@ -563,6 +566,7 @@ function MainTab2() {
           name='Actualité'
           component={NewsScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('Ionicons/megaphone-outline', p);//'fiber-new'
             }
@@ -572,6 +576,7 @@ function MainTab2() {
           name='Rechercher'
           component={SearchScreens}
           options={{
+            headerShown: false,
             tabBarIcon: (p) => {
               return getIcon('MaterialIcons/search', p);
             }
@@ -617,6 +622,7 @@ function MainTab2() {
           name='Critiques'
           component={CommentsScreens}
           options={{
+            headerShown: false,
             tabBarButton: props => <TouchableWithoutFeedback {...props}
               onPress={() => { }} style={{ width: 0 }} />,
             tabBarIcon: (p) => {
