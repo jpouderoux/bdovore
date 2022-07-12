@@ -28,7 +28,7 @@
 
 import React, { useState } from 'react';
 import { Switch, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
