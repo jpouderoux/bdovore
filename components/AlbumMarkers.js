@@ -416,7 +416,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             </View> :
             null}
         </View>
-        {(reduceMode) ?
+        {(reduceMode && global.retractableButtons) ?
           <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
             style={[{ paddingVertical: 8, paddingLeft: 0, width: 25 }]} >
             <Icon name='MaterialIcons/more-vert' size={25}
