@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -55,9 +55,6 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         setSource(APIManager.getAlbumCoverURL(item));
         break;
     }
-  }, []);
-
-  useEffect(() => {
     if (largeMode) {
       Image.getSize(source, (srcWidth, srcHeight) => {
         if (srcWidth > srcHeight) {
@@ -69,14 +66,14 @@ export function CoverImage({ item, category, style, noResize, largeMode }) {
         }
       }, (error) => { console.debug(error); });
     }
-  });
+  }, [item]);
 
   const nodownload = !global.isConnected || (global.imageOnWifi && !SettingsManager.isWifiConnected());
 
   return (nodownload && Platform.OS == 'android' ?
     <View style={{ width, height, backgroundColor: 'lightgrey' }}>
       <Text style={[CommonStyles.defaultText, CommonStyles.evenSmallerText, { textAlign: 'center', height: '100%', textAlignVertical: 'center' }]}>
-        <Icon collection='MaterialIcons' name={'image-not-supported'} size={20} />{'\n'}
+        <Icon name='MaterialIcons/image-not-supported' size={20} />{'\n'}
         Image{'\n'}non disponible{'\n'}hors {!global.isConnected ? 'connexion' : 'WiFi'}
       </Text>
     </View > :

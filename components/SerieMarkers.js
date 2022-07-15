@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
 
-import { CommonStyles, bdovored } from '../styles/CommonStyles';
+import { CommonStyles, bdovored, bdovorlightred } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -136,7 +136,7 @@ export function SerieMarkers({ item, serieAlbums, style, showExclude, refreshCal
 
   const MarkerLoadingIndicator = () => (
     <View style={[CommonStyles.markerStyle]}>
-      <ActivityIndicator size="small" color={bdovored} style={CommonStyles.markerIconStyle} />
+      <ActivityIndicator size="small" color={global.isDarkMode ? bdovorlightred : bdovored} style={CommonStyles.markerIconStyle} />
       <Text style={CommonStyles.markerTextStyle}>{' '}</Text>
     </View>);
 

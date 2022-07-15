@@ -1,3 +1,4 @@
+
 /* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,56 +28,47 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
-import { ListItem } from 'react-native-elements';
+import { Image, Text, View } from 'react-native';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
-import CollectionManager from '../api/CollectionManager';
 import * as Helpers from '../api/Helpers';
 
+const pkg = require('../app.json');
 
-function CollectionPanel({ route, navigation, isVisible, visibleSetter, collectionGenre, setCollectionGenre, noAllEntry = false }) {
 
-  const onCollectionGenreChanged = (route, navigation, mode) => {
-    setCollectionGenre(mode);
-    visibleSetter(false);
-    navigation.dispatch({
-      ...CommonActions.setParams({
-        collectionGenre: mode
-      }),
-      source: route.key,
-    });
+function AboutPanel({ isVisible, visibleSetter }) {
+
+  const onToggleSponsoredLinks = () => {
+    /*if (Platform.OS != 'ios')*/ {
+      global.hideSponsoredLinks = !global.hideSponsoredLinks;
+      Helpers.setAndSaveGlobal('hideSponsoredLinks', global.hideSponsoredLinks);
+      Helpers.showToast(false, 'Sponsored linked are now ' + (global.hideSponsoredLinks ? 'disabled' : 'enabled') + '!', '', 1000, 'top');
+    }
   }
 
   return (
-    <BottomSheet
-      isVisible={isVisible}
-      containerStyle={CommonStyles.bottomSheetContainerStyle}>
-      <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 10, marginBottom: -10 }]}>
+    <BottomSheet isVisible={isVisible} visibleSetter={visibleSetter} containerStyle={CommonStyles.bottomSheetContainerStyle}>
+      <View style={[CommonStyles.modalViewStyle, { height: '80%', paddingTop: 10, paddingBottom: 20, marginBottom: -10 }]}>
 
         {Helpers.renderAnchor()}
 
-        <ListItem key='0' containerStyle={CommonStyles.bottomSheetTitleStyle}>
-          <ListItem.Content>
-            <ListItem.Title style={[CommonStyles.bottomSheetItemTextStyle, CommonStyles.defaultText]}>Collection à afficher</ListItem.Title>
-          </ListItem.Content>
-        </ListItem>
-        {Object.entries(CollectionManager.CollectionGenres).slice(noAllEntry ? 1 : 0).map(([mode, title], index) => (
-          <ListItem key={index + 1}
-            containerStyle={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemContainerStyle : CommonStyles.bottomSheetItemContainerStyle}
-            onPress={() => onCollectionGenreChanged(route, navigation, mode)}>
-            <ListItem.Content>
-              <ListItem.Title style={collectionGenre == mode ? CommonStyles.bottomSheetSelectedItemTextStyle : CommonStyles.bottomSheetItemTextStyle}>
-                {title[0]}
-              </ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        ))}
+        <View style={{ marginTop: 20, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
+          <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width: 320, borderRadius: 5 }} />
+        </View>
+
+        <View style={[CommonStyles.commentsTextInputStyle, {
+          flexDirection: 'column', width: '90%', alignItems: 'center', marginVertical: 20,  borderRadius: 10
+        }]}>
+          <Text style={[CommonStyles.defaultText, CommonStyles.bold, { color: 'black', marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Juin 2022</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black', marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+        </View>
+
+        <Text style={[CommonStyles.linkText, CommonStyles.center, { marginTop: 20 }]} onPress={() => visibleSetter(false)}>Fermer</Text>
       </View>
     </BottomSheet>
   );
 }
 
-export default CollectionPanel;
+export default AboutPanel;

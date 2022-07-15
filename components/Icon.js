@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
  */
 
 import React from 'react';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -37,19 +38,25 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 export function Icon({ collection = 'MaterialCommunityIcons', name, size, color, style }) {
 
-  switch (collection) {
+  const names = name.split('/');
+  const iconCol = names.length > 1 ? names[0] : collection;
+  const iconName = names.length > 1 ? names[1] : names[0];
+
+  switch (iconCol) {
+    case 'AntDesign':
+      return <AntDesign name={iconName} size={size} color={color} style={style} />;
     case 'FontAwesome':
-      return <FontAwesome name={name} size={size} color={color} style={style} />;
+      return <FontAwesome name={iconName} size={size} color={color} style={style} />;
     case 'FontAwesome5':
-      return <FontAwesome5 name={name} size={size} color={color} style={style} />;
+      return <FontAwesome5 name={iconName} size={size} color={color} style={style} />;
     case 'Ionicons':
-      return <Ionicons name={name} size={size} color={color} style={style} />;
+      return <Ionicons name={iconName} size={size} color={color} style={style} />;
     case 'MaterialCommunityIcons':
-      return <MaterialCommunityIcons name={name} size={size} color={color} style={style} />;
+      return <MaterialCommunityIcons name={iconName} size={size} color={color} style={style} />;
     case 'MaterialIcons':
-      return <MaterialIcons name={name} size={size} color={color} style={style} />;
+      return <MaterialIcons name={iconName} size={size} color={color} style={style} />;
     case 'SimpleLineIcons':
-      return <SimpleLineIcons name={name} size={size} color={color} style={style} />;
+      return <SimpleLineIcons name={iconName} size={size} color={color} style={style} />;
   }
   return null;
 }

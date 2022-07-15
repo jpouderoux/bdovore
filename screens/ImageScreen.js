@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,7 +27,8 @@
  */
 
 import React from 'react';
-import { ActivityIndicator, Dimensions, Image, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, Text, TouchableWithoutFeedback, View } from 'react-native';
+
 import { CommonStyles } from '../styles/CommonStyles';
 
 

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ import { ButtonGroup } from 'react-native-elements';
 import { SearchBar } from 'react-native-elements';
 
 import { AlbumItem } from '../components/AlbumItem';
-import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, AlbumItemHeight, CommonStyles, red } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager'
 import * as Helpers from '../api/Helpers';

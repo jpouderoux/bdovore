@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,7 +28,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Platform, Text, TextInput, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles, windowHeight } from '../styles/CommonStyles';
@@ -144,9 +143,9 @@ function UserCommentPanel({ album, comments, isVisible, visibleSetter }) {
             />
 
             <View style={{ flexDirection: 'row', marginVertical: 15 }}>
-              <Text style={CommonStyles.linkTextStyle} onPress={onDeleteComment}>Supprimer</Text>
+              <Text style={CommonStyles.linkText} onPress={onDeleteComment}>Supprimer</Text>
               <View style={{ width: '30%' }}></View>
-              <Text style={CommonStyles.linkTextStyle} onPress={onSaveComment}>Enregistrer</Text>
+              <Text style={CommonStyles.linkText} onPress={onSaveComment}>Enregistrer</Text>
             </View>
 
           </View>

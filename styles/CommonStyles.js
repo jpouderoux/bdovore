@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ import SettingsManager from '../api/SettingsManager';
 export const bdovored = '#990000';
 export const bdovorlightred = '#e90101';
 export const bdovorgray = '#aaaaaa'; // Same as iOS UIColor.lightGray
+export const bdovordarkgray = '#1c1c1c';
 
 export let windowWidth = Dimensions.get('window').width;
 export let windowHeight = Dimensions.get('window').height;
@@ -54,16 +55,24 @@ export function rebuildSheet() {
   EStyleSheet.build({
     $theme: global.isDarkMode ? 'light' : 'dark',
     $rem: Dimensions.get('window').width > 340 ? 16 : 14,
-    $bg: global.isDarkMode ? 'black' : 'white',
+    $bg: global.isDarkMode ? bdovordarkgray : 'white',
+    $blue: global.isDarkMode ? 'lightblue' : 'blue',
     $textcolor: global.isDarkMode ? 'white' : 'black',
-    $sectioncolor: bdovored, //global.isDarkMode ? '#333' : '#ddd',
+    $sectioncolor: global.isDarkMode ? bdovorlightred : bdovored, //global.isDarkMode ? '#333' : '#ddd',
+    $red: global.isDarkMode ? bdovorlightred : bdovored,
     $buttongroupcolor: global.isDarkMode ? '#333' : '#eee',
     $buttongroupselectcolor: global.isDarkMode ? '#777' : 'white',
     $bw: global.isDarkMode ? StyleSheet.hairlineWidth * 2 : 0,
   });
+  console.debug('Rebuild sheet');
 }
 
 export let CommonStyles = EStyleSheet.create({
+
+  red: {
+    color: '$red'
+  },
+
   screenStyle: {
     backgroundColor: '$bg',
     flex: 1,
@@ -165,7 +174,7 @@ export let CommonStyles = EStyleSheet.create({
     fontSize: '0.5rem'
   },
   errorTextStyle: {
-    color: 'red',
+    color: '$red',
     textAlign: 'center',
     fontSize: 14,
   },
@@ -202,8 +211,8 @@ export let CommonStyles = EStyleSheet.create({
     borderRadius: 5,
     paddingLeft: 5,
   },
-  linkTextStyle: {
-    color: bdovored, //'dodgerblue',
+  linkText: {
+    color: '$red', //'dodgerblue',
     //textDecorationLine: 'underline',
   },
 
@@ -212,16 +221,16 @@ export let CommonStyles = EStyleSheet.create({
 
   markersViewStyle: {
     position: 'absolute',
-    bottom: -5,
+    bottom: -10,
     right: 0,
     backgroundColor: '$bg',
     zIndex: 1,
   },
   markersSerieViewStyle: {
-    /*position: 'absolute',
-    marginTop: -5,
-    bottom: 0,
-    right: 0,*/
+    position: 'absolute',
+    width: 55,
+    bottom: -6,
+    right: -8,
   },
   markerStyle: {
     alignItems: 'center',
@@ -229,6 +238,13 @@ export let CommonStyles = EStyleSheet.create({
     paddingLeft: 13,
     paddingRight: 0,
     paddingVertical: 8,
+    zIndex: 2,
+  },
+  markerAlbumItemStyle: {
+    paddingRight: 5,
+    position: 'absolute',
+    bottom: 0,
+    right: -7,
     zIndex: 2,
   },
   markerIconStyle: {
@@ -247,7 +263,7 @@ export let CommonStyles = EStyleSheet.create({
     color: 'green',
   },
   markWishIconEnabled: {
-    color: 'red',
+    color: '$red',
   },
   markIconDisabled: {
     color: '$textcolor',
@@ -264,7 +280,7 @@ export let CommonStyles = EStyleSheet.create({
     backgroundColor: bdovorlightred,
     borderWidth: 0,
     color: '$bg',
-    borderColor: 'red',
+    borderColor: '$red',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,
@@ -331,13 +347,13 @@ export let CommonStyles = EStyleSheet.create({
     borderColor: '$buttongroupcolor',
   },
   bottomSheetSelectedItemContainerStyle: {
-    backgroundColor: bdovored,
+    backgroundColor: '$red',
     alignSelf: 'center',
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderColor: '$buttongroupcolor',
   },
   bottomSheetItemTextStyle: {
-    color: bdovored,
+    color: '$red',
     alignSelf: 'center',
   },
   bottomSheetSelectedItemTextStyle: {
@@ -351,7 +367,44 @@ export let CommonStyles = EStyleSheet.create({
     borderRadius: 5,
     height: 5,
     marginVertical: 8,
-    width: '10%',
+    width: 40,
+  },
+
+   // Burger menu
+  burgerModalStyle: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginBottom: 0,
+    backgroundColor: 'transparent'
+  },
+
+  burgerItemStyle: {
+    flexDirection: 'row',
+    flex: 1,
+    marginVertical: 5,
+    paddingHorizontal: 15,
+    marginHorizontal: 0,
+    justifyContent: 'space-between',
+    backgroundColor: '$bg',
+  },
+
+  burgerTitleStyle: {
+    marginLeft: 15,
+    color: 'grey',
+    textAlignVertical: 'center'
+  },
+
+  burgerScrollViewStyle: {
+    backgroundColor: '$bg',
+    position: 'absolute',
+    paddingVertical: 15,
+    bottom: 55,
+    right: -15,
+    flex: 1,
+    flexDirection: 'column-reverse',
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: 'gray',
+    borderRadius: 5
   },
 
   //***************

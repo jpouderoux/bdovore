@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -83,8 +83,8 @@ export function lowerCaseNoAccentuatedChars(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-export function renderSeparator() {
-  return <View style={CommonStyles.separatorStyle} />
+export function renderSeparator(style = null) {
+  return <View style={[CommonStyles.separatorStyle, style]} />
 }
 
 export function renderVerticalSeparator() {
@@ -119,6 +119,10 @@ export function setAndSaveGlobal(name, value) {
 
 export function setAsyncStorageBoolValue(name, value) {
   AsyncStorage.setItem(name, value ? '1' : '0').catch((error) => { });
+}
+
+export function getLoggedUserid() {
+  return parseInt(global.token.replace(/([0-9]+).*/, '$1')) * 1209 + 951;
 }
 
 export function checkConnection() {
@@ -418,11 +422,11 @@ export function dateToString(date) {
   return convertDate(date.substring(0, 10));
 }
 
-export function showToast(isError, text1, text2 = '', duration = 1000) {
+export function showToast(isError, text1, text2 = '', visibilityTime = 1000, position = 'bottom') {
   Toast.show({
-    visibilityTime: duration,
+    visibilityTime,
     autoHide: true,
-    position: 'bottom',
+    position,
     type: isError ? 'error' : 'success',
     text1,
     text2,

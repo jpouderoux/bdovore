@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import * as Helpers from '../api/Helpers';
@@ -37,15 +36,15 @@ const bdovoreUserAgent = 'bdovore ' + Platform.OS + ' v0.1';
 export const bdovoreBaseURL = 'https://www.bdovore.com';
 const bdovoreBaseUserURL = bdovoreBaseURL + '/getjson?';
 
-function getBaseURL(dataMode) {
+export function getBaseURL(dataMode) {
   return bdovoreBaseUserURL + 'data=' + dataMode;
 }
 
-function getBaseUserURL(token, dataMode) {
+export function getBaseUserURL(token, dataMode) {
   return getBaseURL(dataMode) + '&API_TOKEN=' + encodeURI(token);
 }
 
-function concatParamsToURL(url, params) {
+export function concatParamsToURL(url, params) {
   for (const key in params) {
     if (key) {
       url += '&' + key + '=' + encodeURIComponent(params[key]);
@@ -130,32 +129,36 @@ export async function reloginBDovore(navigation, callback = null) {
   console.debug("relogin!");
   try {
     if (global.isConnected) {
-      AsyncStorage.multiGet(['login', 'passwd'])
-        .then((values) => {
-          const pseudo = values[0][1];
-          const passwd = values[1][1];
-          loginBDovore(pseudo, passwd, (response) => {
-            if (response.error) {
-              if (navigation) {
-                navigation.navigate('Login');
-              }
-            } else if (callback) {
-              callback();
+      if (global.login && global.passwd) {
+        loginBDovore(global.login, global.passwd, (response) => {
+          if (response.error) {
+            console.debug(response.error);
+            if (navigation) {
+              navigation.navigate('Login');
             }
-          });
-        })
-        .catch((error) => {
-          console.debug(error);
-          if (navigation) {
-            navigation.navigate('Login');
+          } else if (callback) {
+            try {
+              callback();
+            } catch (error) {
+              console.debug(error);
+            }
+            return true;
           }
         });
+      }
+      else {
+        //console.debug(error);
+        if (navigation) {
+          navigation.navigate('Login');
+        }
+      }
     } else {
       console.debug('Not connected.');
     }
   } catch (error) {
     console.debug(error);
   }
+  return false;
 }
 
 export function loginBDovore(pseudo, passwd, callback) {
@@ -189,9 +192,10 @@ export function loginBDovore(pseudo, passwd, callback) {
           console.debug("  server timestamp: " + response.Timestamp);
           global.token = response.Token;
           global.serverTimestamp = response.Timestamp;
-          fetchUserPrefs();
+          fetchUserPrefs(null, ()=>{;
           //console.log(responseJson);
           callback(formatResult(true, response.Token, '', response.Timestamp ?? null));
+          });
         } else {
           callback(formatResult(false, response.Token, response.Error));
         }
@@ -289,10 +293,12 @@ export async function fetchJSON(request, context, callback, params = {},
           if (global.verbose) {
             Helpers.showToast(true, 'Connexion perdue. Reconnexion en cours...', 'Tentative n°' + (5 - retry + 1));
           }
-          console.debug("Retry " + (5 - retry + 1) + ' / 5');
-          reloginBDovore(context ? context.navigation : null, () => {
-            fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
-          });
+          setTimeout(() => {
+            console.debug("Retry " + (5 - retry + 1) + ' / 5');
+            reloginBDovore(context ? context.navigation : null, () => {
+              fetchJSON(request, context, callback, params, datamode, multipage, multipageTotalField, pageLength, retry - 1);
+            });
+          }, 1000 + (5 - retry) * 100);
         } else {
           console.error("Error: " + error);
           try {
@@ -399,6 +405,22 @@ export async function fetchWishlist(context, callback, params = {}) {
     }, ...params
   });
 };
+
+export async function fetchMyCollection(context, callback) {
+
+  const url = bdovoreBaseURL + '/Macollection';
+
+  fetchZIP(url)
+    .then(response => response.json())
+    .then(json => {
+      //console.log(json);
+      callback({ error: '', items: json });
+    })
+    .catch((error) => {
+      console.debug('==> error : ' + error.toString())
+      callback({ error: error.toString(), items: {}});
+    });
+}
 
 export async function fetchSimilAlbums(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -233,19 +233,19 @@ function SerieScreen({ route, navigation }) {
     if (!showAllAuthors && nbOfAuthors > 6) {
       return (
         <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkTextStyle}>Collectif</Text>
+          <Text onPress={() => setShowAllAuthors(true)} style={CommonStyles.linkText}>Collectif</Text>
         </Text>);
     }
     return (nbOfAuthors > 0 ?
       <Text style={CommonStyles.defaultText}>{getAuthorsLabel()} :{' '}
-        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkTextStyle}>Collectif : </Text> : null}
+        {nbOfAuthors > 6 ? <Text onPress={() => setShowAllAuthors(false)} style={CommonStyles.linkText}>Collectif : </Text> : null}
         {authors.map((auteur, index, array) => {
           if (auteur.name == 'Collectif') {
             return nbOfAuthors == 1 ? <Text key={index * 2} style={CommonStyles.defaultText}>{auteur.name}{index != (array.length - 1) ? ' / ' : ''}</Text> : null;
           }
           return (
             <Text key={index * 2 + 1} style={CommonStyles.defaultText}>
-              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkTextStyle : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
+              <Text onPress={() => onPressAuteur(auteur)} style={global.isConnected ? CommonStyles.linkText : CommonStyles.defaultText}>{Helpers.reverseAuteurName(auteur.name)}</Text>
               {index != (array.length - 1) ? ' / ' : ''}
             </Text>)
         })}
@@ -287,7 +287,7 @@ function SerieScreen({ route, navigation }) {
                 {nbOfUserAlbums + ' / ' + Math.max(serie.NB_TOME, serie.NB_ALBUM)}
                 {/*serie.NB_TOME > 0 ? '\n' + CollectionManager.getNbOfTomesInCollection(serie.ID_SERIE) + ' / ' + serie.NB_TOME : ''*/}</Text>
               <SerieMarkers item={serie}
-                style={[CommonStyles.markersSerieViewStyle, { position: 'absolute', width: 55, bottom: -6, right: -8 }]}
+                style={CommonStyles.markersSerieViewStyle}
                 reduceMode={true}
                 showExclude={true}
                 serieAlbums={getAlbums()}
@@ -298,9 +298,9 @@ function SerieScreen({ route, navigation }) {
           </View>
         </View>
         {serie.HISTOIRE_SERIE ? <View style={{ marginTop: 4 }}>
-          {!showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkTextStyle}>Afficher le synopsis</Text> : null}
+          {!showSynopsis ? <Text onPress={() => setShowSynopsis(true)} style={CommonStyles.linkText}>Afficher le synopsis</Text> : null}
           {showSynopsis ? <Text>
-            <Text style={CommonStyles.linkTextStyle} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
+            <Text style={CommonStyles.linkText} onPress={() => setShowSynopsis(false)}>Synopsis :{' '}</Text>
             <Text style={CommonStyles.defaultText}>{Helpers.removeHTMLTags(serie.HISTOIRE_SERIE)}</Text>
           </Text> : null}
         </View> : null}

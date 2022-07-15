@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ import { CommonStyles } from '../styles/CommonStyles';
 export function LinkText({ text, url, style }) {
 
   return (
-    <Text style={[CommonStyles.linkTextStyle, style]}
+    <Text style={[CommonStyles.linkText, style]}
       onPress={() => { Linking.openURL(url); }}>
       {text ? text : ''}
     </Text>

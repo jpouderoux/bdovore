@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -133,6 +133,7 @@ function CollectionScreen({ route, navigation }) {
     // Make sure data is refreshed when login/token changed
     const willFocusSubscription = navigation.addListener('focus', () => {
       refreshDataIfNeeded();
+      applyFilters();
       toggle();
     });
     return willFocusSubscription;
@@ -286,7 +287,7 @@ function CollectionScreen({ route, navigation }) {
     if (Helpers.isValid(item)) {
       switch (collectionType) {
         case 0: return (<SerieItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
-        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} />);
+        case 1: return (<AlbumItem navigation={navigation} item={Helpers.toDict(item)} index={index} collectionMode={true} refreshCallback={toggle} />);
       }
     }
     return null;
@@ -342,9 +343,9 @@ function CollectionScreen({ route, navigation }) {
           <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
             <Text style={[CommonStyles.defaultText, CommonStyles.center, {textAlign: 'center'}]}>
               <Text style={CommonStyles.defaultText}>Ajoutez vos albums via les onglets{'\n'}</Text>
-              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Actualité')}>Actualité</Text>
+              <Text style={CommonStyles.linkText} onPress={() => navigation.navigate('Actualité')}>Actualité</Text>
               <Text style={CommonStyles.defaultText}>{' '}et{' '}</Text>
-              <Text style={CommonStyles.linkTextStyle} onPress={() => navigation.navigate('Rechercher')}>Rechercher</Text>
+              <Text style={CommonStyles.linkText} onPress={() => navigation.navigate('Rechercher')}>Rechercher</Text>
               <Text style={CommonStyles.defaultText}>.{'\n'}</Text>
             </Text>
           </View>
@@ -382,8 +383,8 @@ function CollectionScreen({ route, navigation }) {
             ItemSeparatorComponent={Helpers.renderSeparator}
             getItemLayout={getItemLayout}
             refreshControl={<RefreshControl
-              colors={[bdovorlightred, bdovored]}
-              tintColor={bdovored}
+              colors={[bdovorlightred, global.isDarkMode ? bdovorlightred : bdovored]}
+              tintColor={global.isDarkMode ? bdovorlightred : bdovored}
               refreshing={loading}
               onRefresh={fetchData} />}
             onScroll={onScrollEvent}

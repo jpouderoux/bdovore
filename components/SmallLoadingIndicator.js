@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,14 +29,14 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { bdovored } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred } from '../styles/CommonStyles';
 
 
 export function SmallLoadingIndicator({ style }) {
 
   return (
     <View style={[{ justifyContent: 'center' }, style]}>
-      <ActivityIndicator size="large" color={bdovored} />
+      <ActivityIndicator size="large" color={global.isDarkMode ? bdovorlightred : bdovored} />
     </View>
   );
 }

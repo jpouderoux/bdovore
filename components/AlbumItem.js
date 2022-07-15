@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,7 +35,6 @@ import { CoverImage } from './CoverImage';
 import { Icon } from './Icon';
 import { RatingStars } from './RatingStars';
 import * as Helpers from '../api/Helpers';
-import CollectionManager from '../api/CollectionManager';
 
 
 export function AlbumItem({ navigation, item, index, collectionMode, dontShowSerieScreen, showEditionDate = false, showExclude, refreshCallback }) {
@@ -50,9 +49,9 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
       const now = Helpers.getNowDateString().substring(0, 10);
       if (albumDate > now || showEditionDate) {
         return (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Icon name={albumDate > now ? 'calendar-clock' : 'calendar-check'} size={20} style={[CommonStyles.itemText]} />
-            <Text style={[CommonStyles.itemText, { marginLeft: 6}]}>{Helpers.convertDate(albumDate)}</Text>
+            <Text style={[CommonStyles.itemText, { marginLeft: 6 }]}>{Helpers.convertDate(albumDate)}</Text>
           </View>);
       }
     }
@@ -65,22 +64,25 @@ export function AlbumItem({ navigation, item, index, collectionMode, dontShowSer
         <CoverImage item={item} category={1} />
       </View>
       <View style={[CommonStyles.itemTextContent, { marginRight: 0 }]}>
-        <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
-          {item.TITRE_TOME}
-        </Text>
-        <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
-        <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
-          {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n\n'}
-          {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : null}
-        </Text>
-        {collectionMode ? null :
-          <AlbumMarkers item={item}
-            style={CommonStyles.markersViewStyle}
-            reduceMode={true}
-            showExclude={showExclude /*&& CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false*/}
-            refreshCallback={refreshCallback} />
-        }
+        <View style={{ flex: 1 }}>
+          <Text style={[CommonStyles.largerText, CommonStyles.itemTitleText]} numberOfLines={1} textBreakStrategy='balanced'>
+            {item.TITRE_TOME}
+          </Text>
+          <RatingStars note={item.MOYENNE_NOTE_TOME} style={{ marginTop: 5 }} />
+          <Text style={[CommonStyles.itemTextWidth, CommonStyles.itemText, { marginTop: 5 }]}>
+            {(dontShowSerieScreen || !item.NUM_TOME || item.NUM_TOME == 0) ? '' : (item.NOM_SERIE + ' ')}{(item.NUM_TOME > 0) ? "Tome " + item.NUM_TOME : ''}{'\n\n'}
+            {(item.DATE_PARUTION_EDITION || item.DTE_PARUTION) ? showDate() : null}
+          </Text>
+        </View>
       </View>
+      {collectionMode ? null :
+        <AlbumMarkers item={item}
+          style={[CommonStyles.markerAlbumItemStyle]}
+          reduceMode={true}
+          showExclude={showExclude /*&& CollectionManager.getNbOfUserAlbumsInSerie(item.ID_SERIE) > 0 ? true : false*/}
+          refreshCallback={refreshCallback} />
+      }
+
     </TouchableOpacity>
   );
 }

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
 
@@ -243,7 +242,15 @@ class CCollectionManager {
   }
 
   getAlbums(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Albums'), origine);
+    // check if data is loaded
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Albums'), origine);
+    } else {
+      // else return empty array
+      return [];
+    } 
+
+    
   }
 
   getAlbumsInSerie(id_serie) {
@@ -251,11 +258,21 @@ class CCollectionManager {
   }
 
   getSeries(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Series'), origine);
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Series'), origine);
+    } else {
+      return [];
+    }
+    
   }
 
   getWishes(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Wishes'), origine);
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Wishes'), origine);
+    } else {
+      return [];
+    }
+    
   }
 
   numberOfSeries(origine = 0) {
@@ -882,8 +899,15 @@ class CCollectionManager {
     if (album.ID_EDITION) {
       return global.db.objectForPrimaryKey('Albums', Helpers.getAlbumUID(album)) ?? null;
     }
-    let ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
-    return (ret.length > 0) ? ret[0] : null;
+    let ret;
+    if (album.ID_SERIE) {
+      ret = this.getAlbums().filtered('ID_SERIE == $0 && ID_TOME == $1', parseInt(album.ID_SERIE), parseInt(album.ID_TOME));
+      if (ret.length > 0) {
+        return ret[0];
+      }
+    }
+    ret = this.getAlbums().filtered('ID_TOME == $0 && TITRE_TOME == $1', parseInt(album.ID_TOME), album.TITRE_TOME);
+    return ret.length > 0 ? ret[0] : 0;
   }
 
   getAlbumInWishlist(album) {

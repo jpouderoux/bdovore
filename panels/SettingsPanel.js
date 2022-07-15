@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -178,7 +178,7 @@ function SettingsPanel({ isVisible, visibleSetter }) {
             trackColor={{ false: CommonStyles.switchStyle.borderColor, true: CommonStyles.switchStyle.backgroundColor }} />
         </View>
 
-        <Text style={[CommonStyles.linkTextStyle, CommonStyles.center, {marginTop: 20}]} onPress={() => visibleSetter(false)}>Fermer</Text>
+        <Text style={[CommonStyles.linkText, CommonStyles.center, {marginTop: 20}]} onPress={() => visibleSetter(false)}>Fermer</Text>
       </View>
     </BottomSheet>
   );

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -37,6 +37,12 @@ import * as Helpers from '../api/Helpers';
 
 function CommentsPanel({ comments, isVisible, visibleSetter }) {
 
+  const getCommentDate = (item) => {
+    if (!item.DTE_POST) { return ''; }
+    const date = item.DTE_POST.split(' ');
+    return 'le ' + Helpers.convertDate(date[0])/* + ' à ' + date[1].substring(0, 5)*/;
+  }
+
   const renderComment = (item) => {
     return (
       item[1].NOTE > 0 ?
@@ -50,7 +56,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
         }}>
           <View style={{ flexDirection: 'row' }}>
             <RatingStars note={item[1].NOTE} style={{ marginLeft: -2 }} showRate/>
-            <Text style={CommonStyles.commentsTextStyle}>{item[1].username}</Text>
+            <Text style={CommonStyles.commentsTextStyle}>{item[1].username} {getCommentDate(item[1])}</Text>
           </View>
           <Text style={CommonStyles.defaultText}>{item[1].COMMENT}</Text>
         </View> : null);
@@ -71,7 +77,7 @@ function CommentsPanel({ comments, isVisible, visibleSetter }) {
           </TouchableOpacity>
         </ScrollView>
           <View style={{ marginTop: 15, marginBottom: 20, alignContent: 'center', alignItems: 'center' }}>
-            <Text style={[CommonStyles.linkTextStyle, CommonStyles.center]} onPress={() => visibleSetter(false)}>Fermer</Text>
+            <Text style={[CommonStyles.linkText, CommonStyles.center]} onPress={() => visibleSetter(false)}>Fermer</Text>
           </View>
       </View>
     </BottomSheet>

@@ -1,4 +1,4 @@
-/* Copyright 2021 Joachim Pouderoux & Association BDovore
+/* Copyright 2021-2022 Joachim Pouderoux & Association BDovore
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,11 +27,13 @@
  */
 
 import React, { useState } from 'react';
-import { Alert, Platform, Share, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Share, TouchableOpacity, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-import { bdovored, CommonStyles } from '../styles/CommonStyles';
+import { bdovored, bdovorlightred, CommonStyles } from '../styles/CommonStyles';
 import { Icon } from '../components/Icon';
 import * as APIManager from '../api/APIManager';
 import * as Helpers from '../api/Helpers';
@@ -41,12 +43,14 @@ import BarcodeScanner from '../screens/BarcodeScanner';
 import CollectionPanel from '../panels/CollectionPanel';
 import CollectionScreen from '../screens/CollectionScreen';
 import CommentsScreen from '../screens/CommentsScreen';
+import DashboardScreen from '../screens/DashboardScreen';
 import ImageScreen from '../screens/ImageScreen';
 import LoginScreen from '../screens/LoginScreen';
+import BurgerMenuPanel from '../panels/BurgerMenuPanel';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
-import SettingsPanel from '../panels/SettingsPanel';
+import StatsScreen from '../screens/StatsScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
 
@@ -60,24 +64,49 @@ const WishlistStack = createStackNavigator();
 const ToCompleteStack = createStackNavigator();
 const NewsStack = createStackNavigator();
 const SearchStack = createStackNavigator();
-
-
-const accountButton = (navigation) => {
-  return (
-    <TouchableOpacity onPress={() => onAccountPress(navigation)} style={{ margin: 8 }}>
-      <Icon name='account-circle-outline' size={25} color={CommonStyles.iconStyle.color} />
-    </TouchableOpacity>
-  );
-}
-
-const onAccountPress = (navigation) => {
-  navigation.navigate('Login');
-};
+const StatsStack = createStackNavigator();
+const CommentsStack = createStackNavigator();
 
 const ShareIcon = () => (
   Platform.OS == 'ios' ?
-    <Icon name='ios-share-outline' collection='Ionicons' size={25} color={CommonStyles.iconStyle.color} /> :
-    <Icon name='share-social-outline' collection='Ionicons' size={25} color={CommonStyles.iconStyle.color} />);
+    <Icon name='Ionicons/ios-share-outline' size={25} color={CommonStyles.iconStyle.color} /> :
+    <Icon name='Ionicons/share-social-outline' size={25} color={CommonStyles.iconStyle.color} />);
+
+const onShareCollectionPress = () => {
+
+  const shareCollection = () => {
+    const url = APIManager.bdovoreBaseURL + '/guest?user=' + Helpers.getLoggedUserid();
+    Share.share({
+      message: url,
+      url: url
+    });
+  }
+
+  if (global.openCollection) {
+    shareCollection();
+  } else {
+    Alert.alert('Partager ma collection',
+      'Le lien partagé ne fonctionnera qu\'après avoir autorisé la consultation de ' +
+      'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
+      [{
+        text: "Oui",
+        onPress: () => shareCollection()
+      }, {
+        text: "Annuler",
+        onPress: () => { },
+        style: "cancel"
+      }],
+      { cancelable: true });
+  }
+}
+
+const onShareSeriePress = async (item) => {
+  const url = APIManager.bdovoreBaseURL + '/serie-bd-' + item.ID_SERIE;
+  Share.share({
+    message: url,
+    url: url
+  });
+}
 
 const shareAlbumButton = (item) => {
   return (
@@ -95,20 +124,28 @@ const onShareAlbumPress = async (item) => {
   });
 }
 
+const onShareAuthorPress = async (item) => {
+  const url = APIManager.bdovoreBaseURL + '/auteur-bd-' + item.ID_AUTEUR;
+  Share.share({
+    message: url,
+    url: url
+  });
+}
+
+const shareCollectionButton = () => {
+  return (
+    <TouchableOpacity onPress={onShareCollectionPress} style={{ margin: 8 }}>
+      <ShareIcon />
+    </TouchableOpacity>
+  );
+}
+
 const shareSerieButton = (item) => {
   return (
     <TouchableOpacity onPress={() => onShareSeriePress(item)} style={{ margin: 8 }}>
       <ShareIcon />
     </TouchableOpacity>
   );
-}
-
-const onShareSeriePress = async (item) => {
-  const url = APIManager.bdovoreBaseURL + '/serie-bd-' + item.ID_SERIE;
-  Share.share({
-    message: url,
-    url: url
-  });
 }
 
 const shareAuthorButton = (item) => {
@@ -119,16 +156,13 @@ const shareAuthorButton = (item) => {
   );
 }
 
-const onShareAuthorPress = async (item) => {
-  const url = APIManager.bdovoreBaseURL + '/auteur-bd-' + item.ID_AUTEUR;
-  Share.share({
-    message: url,
-    url: url
-  });
-}
-
 const defaultStackOptions = {
-  headerTintColor: global.isDarkMode ? 'white' : bdovored,
+  headerTintColor: bdovored,
+  headerTruncatedBackTitle: ''
+};
+
+const darkStackOptions = {
+  headerTintColor: bdovorlightred,
   headerTruncatedBackTitle: ''
 };
 
@@ -138,55 +172,23 @@ function CollectionScreens({ route, navigation }) {
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
 
-  const onShareCollectionPress = () => {
-
-    const shareCollection = () => {
-      const url = APIManager.bdovoreBaseURL + '/guest?user=' + Helpers.getUserid();
-      Share.share({
-        message: url,
-        url: url
-      });
-    }
-
-    if (global.openCollection) {
-      shareCollection();
-    } else {
-      Alert.alert('Partager ma collection',
-        'Le lien partagé ne fonctionnera que si vous avez autorisé la consultation de ' +
-        'votre collection par d\'autres utilisateurs sur la page profil du site internet.',
-        [{
-          text: "Oui",
-          onPress: () => shareCollection()
-        }, {
-          text: "Annuler",
-          onPress: () => { },
-          style: "cancel"
-        }],
-        { cancelable: true });
-    }
+  const onDashboardScreenPress = (userid) => {
+    navigation.push('Dashboard', { userid });
   }
 
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
 
-  const onSettingsPress = () => {
-    setShowSettingsPanel(true);
-  };
-
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={onShareCollectionPress} style={{ margin: 8 }}>
-          <ShareIcon />
-        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onDashboardScreenPress(Helpers.getLoggedUserid())} style={{ margin: 8 }}>
+          <Icon name='AntDesign/dashboard' size={25} color={CommonStyles.iconStyle.color} />
+          </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={onSettingsPress} style={{ margin: 8 }}>
-          <Icon name='dots-vertical' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon name='Ionicons/library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -195,25 +197,26 @@ function CollectionScreens({ route, navigation }) {
           visibleSetter={setShowCollectionChooser}
           collectionGenre={collectionGenre}
           setCollectionGenre={setCollectionGenre} />
-
-        <SettingsPanel navigation={navigation}
-          isVisible={showSettingsPanel}
-          visibleSetter={setShowSettingsPanel} />
       </View>
     );
   }
 
   return (
-    <CollectionStack.Navigator screenOptions={defaultStackOptions}>
+    <CollectionStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <CollectionStack.Screen name='Ma collection'
         component={CollectionScreen}
         options={({ route }) => {
           route.params = { collectionGenre: collectionGenre };
           return {
-            headerLeft: () => accountButton(navigation),
+            //headerLeft: () => accountButton(navigation),
             headerRight: () => settingsButton(route, navigation),
           };
         }} />
+      <CollectionStack.Screen name='Dashboard' component={DashboardScreen}
+        options={({ route }) => ({
+          title: 'Tableau de bord',
+          headerRight: () => shareCollectionButton()
+        })} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({
           title: route.params.item.NOM_SERIE,
@@ -280,7 +283,7 @@ function WishlistScreens({ navigation }) {
           <ShareIcon />
         </TouchableOpacity>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon name='Ionicons/library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -294,7 +297,7 @@ function WishlistScreens({ navigation }) {
   }
 
   return (
-    <WishlistStack.Navigator screenOptions={defaultStackOptions}>
+    <WishlistStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <WishlistStack.Screen name='Mes envies'
         component={WishlistScreen}
         options={({ route }) => {
@@ -336,7 +339,7 @@ function ToCompleteScreens({ navigation }) {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon name='Ionicons/library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -350,7 +353,7 @@ function ToCompleteScreens({ navigation }) {
   }
 
   return (
-    <ToCompleteStack.Navigator screenOptions={defaultStackOptions}>
+    <ToCompleteStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <ToCompleteStack.Screen name='Albums manquants'
         component={ToCompleteScreen}
         options={({ route }) => {
@@ -382,10 +385,6 @@ function NewsScreens({ navigation }) {
   const [collectionGenre, setCollectionGenre] = useState(1);
   const [showCollectionChooser, setShowCollectionChooser] = useState(false);
 
-  const onCommentsPress = () => {
-    navigation.navigate('Comments');
-  }
-
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
@@ -393,12 +392,9 @@ function NewsScreens({ navigation }) {
   const settingsButton = (route, navigation) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={onCommentsPress} style={{ margin: 8 }}>
-          <Icon collection='FontAwesome' name='comments-o' size={25} color={CommonStyles.iconStyle.color} />
-        </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
-          <Icon collection='Ionicons' name='library-outline' size={25} color={CommonStyles.iconStyle.color} />
+          <Icon name='Ionicons/library-outline' size={25} color={CommonStyles.iconStyle.color} />
         </TouchableOpacity>
 
         <CollectionPanel route={route}
@@ -413,7 +409,7 @@ function NewsScreens({ navigation }) {
   }
 
   return (
-    <NewsStack.Navigator screenOptions={defaultStackOptions}>
+    <NewsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <NewsStack.Screen name='Actualité' component={NewsScreen}
         options={({ route }) => {
           route.params = { collectionGenre: collectionGenre };
@@ -421,10 +417,6 @@ function NewsScreens({ navigation }) {
             headerRight: () => settingsButton(route, navigation),
           };
         }} />
-      <NewsStack.Screen name='Comments' component={CommentsScreen}
-        options={({ route }) => ({
-          title: 'Dernières critiques',
-        })} />
       <NewsStack.Screen name='Album' component={AlbumScreen}
         options={({ route }) => ({
           title: route.params.item.TITRE_TOME,
@@ -446,7 +438,7 @@ function NewsScreens({ navigation }) {
 
 function SearchScreens({ navigation }) {
   return (
-    <SearchStack.Navigator screenOptions={defaultStackOptions}>
+    <SearchStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
       <SearchStack.Screen name='Rechercher' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({
@@ -469,67 +461,182 @@ function SearchScreens({ navigation }) {
   );
 }
 
+function StatsScreens({ navigation }) {
+  return (
+    <StatsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
+      <StatsStack.Screen name='Stats' component={StatsScreen} />
+    </StatsStack.Navigator>
+  );
+}
+
+function CommentsScreens({ navigation }) {
+  return (
+    <CommentsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
+      <CommentsStack.Screen name='Comments' component={CommentsScreen}
+        options={({ route }) => ({
+          title: 'Dernières critiques',
+        })} />
+      <CommentsStack.Screen name='Serie' component={SerieScreen}
+        options={({ route }) => ({
+          title: route.params.item.NOM_SERIE,
+          headerRight: () => shareSerieButton(route.params.item)
+        })} />
+      <CommentsStack.Screen name='Album' component={AlbumScreen}
+        options={({ route }) => ({
+          title: route.params.item.TITRE_TOME,
+          headerRight: () => shareAlbumButton(route.params.item)
+        })} />
+      <CommentsStack.Screen name='Auteur' component={AuteurScreen}
+        options={({ route }) => ({
+          title: Helpers.reverseAuteurName(route.params.author.PSEUDO),
+          headerRight: () => shareAuthorButton(route.params.author)
+        })} />
+    </CommentsStack.Navigator>
+  )
+}
 function MainTab2() {
 
-  const getIcon = (icon, params, collection = 'MaterialCommunityIcons') => {
+  const [showBurgerMenuPanel, setShowBurgerMenuPanel] = useState(false);
+  const route = useRoute();
+  const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+
+
+  const isMoreItemEnabled = () => {
+    if (showBurgerMenuPanel) return true;
+    //console.log("route: " + routeName);
+    switch (routeName) {
+      case 'Critiques':
+      case 'Stats':
+        return true;
+      default:
+        break;
+    }
+    return false;
+  }
+
+  const onShowBurgerMenuPanel = () => {
+    setShowBurgerMenuPanel(true);
+  }
+
+  const getIcon = (icon, params) => {
     return (
-      <Icon name={icon} color={params.color} size={params.size} collection={collection} />
+      <Icon name={icon} color={params.color} size={params.size} />
     );
   };
 
   return (
-    <Tab.Navigator
-      initialRouteName='Ma collection'
-      screenOptions={{ gestureEnabled: false }}
-      tabBarOptions={{ activeTintColor: bdovored }}
-      animationEnabled={true}
-    >
-      <Tab.Screen
-        name='Ma collection'
-        component={CollectionScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return getIcon('home-outline', p, 'Ionicons');
-          }
-        }}
-      />
-      <Tab.Screen
-        name='Wishlist'
-        component={WishlistScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return getIcon('heart-outline', p, 'Ionicons');
-          }
-        }}
-      />
-      <Tab.Screen
-        name='A compléter'
-        component={ToCompleteScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return getIcon('puzzle', p, 'SimpleLineIcons');
-          }
-        }}
-      />
-      <Tab.Screen
-        name='Actualité'
-        component={NewsScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return getIcon('megaphone-outline', p, 'Ionicons');//fiber-new', p);
-          }
-        }}
-      />
-      <Tab.Screen
-        name='Rechercher'
-        component={SearchScreens}
-        options={{
-          tabBarIcon: (p) => {
-            return getIcon('search', p, 'MaterialIcons');
-          }
-        }}
-      />
-    </Tab.Navigator>
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        initialRouteName='Ma collection'
+        screenOptions={[{ gestureEnabled: false }, { headerShown: false }]}
+        tabBarOptions={{ activeTintColor: global.isDarkMode ? bdovorlightred : bdovored }}
+        animationEnabled={true}
+      >
+        <Tab.Screen
+          name='Ma collection'
+          component={CollectionScreens}
+          options={{
+            headerShown: false,
+            tabBarIcon: (p) => {
+              return getIcon('Ionicons/home-outline', p);
+            }
+          }}
+        />
+        <Tab.Screen
+          name='Wishlist'
+          component={WishlistScreens}
+          options={{
+            headerShown: false,
+            tabBarIcon: (p) => {
+              return getIcon('Ionicons/heart-outline', p);
+            }
+          }}
+        />
+        <Tab.Screen
+          name='A compléter'
+          component={ToCompleteScreens}
+          options={{
+            headerShown: false,
+            tabBarIcon: (p) => {
+              return getIcon('SimpleLineIcons/puzzle', p);
+            }
+          }}
+        />
+        <Tab.Screen
+          name='Actualité'
+          component={NewsScreens}
+          options={{
+            headerShown: false,
+            tabBarIcon: (p) => {
+              return getIcon('Ionicons/megaphone-outline', p);//'fiber-new'
+            }
+          }}
+        />
+        <Tab.Screen
+          name='Rechercher'
+          component={SearchScreens}
+          options={{
+            headerShown: false,
+            tabBarIcon: (p) => {
+              return getIcon('MaterialIcons/search', p);
+            }
+          }}
+        />
+
+        {/***** HAMBURGER TABS *****/}
+
+        <Tab.Screen
+          name='Plus'
+          component={SearchScreens}
+          options={{
+            tabBarButton: props => <TouchableOpacity {...props}
+              onLongPress={onShowBurgerMenuPanel}
+              onPress={onShowBurgerMenuPanel}
+              style={{
+                color: isMoreItemEnabled() ? (global.isDarkMode ? bdovorlightred : bdovored) : 'gray', width: 40
+              }} />,
+            tabBarLabel: props => <Text style={{
+              fontSize: 10,
+              textAlign: 'center',
+              backgroundColor: 'transparent',
+              color: isMoreItemEnabled() ? (global.isDarkMode ? bdovorlightred : bdovored) : 'gray'
+            }}>Plus</Text>,
+            tabBarIcon: (p) => {
+              if (isMoreItemEnabled()) p.color = global.isDarkMode ? bdovorlightred : bdovored;
+              return getIcon('MaterialIcons/more-vert', p);
+            }
+          }}
+        />
+        {/*<Tab.Screen
+          name='Stats'
+          component={StatsScreens}
+          options={{
+            tabBarButton: props => <TouchableWithoutFeedback {...props}
+              onPress={() => {}} style={{ width: 0 }} />,
+            tabBarIcon: (p) => {
+              return getIcon('chart-line', p);
+            }
+          }}
+        />*/}
+        <Tab.Screen
+          name='Critiques'
+          component={CommentsScreens}
+          options={{
+            headerShown: false,
+            tabBarButton: props => <TouchableWithoutFeedback {...props}
+              onPress={() => { }} style={{ width: 0 }} />,
+            tabBarIcon: (p) => {
+              return getIcon('FontAwesome/comments-o', p);
+            }
+          }}
+        />
+      </Tab.Navigator>
+
+      <BurgerMenuPanel
+        isVisible={showBurgerMenuPanel}
+        visibleSetter={setShowBurgerMenuPanel} />
+
+    </View>
   );
 }
 
