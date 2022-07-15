@@ -28,7 +28,7 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { ActivityIndicator, FlatList, Linking, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { ListItem } from 'react-native-elements';
+import { Button, ListItem } from 'react-native-elements';
 
 import { AchatSponsorIcon } from '../components/AchatSponsorIcon';
 import { AlbumMarkers } from '../components/AlbumMarkers';
@@ -299,6 +299,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onSubmitChanges = () => {
+    console.log("Demande de modification");
     if (global.isConnected) {
       let url = APIManager.bdovoreBaseURL + '/Proposition?id_edition=' + album.ID_EDITION;
       url = APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
@@ -307,6 +308,7 @@ function AlbumScreen({ route, navigation }) {
   }
 
   const onSubmitNewEdition = () => {
+    console.debug("Proposition edition");
     if (global.isConnected) {
       let url = APIManager.bdovoreBaseURL + '/Proposition?type=EDITION&id_tome=' + album.ID_TOME;
       url = APIManager.concatParamsToURL(url, { 'API_TOKEN': global.token });
@@ -506,12 +508,13 @@ function AlbumScreen({ route, navigation }) {
           {album.EAN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>EAN : {album.EAN_EDITION}</Text>}
           {!album.EAN_EDITION && album.ISBN_EDITION && <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ISBN : {album.ISBN_EDITION}</Text>}
           {global.showBDovoreIds ? <Text style={[CommonStyles.defaultText, CommonStyles.smallerText]}>ID-BDovore - Album : {album.ID_TOME}, Série : {album.ID_SERIE}, Edition : {album.ID_EDITION}</Text> : null}
-          {true && <TouchableOpacity name='Soumettre une modification' onPress={onSubmitChanges} style={{position: 'absolute', bottom:0, right:10}}>
-            <Icon name='comment-edit-outline' size={25} color={'lightgrey'} />
-          </TouchableOpacity>}
-          {true && <TouchableOpacity name='Ajouter nouvelle édition' onPress={onSubmitNewEdition} style={{ position: 'absolute', bottom: 0, right: 50 }}>
-            <Icon name='comment-plus-outline' size={25} color={'lightgrey'} />
-          </TouchableOpacity>}
+          <TouchableOpacity name='Soumettre une modification' style={{position: 'absolute', bottom:0, right:10}}>
+            <Button onPress={onSubmitChanges} type="clear" icon={
+            <Icon name='comment-edit-outline' size={25} color={'lightgrey'} />} />
+          </TouchableOpacity>
+          <TouchableOpacity name='Ajouter nouvelle édition'  style={{ position: 'absolute', bottom: 0, right: 50 }}>
+            <Button onPress={onSubmitNewEdition} type="clear" icon={<Icon name='comment-plus-outline' size={25} color={'lightgrey'} />} />
+          </TouchableOpacity>
 
           <AchatSponsorIcon album={album} />
         </CollapsableSection>

@@ -242,7 +242,15 @@ class CCollectionManager {
   }
 
   getAlbums(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Albums'), origine);
+    // check if data is loaded
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Albums'), origine);
+    } else {
+      // else return empty array
+      return [];
+    } 
+
+    
   }
 
   getAlbumsInSerie(id_serie) {
@@ -250,11 +258,21 @@ class CCollectionManager {
   }
 
   getSeries(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Series'), origine);
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Series'), origine);
+    } else {
+      return [];
+    }
+    
   }
 
   getWishes(origine = 0) {
-    return this.filterByOrigine(global.db.objects('Wishes'), origine);
+    if (global.db != null) {
+      return this.filterByOrigine(global.db.objects('Wishes'), origine);
+    } else {
+      return [];
+    }
+    
   }
 
   numberOfSeries(origine = 0) {
