@@ -416,7 +416,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             </View> :
             null}
         </View>
-        {(reduceMode && global.retractableButtons) ?
+        {(reduceMode && global.retractableButtons && !isAlbumInCollection) ?
           <TouchableOpacity onLongPress={switchExpandMarkers} onPress={switchExpandMarkers} title='...'
             style={[{ paddingVertical: 8, paddingLeft: 0, width: 25 }]} >
             <Icon name='MaterialIcons/more-vert' size={25}
@@ -427,7 +427,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
             <Text style={[CommonStyles.markerTextStyle, CommonStyles.markIconDisabled]}>{' '}</Text>
           </TouchableOpacity>
           :
-          <View style={{ width: 10 }}/>}
+          <View style={{ width: 25 }}/>}
         <View style={{ width: 2 }}></View>
       </ScrollView>
     </View>);
