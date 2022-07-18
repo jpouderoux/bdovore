@@ -69,7 +69,7 @@ function DashboardScreen({ route, navigation }) {
       setLoading(true);
       setErrortext('');
       fetchInfo();
-    } else if (!timeout && comments.length == 0) {
+    } else if (!timeout && (!data || data.length == 0)) {
       if (verbose) {
         Helpers.showToast(false, 'Will try to fetch user\'s info again in 2sec.');
       }

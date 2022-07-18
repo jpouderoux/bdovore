@@ -65,7 +65,7 @@ function StatsScreen({ route, navigation }) {
       setLoading(true);
       setErrortext('');
       fetchInfo();
-    } else if (!timeout && comments.length == 0) {
+    } else if (!timeout) {
       if (verbose) {
         Helpers.showToast(false, 'Will try to fetch user\'s info again in 2sec.');
       }
@@ -79,7 +79,7 @@ function StatsScreen({ route, navigation }) {
   }
 
   const onInfoFetched = async (result) => {
-    console.debug(result.items.length + ' comments fetched')
+    console.debug(result.items.length + ' items fetched')
     setErrortext(result.error);
   }
 
@@ -100,7 +100,7 @@ function StatsScreen({ route, navigation }) {
         </View>
         :
         <Text style={CommonStyles.defaultText}>
-          TODOaaa
+          TODO
         </Text>}
     </View>
   );
