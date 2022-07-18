@@ -203,7 +203,7 @@ function CollectionScreens({ route, navigation }) {
 
   return (
     <CollectionStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
-      <CollectionStack.Screen name='Ma collection'
+      <CollectionStack.Screen name='Ma collection '
         component={CollectionScreen}
         options={({ route }) => {
           route.params = { collectionGenre: collectionGenre };
@@ -410,7 +410,7 @@ function NewsScreens({ navigation }) {
 
   return (
     <NewsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
-      <NewsStack.Screen name='Actualité' component={NewsScreen}
+      <NewsStack.Screen name='Actualité ' component={NewsScreen}
         options={({ route }) => {
           route.params = { collectionGenre: collectionGenre };
           return {
@@ -439,7 +439,7 @@ function NewsScreens({ navigation }) {
 function SearchScreens({ navigation }) {
   return (
     <SearchStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
-      <SearchStack.Screen name='Rechercher' component={SearchScreen} />
+      <SearchStack.Screen name='Rechercher ' component={SearchScreen} />
       <SearchStack.Screen name='Serie' component={SerieScreen}
         options={({ route }) => ({
           title: route.params.item.NOM_SERIE,
@@ -494,7 +494,8 @@ function CommentsScreens({ navigation }) {
     </CommentsStack.Navigator>
   )
 }
-function MainTab2() {
+
+function CoreTab() {
 
   const [showBurgerMenuPanel, setShowBurgerMenuPanel] = useState(false);
   const route = useRoute();
@@ -528,7 +529,7 @@ function MainTab2() {
     <View style={{ flex: 1 }}>
       <Tab.Navigator
         initialRouteName='Ma collection'
-        screenOptions={{ gestureEnabled: false }}
+        screenOptions={{ gestureEnabled: false, headerShown: false }}
         tabBarOptions={{ activeTintColor: global.isDarkMode ? bdovorlightred : bdovored }}
         animationEnabled={true}
       >
@@ -638,8 +639,8 @@ const RootStack = createStackNavigator();
 
 function MainTab() {
   return (
-    <RootStack.Navigator mode="modal" headerMode="none">
-      <RootStack.Screen name="MainTab2" component={MainTab2} />
+    <RootStack.Navigator mode="modal" headerMode="none" >
+      <RootStack.Screen name="CoreTab" component={CoreTab} />
       <RootStack.Screen name="Login" component={LoginScreen} />
       <RootStack.Screen name="Image" component={ImageScreen} />
     </RootStack.Navigator>
