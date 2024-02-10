@@ -422,6 +422,22 @@ export async function fetchMyCollection(context, callback) {
     });
 }
 
+export async function fetchCollectionStat(by, context, callback) {
+
+  const url = bdovoreBaseURL + '/getjson?data=CollectionStat&by='+by;
+
+  fetchZIP(url)
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      callback({ error: '', items: json });
+    })
+    .catch((error) => {
+      console.debug('==> error : ' + error.toString())
+      callback({ error: error.toString(), items: {}});
+    });
+
+}
 export async function fetchSimilAlbums(id_tome, callback) {
   const url = concatParamsToURL(bdovoreBaseURL + '/simil/gettopsimil?', { ID_TOME: id_tome, });
 

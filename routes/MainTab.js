@@ -50,9 +50,10 @@ import BurgerMenuPanel from '../panels/BurgerMenuPanel';
 import NewsScreen from '../screens/NewsScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SerieScreen from '../screens/SerieScreen';
-import StatsScreen from '../screens/StatsScreen';
+import CollectionStatScreen from '../screens/CollectionStatScreen';
 import ToCompleteScreen from '../screens/ToCompleteScreen';
 import WishlistScreen from '../screens/WishlistScreen';
+
 
 
 // The main tab navigator
@@ -461,10 +462,10 @@ function SearchScreens({ navigation }) {
   );
 }
 
-function StatsScreens({ navigation }) {
+function CollectionStatScreens({ navigation }) {
   return (
     <StatsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
-      <StatsStack.Screen name='Stats' component={StatsScreen} />
+      <StatsStack.Screen name='CollectionStat' component={CollectionStatScreen} />
     </StatsStack.Navigator>
   );
 }
@@ -608,9 +609,9 @@ function CoreTab() {
             }
           }}
         />
-        {/*<Tab.Screen
-          name='Stats'
-          component={StatsScreens}
+        <Tab.Screen
+          name='CollectionStat'
+          component={CollectionStatScreens}
           options={{
             tabBarButton: props => <TouchableWithoutFeedback {...props}
               onPress={() => {}} style={{ width: 0 }} />,
@@ -618,7 +619,7 @@ function CoreTab() {
               return getIcon('chart-line', p);
             }
           }}
-        />*/}
+        />
         <Tab.Screen
           name='Critiques'
           component={CommentsScreens}

@@ -84,7 +84,7 @@ function BurgerMenuPanel({ isVisible, visibleSetter }) {
       style={CommonStyles.burgerModalStyle}
     >
       <ScrollView style={CommonStyles.burgerScrollViewStyle}>
-        <View style={[CommonStyles.modalViewStyle, { borderWidth: 0, marginTop: -8, marginBottom: -8 }]}>
+        <View style={[CommonStyles.modalViewStyle, { borderWidth: 0, marginTop: 0, marginBottom: 0 }]}>
 
           <Item icon='account-circle-outline' title='Connexion' callback={() => navigate('Login')} />
 
@@ -95,6 +95,9 @@ function BurgerMenuPanel({ isVisible, visibleSetter }) {
           {/*<Item icon='chart-line' title='Stats' callback={() => navigate('Stats')} />*/}
 
           <Item icon='barcode-scan' title='Scan code-barre' callback={() => navigate('BarcodeScanner')} />
+
+          {Helpers.renderSeparator({ width: '100%' })}
+          <Item icon='chart-bar' title='Statistiques' callback={() => navigate('CollectionStat')} />
 
           {Helpers.renderSeparator({ width: '100%' })}
 
