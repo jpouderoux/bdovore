@@ -142,6 +142,35 @@ function CollectionStatScreen ({ route, navigation }) {
                   yAxisAtTop
                   yAxisThickness={0}
                   xAxisThickness={0}
+                  renderTooltip={(item, index) => {
+                    // Définis le décalage par défaut
+                    let marginLeftAdjustment = -6;
+                  
+                    // Disons que tu as 10 barres, et tu veux ajuster pour les 3 dernières
+                    const totalBars = 8;
+                    const adjustForLastBars = 3; // Les dernières barres pour lesquelles ajuster
+                    const threshold = totalBars - adjustForLastBars;
+                  
+                    // Si l'index de la barre courante est dans les 3 dernières, ajuste le marginLeft
+                    if (index >= threshold) {
+                      marginLeftAdjustment = -80; // Ajuste cette valeur selon le besoin pour éviter le débordement
+                    }
+                  
+                    return (
+                      <View
+                        style={{
+                          marginBottom: -10,
+                          marginLeft: marginLeftAdjustment,
+                          backgroundColor: '#ffcefe',
+                          paddingHorizontal: 6,
+                          paddingVertical: 4,
+                          borderRadius: 4,
+                        }}>
+                        <Text>{dataGenre[index].libelle}</Text>
+                      </View>
+                    );
+                  }}
+                  
                     />
               </CollapsableSection>
             </ScrollView>
