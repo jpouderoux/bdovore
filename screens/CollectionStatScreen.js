@@ -41,7 +41,7 @@ import { LoadingIndicator } from '../components/LoadingIndicator';
 import {
  
   BarChart
-} from 'react-native-chart-kit'
+} from 'react-native-gifted-charts'
 
 let timeout = null;
 const screenWidth = Dimensions.get("window").width;
@@ -93,7 +93,7 @@ function CollectionStatScreen ({ route, navigation }) {
   }
 
   const remapData = (data) => {
-    labels = data.map( item => item.libelle).slice(0,5);
+    label = data.map( item => item.libelle).slice(0,5);
     value = data.map (item => item.nbtome).slice(0,5);
     return ({"labels" : labels, "datasets" : [ {"data": value}]});
   }
@@ -129,14 +129,19 @@ function CollectionStatScreen ({ route, navigation }) {
 
               <CollapsableSection sectionName='Genre' noAnimation={true}>
                 <BarChart
-                  // style={graphStyle}
-                  data={remapData(dataGenre)}
-                  width={screenWidth-20}
-                  height={320}
-                  chartConfig={chartConfig}
-                  verticalLabelRotation={10}
-                  withHorizontalLabels={true}
-                  showValuesOnTopOfBars={true}
+                  barWidth={22}
+                  barBorderRadius={4}
+                  frontColor="lightgray"
+                  data={dataGenre.map ( item => (
+                    { label : item.libelle[0], value : item.nbtome} 
+                    )
+                  )}
+                  maxValue = {Math.max( ...dataGenre.map( item => item.nbtome))}
+                  shiftY={0}
+                  //horizontal
+                  yAxisAtTop
+                  yAxisThickness={0}
+                  xAxisThickness={0}
                     />
               </CollapsableSection>
             </ScrollView>
