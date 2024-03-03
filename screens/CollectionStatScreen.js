@@ -92,11 +92,7 @@ function CollectionStatScreen ({ route, navigation }) {
     }
   }
 
-  const remapData = (data) => {
-    label = data.map( item => item.libelle).slice(0,5);
-    value = data.map (item => item.nbtome).slice(0,5);
-    return ({"labels" : labels, "datasets" : [ {"data": value}]});
-  }
+ 
   const renderData = useCallback (({ item, index }) => (
     <Text key={index}>{item.libelle} : {item.nbtome}</Text>
   ));
@@ -108,6 +104,35 @@ function CollectionStatScreen ({ route, navigation }) {
     //console.debug(result.items);
     setDataGenre(result.items);
     setErrortext(result.error);
+  }
+
+  const tooltip = (item, index, data) => {
+     // Définis le décalage par défaut
+     let marginLeftAdjustment = -6;
+                  
+     // Disons que tu as 10 barres, et tu veux ajuster pour les 3 dernières
+     const totalBars = 8;
+     const adjustForLastBars = 3; // Les dernières barres pour lesquelles ajuster
+     const threshold = totalBars - adjustForLastBars;
+   
+     // Si l'index de la barre courante est dans les 3 dernières, ajuste le marginLeft
+     if (index >= threshold) {
+       marginLeftAdjustment = -80; // Ajuste cette valeur selon le besoin pour éviter le débordement
+     }
+   
+     return (
+       <View
+         style={{
+           marginBottom: -10,
+           marginLeft: marginLeftAdjustment,
+           backgroundColor: '#ffcefe',
+           paddingHorizontal: 6,
+           paddingVertical: 4,
+           borderRadius: 4,
+         }}>
+         <Text>{data[index].libelle}</Text>
+       </View>
+     );
   }
   return(
     <View style={CommonStyles.screenStyle}>
@@ -143,32 +168,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   yAxisThickness={0}
                   xAxisThickness={0}
                   renderTooltip={(item, index) => {
-                    // Définis le décalage par défaut
-                    let marginLeftAdjustment = -6;
-                  
-                    // Disons que tu as 10 barres, et tu veux ajuster pour les 3 dernières
-                    const totalBars = 8;
-                    const adjustForLastBars = 3; // Les dernières barres pour lesquelles ajuster
-                    const threshold = totalBars - adjustForLastBars;
-                  
-                    // Si l'index de la barre courante est dans les 3 dernières, ajuste le marginLeft
-                    if (index >= threshold) {
-                      marginLeftAdjustment = -80; // Ajuste cette valeur selon le besoin pour éviter le débordement
-                    }
-                  
-                    return (
-                      <View
-                        style={{
-                          marginBottom: -10,
-                          marginLeft: marginLeftAdjustment,
-                          backgroundColor: '#ffcefe',
-                          paddingHorizontal: 6,
-                          paddingVertical: 4,
-                          borderRadius: 4,
-                        }}>
-                        <Text>{dataGenre[index].libelle}</Text>
-                      </View>
-                    );
+                    return tooltip(item, index, dataGenre)
                   }}
                   
                     />
