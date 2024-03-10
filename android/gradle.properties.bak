@@ -32,5 +32,5 @@ BDOVORE_UPLOAD_KEY_ALIAS=bdovore
 
 # /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
 # Set the correct passowrd below and remove the .bak extension
-# BDOVORE_UPLOAD_STORE_PASSWORD=*******
-# BDOVORE_UPLOAD_KEY_PASSWORD=*******
+BDOVORE_UPLOAD_STORE_PASSWORD=*******
+BDOVORE_UPLOAD_KEY_PASSWORD=*******

@@ -166,7 +166,6 @@ function LoginScreen({ navigation }) {
           autoCompleteType='username' // Android
           onChangeText={(pseudo) => setPseudo(pseudo)}
           onSubmitEditing={() => { passwdInputRef.current.focus(); }}
-          blurOnSubmit={false}
           testID='login'
         />
         <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text>
