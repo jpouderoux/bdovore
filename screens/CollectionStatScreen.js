@@ -63,6 +63,9 @@ function CollectionStatScreen ({ route, navigation }) {
     const [loading, setLoading] = useState(false);
     /*const [userId, setUserId] = useState(route.params.userid); */
     const [dataGenre, setDataGenre] = useState(null);
+    const [dataAuteur, setDataAuteur] = useState(null);
+    const [dataEditeur, setDataEditeur] = useState(null);
+    const [dataNote, setDataNote] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -97,7 +100,10 @@ function CollectionStatScreen ({ route, navigation }) {
     <Text key={index}>{item.libelle} : {item.nbtome}</Text>
   ));
   const fetchInfo = () => {
-    APIManager.fetchCollectionStat("Genre",{ navigation }, onInfoGenreFetched);
+    APIManager.fetchCollectionStat("genre",{ navigation }, onInfoGenreFetched);
+    APIManager.fetchCollectionStat("auteur",{ navigation }, onInfoAuteurFetched);
+    APIManager.fetchCollectionStat("editeur",{ navigation }, onInfoEditeurFetched);
+    APIManager.fetchCollectionStat("note",{ navigation }, onInfoNoteFetched);
 
   }
   const onInfoGenreFetched = async (result) => {
@@ -105,8 +111,22 @@ function CollectionStatScreen ({ route, navigation }) {
     setDataGenre(result.items);
     setErrortext(result.error);
   }
-
-  const tooltip = (item, index, data) => {
+  const onInfoAuteurFetched = async (result) => {
+    //console.debug(result.items);
+    setDataAuteur(result.items);
+    setErrortext(result.error);
+  }
+  const onInfoEditeurFetched = async (result) => {
+    //console.debug(result.items);
+    setDataEditeur(result.items);
+    setErrortext(result.error);
+  }
+  const onInfoNoteFetched = async (result) => {
+    //console.debug(result.items);
+    setDataNote(result.items);
+    setErrortext(result.error);
+  }
+  const tooltip = (label, index, data) => {
      // Définis le décalage par défaut
      let marginLeftAdjustment = -6;
                   
@@ -125,12 +145,12 @@ function CollectionStatScreen ({ route, navigation }) {
          style={{
            marginBottom: -10,
            marginLeft: marginLeftAdjustment,
-           backgroundColor: '#ffcefe',
+           backgroundColor: '#990000',
            paddingHorizontal: 6,
            paddingVertical: 4,
            borderRadius: 4,
          }}>
-         <Text>{data[index].libelle}</Text>
+         <Text style = {{color: "white"}}>{label}</Text>
        </View>
      );
   }
@@ -147,12 +167,13 @@ function CollectionStatScreen ({ route, navigation }) {
             <View style={{ flex: 1 }}></View>
         </View>
        :
-       (!dataGenre ?
+       <ScrollView style={{ margin: 0 }}>
+       {(!dataGenre ?
           <LoadingIndicator /> :
           <View style={{ flexDirection: 'column', alignItems: 'center' }}>
             <ScrollView style={{ margin: 0, width: '100%' }}>
 
-              <CollapsableSection sectionName='Genre' noAnimation={true}>
+              <CollapsableSection sectionName="Top Genre (nb d'albums)" noAnimation={true}>
                 <BarChart
                   barWidth={22}
                   barBorderRadius={4}
@@ -168,14 +189,108 @@ function CollectionStatScreen ({ route, navigation }) {
                   yAxisThickness={0}
                   xAxisThickness={0}
                   renderTooltip={(item, index) => {
-                    return tooltip(item, index, dataGenre)
+                    return tooltip(dataGenre[index].libelle, index, dataGenre)
                   }}
                   
                     />
               </CollapsableSection>
             </ScrollView>
          </View>
-       )
+         
+       )}
+       {(!dataAuteur ?
+          <LoadingIndicator /> :
+          <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <ScrollView style={{ margin: 0, width: '100%' }}>
+
+              <CollapsableSection sectionName='Top Auteur (score)' noAnimation={true}>
+                <BarChart
+                  barWidth={22}
+                  barBorderRadius={4}
+                  frontColor="lightgray"
+                  data={dataAuteur.map ( item => (
+                    { label : item.pseudo[0], value : item.score} 
+                    )
+                  )}
+                  maxValue = {Math.max( ...dataAuteur.map( item => item.score))}
+                  shiftY={0}
+                  //horizontal
+                  yAxisAtTop
+                  yAxisThickness={0}
+                  xAxisThickness={0}
+                  renderTooltip={(item, index) => {
+                    return tooltip(dataAuteur[index].pseudo, index, dataAuteur)
+                  }}
+                  
+                    />
+              </CollapsableSection>
+            </ScrollView>
+         </View>
+         
+       )}
+       {(!dataEditeur ?
+          <LoadingIndicator /> :
+          <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <ScrollView style={{ margin: 0, width: '100%' }}>
+
+              <CollapsableSection sectionName="Top Editeur (nb d'albums)" noAnimation={true}>
+                <BarChart
+                  barWidth={22}
+                  barBorderRadius={4}
+                  frontColor="lightgray"
+                  data={dataEditeur.map ( item => (
+                    { label : item.nom[0], value : item.nbtome} 
+                    )
+                  )}
+                  maxValue = {Math.max( ...dataEditeur.map( item => item.nbtome))}
+                  shiftY={0}
+                  //horizontal
+                  yAxisAtTop
+                  yAxisThickness={0}
+                  xAxisThickness={0}
+                  renderTooltip={(item, index) => {
+                    return tooltip(dataEditeur[index].nom, index, dataEditeur)
+                  }}
+                  
+                    />
+              </CollapsableSection>
+            </ScrollView>
+         </View>
+         
+       )}
+        {(!dataNote ?
+          <LoadingIndicator /> :
+          <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <ScrollView style={{ margin: 0, width: '100%' }}>
+
+              <CollapsableSection sectionName="Top Notes (nb d'albums)" noAnimation={true}>
+                <BarChart
+                  barWidth={22}
+                  barBorderRadius={4}
+                  frontColor="lightgray"
+                  data={dataNote.map ( item => (
+                    { label : item.note, value : item.nbnotes} 
+                    )
+                  )}
+                  maxValue = {Math.max( ...dataNote.map( item => item.nbnotes))}
+                  shiftY={0}
+                  //horizontal
+                  yAxisAtTop
+                  yAxisThickness={0}
+                  xAxisThickness={0}
+                  renderTooltip={(item, index) => {
+                    return tooltip(dataNote[index].note, index, dataNote)
+                  }}
+                  
+                    />
+              </CollapsableSection>
+            </ScrollView>
+         </View>
+         
+       )}
+
+       </ScrollView>
+       
     }
     </View>
   )

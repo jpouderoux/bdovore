@@ -465,7 +465,7 @@ function SearchScreens({ navigation }) {
 function CollectionStatScreens({ navigation }) {
   return (
     <StatsStack.Navigator screenOptions={global.isDarkMode ? darkStackOptions : defaultStackOptions}>
-      <StatsStack.Screen name='CollectionStat' component={CollectionStatScreen} />
+      <StatsStack.Screen name='Statistiques de la Collection' component={CollectionStatScreen} />
     </StatsStack.Navigator>
   );
 }
