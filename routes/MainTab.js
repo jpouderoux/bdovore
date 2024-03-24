@@ -177,6 +177,10 @@ function CollectionScreens({ route, navigation }) {
     navigation.push('Dashboard', { userid });
   }
 
+  const onStatScreenPress = (userid) => {
+    navigation.push('CollectionStat', { userid });
+  }
+
   const onCollectionGenrePress = () => {
     setShowCollectionChooser(!showCollectionChooser);
   }
@@ -186,6 +190,10 @@ function CollectionScreens({ route, navigation }) {
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={() => onDashboardScreenPress(Helpers.getLoggedUserid())} style={{ margin: 8 }}>
           <Icon name='AntDesign/dashboard' size={25} color={CommonStyles.iconStyle.color} />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => onStatScreenPress(Helpers.getLoggedUserid())} style={{ margin: 8 }}>
+          <Icon name='Ionicons/stats-chart-outline' size={25} color={CommonStyles.iconStyle.color} />
           </TouchableOpacity>
 
         <TouchableOpacity onPress={onCollectionGenrePress} style={{ margin: 8 }}>
@@ -216,6 +224,11 @@ function CollectionScreens({ route, navigation }) {
       <CollectionStack.Screen name='Dashboard' component={DashboardScreen}
         options={({ route }) => ({
           title: 'Tableau de bord',
+          headerRight: () => shareCollectionButton()
+        })} />
+        <CollectionStack.Screen name='CollectionStat' component={CollectionStatScreen}
+        options={({ route }) => ({
+          title: 'Statistiques de la collection',
           headerRight: () => shareCollectionButton()
         })} />
       <CollectionStack.Screen name='Serie' component={SerieScreen}

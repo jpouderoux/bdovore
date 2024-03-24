@@ -167,7 +167,7 @@ function CollectionStatScreen ({ route, navigation }) {
             <View style={{ flex: 1 }}></View>
         </View>
        :
-       <ScrollView style={{ margin: 0 }}>
+       <ScrollView style={[CommonStyles.screenStyle, { margin: 0 }]}>
        {(!dataGenre ?
           <LoadingIndicator /> :
           <View style={{ flexDirection: 'column', alignItems: 'center' }}>
@@ -179,7 +179,10 @@ function CollectionStatScreen ({ route, navigation }) {
                   barBorderRadius={4}
                   frontColor="lightgray"
                   data={dataGenre.map ( item => (
-                    { label : item.libelle[0], value : item.nbtome} 
+                    { label : item.libelle[0], 
+                      value : item.nbtome,
+                      labelTextStyle: {color: 'gray'}
+                    }
                     )
                   )}
                   maxValue = {Math.max( ...dataGenre.map( item => item.nbtome))}
@@ -188,6 +191,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   yAxisAtTop
                   yAxisThickness={0}
                   xAxisThickness={0}
+                  yAxisTextStyle={{color: 'gray'}}
                   renderTooltip={(item, index) => {
                     return tooltip(dataGenre[index].libelle, index, dataGenre)
                   }}
@@ -209,7 +213,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   barBorderRadius={4}
                   frontColor="lightgray"
                   data={dataAuteur.map ( item => (
-                    { label : item.pseudo[0], value : item.score} 
+                    { label : item.pseudo[0], value : item.score, labelTextStyle: {color: 'gray'}} 
                     )
                   )}
                   maxValue = {Math.max( ...dataAuteur.map( item => item.score))}
@@ -217,6 +221,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   //horizontal
                   yAxisAtTop
                   yAxisThickness={0}
+                  yAxisTextStyle={{color: 'gray'}}
                   xAxisThickness={0}
                   renderTooltip={(item, index) => {
                     return tooltip(dataAuteur[index].pseudo, index, dataAuteur)
@@ -239,7 +244,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   barBorderRadius={4}
                   frontColor="lightgray"
                   data={dataEditeur.map ( item => (
-                    { label : item.nom[0], value : item.nbtome} 
+                    { label : item.nom[0], value : item.nbtome , labelTextStyle: {color: 'gray'}} 
                     )
                   )}
                   maxValue = {Math.max( ...dataEditeur.map( item => item.nbtome))}
@@ -247,6 +252,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   //horizontal
                   yAxisAtTop
                   yAxisThickness={0}
+                  yAxisTextStyle={{color: 'gray'}}
                   xAxisThickness={0}
                   renderTooltip={(item, index) => {
                     return tooltip(dataEditeur[index].nom, index, dataEditeur)
@@ -269,7 +275,7 @@ function CollectionStatScreen ({ route, navigation }) {
                   barBorderRadius={4}
                   frontColor="lightgray"
                   data={dataNote.map ( item => (
-                    { label : item.note, value : item.nbnotes} 
+                    { label : item.note, value : item.nbnotes, labelTextStyle: {color: 'gray'}} 
                     )
                   )}
                   maxValue = {Math.max( ...dataNote.map( item => item.nbnotes))}
@@ -277,7 +283,9 @@ function CollectionStatScreen ({ route, navigation }) {
                   //horizontal
                   yAxisAtTop
                   yAxisThickness={0}
+                  yAxisTextStyle={{color: 'gray'}}
                   xAxisThickness={0}
+                  scrollToEnd= {true} 
                   renderTooltip={(item, index) => {
                     return tooltip(dataNote[index].note, index, dataNote)
                   }}
