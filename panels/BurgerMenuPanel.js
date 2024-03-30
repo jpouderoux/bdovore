@@ -86,7 +86,7 @@ function BurgerMenuPanel({ isVisible, visibleSetter }) {
       <ScrollView style={CommonStyles.burgerScrollViewStyle}>
         <View style={[CommonStyles.modalViewStyle, { borderWidth: 0, marginTop: 0, marginBottom: 0 }]}>
 
-          <Item icon='account-circle-outline' title='Connexion' callback={() => navigate('Login')} />
+          <Item icon='account-circle-outline' title='Compte' callback={() => navigate('Login')} />
 
           {Helpers.renderSeparator({width: '100%'})}
 

@@ -118,7 +118,7 @@ function CollectionScreen({ route, navigation }) {
       const savedCachedToken = cachedToken;
       APIManager.onConnected(navigation, () => {
         cachedToken = 'fetching';
-        if (global.localTimestamp != global.serverTimestamp) {
+        if (global.localTimestamp != global.serverTimestamp || !global.collectionFetched) {
           //console.log('refreshing from local ' + savedCachedToken + '/' + global.localTimestamp + ' to server ' + global.token + '/' + global.serverTimestamp);
           fetchData();
         } else {

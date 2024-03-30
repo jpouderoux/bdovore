@@ -46,6 +46,7 @@ function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [passwd, setPasswd] = useState('');
   const [pseudo, setPseudo] = useState('');
+  const [isConnected,setIsConnected] = useState(login != null);
   const passwdInputRef = useRef();
 
   useEffect(() => {
@@ -146,6 +147,67 @@ function LoginScreen({ navigation }) {
       Helpers.showToast(true, error.message);
     }
   }
+  const onEditAccount = async () => {
+    try {
+      const url = APIManager.bdovoreBaseURL + '/compte';
+      if (await InAppBrowser.isAvailable()) {
+        const result = await InAppBrowser.open(url, {
+          // iOS Properties
+          dismissButtonStyle: 'Cancel',
+          preferredBarTintColor: '#FFFFFF',
+          preferredControlTintColor: 'blue',
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'fullScreen',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          // Android Properties
+          showTitle: false,
+          toolbarColor: 'white',
+          secondaryToolbarColor: 'black',
+          navigationBarColor: 'black',
+          navigationBarDividerColor: 'blue',
+          enableUrlBarHiding: true,
+          enableDefaultShare: false,
+          forceCloseOnRedirection: false,
+          // Specify full animation resource identifier(package:anim/name)
+          // or only resource name(in case of animation bundled with app).
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right'
+          },
+          headers: {
+            'my-custom-header': 'Gérer mon compte'
+          }
+        })
+        //console.debug(JSON.stringify(result));
+      }
+      else {
+        Linking.openURL(url);
+      }
+    } catch (error) {
+      Helpers.showToast(true, error.message);
+    }
+  }
+
+  const onDisconnetPress = () => {
+    
+    global.forceOffline = false;
+    global.isConnected = false;
+    
+    console.debug('Deconnexion user.');
+    Helpers.showToast(false, 'Vous êtes déconnecté', 'Veuillez vous connecter de nouveau.')
+    Helpers.setAndSaveGlobal('token', null);
+    Helpers.setAndSaveGlobal('login', null);
+    Helpers.setAndSaveGlobal('passwd', null);
+    
+    setPseudo(global.login);
+    setPasswd(global.passwd);
+    setIsConnected(false);
+  }
 
   return (
     <View style={CommonStyles.screenStyle}>
@@ -153,43 +215,70 @@ function LoginScreen({ navigation }) {
         <View style={{ marginTop: 20, alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
           <Image source={require('../assets/logo_v2.png')} resizeMode='cover' style={{ height: 160, width:320 }}/>
         </View>
-        <Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte BDovore</Text>
-        <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text>
-        <TextInput
-          style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
-          placeholder='Entrez votre login'
-          autoCapitalize='none'
-          returnKeyType='next'
-          blurOnSubmit={false}
-          value={pseudo}
-          textContentType='username'  // iOS
-          autoCompleteType='username' // Android
-          onChangeText={(pseudo) => setPseudo(pseudo)}
-          onSubmitEditing={() => { passwdInputRef.current.focus(); }}
-          //blurOnSubmit={false}
-          testID='login'
-        />
-        <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text>
-        <TextInput
-          style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
-          ref={passwdInputRef}
-          placeholder='Entrez votre mot de passe'
-          secureTextEntry={true}
-          value={passwd}
-          autoCapitalize='none'
-          returnKeyType='go'
-          textContentType='password'  // iOS
-          autoCompleteType='password' // Android
-          onChangeText={(passwd) => setPasswd(passwd)}
-          onSubmitEditing={onLoginPress}
-          blurOnSubmit={false}
-          testID='password'
-        />
+        {isConnected ? 
+        <View>
+          <View style={{height: 20}}></View>
+          <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous êtes connecté en tant que {global.login}</Text>
+          <Text onPress={onDisconnetPress} style={[CommonStyles.linkText, { textAlign: 'center', marginBottom: 10 }]}>Se déconnecter</Text>
+          <View>
+            
+
+            <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous pouvez mettre à jour vos préférences ou supprimer votre compte Bdovore en vous connectant sur Bdovore.com</Text>
+           
+            <TouchableOpacity
+              style={CommonStyles.loginConnectionButtonStyle}
+              onPress={onEditAccount}
+              title='Gérer mon compte'>
+              <Text style={CommonStyles.loginConnectionTextStyle}>Gérer mon compte</Text>
+            </TouchableOpacity>
+            <View style={{height: 20}}></View>
+
+            <Text onPress={onOfflinePress} style={[CommonStyles.linkText, { textAlign: 'center', marginBottom: 10 }]}>Mode offline</Text>
+            <View style={{height: 100}}></View>
+            <TouchableOpacity
+              style={{backgroundColor: "lightgray", alignItems: 'center'}}
+              onPress={() => navigation.goBack()}
+              title='Fermer'>
+              <Text style={CommonStyles.loginConnectionTextStyle}>Fermer</Text>
+            </TouchableOpacity>
+            
+          </View>
+        </View>
+          
+        : (
+        <><Text style={[CommonStyles.defaultText, { marginTop: 0, marginBottom: 15, textAlign: 'center' }]}>Connectez vous avec votre compte BDovore</Text><Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Login</Text><TextInput
+              style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+              placeholder='Entrez votre login'
+              autoCapitalize='none'
+              returnKeyType='next'
+              blurOnSubmit={false}
+              value={pseudo}
+              textContentType='username' // iOS
+              autoCompleteType='username' // Android
+              onChangeText={(pseudo) => setPseudo(pseudo)}
+              onSubmitEditing={() => { passwdInputRef.current.focus(); } }
+              //blurOnSubmit={false}
+              testID='login' /><Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Mot de passe</Text><TextInput
+                style={[CommonStyles.SectionStyle, CommonStyles.loginInputTextStyle]}
+                ref={passwdInputRef}
+                placeholder='Entrez votre mot de passe'
+                secureTextEntry={true}
+                value={passwd}
+                autoCapitalize='none'
+                returnKeyType='go'
+                textContentType='password' // iOS
+                autoCompleteType='password' // Android
+                onChangeText={(passwd) => setPasswd(passwd)}
+                onSubmitEditing={onLoginPress}
+                blurOnSubmit={false}
+                testID='password' />
+      
         {errortext ? (
           <Text style={CommonStyles.errorTextStyle}>
             {errortext}
           </Text>
         ) : null}
+      
         {loading ?
           <SmallLoadingIndicator style={{
             flexDirection: 'row',
@@ -203,12 +292,17 @@ function LoginScreen({ navigation }) {
               title='Login'>
               <Text style={CommonStyles.loginConnectionTextStyle}>Se connecter</Text>
             </TouchableOpacity>
-            <Text onPress={onOfflinePress} style={[CommonStyles.linkText, { textAlign: 'center', marginBottom: 10 }]}>Mode offline</Text>
+            </View>
+        }
+        <View>
+            
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Vous n'avez pas encore de compte ?</Text>
             <Text style={[CommonStyles.defaultText, { textAlign: 'center' }]}>Rendez-vous sur bdovore.com pour en créer un gratuitement.</Text>
             <Text style={[CommonStyles.linkText, { marginTop: 10, textAlign: 'center' }]} onPress={onRegister}>Créer mon compte</Text>
+         
           </View>
-        }
+        </>)}
+       
         <View style={{height: 20}}></View>
       </ScrollView>
     </View>
