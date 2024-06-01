@@ -1,0 +1,17 @@
+#!/bin/bash
+
+export ANDROID_SDK_ROOT=/home/joachim/Android/Sdk
+export NODE_OPTIONS=--openssl-legacy-provider
+
+APP_VERSION=2.2.4
+
+#./gradlew assembleDebug
+#cp app/build/outputs/apk/debug/app-debug.apk bdovore-$APP_VERSION-debug.apk
+
+./gradlew assembleRelease
+cp app/build/outputs/apk/release/app-release.apk bdovore-$APP_VERSION-release.apk
+
+./gradlew bundleRelease
+cp app/build/outputs/bundle/release/app-release.aab bdovore-$APP_VERSION-release.aab
+
+echo "App copied into current directory."
