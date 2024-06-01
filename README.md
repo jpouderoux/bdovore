@@ -2,9 +2,9 @@
 
 ![BDovore](assets/logo_v2.png)
 
-Coded by Joachim Pouderoux, 2021
+Coded by Joachim Pouderoux and Thomas Cohu, 2021-2024.
 
-License: BSD-3-Clause License
+License: BSD-3-Clause License.
 
 Open-source code hosted on [github](https://github.com/jpouderoux/bdovore).
 
@@ -14,5 +14,5 @@ This project aims to provide a free and opensource mobile application for both A
 
 This application is available on the following app stores:
 
-* [Google Play Store](https://play.google.com/store/apps/details?id=com.mobile.bdovore)
+* [Google Play Store](https://play.google.com/store/apps/details?id=com.mobileapp.bdovore)
 * [Apple App Store](https://apps.apple.com/fr/app/bdovore/id1519677181)
