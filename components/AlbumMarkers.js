@@ -377,7 +377,7 @@ export function AlbumMarkers({ item, style, reduceMode = true, retractableButton
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ alignSelf: 'center' }} contentContainerStyle={{}} >
         <View style={[{ flexDirection: 'row', justifyContent: 'center' }]}>
 
-          {isAlbumInCollection || (!global.retractableButtons || (global.retractableButtons && showMore)) || !reduceMode ?
+          {(isAlbumInCollection || album.FLG_ACHAT) || (!global.retractableButtons || (global.retractableButtons && showMore)) || !reduceMode ?
             <Marker name='own' iconEnabled='check-bold' iconDisabled='check' text="J'ai" onPressCb={onGotIt}
               isCheckedCb={() => isAlbumInCollection} /> : null}
 
