@@ -28,7 +28,8 @@
  */
 
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Linking, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { BottomSheet } from '../components/BottomSheet';
 import { CommonStyles } from '../styles/CommonStyles';
@@ -61,11 +62,14 @@ function AboutPanel({ isVisible, visibleSetter }) {
           flexDirection: 'column', width: '90%', alignItems: 'center', marginVertical: 20,  borderRadius: 10
         }]}>
           <Text style={[CommonStyles.defaultText, CommonStyles.bold, { color: 'black', marginVertical: 10 }]}>{pkg.displayName} - {Platform.OS == 'ios' ? 'iOS' : 'Android'}</Text>
-          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Novembre 2025</Text>
+          <Text style={[CommonStyles.defaultText, { color: 'black' }]}>Version {pkg.version} - Mars 2026</Text>
           <Text style={[CommonStyles.defaultText, { color: 'black', marginVertical: 10 }]} onPress={onToggleSponsoredLinks}>Code by Joachim Pouderoux & Thomas Cohu</Text>
+          <Text style={[CommonStyles.linkText, { marginTop: 15 }]} onPress={() => Linking.openURL('https://forum.bdovore.com')}>Forum BDovore</Text>
+          <Text style={[CommonStyles.linkText, {  marginTop: 5 }]} onPress={() => Linking.openURL('https://discord.gg/NJVptrR9y9')}>Discord</Text>
         </View>
 
         <Text style={[CommonStyles.linkText, CommonStyles.center, { marginTop: 20 }]} onPress={() => visibleSetter(false)}>Fermer</Text>
+        <Toast />
       </View>
     </BottomSheet>
   );
